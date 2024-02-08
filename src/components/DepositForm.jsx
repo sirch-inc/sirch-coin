@@ -14,7 +14,7 @@ const DepositForm = () => {
   
   useEffect(() => {
     // Load stripe and set it in state
-    const stripeKey = "pk_test_6rOaG7p9vtW2VyduXtVfr7JV00sqg9HpxQ";
+    const stripeKey = process.env.STRIPE_TEST_KEY;
     loadStripe(stripeKey).then(setStripe);
   }, []);
 
