@@ -1,0 +1,541 @@
+/* Styles for Navbar */
+.navbar {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: flex-start;
+  align-items: baseline;
+  flex-wrap: nowrap;
+}
+
+.navbar-item {
+  margin: 10px;
+  font-size: 24px;
+}
+
+.navbar-item > a {
+  text-decoration: none;
+  color: black;
+  font-weight: 600;
+}
+
+/* Page Header */
+.page-header {
+  margin-bottom: 2em;
+  width: 100%;
+  padding: 10px;
+  color: white;
+  background-color: #df4343;
+}
+/* End styles for nav bar/header */
+
+/* Start Styles for Main page buttons */
+.button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.button-container > a {
+  margin-top: 20px;
+  margin-right: 30px;
+  padding: 10px;
+  width: 250px;
+  list-style: none;
+  border: 4px solid black;
+  border-radius: 50px;
+  font-size: 20px;
+  background-color: #524f4f;
+}
+
+.button-container > a:hover {
+  background-color: #5590e2;
+}
+
+.button-container > a {
+  text-decoration: none;
+  color: white;
+}
+
+.action-btn {
+  cursor: pointer;
+  text-align: center;
+  font-weight: 700;
+}
+/* End Styles for Main page buttons */
+
+/* Start Styles for Send Page */
+.page-text {
+  text-align: center;
+  font-size: x-large;
+  margin-top: 100px;
+}
+
+.price-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 50px;
+}
+
+.first-row {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 15px;
+}
+
+.second-row {
+  display: flex;
+  gap: 15px;
+}
+
+.first-row > button,
+.second-row > button {
+  padding: 7px 20px;
+  background-color: #5590e2;
+  border: none;
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
+  text-decoration: none;
+  margin: 0 auto;
+}
+
+.cash-input,
+.total-input {
+  margin: 0 auto;
+  padding: 20px;
+  width: 350px;
+  background-color: #5590e2;
+  color: white;
+  border: none;
+  font-size: 18px;
+}
+
+.cash-input::placeholder,
+.total-input::placeholder {
+  color: white;
+  font-weight: 500;
+}
+
+.cash-input:focus,
+.total-input:focus {
+  outline: none;
+}
+
+.cash-btn:hover {
+  background-color: #5d5d5d;
+}
+
+.other-amount-input {
+  margin: 10px 0;
+  padding: 20px;
+  width: 350px;
+  background-color: #5590e2;
+  color: white;
+  border: none;
+  font-size: 18px;
+}
+
+.other-amount-input::placeholder {
+  color: white;
+  font-weight: 500;
+}
+
+.other-amount-input:focus {
+  outline: none;
+}
+
+.email-inputs {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.your-email-input,
+.recipient-email-input {
+  margin: 10px 0;
+  padding: 20px;
+  width: 350px;
+  background-color: #5590e2;
+  color: white;
+  border: none;
+  font-size: 18px;
+}
+
+.your-email-input::placeholder,
+.recipient-email-input::placeholder {
+  color: white;
+  font-weight: 500;
+}
+
+.your-email-input:focus,
+.recipient-email-input:focus {
+  outline: none;
+}
+/* End of styles for send page */
+
+/*  Start Styles for Buy Page */
+.page-text {
+  text-align: center;
+  font-size: x-large;
+  margin-top: 100px;
+}
+
+.price-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 50px;
+}
+
+.first-row {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 15px;
+}
+
+.second-row {
+  display: flex;
+  gap: 15px;
+}
+
+.first-row > button {
+  padding: 7px 20px;
+  background-color: #5590e2;
+  border: none;
+}
+
+.second-row > button {
+  padding: 7px 15px;
+  background-color: #5590e2;
+  border: none;
+}
+
+.cash-btn {
+  width: 150px;
+  font-size: 20px;
+  font-weight: 700;
+  text-decoration: none;
+  color: white;
+  margin: 0 auto;
+}
+
+.cash-input {
+  margin: 0 auto;
+  padding: 20px;
+  width: 350px;
+  background-color: #5590e2;
+  color: white;
+  border: none;
+  font-size: 18px;
+}
+
+.total-input {
+  margin: 0 auto;
+  padding: 20px;
+  width: 350px;
+  background-color: #5d5d5d;
+  color: white;
+  margin-top: 30px;
+  font-size: 18px;
+}
+
+.cash-btn:hover {
+  background-color: #5d5d5d;
+}
+
+#coin::placeholder,
+#email::placeholder {
+  color: white;
+  font-weight: 500;
+}
+
+.bottom-btn-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-top: 20px;
+  padding: 20px;
+}
+
+.big-btn-red {
+  background-color: #df4343;
+  text-decoration: none;
+  text-align: center;
+  font-size: x-large;
+  font-weight: 600;
+  color: white;
+  border: 7px solid black;
+  border-radius: 30px;
+  padding: 10px;
+  margin-bottom: 20px;
+  width: 300px;
+}
+
+.big-btn-blue {
+  background-color: #5590e2;
+  text-decoration: none;
+  text-align: center;
+  font-size: x-large;
+  font-weight: 600;
+  color: white;
+  border: 7px solid black;
+  border-radius: 30px;
+  padding: 10px;
+  margin-bottom: 20px;
+  width: 300px;
+}
+/* End of styles for buy page
+
+
+
+/* Start styles for Balance Inquiry */
+.balance-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.email-balance {
+  margin: 80px auto;
+  padding: 20px;
+  width: 350px;
+  max-width: 350px;
+  background-color: #5590e2;
+  color: white;
+  border: none;
+  font-size: 16px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.balance-btn {
+  margin-top: 30px;
+  padding: 10px;
+  font-size: 20px;
+  font-weight: 700;
+  text-decoration: none;
+  background-color: #5d5d5d;
+  color: white;
+  border: none;
+  width: 90%;
+  max-width: 300px;
+  text-align: center;
+}
+
+.balance-btn:hover {
+  color: black;
+}
+
+.balance {
+  margin-top: 15px;
+}
+
+.bottom-btn-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  margin-top: 20px;
+  padding: 10px;
+}
+
+.bottom-btn-container a {
+  margin: 5px;
+}
+/* End styles for Balance Inquiry */
+
+/* Start styles for Transfer History */
+/* End styles for Transfer History */
+
+/* Start styles for Preferences */
+.bottom-btn-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.big-btn-red,
+.big-btn-blue {
+  display: inline-block;
+  text-decoration: none;
+  text-align: center;
+  font-size: x-large;
+  font-weight: 600;
+  color: white;
+  border: 7px solid black;
+  border-radius: 30px;
+  padding: 10px;
+  width: 45%;
+  box-sizing: border-box;
+}
+
+.big-btn-red {
+  background-color: #df4343;
+}
+
+.big-btn-blue {
+  background-color: #5590e2;
+}
+
+.page-text {
+  margin-bottom: -55px;
+}
+
+/* End styles for Preferences */
+
+/* Mobile styles */
+
+@media only screen and (min-width: 768px) {
+  .email-balance,
+  .balance-btn {
+    width: 70%;
+  }
+}
+
+@media only screen and (min-width: 1200px) {
+  .navbar {
+    justify-content: flex-start;
+  }
+
+  .navbar-item {
+    font-size: 24px;
+  }
+
+  .page-header {
+    padding: 10px;
+    font-size: 1.2em;
+  }
+
+  .button-container > a {
+    width: 60%;
+    font-size: 20px;
+    max-width: 300px;
+  }
+
+  .cash-input,
+  .total-input {
+    width: 60%;
+    max-width: 300px;
+  }
+
+  .big-btn-red,
+  .big-btn-blue {
+    width: 70%;
+    max-width: 350px;
+  }
+}
+
+/* Start Styles for buy money Mobile */
+@media screen and (max-width: 768px) {
+  .page-text {
+    margin-top: 15px;
+    font-size: large;
+  }
+
+  .price-container {
+    margin-top: 5px;
+  }
+
+  .first-row,
+  .second-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    margin-bottom: 5px;
+  }
+
+  .cash-btn {
+    width: calc(31.33% - 10px);
+    margin-bottom: 5px;
+    font-size: 14px;
+    padding: 5px;
+  }
+
+  .cash-input {
+    width: 50%;
+    margin: 4px 0;
+    padding: 15px;
+    background-color: #5590e2;
+    color: white;
+    border: none;
+    font-size: 18px;
+  }
+
+  .total-input {
+    width: 100%;
+    margin: 10px 0;
+    padding: 15px;
+    background-color: #5d5d5d;
+    color: white;
+    font-size: 18px;
+  }
+
+  .big-btn-red,
+  .big-btn-blue {
+    width: 70%;
+    max-width: 350px;
+  }
+}
+/* End Styles for buy money Mobile */
+
+/* Start Styles for send money Mobile */
+@media (max-width: 767px) {
+  .send-coin-container {
+  }
+
+  .price-container {
+  }
+
+  .cash-btn {
+    width: calc(33% - 10px);
+    margin-bottom: 10px;
+    box-sizing: border-box;
+  }
+
+  .cash-input {
+    width: 100%;
+  }
+
+  .bottom-btn-container {
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+  }
+
+  .big-btn-red,
+  .big-btn-blue {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
+/* End Styles for send money Mobile */
+
+/* Start Styles for Prefrences Mobile */
+@media screen and (max-width: 600px) {
+  .balance-container {
+    text-align: center;
+  }
+
+  .bottom-btn-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .page-text {
+    margin-bottom: 10px;
+  }
+}
+/* End Styles for Prefrences Mobile */
