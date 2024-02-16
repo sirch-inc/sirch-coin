@@ -65,7 +65,7 @@
 }
 /* End Styles for Main page buttons */
 
-/* Start Styles for Send Page */
+/* Start Styles for Send coin Page */
 .page-text {
   text-align: center;
   font-size: x-large;
@@ -174,83 +174,59 @@
 .recipient-email-input:focus {
   outline: none;
 }
-/* End of styles for send page */
+/* End of styles for send coin page */
 
-/*  Start Styles for Buy Page */
-.page-text {
-  text-align: center;
-  font-size: x-large;
-  margin-top: 100px;
+
+
+
+/*  Start Styles for Buy coin (Deposit) Page */
+
+
+
+
+
+
+/* Styles for the success message */
+.success {
+  /* Your styles here */
+  background-color: lightgreen;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 20px;
 }
 
-.price-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 50px;
+/* Styles for labels */
+label {
+  /* Your styles here */
+  font-weight: bold;
+  display: block; /* Ensure labels are on separate lines */
+  margin-bottom: 5px; /* Add some space below labels */
 }
 
-.first-row {
-  margin-bottom: 20px;
-  display: flex;
-  gap: 15px;
+/* Styles for inputs */
+input {
+  /* Your styles here */
+  padding: 5px;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  width: 100%; /* Make inputs fill their container */
+  box-sizing: border-box; /* Include padding in width calculation */
 }
 
-.second-row {
-  display: flex;
-  gap: 15px;
-}
-
-.first-row > button {
-  padding: 7px 20px;
-  background-color: #5590e2;
+/* Styles for the submit button */
+button {
+  /* Your styles here */
+  background-color: #007bff; /* Blue color */
+  color: white; /* Text color */
+  padding: 10px 20px; /* Adjust padding as needed */
   border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px; /* Add some space on top */
 }
 
-.second-row > button {
-  padding: 7px 15px;
-  background-color: #5590e2;
-  border: none;
-}
+/* Additional styles as needed */
 
-.cash-btn {
-  width: 150px;
-  font-size: 20px;
-  font-weight: 700;
-  text-decoration: none;
-  color: white;
-  margin: 0 auto;
-}
-
-.cash-input {
-  margin: 0 auto;
-  padding: 20px;
-  width: 350px;
-  background-color: #5590e2;
-  color: white;
-  border: none;
-  font-size: 18px;
-}
-
-.total-input {
-  margin: 0 auto;
-  padding: 20px;
-  width: 350px;
-  background-color: #5d5d5d;
-  color: white;
-  margin-top: 30px;
-  font-size: 18px;
-}
-
-.cash-btn:hover {
-  background-color: #5d5d5d;
-}
-
-#coin::placeholder,
-#email::placeholder {
-  color: white;
-  font-weight: 500;
-}
 
 .bottom-btn-container {
   position: fixed;
@@ -291,7 +267,7 @@
   margin-bottom: 20px;
   width: 300px;
 }
-/* End of styles for buy page
+/* End of styles for buy coin (Deposit) page
 
 
 
@@ -358,7 +334,11 @@ form {
 /* End styles for Balance Inquiry */
 
 /* Start styles for Transfer History */
+
+
 /* End styles for Transfer History */
+
+
 
 /* Start styles for Preferences */
 .bottom-btn-container {

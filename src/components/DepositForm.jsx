@@ -44,22 +44,45 @@ setStripe(s);
     payEl.mount(paymentElementRef.current);
   };
 
+  
+
   const handleClick = async () => {
     try {
       if (!stripe) {
         await initializeStripe();
       }
-      const sResult = await stripe.confirmPayment({
+  
+      // Confirm the payment
+      const result = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: "http://localhost:3000/coin/send",
+          return_url: window.location.origin + "/stripe/success",
         },
       });
-      // ...success handling...
+  
+      // Check if the payment was successful
+      if (result.error) {
+        // Payment failed
+        console.error("Payment failed:", result.error);
+        window.location.href = window.location.origin + "/stripe/Failure";
+      } else if (result.paymentIntent && result.paymentIntent.status === "succeeded") {
+        // Payment succeeded
+        setContainerVisible(false); // Hide the payment form
+        setSuccessVisible(true); // Show success message
+        setPaymentIntent(result.paymentIntent.id); // Store payment intent if needed
+      } else {
+        // Payment not yet completed, handle as necessary
+        console.log("Payment not yet completed:", result);
+      }
     } catch (error) {
-      console.error(error); // Log the error to console
+      console.error("Error processing payment:", error);
     }
   };
+  
+  
+
+
+
 
   return (
     <>

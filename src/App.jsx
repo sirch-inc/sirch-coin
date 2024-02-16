@@ -10,7 +10,8 @@ import Preferences from "./components/Preferences";
 import TransferHistory from "./components/TransferHistory";
 import Help from "./components/Help";
 import LoginForm from "./components/Users/Login";
-
+import success from "./components/Stripe/success";
+import Failure from "./components/Stripe/Failure";
 export default function App() {
   return (
     <BrowserRouter>
@@ -24,6 +25,8 @@ export default function App() {
         <Route path="/preferences" Component={Preferences} />
         <Route path="/transferhistory" Component={TransferHistory} />
         <Route path="/help" Component={Help} />
+        <Route path="/Stripe/success" Component={success} />
+        <Route path="/Stripe/Failure" Component={Failure} />
       </Routes>
     </BrowserRouter>
   );
