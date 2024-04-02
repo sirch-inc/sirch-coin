@@ -9,16 +9,17 @@ import DepositForm from "./components/DepositForm";
 import Preferences from "./components/Preferences";
 import TransferHistory from "./components/TransferHistory";
 import Help from "./components/Help";
-import LoginForm from "./components/Users/Login";
+import Login from "./components/Users/Login";
 import success from "./components/Stripe/success";
 import Failure from "./components/Stripe/Failure";
+
 export default function App() {
   return (
     <BrowserRouter>
       <NavBar />
       <Routes>
         <Route path="/" Component={MainPage} />
-        <Route path="login" Component={LoginForm} />
+        <Route path="login" Component={Login} />
         <Route path="coin/send" Component={SendCoin} />
         <Route path="coin/balance" Component={CoinBalance} />
         <Route path="/checkout" Component={DepositForm} />
