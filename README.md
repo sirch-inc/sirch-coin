@@ -13,6 +13,10 @@ This is the frontend dashboard for SirchCoin, written in React/JSX and uses the 
 7. In a terminal, change into the `sirch-coin` directory where you pulled/downloaded the source code, then run `code .` to open in VS Code.
 8. Create an `.env` text file with the necessary keys (ask a developer for these). NOTE: These may change over time!
 
+## Generating a Token for Auth
+
+❗ TBD, need to test & confirm
+
 ## Building the latest (day-to-day)
 
 1. Use your `git` tools to pull down the latest code from the `sirch-coin` repo.
@@ -36,6 +40,6 @@ In your terminal, change into your development branch by typing: `git checkout <
 8. Give your pull request a title and meaningful description on the changes that you've implemented.
 9. Finally, select "Create Pull Request" again so that project owners can review the changes.
 
-## Deployment
+## Deployment // Dependencies
 
 ❗ TBD
