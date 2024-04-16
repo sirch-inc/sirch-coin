@@ -6,6 +6,8 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const clientId = process.env.REACT_APP_CLIENT_ID;
   const clientSecret = process.env.REACT_APP_CLIENT_SECRET;
+  // ❗❗❗ Adding audience token 
+  const audienceToken = process.env.REACT_APP_AUDIENCE;
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -16,7 +18,8 @@ const LoginPage = () => {
         {
           client_id: clientId,
           client_secret: clientSecret,
-          audience: "https://useapi",
+          // ❗❗❗ Changed audience token here
+          audience: audienceToken,
           grant_type: "client_credentials",
         },
         {

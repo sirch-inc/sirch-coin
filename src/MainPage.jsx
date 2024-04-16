@@ -1,6 +1,12 @@
 import { Link } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function MainPage() {
+
+  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
+  console.log(isAuthenticated, user)
+
+
   return (
     <>
       <h3 className="page-header">Avaliable Transactions</h3>

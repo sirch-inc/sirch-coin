@@ -1,3 +1,5 @@
+import LoginButton from "./components/Users/AuthLogin";
+
 export default function NavBar() {
   return (
     <>
@@ -15,6 +17,7 @@ export default function NavBar() {
           <a href="/"> SirchCoin </a>
         </li>
         <li>
+          <LoginButton/>
           <a href="/login">Login</a>
         </li>
       </ul>

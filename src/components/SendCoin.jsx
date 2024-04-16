@@ -42,6 +42,7 @@ export default function SendCoin() {
       "https://sirchcoinv1-production.up.railway.app/api/v1/customers/transfer-coins";
 
     const fetchConfig = {
+      mode: 'no-cors',
       method: "POST",
       body: JSON.stringify(data),
       headers: {
