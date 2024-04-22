@@ -14,7 +14,7 @@ root.render(
       authorizationParams={{
       redirect_uri: "http://localhost:3000",
       audience:process.env.REACT_APP_AUDIENCE,
-      access_token: process.env.REACT_APP_ACCESS_TOKEN,
+      scope: "read:current_user update:current_user_metadata",
     }}
     onRedirectCallback={(state) => {
       console.log('onRedirectCallback', state);
