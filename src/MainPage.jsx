@@ -4,32 +4,28 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 export default function MainPage() {
 
-  // const { getAccessTokenSilently, isAuthenticated, loginWithRedirect, user, isLoading } = useAuth0();
+  const { getAccessTokenSilently, isAuthenticated, user, isLoading } = useAuth0();
 
-  // const callApi = async () => {
-  //   if (!isLoading && !isAuthenticated) {
-  //     loginWithRedirect();
-  //     return;
-  //   }
+  const callApi = async () => {
 
-  //   try {
-  //     const token = await getAccessTokenSilently();
-  //     const response = await fetch("dev-rzyub0shb85bv728.us.auth0.com/", {
-  //       method: "POST",  
-  //       headers: {
-  //         Authorization: `Bearer ${token}`
-  //       }
-  //     });
-  //     const responseData = await response.json();
-  //     console.log(responseData);
-  //   } catch (e) {
-  //     console.error(e);
-  //   }
-  // };
+    try {
+      const token = await getAccessTokenSilently();
+      const response = await fetch("dev-rzyub0shb85bv728.us.auth0.com/", {
+        method: "POST",  
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const responseData = await response.json();
+      console.log(responseData);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
-  // useEffect(() => {
-  //   callApi();
-  // }, [isAuthenticated, isLoading, loginWithRedirect]);
+  useEffect(() => {
+    callApi();
+  }, [isAuthenticated, isLoading]);
 
 
 
