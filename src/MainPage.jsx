@@ -10,14 +10,14 @@ export default function MainPage() {
 
     try {
       const token = await getAccessTokenSilently();
-      const response = await fetch("dev-rzyub0shb85bv728.us.auth0.com/", {
-        method: "POST",  
+      const response = await fetch("https://userapi", {  
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
       const responseData = await response.json();
       console.log(responseData);
+      console.log(user);
     } catch (e) {
       console.error(e);
     }
