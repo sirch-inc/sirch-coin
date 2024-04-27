@@ -1,2 +1,24 @@
+
+# dependencies
 node_modules
+
+# environments
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# production
+build
+
+# testing
+#/coverage
+
+# filesystems fluff
+.DS_Store
+
+# miscellaneous
+#npm-debug.log*
+#yarn-debug.log*
+#yarn-error.log*
