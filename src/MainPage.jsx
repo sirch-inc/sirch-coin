@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 
+
 export default function MainPage() {
 
   const { getAccessTokenSilently, isAuthenticated, user, isLoading } = useAuth0();
@@ -28,10 +29,9 @@ export default function MainPage() {
   }, [isAuthenticated, isLoading]);
 
 
-
   return (
     <>
-      <h3 className="page-header">Avaliable Transactions</h3>
+      <h3 className="page-header">Available Transactions</h3>
       <div className="button-container">
         <Link to="coin/send" className="action-btn">
           Send Money
