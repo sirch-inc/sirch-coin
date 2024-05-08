@@ -11,7 +11,7 @@ export default function MainPage() {
 
     try {
       const token = await getAccessTokenSilently();
-      const response = await fetch("https://userapi", {  
+      const response = await fetch("https://backend.sirch-engine.org/api/user", {  
         headers: {
           Authorization: `Bearer ${token}`
         }
