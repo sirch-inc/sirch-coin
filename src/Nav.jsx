@@ -1,4 +1,5 @@
 import LoginButton from "./components/Users/AuthLogin";
+import LogoutButton from "./components/Users/AuthLogout";
 
 export default function NavBar() {
   return (
@@ -19,6 +20,8 @@ export default function NavBar() {
         <li>
           <LoginButton/>
           <a href="/login">Login</a>
+          <LogoutButton/>
+          <a href="/logout">Logout</a>
         </li>
       </ul>
     </>
