@@ -12,8 +12,12 @@ import Help from "./components/Help";
 import Login from "./components/Users/Login";
 import success from "./components/Stripe/success";
 import Failure from "./components/Stripe/Failure";
+import { createClient } from "@supabase/supabase-js";
 
 export default function App() {
+
+  const supabase = createClient(process.env.REACT_APP_SUPABASE_PROJECT_URL, process.env.REACT_APP_SUPABASE_ANON_KEY);
+
   return (
     <BrowserRouter>
       <NavBar />
