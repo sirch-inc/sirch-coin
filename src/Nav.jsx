@@ -18,9 +18,9 @@ export default function NavBar() {
           <a href="/"> SirchCoin </a>
         </li>
         <li>
-          <LoginButton/>
+          {/* <LoginButton/> */}
           <a href="/login">Login</a>
-          <LogoutButton/>
+          {/* <LogoutButton/> */}
           <a href="/logout">Logout</a>
         </li>
       </ul>
