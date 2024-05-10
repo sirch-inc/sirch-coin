@@ -12,7 +12,8 @@ import Help from "./components/Help";
 import Login from "./components/Users/Login";
 import success from "./components/Stripe/success";
 import Failure from "./components/Stripe/Failure";
-import supabase from './Config/supabaseClient'
+import supabase from './Config/supabaseConfig'
+import LoginSupabase from "./components/Users/LoginSupabase";
 
 export default function App() {
 
@@ -22,6 +23,7 @@ export default function App() {
       <Routes>
         <Route path="/" Component={MainPage} />
         <Route path="login" Component={Login} />
+        <Route path="/supabase-login" element={<LoginSupabase supabase={supabase}/>}/>
         <Route path="coin/send" Component={SendCoin} />
         <Route path="coin/balance" Component={CoinBalance} />
         <Route path="/checkout" Component={DepositForm} />
