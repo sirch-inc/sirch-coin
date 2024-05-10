@@ -1,7 +1,13 @@
 import LoginButton from "./components/Users/AuthLogin";
 import LogoutButton from "./components/Users/AuthLogout";
+import LogoutSupabase from "./components/Users/LogoutSupabase"
 
-export default function NavBar() {
+export default function NavBar({ supabase }) {
+
+  function handleLogout(){
+    LogoutSupabase({ supabase })
+    }
+
   return (
     <>
       <ul className="navbar">
@@ -9,7 +15,7 @@ export default function NavBar() {
           <a href="/">
             <img
               src="/sirch_logo.png"
-              alt="Sirc Logo"
+              alt="Sirch Logo"
               style={{ width: "60px", height: "auto" }}
             />
           </a>
@@ -21,7 +27,7 @@ export default function NavBar() {
           {/* <LoginButton/> */}
           <a href="/supabase-login">Login</a>
           {/* <LogoutButton/> */}
-          <a href="/logout">Logout</a>
+          <a href="#" onClick={handleLogout}>Logout</a>
         </li>
       </ul>
     </>

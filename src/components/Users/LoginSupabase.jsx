@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { AuthContext } from "./AuthContext";
 
 const LoginSupabase = ({supabase}) => {
 
-    console.log(supabase)
     return (
         <AuthContext.Consumer>
         {({ session }) =>

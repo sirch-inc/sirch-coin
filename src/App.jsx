@@ -14,6 +14,7 @@ import success from "./components/Stripe/success";
 import Failure from "./components/Stripe/Failure";
 import supabase from './Config/supabaseConfig'
 import LoginSupabase from "./components/Users/LoginSupabase";
+import LogoutSupabase from "./components/Users/LogoutSupabase"
 import { AuthProvider } from "./components/Users/AuthContext";
 
 export default function App() {
@@ -22,11 +23,12 @@ export default function App() {
     
     <AuthProvider supabase={supabase}>
       <BrowserRouter>
-        <NavBar />
+        <NavBar supabase={supabase} />
         <Routes>
           <Route path="/" Component={MainPage} />
           <Route path="login" Component={Login} />
           <Route path="/supabase-login" element={<LoginSupabase supabase={supabase}/>}/>
+          <Route path="/supabase-logout" element={<LogoutSupabase supabase={supabase}/>}/>
           <Route path="coin/send" Component={SendCoin} />
           <Route path="coin/balance" Component={CoinBalance} />
           <Route path="/checkout" Component={DepositForm} />
