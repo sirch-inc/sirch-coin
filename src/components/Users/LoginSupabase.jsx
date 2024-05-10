@@ -16,6 +16,7 @@ const LoginSupabase = ({supabase}) => {
           data: { subscription },
         } = supabase.auth.onAuthStateChange((_event, session) => {
           setSession(session)
+          console.log(session)
         })
   
         return () => subscription.unsubscribe()
@@ -25,7 +26,7 @@ const LoginSupabase = ({supabase}) => {
         return (<Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} />)
       }
       else {
-        return (<div>Logged in!</div>)
+        return (<div>You've successfully logged in as {session.user.email}!</div>)
       }
     }
 

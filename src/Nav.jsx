@@ -19,7 +19,7 @@ export default function NavBar() {
         </li>
         <li>
           {/* <LoginButton/> */}
-          <a href="/login">Login</a>
+          <a href="/supabase-login">Login</a>
           {/* <LogoutButton/> */}
           <a href="/logout">Logout</a>
         </li>
