@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
-import { useEffect } from "react";
+import { AuthContext } from "./components/Users/AuthContext";
+import { useEffect, useContext } from "react";
 // import { useAuth0 } from "@auth0/auth0-react";
 import { jwtDecode } from "jwt-decode"
 
 
-export default function MainPage() {
+export default function MainPage({supabase}) {
 
   // const { getAccessTokenSilently, isAuthenticated, user, isLoading } = useAuth0();
 
@@ -29,10 +30,15 @@ export default function MainPage() {
   //   callApi();
   // }, [isAuthenticated, isLoading]);
 
+  const { session } = useContext(AuthContext);
 
   return (
     <>
-      <h3 className="page-header">Available Transactions</h3>
+        {session ? (
+          <h3 className="page-header">Welcome, {session.user.email}!</h3>
+        ) : (
+          <h3 className="page-header"> Welcome! Please sign in to use Sirch Coins.</h3>)}
+      
       <div className="button-container">
         <Link to="coin/send" className="action-btn">
           Send Money

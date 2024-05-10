@@ -19,13 +19,15 @@ import { AuthProvider } from "./components/Users/AuthContext";
 
 export default function App() {
 
+
+
   return (
     
-    <AuthProvider supabase={supabase}>
+    <AuthProvider supabase={supabase} >
       <BrowserRouter>
         <NavBar supabase={supabase} />
         <Routes>
-          <Route path="/" Component={MainPage} />
+          <Route path="/" Component={MainPage} supabase={supabase}/>
           <Route path="login" Component={Login} />
           <Route path="/supabase-login" element={<LoginSupabase supabase={supabase}/>}/>
           <Route path="/supabase-logout" element={<LogoutSupabase supabase={supabase}/>}/>

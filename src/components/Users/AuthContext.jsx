@@ -5,18 +5,25 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [session, setSession] = useState(null);
+    const [userID, setUserId] = useState(null);
 
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session }}) => {
             setSession(session);
+            if (session && session.user) {
+                setUserId(session.user.id);
+            }
         });
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             (_event, session) => {
                 setSession(session);
-                // For testing purposes only below: 
-                if (session){
-                    console.log(session.user.email);
+                if (session && session.user){
+                    setUserId(session.user.id);
+                    console.log(session.user.id);
+                    console.log(session)
+                } else {
+                    setUserId(null);
                 }
             }
         );
@@ -25,7 +32,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ session }} supabase={ supabase }>
+        <AuthContext.Provider value={{ session, userID }} supabase={ supabase }>
             {children}
         </AuthContext.Provider>
     )
