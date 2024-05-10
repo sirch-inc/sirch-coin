@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { AuthContext } from "./Users/AuthContext";
 import { Link } from "react-router-dom";
 
 export default function SendCoin() {
@@ -6,6 +7,8 @@ export default function SendCoin() {
   const [userEmail, setUserEmail] = useState("");
   const [coin, setCoin] = useState(0);
   const [coinAmount, setCoinAmount] = useState("");
+
+  const { session } = useContext(AuthContext);
 
 
     // Function to handle changes in the coin input field
@@ -143,9 +146,11 @@ export default function SendCoin() {
                 name="userEmail"
                 id="userEmail"
                 className="cash1-input your-email-input"
-                value={userEmail}
+                value={session.user.email}
                 onChange={userEmailChange}
                 autoComplete="email"
+                // Prevent users from inputting email other than their own
+                readOnly
               />
               <input
                 placeholder="Recipient's Email"
