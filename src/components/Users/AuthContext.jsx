@@ -14,6 +14,7 @@ export const AuthProvider = ({ children }) => {
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             (_event, session) => {
                 setSession(session);
+                // For testing purposes only below: 
                 if (session){
                     console.log(session.user.email);
                 }

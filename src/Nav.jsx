@@ -1,13 +1,17 @@
 import LoginButton from "./components/Users/AuthLogin";
 import LogoutButton from "./components/Users/AuthLogout";
+import React, { useContext } from 'react';
 import LogoutSupabase from "./components/Users/LogoutSupabase"
+import { AuthContext } from "./components/Users/AuthContext";
 
 export default function NavBar({ supabase }) {
+
+  const { session } = useContext(AuthContext);
 
   function handleLogout(){
     LogoutSupabase({ supabase })
     }
-
+    
   return (
     <>
       <ul className="navbar">
@@ -24,10 +28,13 @@ export default function NavBar({ supabase }) {
           <a href="/"> SirchCoin </a>
         </li>
         <li>
-          {/* <LoginButton/> */}
-          <a href="/supabase-login">Login</a>
-          {/* <LogoutButton/> */}
-          <a href="#" onClick={handleLogout}>Logout</a>
+          {session ? (
+            <a href="#" onClick={handleLogout}>
+              Logout
+            </a>
+          ) : (
+            <a href="/supabase-login">Login</a>
+          )}
         </li>
       </ul>
     </>
