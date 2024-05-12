@@ -8,8 +8,9 @@ export default function SendCoin() {
   const [coin, setCoin] = useState(0);
   const [coinAmount, setCoinAmount] = useState("");
 
-  const { session } = useContext(AuthContext);
+  const { userInTable } = useContext(AuthContext);
 
+  console.log(userInTable.name)
 
     // Function to handle changes in the coin input field
     const handleCoinInputChange = (event) => {
@@ -146,7 +147,9 @@ export default function SendCoin() {
                 name="userEmail"
                 id="userEmail"
                 className="cash1-input your-email-input"
-                value={session.user.email}
+                // ❗ Fix -- if no user, value blank 
+                // value={session.user.email}
+                value={userEmail}
                 onChange={userEmailChange}
                 autoComplete="email"
                 // Prevent users from inputting email other than their own

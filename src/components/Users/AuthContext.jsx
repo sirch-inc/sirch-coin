@@ -5,7 +5,8 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [session, setSession] = useState(null);
-    const [userID, setUserId] = useState(null);
+    const [userId, setUserId] = useState(null);
+    const [userInTable, setUserInTable] = useState(null);
 
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session }}) => {
@@ -29,10 +30,34 @@ export const AuthProvider = ({ children }) => {
         );
 
         return () => subscription.unsubscribe();
+    
     }, []);
 
+    useEffect(() => {
+        const checkUserInTable = async () => {
+          if (userId) {
+            const { data, error } = await supabase
+              .from('users')
+              .select('*')
+              .eq('user_id', userId)
+              .single();
+    
+            if (error) {
+              console.error('Error checking user in table:', error);
+            } else {
+              setUserInTable(data);
+              console.log(userInTable)
+            }
+          }
+        };
+    
+        checkUserInTable();
+      }, [userId]);
+    
+    
+
     return (
-        <AuthContext.Provider value={{ session, userID }} supabase={ supabase }>
+        <AuthContext.Provider value={{ session, userId, userInTable }} supabase={ supabase }>
             {children}
         </AuthContext.Provider>
     )

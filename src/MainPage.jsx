@@ -30,12 +30,12 @@ export default function MainPage({supabase}) {
   //   callApi();
   // }, [isAuthenticated, isLoading]);
 
-  const { session } = useContext(AuthContext);
+  const { userInTable } = useContext(AuthContext);
 
   return (
     <>
-        {session ? (
-          <h3 className="page-header">Welcome, {session.user.email}!</h3>
+        {userInTable ? (
+          <h3 className="page-header">Welcome, {userInTable.name}!</h3>
         ) : (
           <h3 className="page-header"> Welcome! Please sign in to use Sirch Coins.</h3>)}
       
