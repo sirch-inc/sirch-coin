@@ -10,8 +10,6 @@ export default function SendCoin() {
 
   const { userInTable } = useContext(AuthContext);
 
-  console.log(userInTable.name)
-
     // Function to handle changes in the coin input field
     const handleCoinInputChange = (event) => {
       setCoinAmount(event.target.value);

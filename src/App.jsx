@@ -15,6 +15,7 @@ import Failure from "./components/Stripe/Failure";
 import supabase from './Config/supabaseConfig'
 import LoginSupabase from "./components/Users/LoginSupabase";
 import LogoutSupabase from "./components/Users/LogoutSupabase"
+import CoinFaucetDeposit from "./components/CoinFaucetDeposit";
 import { AuthProvider } from "./components/Users/AuthContext";
 
 export default function App() {
@@ -33,6 +34,7 @@ export default function App() {
           <Route path="/supabase-logout" element={<LogoutSupabase supabase={supabase}/>}/>
           <Route path="coin/send" Component={SendCoin} />
           <Route path="coin/balance" Component={CoinBalance} />
+          <Route path="/coin-faucet" Component={CoinFaucetDeposit}/>
           <Route path="/checkout" Component={DepositForm} />
           <Route path="/preferences" Component={Preferences} />
           <Route path="/transferhistory" Component={TransferHistory} />
