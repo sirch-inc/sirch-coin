@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
     
     }, []);
 
-    //Match authenticated user with assocaited users table
+    //Match authenticated user with associated users table
     useEffect(() => {
         const checkUserInTable = async () => {
           if (userId) {
@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }) => {
         checkUserInTable();
       }, [userId]);
     
-      //Get the users current balance via the user-balances table
+      //Get users current balance via user-balances table
       useEffect(() => {
         const getUserBalance = async () => {
           if (userInTable) {

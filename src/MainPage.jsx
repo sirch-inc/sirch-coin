@@ -5,7 +5,7 @@ import { useEffect, useContext } from "react";
 import { jwtDecode } from "jwt-decode"
 
 
-export default function MainPage({supabase}) {
+export default function MainPage() {
 
   // const { getAccessTokenSilently, isAuthenticated, user, isLoading } = useAuth0();
 
