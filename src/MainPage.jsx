@@ -40,6 +40,11 @@ export default function MainPage({supabase}) {
           <h3 className="page-header"> Welcome! Please sign in to use Sirch Coins.</h3>)}
       
       <div className="button-container">
+
+      <Link to="/coin-faucet" className="action-btn">
+          Internal: Balance & Faucet
+      </Link>
+
         <Link to="coin/send" className="action-btn">
           Send Money
         </Link>
