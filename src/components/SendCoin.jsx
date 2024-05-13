@@ -47,52 +47,17 @@ export default function SendCoin() {
 
       // Check if the logged-in user has enough balance
       if (userBalance.balance >= sendAmount) {
-        // Start a transaction
-        const { error: transactionError } = await supabase.transaction(
-          async (tx) => {
-            // Update the sender's balance
-            const { error: senderUpdateError } = await tx
-              .from("user-balances")
-              .update({ balance: userBalance.balance - sendAmount })
-              .eq("user_id", userInTable.user_id)
-              .select("balance")
-              .single();
+        // Call the RPC function to handle the coin transfer
+        const { data, error } = await supabase.rpc("transfer_coins", {
+          sender_id: userInTable.user_id,
+          receiver_id: recipientData.user_id,
+          amount: sendAmount,
+        });
 
-            if (senderUpdateError) {
-              throw new Error("Error updating sender's balance");
-            }
-
-            // Update the recipient's balance
-            const { error: recipientUpdateError } = await tx
-              .from("user-balances")
-              .update({ balance: recipientData.balance + sendAmount })
-              .eq("user_id", recipientData.user_id)
-              .select("balance")
-              .single();
-
-            if (recipientUpdateError) {
-              throw new Error("Error updating recipient's balance");
-            }
-
-            // Insert a new transaction record
-            const { error: transactionInsertError } = await tx
-              .from("transactions")
-              .insert({
-                sender_id: userInTable.user_id,
-                receiver_id: recipientData.user_id,
-                amount: sendAmount,
-              });
-
-            if (transactionInsertError) {
-              throw new Error("Error inserting transaction record");
-            }
-          }
-        );
-
-        if (transactionError) {
-          console.error("Error during transaction:", transactionError);
+        if (error) {
+          console.error("Error during coin transfer:", error);
         } else {
-          console.log("Transaction successful!");
+          console.log("Coin transfer successful!");
           setSendAmount(0);
           setRecipientEmail("");
         }
