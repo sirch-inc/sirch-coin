@@ -11,7 +11,7 @@ export default function SendCoin() {
 
   useEffect(() => {
     if (session && session.user) {
-      setRecipientEmail(session.user.email);
+      setRecipientEmail("Recipient Email");
     }
   }, [session]);
 
