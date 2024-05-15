@@ -5,7 +5,7 @@ import supabase from "../Config/supabaseConfig";
 
 export default function SendCoin() {
   const [recipientEmail, setRecipientEmail] = useState("");
-  const [sendAmount, setSendAmount] = useState(0);
+  const [sendAmount, setSendAmount] = useState("Other Amount");
   const { userInTable, session, userBalance } = useContext(AuthContext);
   const [recipient, setRecipient] = useState(null);
 
@@ -16,7 +16,15 @@ export default function SendCoin() {
   }, [session]);
 
   const handleCoinInputChange = (event) => {
-    setSendAmount(parseInt(event.target.value, 10));
+    const value = event.target.value;
+    if (value === "") {
+      setSendAmount("Other Amount");
+    } else {
+      const parsedValue = parseInt(value, 10);
+      if (!isNaN(parsedValue)) {
+        setSendAmount(parsedValue);
+      }
+    }
   };
 
   const handleAmountButtonClick = (amount) => {
