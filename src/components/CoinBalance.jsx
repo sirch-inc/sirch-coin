@@ -21,6 +21,8 @@ export default function CoinBalance() {
 
     const fetchUrl = `https://sirchcoinv1-production.up.railway.app/api/v1/customers/balance?email=${email}`;
     const fetchConfig = {
+      // ❗❗❗ Changed mode to 'no-cors'
+      mode: 'no-cors',
       method: "GET",
       headers: {
         "Content-Type": "application/json",

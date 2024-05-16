@@ -1,4 +1,17 @@
-export default function NavBar() {
+import LoginButton from "./components/Users/AuthLogin";
+import LogoutButton from "./components/Users/AuthLogout";
+import React, { useContext } from 'react';
+import LogoutSupabase from "./components/Users/LogoutSupabase"
+import { AuthContext } from "./components/Users/AuthContext";
+
+export default function NavBar({ supabase }) {
+
+  const { session } = useContext(AuthContext);
+
+  function handleLogout(){
+    LogoutSupabase({ supabase })
+    }
+    
   return (
     <>
       <ul className="navbar">
@@ -6,7 +19,7 @@ export default function NavBar() {
           <a href="/">
             <img
               src="/sirch_logo.png"
-              alt="Sirc Logo"
+              alt="Sirch Logo"
               style={{ width: "60px", height: "auto" }}
             />
           </a>
@@ -15,7 +28,13 @@ export default function NavBar() {
           <a href="/"> SirchCoin </a>
         </li>
         <li>
-          <a href="login">Login</a>
+          {session ? (
+            <a href="#" onClick={handleLogout}>
+              Logout
+            </a>
+          ) : (
+            <a href="/supabase-login">Login</a>
+          )}
         </li>
       </ul>
     </>
