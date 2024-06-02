@@ -1,8 +1,6 @@
-import LoginButton from "./components/Users/AuthLogin";
-import LogoutButton from "./components/Users/AuthLogout";
 import React, { useContext } from 'react';
-import LogoutSupabase from "./components/Users/LogoutSupabase"
-import { AuthContext } from "./components/Users/AuthContext";
+import LogoutSupabase from "./components/LogoutSupabase"
+import { AuthContext } from "./components/AuthContext";
 
 export default function NavBar({ supabase }) {
 
@@ -33,7 +31,7 @@ export default function NavBar({ supabase }) {
               Logout
             </a>
           ) : (
-            <a href="/supabase-login">Login</a>
+            <a href="supabase-login">Login</a>
           )}
         </li>
       </ul>

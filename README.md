@@ -1,6 +1,6 @@
 # SirchCoin Frontend Dashboard: Quickstart
 
-This is the frontend dashboard for SirchCoin, written in React/JSX and uses the `create-react-app` command-line toolchain. The SirchCoin dashboard allows users to login to their accounts, send coins, deposit coins, etc. The interface is meant to be extremely simple and mimic the actions & functionality of an ATM machine.
+This is the frontend dashboard for SirchCoin, written in React/JSX and uses the `Vite.js` command-line toolchain. The SirchCoin dashboard allows users to login to their accounts, send coins, deposit coins, etc. The interface is meant to be extremely simple and mimic the actions & functionality of an ATM machine.
 
 ## Prerequisites (one-time-chores)
 
@@ -21,7 +21,7 @@ This is the frontend dashboard for SirchCoin, written in React/JSX and uses the 
 
 1. Use your `git` tools to pull down the latest code from the `sirch-coin` repo.
 2. In your terminal, type `npm i` to install the latest dependencies. ON FAILURE: consult a developer.
-3. Type `npm start` to run the project on [http://localhost:3000](http://localhost:3000). ON FAILURE: consult a developer.
+3. Type `npm run dev` to run the project on [http://localhost:5175](http://localhost:5173). ON FAILURE: consult a developer.
 
 ## Making Changes & Submitting Pull Requests
 

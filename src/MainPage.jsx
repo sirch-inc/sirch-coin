@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { AuthContext } from "./components/Users/AuthContext";
+import { AuthContext } from "./components/AuthContext";
 import { useEffect, useContext } from "react";
 // import { useAuth0 } from "@auth0/auth0-react";
 import { jwtDecode } from "jwt-decode"

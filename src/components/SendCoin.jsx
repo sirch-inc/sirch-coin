@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { AuthContext } from "./Users/AuthContext";
+import { AuthContext } from "./AuthContext";
 import { Link } from "react-router-dom";
 import supabase from "../Config/supabaseConfig";
 
