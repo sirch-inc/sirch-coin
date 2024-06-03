@@ -7,28 +7,6 @@ import { jwtDecode } from "jwt-decode"
 
 export default function MainPage() {
 
-  // const { getAccessTokenSilently, isAuthenticated, user, isLoading } = useAuth0();
-
-  // const callApi = async () => {
-
-  //   try {
-  //     const token = await getAccessTokenSilently();
-  //     const response = await fetch("https://backend.sirch-engine.org/api/user", {  
-  //       headers: {
-  //         Authorization: `Bearer ${token}`
-  //       }
-  //     });
-  //     const responseData = await response.json();
-  //     console.log(responseData);
-  //     console.log(user);
-  //   } catch (e) {
-  //     console.error(e);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   callApi();
-  // }, [isAuthenticated, isLoading]);
 
   const { userInTable } = useContext(AuthContext);
 

@@ -19,9 +19,6 @@ import { AuthProvider } from "./components/AuthContext";
 
 export default function App() {
 
-  console.log(supabase)
-
-
   return (
     
     <AuthProvider supabase={supabase} >

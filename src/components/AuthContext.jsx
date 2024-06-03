@@ -24,8 +24,6 @@ export const AuthProvider = ({ children }) => {
                 setSession(session);
                 if (session && session.user){
                     setUserId(session.user.id);
-                    console.log(session.user.id);
-                    console.log(session)
                 } else {
                     setUserId(null);
                 }
