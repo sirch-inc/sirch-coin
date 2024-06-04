@@ -37,7 +37,7 @@ export default function NavBar({ supabase }) {
                 <a href="supabase-login">Login</a>
               </li>
               <li>
-                <a href="create-account">Create An Account</a>
+                <a href="create-account">Create an Account</a>
               </li>
               </ul>
             </>

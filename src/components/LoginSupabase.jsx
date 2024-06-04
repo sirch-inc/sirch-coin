@@ -24,6 +24,7 @@ const LoginSupabase = () => {
   
         // Upon successful login, redir. user to homepage
         navigate("/");
+        // TODO: Add login failure notification to user
       } catch (error) {
         console.error("Error logging in:", error.message);
       }

@@ -29,7 +29,7 @@ export default function App() {
         <Routes>
           <Route path="/" Component={MainPage} />
           <Route path="/create-account" Component={CreateAccount} />
-          <Route path="/verify" Component={VerifyAccount} />
+          <Route path="/verify-account" Component={VerifyAccount} />
           <Route path="/supabase-login" Component={LoginSupabase}/>
           <Route path="/supabase-logout" Component={LogoutSupabase}/>
           <Route path="coin/send" Component={SendCoin} />

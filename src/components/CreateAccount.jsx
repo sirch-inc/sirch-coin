@@ -25,7 +25,7 @@ export default function CreateAccount() {
           throw error;
         }
 
-        navigate("/verify");
+        navigate("/verify-account");
       } catch (error) {
         console.error("Error signing up:", error.message);
       }
@@ -37,7 +37,7 @@ export default function CreateAccount() {
         {({ session }) =>
           !session ? (
             <>
-            <h2> Create An Account</h2>
+            <h2> Create an Account</h2>
             <p> Already have an account? <a href="/supabase-login">Log in</a> instead.</p>
             <form onSubmit={handleSignUp}>
               <input type="email" name="email" placeholder="Email" required autoComplete="username" />
