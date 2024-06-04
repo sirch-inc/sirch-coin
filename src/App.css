@@ -20,6 +20,15 @@
   font-weight: 600;
 }
 
+.navbar-links {
+  display: flex;
+  list-style: none;
+  padding: 8px;
+}
+.navbar-links li {
+  padding: 4px;
+}
+
 /* Page Header */
 .page-header {
   margin-bottom: 2em;

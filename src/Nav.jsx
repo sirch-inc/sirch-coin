@@ -31,7 +31,16 @@ export default function NavBar({ supabase }) {
               Logout
             </a>
           ) : (
-            <a href="supabase-login">Login</a>
+            <>
+            <ul className='navbar-links'>
+              <li>
+                <a href="supabase-login">Login</a>
+              </li>
+              <li>
+                <a href="create-account">Create an Account</a>
+              </li>
+              </ul>
+            </>
           )}
         </li>
       </ul>
