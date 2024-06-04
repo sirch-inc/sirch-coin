@@ -12,6 +12,8 @@ import Help from "./components/Help";
 import success from "./components/Stripe/success";
 import Failure from "./components/Stripe/Failure";
 import supabase from './Config/supabaseConfig'
+import CreateAccount from "./components/CreateAccount";
+import VerifyAccount from "./components/VerifyAccount";
 import LoginSupabase from "./components/LoginSupabase";
 import LogoutSupabase from "./components/LogoutSupabase"
 import CoinFaucetDeposit from "./components/CoinFaucetDeposit";
@@ -26,6 +28,8 @@ export default function App() {
         <NavBar supabase={supabase} />
         <Routes>
           <Route path="/" Component={MainPage} />
+          <Route path="/create-account" Component={CreateAccount} />
+          <Route path="/verify" Component={VerifyAccount} />
           <Route path="/supabase-login" Component={LoginSupabase}/>
           <Route path="/supabase-logout" Component={LogoutSupabase}/>
           <Route path="coin/send" Component={SendCoin} />
