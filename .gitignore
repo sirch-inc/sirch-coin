@@ -1,4 +1,27 @@
-# Logs
+######################### dependencies
+node_modules
+dist
+dist-ssr
+*.local
+
+
+######################### environments
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+
+######################### production
+build
+
+
+######################### testing
+#/coverage
+
+
+######################### vite logs
 logs
 *.log
 npm-debug.log*
@@ -7,19 +30,16 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
-.env
 
-# Editor directories and files
+######################## editor fluff
 .vscode/*
 !.vscode/extensions.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+######################### filesystems fluff
+.DS_Store
