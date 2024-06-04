@@ -1,6 +1,7 @@
+import supabase from '../Config/supabaseConfig'
 
 
-async function signOut({supabase}){
+async function signOut(){
     const { error } = await supabase.auth.signOut()
 }
 

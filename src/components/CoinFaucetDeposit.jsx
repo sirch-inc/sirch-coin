@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { AuthContext } from "./Users/AuthContext";
+import { AuthContext } from "./AuthContext";
 import supabase from '../Config/supabaseConfig';
 
 const CoinFaucetDeposit = () => {

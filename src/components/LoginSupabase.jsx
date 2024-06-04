@@ -1,9 +1,13 @@
 import React from "react";
+import {useState, useEffect} from 'react'
+import { useNavigate } from "react-router-dom";
 import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { AuthContext } from "./AuthContext";
+import supabase from '../Config/supabaseConfig'
 
-const LoginSupabase = ({supabase}) => {
+
+const LoginSupabase = () => {
 
     return (
         <AuthContext.Consumer>
