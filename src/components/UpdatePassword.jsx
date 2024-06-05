@@ -7,6 +7,7 @@ export default function UpdatePassword() {
     const [passwordRecoverySession, setPasswordRecoverySession] = useState(null)
     const navigate = useNavigate();
 
+    // Checks to ensure that the PASSWORD_RECOVERY event is present and sets session.
     useEffect(() => {
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
           if (event === "PASSWORD_RECOVERY") {
@@ -22,6 +23,7 @@ export default function UpdatePassword() {
       async function submitPassword(e) {
         e.preventDefault();
     
+        // If the user has arrived at this page from their update password link, they will have a passwordRecoverySession
         if (passwordRecoverySession){
             const { data, error } = await supabase.auth.updateUser(
                 { password: newPassword },
@@ -29,13 +31,16 @@ export default function UpdatePassword() {
             );
             
             if (error) {
+                //TODO: Change from alert to error messaging on the frontend.
               alert('There was an error updating your password.');
             } else {
+                //TODO: Change from alert to a success message once redirected to the homepage. 
             alert('Password updated successfully!');
             navigate('/login');
             }
         } else {
-            alert("Something's not right... did you get to this page by clicking on the link in your email? You may need to request another password reset via the Login page before being able to successfully update your password.")
+            //TODO: Change from alert to error messaging on the frontend.
+            alert("Something's not right... have you arrived at this page by clicking on the link in your email? You may need to request another password reset via the Login page before being able to successfully update your password.")
         }
       }
 

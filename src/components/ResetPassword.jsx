@@ -10,6 +10,7 @@ export default function ResetPassword() {
     async function requestReset(e){
         e.preventDefault();
 
+        // Use supabase resetPasswordForEmail to trigger a password reset email event and redirect to the update password page.
         try {
             const {data, error} = await supabase.auth.resetPasswordForEmail(userEmail, {
                 redirectTo: `${window.location.origin}/update-password`, })
@@ -31,6 +32,7 @@ export default function ResetPassword() {
     return (
         <>
           <h1>Reset Password</h1>
+          {/* If the reset hasn't been sent, display the form. Otherwise show "sent" messaging.*/}
           {!resetSent ? (
             <>
               <p>Enter the email you used to sign up for Sirch Coin:</p>
@@ -48,7 +50,7 @@ export default function ResetPassword() {
               {error && <p className="error">{error}</p>}
             </>
           ) : (
-            <p>We've sent a link to {userEmail} to reset your password. Please check your inbox.</p>
+            <p>If the email address {userEmail} has a Sirch Coin account, we've sent you a link to reset your password. Please check your inbox.</p>
           )}
         </>
       );
