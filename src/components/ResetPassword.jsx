@@ -11,7 +11,8 @@ export default function ResetPassword() {
         e.preventDefault();
 
         try {
-            const {data, error} = await supabase.auth.resetPasswordForEmail(userEmail)
+            const {data, error} = await supabase.auth.resetPasswordForEmail(userEmail, {
+                redirectTo: `${window.location.origin}/update-password`, })
 
             if (error){
                 throw error;
@@ -47,7 +48,7 @@ export default function ResetPassword() {
               {error && <p className="error">{error}</p>}
             </>
           ) : (
-            <p>We've sent a link to that email address to reset your password. Please check your inbox.</p>
+            <p>We've sent a link to {userEmail} to reset your password. Please check your inbox.</p>
           )}
         </>
       );

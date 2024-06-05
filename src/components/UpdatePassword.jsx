@@ -1,10 +1,59 @@
-
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import supabase from '../Config/supabaseConfig'
 
 export default function UpdatePassword() {
+    const [newPassword, setNewPassword] = useState('')
+    const [passwordRecoverySession, setPasswordRecoverySession] = useState(null)
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+          if (event === "PASSWORD_RECOVERY") {
+            setPasswordRecoverySession(session)
+          }
+        });
+    
+        return () => {
+          subscription.unsubscribe();
+        };
+      }, []);
+    
+      async function submitPassword(e) {
+        e.preventDefault();
+    
+        if (passwordRecoverySession){
+            const { data, error } = await supabase.auth.updateUser(
+                { password: newPassword },
+                { session: passwordRecoverySession }
+            );
+            
+            if (error) {
+              alert('There was an error updating your password.');
+            } else {
+            alert('Password updated successfully!');
+            navigate('/login');
+            }
+        } else {
+            alert("Something's not right... did you get to this page by clicking on the link in your email? You may need to request another password reset via the Login page before being able to successfully update your password.")
+        }
+      }
 
     return(
         <>
-            <h1>Something will happen here.</h1>
+            <h1>Enter a New Password:</h1>
+            <p> Choose a new password for your Sirch Coin account by entering it below:</p>
+
+            <form onSubmit={submitPassword}>
+                <input 
+                type="password"
+                placeholder="Password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+                autoComplete="current-password"/>
+                <button>Change Password</button>
+            </form>
         </>
     )
 }
