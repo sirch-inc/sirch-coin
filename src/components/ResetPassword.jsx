@@ -35,7 +35,7 @@ export default function ResetPassword() {
           {/* If the reset hasn't been sent, display the form. Otherwise show "sent" messaging.*/}
           {!resetSent ? (
             <>
-              <p>Enter the email you used to sign up for Sirch Coin:</p>
+              <p>Enter the email you used to sign up for SirchCoin:</p>
               <form className="reset-password" onSubmit={requestReset}>
                 <input
                   type="email"
@@ -50,7 +50,7 @@ export default function ResetPassword() {
               {error && <p className="error">{error}</p>}
             </>
           ) : (
-            <p>If the email address {userEmail} has a Sirch Coin account, we've sent you a link to reset your password. Please check your inbox.</p>
+            <p>If the email address {userEmail} has a SirchCoin account, we've sent you a link to reset your password. Please check your inbox.</p>
           )}
         </>
       );
