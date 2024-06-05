@@ -36,7 +36,7 @@ export default function UpdatePassword() {
             } else {
                 //TODO: Change from alert to a success message once redirected to the homepage. 
             alert('Password updated successfully!');
-            navigate('/login');
+            navigate('/');
             }
         } else {
             //TODO: Change from alert to error messaging on the frontend.
