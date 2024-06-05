@@ -56,7 +56,7 @@ const LoginSupabase = () => {
                 autoComplete="current-password"
               />
               <button type="submit">Log In</button>
-              <a>Forgot Password?</a>
+              <a href="/reset-password">Forgot Password?</a>
             </form>
             </>
           ) : (

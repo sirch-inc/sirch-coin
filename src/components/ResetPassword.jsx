@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 export default function ResetPassword() {
 
-    const [userEmail, setUserEmail] = useState(null)
+    const [userEmail, setUserEmail] = useState("")
 
     return(
         <>
