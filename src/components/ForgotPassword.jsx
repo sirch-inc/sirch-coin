@@ -44,7 +44,7 @@ export default function ForgotPassword() {
                   required
                   autoComplete="username"
                 />
-                <button type="submit">Reset Password</button>
+                <button type="submit">Send Reset Email</button>
               </form>
               {error && <p className="error">{error}</p>}
             </>
