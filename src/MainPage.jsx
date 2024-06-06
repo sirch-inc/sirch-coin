@@ -6,9 +6,8 @@ import { jwtDecode } from "jwt-decode"
 
 
 export default function MainPage() {
-
-
   const { userInTable } = useContext(AuthContext);
+
 
   return (
     <>

@@ -26,6 +26,7 @@ export const AuthProvider = ({ children }) => {
                     setUserId(session.user.id);
                 } else {
                     setUserId(null);
+                    setUserInTable(null);
                 }
             }
         );
