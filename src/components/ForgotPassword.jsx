@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import supabase from "../Config/supabaseConfig"
 
-export default function ResetPassword() {
+export default function ForgotPassword() {
 
     const [userEmail, setUserEmail] = useState("");
     const [resetSent, setResetSent] = useState(false);

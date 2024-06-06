@@ -14,7 +14,7 @@ import Failure from "./components/Stripe/Failure";
 import supabase from './Config/supabaseConfig'
 import CreateAccount from "./components/CreateAccount";
 import VerifyAccount from "./components/VerifyAccount";
-import ResetPassword from "./components/ResetPassword";
+import ForgotPassword from "./components/ForgotPassword";
 import UpdatePassword from "./components/UpdatePassword";
 import LoginSupabase from "./components/LoginSupabase";
 import LogoutSupabase from "./components/LogoutSupabase"
@@ -32,7 +32,7 @@ export default function App() {
           <Route path="/" Component={MainPage} />
           <Route path="/create-account" Component={CreateAccount} />
           <Route path="/verify-account" Component={VerifyAccount} />
-          <Route path="/reset-password" Component={ResetPassword} />
+          <Route path="/forgot-password" Component={ForgotPassword} />
           <Route path="/update-password" Component={UpdatePassword} />
           <Route path="/supabase-login" Component={LoginSupabase}/>
           <Route path="/supabase-logout" Component={LogoutSupabase}/>
