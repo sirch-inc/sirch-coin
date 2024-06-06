@@ -35,8 +35,8 @@ export default function ResetPassword() {
               alert('There was an error updating your password.');
             } else {
                 //TODO: Change from alert to a success message once redirected to the homepage. 
-            alert('Password updated successfully!');
-            navigate('/');
+              alert('Password updated successfully!');
+              navigate('/');
             }
         } else {
             //TODO: Change from alert to error messaging on the frontend.
