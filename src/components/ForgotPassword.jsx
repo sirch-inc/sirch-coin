@@ -18,7 +18,6 @@ export default function ForgotPassword() {
             if (error){
                 throw error;
             } else {
-                console.log(data)
                 setResetSent(true);
             }
         }
