@@ -15,7 +15,7 @@ import supabase from './Config/supabaseConfig'
 import CreateAccount from "./components/CreateAccount";
 import VerifyAccount from "./components/VerifyAccount";
 import ForgotPassword from "./components/ForgotPassword";
-import UpdatePassword from "./components/UpdatePassword";
+import ResetPassword from "./components/ResetPassword";
 import LoginSupabase from "./components/LoginSupabase";
 import LogoutSupabase from "./components/LogoutSupabase"
 import CoinFaucetDeposit from "./components/CoinFaucetDeposit";
@@ -33,7 +33,7 @@ export default function App() {
           <Route path="/create-account" Component={CreateAccount} />
           <Route path="/verify-account" Component={VerifyAccount} />
           <Route path="/forgot-password" Component={ForgotPassword} />
-          <Route path="/update-password" Component={UpdatePassword} />
+          <Route path="/reset-password" Component={ResetPassword} />
           <Route path="/supabase-login" Component={LoginSupabase}/>
           <Route path="/supabase-logout" Component={LogoutSupabase}/>
           <Route path="coin/send" Component={SendCoin} />

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import supabase from '../Config/supabaseConfig'
 
-export default function UpdatePassword() {
+export default function ResetPassword() {
     const [newPassword, setNewPassword] = useState('')
     const [passwordRecoverySession, setPasswordRecoverySession] = useState(null)
     const navigate = useNavigate();
