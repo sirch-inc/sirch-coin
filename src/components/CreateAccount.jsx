@@ -6,6 +6,10 @@ import supabase from '../Config/supabaseConfig';
 
 export default function CreateAccount() {
 
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('')
+
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordsMatch, setPasswordsMatch] = useState(false);
   const navigate = useNavigate();
@@ -14,24 +18,25 @@ export default function CreateAccount() {
 
   const handleSignUp = async (event) => {
     event.preventDefault();
-    const { email, password, name } = event.target.elements;
 
     try {
-      const { user, error } = await supabase.auth.signUp({
-        email: email.value,
-        password: password.value,
-        options: {
-          data: {
-            name: name.value,
+      if (passwordsMatch === true){
+        const { user, error } = await supabase.auth.signUp({
+          email: email,
+          password: password,
+          options: {
+            data: {
+              name: name,
+            },
           },
-        },
-      })
-
-      if (error) {
+        })
+        navigate("/verify-account");
+      } else if (passwordsMatch === false){
+        alert("Make sure your passwords match before creating your account.")
+      } else {
         throw error;
       }
-
-      navigate("/verify-account");
+      
     } catch (error) {
       console.error("Error signing up:", error.message);
     }
@@ -41,7 +46,7 @@ export default function CreateAccount() {
   const handlePasswordConfirmation = (e) => {
     const value = e.target.value;
     setConfirmPassword(value);
-    setPasswordsMatch(value === event.target.form.password.value);
+    setPasswordsMatch(value === password);
   };
 
   // TODO: Style component
@@ -53,8 +58,21 @@ export default function CreateAccount() {
           <h2> Create an Account</h2>
           <p> Already have an account? <a href="/supabase-login">Log in</a> instead.</p>
           <form onSubmit={handleSignUp}>
-            <input type="email" name="email" placeholder="Email" required autoComplete="username" />
-            <input type="password" name="password" placeholder="Password" autoComplete="current-password" required />
+            <input 
+              type="email" 
+              name="email" 
+              placeholder="Email" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} 
+              required 
+              autoComplete="username" />
+            <input 
+              type="password" 
+              name="password" 
+              placeholder="Password"
+              value = {password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password" required />
             <input 
               type="password" 
               name="confirm-password" 
@@ -68,7 +86,13 @@ export default function CreateAccount() {
                   {passwordsMatch ? "Passwords match!" : "Passwords do not match"}
                 </p>
               )}
-            <input type="text" name="name" placeholder="First Name" required />
+            <input 
+            type="text" 
+            name="name" 
+            placeholder="First Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)} 
+            required />
             <button type="submit">Sign Up</button>
           </form>
           </>
