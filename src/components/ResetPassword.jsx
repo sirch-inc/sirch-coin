@@ -35,6 +35,8 @@ export default function ResetPassword() {
             if (error) {
                 //TODO: Change from alert to error messaging on the frontend.
               alert('There was an error updating your password.');
+            } else if (passwordsMatch === false) {
+              alert("Make sure your passwords match before resetting your password.")
             } else {
                 //TODO: Change from alert to a success message once redirected to the homepage. 
               alert('Password updated successfully!');
