@@ -7,7 +7,7 @@ import supabase from '../Config/supabaseConfig';
 const LoginSupabase = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [signInError, setSignInError] = useState(false)
+    const [signInError, setSignInError] = useState(false);
     const navigate = useNavigate();
   
     const handleLogin = async (event) => {
@@ -20,7 +20,7 @@ const LoginSupabase = () => {
         });
   
         if (error) {
-          setSignInError(true)
+          setSignInError(true);
           throw error;
         }
   
