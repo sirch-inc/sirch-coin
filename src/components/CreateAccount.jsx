@@ -32,7 +32,7 @@ export default function CreateAccount() {
         })
         navigate("/verify-account");
       } else if (passwordsMatch === false){
-        alert("Make sure your passwords match before creating your account.")
+        alert("Passwords do not match.");
       } else {
         throw error;
       }
