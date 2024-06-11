@@ -5,6 +5,8 @@ import supabase from '../Config/supabaseConfig'
 export default function ResetPassword() {
     const [newPassword, setNewPassword] = useState('')
     const [passwordRecoverySession, setPasswordRecoverySession] = useState(null)
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [passwordsMatch, setPasswordsMatch] = useState(false);
     const navigate = useNavigate();
 
     // Checks to ensure that the PASSWORD_RECOVERY event is present and sets session.
@@ -33,6 +35,8 @@ export default function ResetPassword() {
             if (error) {
                 //TODO: Change from alert to error messaging on the frontend.
               alert('There was an error updating your password.');
+            } else if (passwordsMatch === false) {
+              alert("Make sure your passwords match before resetting your password.")
             } else {
                 //TODO: Change from alert to a success message once redirected to the homepage. 
               alert('Password updated successfully!');
@@ -44,6 +48,13 @@ export default function ResetPassword() {
         }
       }
 
+    // Compare passwords and ensure that they match before a user can successfully reset it.
+    const handlePasswordConfirmation = (e) =>{
+      const value = e.target.value;
+      setConfirmPassword(value);
+      setPasswordsMatch(value === newPassword)
+    }
+
     return(
         <>
             <h1>Enter a New Password:</h1>
@@ -52,11 +63,24 @@ export default function ResetPassword() {
             <form onSubmit={submitPassword}>
                 <input 
                 type="password"
-                placeholder="Password"
+                placeholder="New Password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 required
                 autoComplete="current-password"/>
+                <input 
+                  type="password" 
+                  name="confirm-password" 
+                  placeholder="Confirm New Password" 
+                  autoComplete="current-password" 
+                  required value={confirmPassword}
+                  onChange={handlePasswordConfirmation}
+                />
+                {confirmPassword && (
+                  <p style={{ color: passwordsMatch ? "green" : "red" }}>
+                  {passwordsMatch ? "Passwords match!" : "Passwords do not match"}
+                </p>
+              )}
                 <button>Change Password</button>
             </form>
         </>
