@@ -9,9 +9,6 @@ const CoinFaucetDeposit = () => {
   const [updatedCoinSupply, setUpdatedCoinSupply] = useState(null);
 
   useEffect(() => {
-    // Fetch the current user's balance when the component mounts
-    fetchUserBalance(userBalance);
-
     const fetchTotalSupply = async () => {
       const { data, error } = await supabase.from('sirch-coins').select('*');
       if (error) {
@@ -20,6 +17,11 @@ const CoinFaucetDeposit = () => {
         setUpdatedCoinSupply(data[0]['total_supply']);
       }
     };
+
+    // Fetch the user's balance
+    fetchUserBalance(userBalance);
+
+    // Fetch the total supply of Sirch Coins
     fetchTotalSupply();
   }, [userBalance]);
 
