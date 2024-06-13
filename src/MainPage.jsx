@@ -2,12 +2,11 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "./components/AuthContext";
 import { useEffect, useContext } from "react";
 // import { useAuth0 } from "@auth0/auth0-react";
-import { jwtDecode } from "jwt-decode"
+// import { jwtDecode } from "jwt-decode"
 
 
 export default function MainPage() {
   const { userInTable } = useContext(AuthContext);
-
 
   return (
     <>
@@ -45,6 +44,7 @@ export default function MainPage() {
         <Link to="help" className="action-btn">
           Help
         </Link>
+
       </div>
     </>
   );
