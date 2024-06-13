@@ -21,10 +21,10 @@ import LogoutSupabase from "./components/LogoutSupabase"
 import CoinFaucetDeposit from "./components/CoinFaucetDeposit";
 import { AuthProvider } from "./components/AuthContext";
 
+
 export default function App() {
 
   return (
-    
     <AuthProvider supabase={supabase} >
       <BrowserRouter>
         <NavBar supabase={supabase} />

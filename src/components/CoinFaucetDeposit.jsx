@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from "./AuthContext";
 import supabase from '../Config/supabaseConfig';
 
+
 const CoinFaucetDeposit = () => {
   const { userBalance, userInTable, userId } = useContext(AuthContext);
   const [currentBalance, setCurrentBalance] = useState(null);

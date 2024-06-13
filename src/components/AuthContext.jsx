@@ -9,7 +9,6 @@ export const AuthProvider = ({ children }) => {
     const [userInTable, setUserInTable] = useState(null);
     const [userBalance, setUserBalance] = useState(null);
 
-
     // Authenticate users
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session }}) => {
@@ -32,10 +31,9 @@ export const AuthProvider = ({ children }) => {
         );
 
         return () => subscription.unsubscribe();
-    
     }, []);
 
-    //Match authenticated user with associated users table
+    // Match authenticated user with associated users table
     useEffect(() => {
         const checkUserInTable = async () => {
           if (userId) {
@@ -46,12 +44,10 @@ export const AuthProvider = ({ children }) => {
               .single();
     
             if (error) {
-              console.error('Error checking user in table:', error);
+              // TODO: handle this error
+              alert('Error checking user in table:', error);
             } else {
               setUserInTable(data);
-              if (data){
-                console.log(data.name)
-              }
             //   console.log(userInTable.name)
             }
           }
@@ -60,7 +56,7 @@ export const AuthProvider = ({ children }) => {
         checkUserInTable();
       }, [userId]);
     
-      //Get users current balance via user-balances table
+      // Get users current balance via user-balances table
       useEffect(() => {
         const getUserBalance = async () => {
           if (userInTable) {
@@ -71,12 +67,9 @@ export const AuthProvider = ({ children }) => {
               .single();
     
             if (error) {
-              console.log('Error checking this user\'s balance:', error);
+              alert('Error checking this user\'s balance:', error);
             } else {
               setUserBalance(data);
-              if (data) {
-                console.log(data.balance); // Log the balance here
-              }
             }
           }
         };
