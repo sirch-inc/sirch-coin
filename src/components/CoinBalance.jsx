@@ -38,6 +38,7 @@ const CoinBalance = () => {
   const onRefreshBalance = async (event) => {
     event.preventDefault();
     setError("");
+    setCurrentBalance(null);
     fetchUserBalance(userInTable);
   };
 
