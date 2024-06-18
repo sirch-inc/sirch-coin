@@ -14,17 +14,16 @@ export default function CreateAccount() {
   const [passwordsMatch, setPasswordsMatch] = useState(false);
   const navigate = useNavigate();
 
-
-
   const handleSignUp = async (event) => {
     event.preventDefault();
 
     try {
-      if (passwordsMatch === true){
+      if (passwordsMatch) {
         const { user, error } = await supabase.auth.signUp({
           email: email,
           password: password,
           options: {
+            emailRedirectTo: 'http://localhost:5173/welcome',
             data: {
               name: name,
             },
@@ -32,11 +31,10 @@ export default function CreateAccount() {
         })
         navigate("/verify-account");
       } else if (passwordsMatch === false){
-        alert("Make sure your passwords match before creating your account.")
+        alert("Passwords do not match.")
       } else {
         throw error;
       }
-      
     } catch (error) {
       console.error("Error signing up:", error.message);
     }
@@ -55,8 +53,8 @@ export default function CreateAccount() {
       {({ session }) =>
         !session ? (
           <>
-          <h2> Create an Account</h2>
-          <p> Already have an account? <a href="/supabase-login">Log in</a> instead.</p>
+          <h2>Create an Account</h2>
+          <p>Already have an account? <a href="/supabase-login">Log in</a> instead.</p>
           <form onSubmit={handleSignUp}>
             <input 
               type="email" 
