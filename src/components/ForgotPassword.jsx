@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import supabase from "../Config/supabaseConfig"
 
-export default function ForgotPassword() {
 
+export default function ForgotPassword() {
     const [userEmail, setUserEmail] = useState("");
     const [resetSent, setResetSent] = useState(false);
     const [error, setError] = useState(null);
@@ -49,7 +49,7 @@ export default function ForgotPassword() {
               {error && <p className="error">{error}</p>}
             </>
           ) : (
-            <p>If the email address {userEmail} has a SirchCoin account, we've sent you a link to reset your password. Please check your inbox.</p>
+            <p>If the email address {userEmail} has a SirchCoin account, we've emailed you a link to reset your password. Please check your email inbox.</p>
           )}
         </>
       );
