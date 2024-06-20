@@ -31,7 +31,7 @@ export default function CreateAccount() {
         })
         navigate("/verify-account");
       } else if (passwordsMatch === false){
-        alert("Passwords do not match.")
+        alert("Passwords do not match.");
       } else {
         throw error;
       }
