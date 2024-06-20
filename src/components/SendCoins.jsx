@@ -48,21 +48,21 @@ export default function SendCoins() {
         .single();
 
       if (recipientError) {
-        const confirmedResponse = confirm("The recipient (" + recipientEmail + ") does not appear to have a Sirch Coins account.  Would you like to send this person an invitation to join Sirch Coins?");
-        if (confirmedResponse) {
-          debugger;
-          const { data, error } = await supabase.auth.admin.inviteUserByEmail(recipientEmail);
-          console.log("data", data);
-          console.log("error", error);
-          if (error) {
-            // TODO: surface this error
-            console.error("Error inviting recipient:", error);
-          } else {
-            console.log("Invitation successful!");
-            setSendAmount("");
-            setRecipientEmail("");
-          }  
-        }
+        alert("The recipient (" + recipientEmail + ") does not appear to have a Sirch Coins account. Please check the email address or invite this individual join Sirch Coins!");
+        // TODO: either rework this use case, or conduct the invitation on the server
+        // const confirmedResponse = confirm("The recipient (" + recipientEmail + ") does not appear to have a Sirch Coins account.  Would you like to send this person an invitation to join Sirch Coins?");
+        // if (confirmedResponse) {
+        //   const { data, error } = await supabase.auth.admin.inviteUserByEmail(recipientEmail);
+        //   if (error) {
+        //     // TODO: surface this error
+        //     console.error("Error inviting recipient:", error);
+        //   } else {
+        //     // TODO: indicate success to the user
+        //     alert("Invitation successful!");
+        //     setSendAmount("");
+        //     setRecipientEmail("");
+        //   }  
+        // }
         return;
       }
 
