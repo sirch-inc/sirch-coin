@@ -49,10 +49,6 @@ export const AuthProvider = ({ children }) => {
               console.error('Error checking user in table:', error);
             } else {
               setUserInTable(data);
-              if (data){
-                console.log(data.name)
-              }
-              console.log(userInTable.name)
             }
           }
         };
@@ -74,9 +70,6 @@ export const AuthProvider = ({ children }) => {
               console.log('Error checking this user\'s balance:', error);
             } else {
               setUserBalance(data);
-              if (data) {
-                console.log(data.balance); // Log the balance here
-              }
             }
           }
         };
