@@ -46,9 +46,9 @@ export default function MainPage() {
           </Link>
         </div>
         ) : (
-          <Link to="help" className="action-btn">
+        <Link to="help" className="action-btn">
           Help
-          </Link>
+        </Link>
         )}
       {/* <ToastContainer /> */}
     </>

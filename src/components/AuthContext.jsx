@@ -10,7 +10,6 @@ export const AuthProvider = ({ children }) => {
     const [userInTable, setUserInTable] = useState(null);
     const [userBalance, setUserBalance] = useState(null);
 
-
     // Authenticate users
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session }}) => {
@@ -46,7 +45,8 @@ export const AuthProvider = ({ children }) => {
               .single();
     
             if (error) {
-              console.error('Error checking user in table:', error);
+              // TODO: handle this error
+              alert('Error checking user in table:', error);
             } else {
               setUserInTable(data);
             }
@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }) => {
               .single();
     
             if (error) {
-              console.log('Error checking this user\'s balance:', error);
+              alert('Error checking this user\'s balance:', error);
             } else {
               setUserBalance(data);
             }

@@ -2,15 +2,13 @@ import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from "./AuthContext";
 import supabase from '../Config/supabaseConfig';
 
+
 const CoinFaucetDeposit = () => {
   const { userBalance, userInTable, userId } = useContext(AuthContext);
   const [currentBalance, setCurrentBalance] = useState(null);
   const [updatedCoinSupply, setUpdatedCoinSupply] = useState(null);
 
   useEffect(() => {
-    // Fetch the current user's balance when the component mounts
-    fetchUserBalance(userBalance);
-
     const fetchTotalSupply = async () => {
       const { data, error } = await supabase.from('sirch-coins').select('*');
       if (error) {
@@ -19,6 +17,11 @@ const CoinFaucetDeposit = () => {
         setUpdatedCoinSupply(data[0]['total_supply']);
       }
     };
+
+    // Fetch the user's balance
+    fetchUserBalance(userBalance);
+
+    // Fetch the total supply of Sirch Coins
     fetchTotalSupply();
   }, [userBalance]);
 
