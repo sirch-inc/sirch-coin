@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import { AuthContext } from "./AuthContext";
 import { Link } from "react-router-dom";
 import supabase from "../Config/supabaseConfig";
@@ -10,17 +10,22 @@ export default function SendCoins() {
   const [sendAmount, setSendAmount] = useState("");
   const [recipient, setRecipient] = useState(null);
   
+  const changeAmount = (amount) => {
+    console.log("foo");
+    console.log(typeof amount)
+    console.log(parseInt(amount, 10));
+    // TODO: if the value is EQUAL to the user's balance, display a pretty warning
+  }
+
   const handleAmountButtonClick = (amount) => {
     setSendAmount(amount);
   };
 
   const handleCoinInputChange = (event) => {
     const amount = event.target.value;
-    
-    // TODO: if the value is EQUAL to the user's balance, display a pretty warning
+
     if (parseInt(amount, 10) === userBalance.balance) {
-      console.log("foo")
-      window.alert("Warning: the Amount to Send is your entire balance!");
+      alert("Warning: the amount specified is your entire balance!");
     }
 
     setSendAmount(amount < 0 ? "" : amount);
@@ -36,7 +41,7 @@ export default function SendCoins() {
     // TODO: if the value is EQUAL to the user's balance, display a warning
     if (
         parseInt(sendAmount, 10) === userBalance.balance
-        && !confirm("Warning: the Amount to Send is your entire balance! Please confirm your intent."))
+        && !confirm("Warning: the amount to send (" + sendAmount + " Sirch Coins) is your entire balance! Please confirm your intent."))
       return;
   
     try {
@@ -104,19 +109,19 @@ export default function SendCoins() {
                   className="cash1-btn"
                   onClick={() => handleAmountButtonClick(20)}
                 >
-                  $20
+                  20
                 </button>
                 <button
                   className="cash1-btn"
                   onClick={() => handleAmountButtonClick(40)}
                 >
-                  $40
+                  40
                 </button>
                 <button
                   className="cash1-btn"
                   onClick={() => handleAmountButtonClick(100)}
                 >
-                  $100
+                  100
                 </button>
               </div>
               <div className="second-row">
@@ -124,13 +129,13 @@ export default function SendCoins() {
                   className="cash1-btn"
                   onClick={() => handleAmountButtonClick(500)}
                 >
-                  $500
+                  500
                 </button>
                 <button
                   className="cash1-btn"
                   onClick={() => handleAmountButtonClick(1000)}
                 >
-                  $1000
+                  1000
                 </button>
                 <button
                   className="cash1-btn"
