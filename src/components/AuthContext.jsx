@@ -1,6 +1,7 @@
 import React, {createContext, useState, useEffect } from 'react';
 import supabase from '../Config/supabaseConfig';
 
+
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -32,10 +33,9 @@ export const AuthProvider = ({ children }) => {
         );
 
         return () => subscription.unsubscribe();
-    
     }, []);
 
-    //Match authenticated user with associated users table
+    // Match authenticated user with associated users table
     useEffect(() => {
         const checkUserInTable = async () => {
           if (userId) {
@@ -49,10 +49,6 @@ export const AuthProvider = ({ children }) => {
               console.error('Error checking user in table:', error);
             } else {
               setUserInTable(data);
-              if (data){
-                console.log(data.name)
-              }
-            //   console.log(userInTable.name)
             }
           }
         };
@@ -60,7 +56,7 @@ export const AuthProvider = ({ children }) => {
         checkUserInTable();
       }, [userId]);
     
-      //Get users current balance via user-balances table
+      // Get user's current balance
       useEffect(() => {
         const getUserBalance = async () => {
           if (userInTable) {
@@ -74,9 +70,6 @@ export const AuthProvider = ({ children }) => {
               console.log('Error checking this user\'s balance:', error);
             } else {
               setUserBalance(data);
-              if (data) {
-                console.log(data.balance); // Log the balance here
-              }
             }
           }
         };
