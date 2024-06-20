@@ -10,25 +10,20 @@ export default function SendCoins() {
   const [sendAmount, setSendAmount] = useState("");
   const [recipient, setRecipient] = useState(null);
   
-  // TODO: JEFF *******************************
-  // useEffect(() => {
-  //   if (session && session.user) {
-  //     setRecipientEmail();
-  //   }
-  // }, [session]);
-
   const handleAmountButtonClick = (amount) => {
     setSendAmount(amount);
   };
 
   const handleCoinInputChange = (event) => {
-    const value = event.target.value;
+    const amount = event.target.value;
     
-    // TODO: if the value is EQUAL to the user's balance, display a warning
-    if (value < 0)
-      setSendAmount("");
-    else
-      setSendAmount(value);
+    // TODO: if the value is EQUAL to the user's balance, display a pretty warning
+    if (parseInt(amount, 10) === userBalance.balance) {
+      console.log("foo")
+      window.alert("Warning: the Amount to Send is your entire balance!");
+    }
+
+    setSendAmount(amount < 0 ? "" : amount);
   };
 
   const handleRecipientEmailAddressChange = (event) => {
@@ -38,6 +33,12 @@ export default function SendCoins() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    // TODO: if the value is EQUAL to the user's balance, display a warning
+    if (
+        parseInt(sendAmount, 10) === userBalance.balance
+        && !confirm("Warning: the Amount to Send is your entire balance! Please confirm your intent."))
+      return;
+  
     try {
       // Find the recipient user by email
       const { data: recipientData, error: recipientError } = await supabase
@@ -48,7 +49,8 @@ export default function SendCoins() {
 
       if (recipientError) {
         console.error("Error fetching recipient:", recipientError);
-        alert("TODO: Recipient not found, so send invitation...")
+        alert("TODO: Recipient not found, offer to send that recipient an invite to join...");
+        return;
       }
 
       setRecipient(recipientData);
@@ -89,9 +91,9 @@ export default function SendCoins() {
           <h2>You currently have a balance of:</h2>
           <h1> {userBalance?.balance || "Loading..."} Sirch Coins</h1>
           <p>
-            To send Sirch Coins to anyone, please specify the amount and the recipient's email address below.
-            We will send the recipient an email to claim their Sirch Coins.  If the recipient is not already
-            registered with Sirch Coins, an invitation to join will also be included.
+            To send Sirch Coins to anyone with a Sirch Coins account,
+            please specify the amount and the recipient's email address below.
+            We will send the recipient an email notification.
           </p>
         </div>
         <form onSubmit={handleSubmit}>
