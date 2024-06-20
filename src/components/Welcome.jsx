@@ -1,12 +1,16 @@
 import { Link } from "react-router-dom";
-
+import { AuthContext } from "./AuthContext";
+import { useContext } from "react";
 
 // TODO: handle errors here (esp 400-class, like "expired link", etc...)
 // TODO: address the user by user name, if that is accessible?
 export default function Welcome() {
+  const { session, userInTable } = useContext(AuthContext);
+
     return(
         <>
-            <h1>Welcome!</h1>
+          {session && userInTable ? 
+            <h1>Welcome {userInTable.name}!</h1> : <> </> }
             <h4>Your SirchCoins account has been created and you may now use all of the SirchCoin services!</h4>
             <div className="button-container">
               <Link to="/" className="action-btn">
