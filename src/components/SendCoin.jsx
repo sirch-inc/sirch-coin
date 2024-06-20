@@ -3,35 +3,35 @@ import { AuthContext } from "./AuthContext";
 import { Link } from "react-router-dom";
 import supabase from "../Config/supabaseConfig";
 
+
 export default function SendCoin() {
-  const [recipientEmail, setRecipientEmail] = useState("");
-  const [sendAmount, setSendAmount] = useState("Other Amount");
   const { userInTable, session, userBalance } = useContext(AuthContext);
+  const [recipientEmail, setRecipientEmail] = useState("");
+  const [sendAmount, setSendAmount] = useState("");
   const [recipient, setRecipient] = useState(null);
-
-  useEffect(() => {
-    if (session && session.user) {
-      setRecipientEmail("Recipient Email");
-    }
-  }, [session]);
-
-  const handleCoinInputChange = (event) => {
-    const value = event.target.value;
-    if (value === "") {
-      setSendAmount("Other Amount");
-    } else {
-      const parsedValue = parseInt(value, 10);
-      if (!isNaN(parsedValue)) {
-        setSendAmount(parsedValue);
-      }
-    }
-  };
+  
+  // TODO: JEFF *******************************
+  // useEffect(() => {
+  //   if (session && session.user) {
+  //     setRecipientEmail();
+  //   }
+  // }, [session]);
 
   const handleAmountButtonClick = (amount) => {
     setSendAmount(amount);
   };
 
-  const handleRecipientEmailChange = (event) => {
+  const handleCoinInputChange = (event) => {
+    const value = event.target.value;
+    
+    // TODO: if the value is EQUAL to the user's balance, display a warning
+    if (value < 0)
+      setSendAmount("");
+    else
+      setSendAmount(value);
+  };
+
+  const handleRecipientEmailAddressChange = (event) => {
     setRecipientEmail(event.target.value);
   };
 
@@ -48,31 +48,35 @@ export default function SendCoin() {
 
       if (recipientError) {
         console.error("Error fetching recipient:", recipientError);
-        return;
+        alert("TODO: Recipient not found, so send invitation...")
       }
 
       setRecipient(recipientData);
 
-      // Check if the logged-in user has enough balance
-      if (userBalance.balance >= sendAmount) {
+      // recheck if the logged-in user has enough balance
+      // TODO: this should all become an atomic transaction in the backend to ensure correctness
+      if (sendAmount <= userBalance.balance) {
         // Call the RPC function to handle the coin transfer
         const { data, error } = await supabase.rpc("transfer_coins", {
           sender_id: userInTable.user_id,
           receiver_id: recipientData.user_id,
-          amount: sendAmount,
+          amount: sendAmount
         });
 
         if (error) {
+          // TODO: surface this error
           console.error("Error during coin transfer:", error);
         } else {
           console.log("Coin transfer successful!");
-          setSendAmount(0);
+          setSendAmount("");
           setRecipientEmail("");
         }
       } else {
+        // TODO: surface this error
         console.error("Insufficient balance");
       }
     } catch (error) {
+      // TODO: surface this error
       console.error("An error occurred:", error);
     }
   };
@@ -120,44 +124,39 @@ export default function SendCoin() {
                 </button>
                 <button
                   className="cash1-btn"
-                  onClick={() => handleAmountButtonClick(239)}
+                  onClick={() => handleAmountButtonClick("")}
                 >
-                  $239
+                  Other Amount
                 </button>
               </div>
             </div>
 
+            <label htmlFor="amountToSend">Amount to Send</label>
             <input
-              placeholder="Other Amount"
+              placeholder="any positive value up your balance"
               required
-              type="text"
-              name="coin"
-              id="coin"
+              type="number"
+              min="0"
+              max={userBalance?.balance || "0"}
+              step=".01"
+              name="amountToSend"
+              id="amountToSend"
               className="cash1-input other-amount-input"
               value={sendAmount}
               onChange={handleCoinInputChange}
             />
 
             <div className="email-inputs">
+              <label htmlFor="recipientEmailAddress">Recipient's Email Address</label>
               <input
-                placeholder="Your Email"
+                placeholder="any valid email address"
                 required
                 type="email"
-                name="userEmail"
-                id="userEmail"
-                className="cash1-input your-email-input"
-                value={session?.user?.email || ""}
-                readOnly
-              />
-              <input
-                placeholder="Recipient's Email"
-                required
-                type="email"
-                name="recipientEmail"
-                id="recipientEmail"
+                name="recipientEmailAddress"
+                id="recipientEmailAddress"
                 className="cash1-input recipient-email-input"
                 value={recipientEmail}
-                onChange={handleRecipientEmailChange}
+                onChange={handleRecipientEmailAddressChange}
                 autoComplete="email"
               />
             </div>
