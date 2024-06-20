@@ -1,89 +1,11 @@
 import { Link } from "react-router-dom";
-// import { ToastContainer, toast } from 'react-toastify';
-// import 'react-toastify/dist/ReactToastify.css';
 import { AuthContext } from "./components/AuthContext";
 import { useEffect, useContext } from "react";
 import supabase from "./Config/supabaseConfig"
-// import { useAuth0 } from "@auth0/auth0-react";
-// import { jwtDecode } from "jwt-decode"
 
 
 export default function MainPage() {
   const { session, userInTable } = useContext(AuthContext);
-
-  // useEffect(() => {
-  //   const urlParams = new URLSearchParams(window.location.hash.slice(1));
-  //   const type = urlParams.get('type');
-  //   const accessToken = urlParams.get('access_token');
-
-  //   const verifiedEmailPopup = async () => {
-  //     if (type !== null && accessToken !== null){
-  //       if (type === 'signup' && accessToken !== null) {
-  //         toast.success("Success! Your Sirch Coin account has been verified.", {
-  //           position: "top-center",
-  //           autoClose: 3000, 
-  //         })
-  //       } else if (type === null || accessToken === null) {
-  //         toast.error("Email verification failed. Please try again.", {
-  //           position: "top-center",
-  //           autoClose: 3000,
-  //         })
-  //       }
-  //     } else {
-  //       console.log("some other error?");
-  //       console.log("Type: ", type)
-  //       console.log("AccessToken: ", accessToken)
-  //     }
-  //     verifiedEmailPopup();
-  //   }
-  // })
-  
-  // Display success messaging when user verifies their account via email
-  // useEffect(() => {
-  //   const urlParams = new URLSearchParams(window.location.hash.slice(1));
-  //   const type = urlParams.get('type');
-  //   const accessToken = urlParams.get('access_token');
-
-  //   const verifyEmail = async () => {
-  //     if (type === 'signup' && accessToken) {
-  //       try {
-  //         const { error } = await supabase.auth.verifyOtp({
-  //           token: accessToken,
-  //           type: 'signup',
-  //         });
-
-  //         if (!error) {
-  //           toast.success('Success! Your Sirch Coin account has been verified.', {
-  //             position: "top-center",
-  //             autoClose: 3000,
-  //           });
-  //         } else {
-  //           if (error.message === 'User already verified') {
-  //             toast.info('Your account is already verified.', {
-  //               position: "top-center",
-  //               autoClose: 3000,
-  //             });
-  //           } else {
-  //             toast.error('Email verification failed. Please try again.', {
-  //               position: "top-center",
-  //               autoClose: 3000,
-  //             });
-  //           }
-  //         }
-  //       } catch (error) {
-  //         console.error('Email verification error:', error);
-  //         toast.error('An error occurred during email verification.', {
-  //           position: "top-center",
-  //           autoClose: 3000,
-  //         });
-  //       }
-  //     } else {
-  //       console.log('Invalid type or access token');
-  //     }
-  //   };
-
-  //   verifyEmail();
-  // }, []);
 
   return (
     <>
