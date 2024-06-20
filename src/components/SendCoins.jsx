@@ -10,12 +10,6 @@ export default function SendCoins() {
   const [sendAmount, setSendAmount] = useState("");
   const [recipient, setRecipient] = useState(null);
   
-  const changeAmount = (amount) => {
-    console.log("foo");
-    console.log(typeof amount)
-    console.log(parseInt(amount, 10));
-    // TODO: if the value is EQUAL to the user's balance, display a pretty warning
-  }
 
   const handleAmountButtonClick = (amount) => {
     setSendAmount(amount);
@@ -24,6 +18,7 @@ export default function SendCoins() {
   const handleCoinInputChange = (event) => {
     const amount = event.target.value;
 
+    // TODO: if the value is EQUAL to the user's balance, display a pretty warning
     if (parseInt(amount, 10) === userBalance.balance) {
       alert("Warning: the amount specified is your entire balance!");
     }
@@ -61,7 +56,6 @@ export default function SendCoins() {
       setRecipient(recipientData);
 
       // recheck if the logged-in user has enough balance
-      // TODO: this should all become an atomic transaction in the backend to ensure correctness
       if (sendAmount <= userBalance.balance) {
         // Call the RPC function to handle the coin transfer
         const { data, error } = await supabase.rpc("transfer_coins", {
