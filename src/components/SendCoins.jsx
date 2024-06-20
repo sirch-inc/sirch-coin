@@ -48,8 +48,21 @@ export default function SendCoins() {
         .single();
 
       if (recipientError) {
-        console.error("Error fetching recipient:", recipientError);
-        alert("TODO: Recipient not found, offer to send that recipient an invite to join...");
+        const confirmedResponse = confirm("The recipient (" + recipientEmail + ") does not appear to have a Sirch Coins account.  Would you like to send this person an invitation to join Sirch Coins?");
+        if (confirmedResponse) {
+          debugger;
+          const { data, error } = await supabase.auth.admin.inviteUserByEmail(recipientEmail);
+          console.log("data", data);
+          console.log("error", error);
+          if (error) {
+            // TODO: surface this error
+            console.error("Error inviting recipient:", error);
+          } else {
+            console.log("Invitation successful!");
+            setSendAmount("");
+            setRecipientEmail("");
+          }  
+        }
         return;
       }
 
