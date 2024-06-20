@@ -85,12 +85,15 @@ export default function SendCoins() {
     <div className="send-coin-container">
       <div>
         <h3 className="page-header">Send Sirch Coins</h3>
-        <p className="page-text">
-          To send Sirch Coins to anyone, please specify the amount and the recipient's email address below.
-          We will send the recipient an email to claim their Sirch Coins.  If the recipient is not already
-          registered with Sirch Coins, an invitation to join will also be included.
-        </p>
-        <p> You currently have a balance of: {userBalance?.balance || "UNKNOWN"} Sirch Coins.</p>
+        <div>
+          <h2>You currently have a balance of:</h2>
+          <h1> {userBalance?.balance || "Loading..."} Sirch Coins</h1>
+          <p>
+            To send Sirch Coins to anyone, please specify the amount and the recipient's email address below.
+            We will send the recipient an email to claim their Sirch Coins.  If the recipient is not already
+            registered with Sirch Coins, an invitation to join will also be included.
+          </p>
+        </div>
         <form onSubmit={handleSubmit}>
           <div className="price-container">
             <div className="cash-buttons">
