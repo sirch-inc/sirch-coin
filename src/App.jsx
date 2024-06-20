@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "@stripe/stripe-js";
 import NavBar from "./Nav";
 import "bootstrap/dist/css/bootstrap.min.css";
-import SendCoin from "./components/SendCoin";
+import SendCoins from "./components/SendCoins";
 import MainPage from "./MainPage";
 import CoinBalance from "./components/CoinBalance";
 import DepositForm from "./components/DepositForm";
@@ -36,7 +36,7 @@ export default function App() {
           <Route path="/reset-password" Component={ResetPassword} />
           <Route path="/supabase-login" Component={LoginSupabase}/>
           <Route path="/supabase-logout" Component={LogoutSupabase}/>
-          <Route path="coin/send" Component={SendCoin} />
+          <Route path="coin/send" Component={SendCoins} />
           <Route path="coin/balance" Component={CoinBalance} />
           <Route path="/coin-faucet" Component={CoinFaucetDeposit}/>
           <Route path="/checkout" Component={DepositForm} />
