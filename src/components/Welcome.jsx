@@ -3,6 +3,7 @@ import { AuthContext } from "./AuthContext";
 import { useState, useContext } from "react";
 import supabase from "../Config/supabaseConfig"
 
+
 // TODO: handle errors here (esp 400-class, like "expired link", etc...)
 export default function Welcome() {
   const { session, userInTable } = useContext(AuthContext);

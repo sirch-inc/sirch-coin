@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "./AuthContext";
 import supabase from "../Config/supabaseConfig";
 
-const DepositForm = () => {
+
+export default DepositForm = () => {
   const [stripe, setStripe] = useState(null);
   const [elements, setElements] = useState(null);
   const [paymentIntent, setPaymentIntent] = useState(null);
@@ -120,5 +121,3 @@ const DepositForm = () => {
     </>
   );
 };
-
-export default DepositForm;

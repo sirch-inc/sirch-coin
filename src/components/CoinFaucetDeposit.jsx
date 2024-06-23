@@ -3,7 +3,7 @@ import { AuthContext } from "./AuthContext";
 import supabase from '../Config/supabaseConfig';
 
 
-const CoinFaucetDeposit = () => {
+export default CoinFaucetDeposit = () => {
   const { userBalance, userInTable, userId } = useContext(AuthContext);
   const [currentBalance, setCurrentBalance] = useState(null);
   const [updatedCoinSupply, setUpdatedCoinSupply] = useState(null);
@@ -96,5 +96,3 @@ const CoinFaucetDeposit = () => {
     </>
   );
 };
-
-export default CoinFaucetDeposit;

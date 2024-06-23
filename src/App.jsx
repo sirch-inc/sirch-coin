@@ -23,7 +23,6 @@ import LogoutSupabase from "./components/LogoutSupabase"
 import CoinFaucetDeposit from "./components/CoinFaucetDeposit";
 
 
-
 export default function App() {
   return (
     <AuthProvider supabase={supabase} >

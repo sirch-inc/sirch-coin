@@ -4,12 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "./AuthContext";
 import supabase from '../Config/supabaseConfig';
 
-export default function CreateAccount() {
 
+export default function CreateAccount() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('')
-
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordsMatch, setPasswordsMatch] = useState(false);
   const navigate = useNavigate();

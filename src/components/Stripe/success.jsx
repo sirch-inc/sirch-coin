@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-const success = () => {
+
+export default success = () => {
     return (
         <div style={{ textAlign: "center", padding: "50px" }}>
           <h1 style={{ color: "green" }}>Payment Successful!</h1>
@@ -13,7 +14,3 @@ const success = () => {
     </div>
   );
 };
-
-
-
-export default success;

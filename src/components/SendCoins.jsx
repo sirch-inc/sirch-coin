@@ -10,7 +10,6 @@ export default function SendCoins() {
   const [sendAmount, setSendAmount] = useState("");
   const [recipient, setRecipient] = useState(null);
   
-
   const handleAmountButtonClick = (amount) => {
     setSendAmount(amount);
   };
