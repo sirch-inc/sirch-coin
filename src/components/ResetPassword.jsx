@@ -80,8 +80,8 @@ export default function ResetPassword() {
                 {confirmPassword && (
                   <p style={{ color: passwordsMatch ? "green" : "red" }}>
                   {passwordsMatch ? "Passwords match!" : "Passwords do not match"}
-                </p>
-              )}
+                  </p>
+                )}
                 <button>Change Password</button>
             </form>
         </>
