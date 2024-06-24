@@ -8,11 +8,9 @@ export default function Transactions() {
       <h3 className="page-header">Transaction History</h3>
       <div className="balance-container">
         <p className="page-text">
-          Sorry, this page isn't available yet
+          Your transactions:
         </p>
-        <p className="page-text">
-          <strong>Please try again later</strong>
-        </p>
+        
         <div className="bottom-btn-container">
           <Link to="/" className="big-btn-red">
             Back
