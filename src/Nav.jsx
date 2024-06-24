@@ -32,7 +32,7 @@ export default function NavBar({ supabase }) {
             <>
               <ul className='navbar-links'>
                 <li>
-                  <a href="supabase-login">Login</a>
+                  <a href="login">Login</a>
                 </li>
                 <li>
                   <a href="create-account">Create an Account</a>

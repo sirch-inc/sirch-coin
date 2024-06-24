@@ -34,8 +34,8 @@ export default function App() {
         <NavBar supabase={supabase} />
         <Routes>
           <Route path="/" Component={MainPage}/>
-          <Route path="/supabase-login" Component={Login}/>
-          <Route path="/supabase-logout" Component={Logout}/>
+          <Route path="/login" Component={Login}/>
+          <Route path="/logout" Component={Logout}/>
           <Route path="/create-account" Component={CreateAccount}/>
           <Route path="/verify-account" Component={VerifyAccount}/>
           <Route path="/welcome" Component={Welcome}/>
