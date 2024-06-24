@@ -17,7 +17,7 @@ import DepositForm from "./components/DepositForm";
 import TransferHistory from "./components/TransferHistory";
 import Preferences from "./components/Preferences";
 import Help from "./components/Help";
-import CoinFaucetDeposit from "./components/CoinFaucetDeposit";
+import Faucet from "./components/Admin/Faucet";
 import StripeSuccess from "./components/Stripe/StripeSuccess";
 import StripeFailure from "./components/Stripe/StripeFailure";
 import "@stripe/stripe-js";
@@ -43,8 +43,8 @@ export default function App() {
           <Route path="/transferhistory" Component={TransferHistory}/>
           <Route path="/preferences" Component={Preferences}/>
           <Route path="/help" Component={Help}/>
-          <Route path="/coin-faucet" Component={CoinFaucetDeposit}/>
-          <Route path="/Stripe/Sucess" Component={StripeSuccess}/>
+          <Route path="/admin/faucet" Component={Faucet}/>
+          <Route path="/Stripe/Success" Component={StripeSuccess}/>
           <Route path="/Stripe/Failure" Component={StripeFailure}/>
         </Routes>
       </BrowserRouter>

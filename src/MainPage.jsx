@@ -17,16 +17,16 @@ export default function MainPage() {
       
       {session ? (
         <div className="button-container">
-          <Link to="/coin-faucet" className="action-btn">
-              Internal: Balance & Faucet
-          </Link>
-
-          <Link to="coin/send" className="action-btn">
-            Send Money
+          <Link to="admin/faucet" className="action-btn">
+              Admin: Faucet
           </Link>
 
           <Link to="checkout" className="action-btn">
-            Deposit
+            Purchase Sirch Coins
+          </Link>
+
+          <Link to="coin/send" className="action-btn">
+            Send Sirch Coins
           </Link>
 
           <Link to="coin/balance" className="action-btn">
@@ -34,7 +34,7 @@ export default function MainPage() {
           </Link>
 
           <Link to="/transferhistory" className="action-btn">
-            Transfer History
+            Transaction History
           </Link>
 
           <Link to="preferences" className="action-btn">
@@ -46,11 +46,13 @@ export default function MainPage() {
           </Link>
         </div>
         ) : (
-        <Link to="help" className="action-btn">
-          Help
-        </Link>
+          <div className="button-container">
+            <Link to="help" className="action-btn">
+              Help
+            </Link>
+          </div>
         )}
-      {/* <ToastContainer /> */}
+      {/* TODO: <ToastContainer /> */}
     </>
   );
 }
