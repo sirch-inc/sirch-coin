@@ -39,7 +39,7 @@ export default function App() {
           <Route path="/reset-password" Component={ResetPassword}/>
           <Route path="coin/send" Component={Send}/>
           <Route path="coin/balance" Component={CoinBalance}/>
-          <Route path="/checkout" Component={Purchase}/>
+          <Route path="/purchase" Component={Purchase}/>
           <Route path="/transactions" Component={Transactions}/>
           <Route path="/preferences" Component={Preferences}/>
           <Route path="/help" Component={Help}/>

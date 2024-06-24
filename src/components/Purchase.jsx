@@ -118,7 +118,7 @@ export default function Purchase() {
         <Link to="/" className="big-btn-red">
           Back
         </Link>
-        <Link to="/checkout" className="big-btn-blue">
+        <Link to="/purchase" className="big-btn-blue">
           Will do something eventually
         </Link>
       </div>

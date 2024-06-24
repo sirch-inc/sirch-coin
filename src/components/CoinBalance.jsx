@@ -62,7 +62,7 @@ export default function CoinBalance() {
           <Link to="/" className="big-btn-red">
             Back
           </Link>
-          <Link to="/checkout" className="big-btn-blue">
+          <Link to="/purchase" className="big-btn-blue">
             Buy More
           </Link>
         </div>

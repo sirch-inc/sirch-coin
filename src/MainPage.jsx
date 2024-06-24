@@ -20,7 +20,7 @@ export default function MainPage() {
               Admin: Faucet
           </Link>
 
-          <Link to="checkout" className="action-btn">
+          <Link to="purchase" className="action-btn">
             Purchase Sirch Coins
           </Link>
 
