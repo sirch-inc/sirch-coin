@@ -8,6 +8,15 @@ export default function AdminFaucet() {
   const [currentBalance, setCurrentBalance] = useState(null);
   const [updatedCoinSupply, setUpdatedCoinSupply] = useState(null);
 
+  // TODO: this is a hack; the "admin" view(s) should be conditionally compiled out of the app in PROD
+  const env = import.meta.env.VITE_ENVIRONMENT;
+  const isLocalEnvironment = env && env.toLowerCase() === 'local';
+
+  if (!isLocalEnvironment) {
+    alert("You don't belong here!");
+    return;
+  }
+
   useEffect(() => {
     const fetchTotalSupply = async () => {
       const { data, error } = await supabase.from('sirch-coins').select('*');
