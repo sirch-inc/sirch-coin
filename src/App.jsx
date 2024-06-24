@@ -24,6 +24,10 @@ import "@stripe/stripe-js";
 
 
 export default function App() {
+  // TODO: this is a hack; the "admin" view(s) should be conditionally compiled out of the app in PROD
+  const env = import.meta.env.VITE_ENVIRONMENT;
+  const isLocalEnvironment = env && env.toLowerCase() === 'local';
+
   return (
     <AuthProvider supabase={supabase} >
       <BrowserRouter>
@@ -43,7 +47,9 @@ export default function App() {
           <Route path="/transactions" Component={Transactions}/>
           <Route path="/preferences" Component={Preferences}/>
           <Route path="/help" Component={Help}/>
+          {isLocalEnvironment &&
           <Route path="/admin/faucet" Component={Faucet}/>
+          }
           <Route path="/Stripe/Success" Component={StripeSuccess}/>
           <Route path="/Stripe/Failure" Component={StripeFailure}/>
         </Routes>
