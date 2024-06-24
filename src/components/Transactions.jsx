@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 export default function Transactions() {
   return (
     <>
-      <h3 className="page-header">Transfer History</h3>
+      <h3 className="page-header">Transaction History</h3>
       <div className="balance-container">
         <p className="page-text">
           Sorry, this page isn't available yet

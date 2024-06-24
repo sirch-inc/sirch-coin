@@ -40,7 +40,7 @@ export default function MainPage() {
           </Link>
 
           <Link to="/transactions" className="action-btn">
-            Transactions
+            Transaction History
           </Link>
 
           <Link to="preferences" className="action-btn">
