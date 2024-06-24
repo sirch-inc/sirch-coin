@@ -60,7 +60,7 @@ export default function ResetPassword() {
     return(
         <>
           <h1>Enter a New Password:</h1>
-          <p> Choose a new password for your SirchCoin account by entering it below:</p>
+          <p> Choose a new password for your Sirch Coins account by entering it below:</p>
 
           <form onSubmit={submitPassword}>
             <input 

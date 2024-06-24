@@ -14,7 +14,7 @@ export default function Send() {
     setSendAmount(amount);
   };
 
-  const handleCoinInputChange = (event) => {
+  const handleAmountInputChange = (event) => {
     const amount = event.target.value;
 
     // TODO: if the value is EQUAL to the user's balance, display a pretty warning
@@ -70,7 +70,7 @@ export default function Send() {
 
       // recheck if the logged-in user has enough balance
       if (sendAmount <= userBalance.balance) {
-        // Call the RPC function to handle the coin transfer
+        // Call the RPC function to handle the transfer
         const { data, error } = await supabase.rpc("transfer_coins", {
           sender_id: userInTable.user_id,
           receiver_id: recipientData.user_id,
@@ -79,7 +79,7 @@ export default function Send() {
 
         if (error) {
           // TODO: surface this error
-          console.error("Error during coin transfer:", error);
+          console.error("Error during transfer:", error);
         } else {
           setSendAmount("");
           setRecipientEmail("");
@@ -162,7 +162,7 @@ export default function Send() {
               id="amountToSend"
               className="cash1-input other-amount-input"
               value={sendAmount}
-              onChange={handleCoinInputChange}
+              onChange={handleAmountInputChange}
             />
 
             <div className="email-inputs">

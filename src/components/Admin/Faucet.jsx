@@ -77,7 +77,7 @@ export default function AdminFaucet() {
         return;
       }
 
-      // Update the updatedCoinSupply state with the new total supply
+      // Update the updated Coin Supply state with the new total supply
       setUpdatedCoinSupply(updatedSupply.total_supply);
     } catch (error) {
       // TODO: surface this error...
