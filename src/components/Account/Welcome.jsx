@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
-import { AuthContext } from "./AuthContext";
+import { AuthContext } from "../AuthContext";
 import { useState, useContext } from "react";
-import supabase from "../Config/supabaseConfig"
+import supabase from "../../Config/supabaseConfig"
 
 
 // TODO: handle errors here (esp 400-class, like "expired link", etc...)

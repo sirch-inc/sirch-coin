@@ -4,13 +4,13 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import NavBar from "./Nav";
 import { AuthProvider } from "./components/AuthContext";
 import MainPage from "./MainPage";
-import LoginSupabase from "./components/LoginSupabase";
-import LogoutSupabase from "./components/LogoutSupabase"
-import CreateAccount from "./components/CreateAccount";
-import VerifyAccount from "./components/VerifyAccount";
-import Welcome from "./components/Welcome";
-import ForgotPassword from "./components/ForgotPassword";
-import ResetPassword from "./components/ResetPassword";
+import LoginSupabase from "./components/Account/LoginSupabase";
+import LogoutSupabase from "./components/Account/LogoutSupabase"
+import CreateAccount from "./components/Account/CreateAccount";
+import VerifyAccount from "./components/Account/VerifyAccount";
+import Welcome from "./components/Account/Welcome";
+import ForgotPassword from "./components/Account/ForgotPassword";
+import ResetPassword from "./components/Account/ResetPassword";
 import SendCoins from "./components/SendCoins";
 import CoinBalance from "./components/CoinBalance";
 import DepositForm from "./components/DepositForm";

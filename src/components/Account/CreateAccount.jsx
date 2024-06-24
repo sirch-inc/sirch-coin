@@ -1,8 +1,8 @@
 import React from "react";
 import { useState } from 'react'
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "./AuthContext";
-import supabase from '../Config/supabaseConfig';
+import { AuthContext } from "../AuthContext";
+import supabase from '../../Config/supabaseConfig';
 
 
 export default function CreateAccount() {

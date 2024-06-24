@@ -1,4 +1,4 @@
-import supabase from '../Config/supabaseConfig'
+import supabase from '../../Config/supabaseConfig'
 
 
 async function signOut(){
