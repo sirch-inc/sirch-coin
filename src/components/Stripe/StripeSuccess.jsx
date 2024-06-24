@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 
-export default function success() {
+export default function StripeSuccess() {
     return (
         <div style={{ textAlign: "center", padding: "50px" }}>
           <h1 style={{ color: "green" }}>Payment Successful!</h1>

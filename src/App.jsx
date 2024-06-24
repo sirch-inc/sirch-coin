@@ -10,8 +10,6 @@ import DepositForm from "./components/DepositForm";
 import Preferences from "./components/Preferences";
 import TransferHistory from "./components/TransferHistory";
 import Help from "./components/Help";
-import success from "./components/Stripe/success";
-import Failure from "./components/Stripe/Failure";
 import supabase from './Config/supabaseConfig'
 import CreateAccount from "./components/CreateAccount";
 import VerifyAccount from "./components/VerifyAccount";
@@ -21,6 +19,8 @@ import ResetPassword from "./components/ResetPassword";
 import LoginSupabase from "./components/LoginSupabase";
 import LogoutSupabase from "./components/LogoutSupabase"
 import CoinFaucetDeposit from "./components/CoinFaucetDeposit";
+import StripeSuccess from "./components/Stripe/StripeSuccess";
+import StripeFailure from "./components/Stripe/StripeFailure";
 
 
 export default function App() {
@@ -44,8 +44,8 @@ export default function App() {
           <Route path="/preferences" Component={Preferences}/>
           <Route path="/transferhistory" Component={TransferHistory}/>
           <Route path="/help" Component={Help}/>
-          <Route path="/Stripe/success" Component={success}/>
-          <Route path="/Stripe/Failure" Component={Failure}/>
+          <Route path="/Stripe/Sucess" Component={StripeSuccess}/>
+          <Route path="/Stripe/Failure" Component={StripeFailure}/>
         </Routes>
       </BrowserRouter>
     </AuthProvider>

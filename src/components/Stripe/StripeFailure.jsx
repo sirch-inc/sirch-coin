@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-export default function Failure() {
+
+export default function StripeFailure() {
     return (
         <div style={{ textAlign: "center", padding: "50px" }}>
           <h1 style={{ color: "Red" }}>Payment Failed!</h1>
