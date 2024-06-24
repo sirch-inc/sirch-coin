@@ -1,8 +1,9 @@
 import supabase from '../../Config/supabaseConfig'
 
 
-async function signOut(){
+async function Logout() {
+    // TODO: handle errors here...
     const { error } = await supabase.auth.signOut()
 }
 
-export default signOut
+export default Logout

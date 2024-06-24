@@ -4,8 +4,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import NavBar from "./Nav";
 import { AuthProvider } from "./components/AuthContext";
 import MainPage from "./MainPage";
-import LoginSupabase from "./components/Account/LoginSupabase";
-import LogoutSupabase from "./components/Account/LogoutSupabase"
+import Login from "./components/Account/Login";
+import Logout from "./components/Account/Logout"
 import CreateAccount from "./components/Account/CreateAccount";
 import VerifyAccount from "./components/Account/VerifyAccount";
 import Welcome from "./components/Account/Welcome";
@@ -30,8 +30,8 @@ export default function App() {
         <NavBar supabase={supabase} />
         <Routes>
           <Route path="/" Component={MainPage}/>
-          <Route path="/supabase-login" Component={LoginSupabase}/>
-          <Route path="/supabase-logout" Component={LogoutSupabase}/>
+          <Route path="/supabase-login" Component={Login}/>
+          <Route path="/supabase-logout" Component={Logout}/>
           <Route path="/create-account" Component={CreateAccount}/>
           <Route path="/verify-account" Component={VerifyAccount}/>
           <Route path="/welcome" Component={Welcome}/>

@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import LogoutSupabase from "./components/Account/LogoutSupabase"
+import LogoutSupabase from "./components/Account/Logout"
 import { AuthContext } from "./components/AuthContext";
 
 
