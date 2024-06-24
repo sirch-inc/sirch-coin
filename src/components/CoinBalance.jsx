@@ -4,7 +4,7 @@ import { AuthContext } from "./AuthContext";
 import supabase from '../Config/supabaseConfig';
 
 
-export default CoinBalance = () => {
+export default function CoinBalance() {
   const { userBalance, userInTable } = useContext(AuthContext);
   const [currentBalance, setCurrentBalance] = useState(null);
   const [error, setError] = useState("");

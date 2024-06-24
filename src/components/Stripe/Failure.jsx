@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-
-export default Failure = () => {
+export default function Failure() {
     return (
         <div style={{ textAlign: "center", padding: "50px" }}>
           <h1 style={{ color: "Red" }}>Payment Failed!</h1>

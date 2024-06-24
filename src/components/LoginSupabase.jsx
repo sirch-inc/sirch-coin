@@ -4,7 +4,7 @@ import { AuthContext } from "./AuthContext";
 import supabase from '../Config/supabaseConfig';
 
 
-export default LoginSupabase = () => {
+export default function LoginSupabase() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [signInError, setSignInError] = useState(false);

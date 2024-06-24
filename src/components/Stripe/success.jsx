@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 
-export default success = () => {
+export default function success() {
     return (
         <div style={{ textAlign: "center", padding: "50px" }}>
           <h1 style={{ color: "green" }}>Payment Successful!</h1>
