@@ -12,7 +12,7 @@ import Welcome from "./components/Account/Welcome";
 import ForgotPassword from "./components/Account/ForgotPassword";
 import ResetPassword from "./components/Account/ResetPassword";
 import Send from "./components/Send";
-import CoinBalance from "./components/CoinBalance";
+import Balance from "./components/Balance";
 import Purchase from "./components/Purchase";
 import Transactions from "./components/Transactions";
 import Preferences from "./components/Preferences";
@@ -38,7 +38,7 @@ export default function App() {
           <Route path="/forgot-password" Component={ForgotPassword}/>
           <Route path="/reset-password" Component={ResetPassword}/>
           <Route path="coin/send" Component={Send}/>
-          <Route path="coin/balance" Component={CoinBalance}/>
+          <Route path="coin/balance" Component={Balance}/>
           <Route path="/purchase" Component={Purchase}/>
           <Route path="/transactions" Component={Transactions}/>
           <Route path="/preferences" Component={Preferences}/>
