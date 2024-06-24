@@ -14,7 +14,7 @@ import ResetPassword from "./components/Account/ResetPassword";
 import SendCoins from "./components/SendCoins";
 import CoinBalance from "./components/CoinBalance";
 import DepositForm from "./components/DepositForm";
-import TransferHistory from "./components/TransferHistory";
+import Transactions from "./components/Transactions";
 import Preferences from "./components/Preferences";
 import Help from "./components/Help";
 import Faucet from "./components/Admin/Faucet";
@@ -40,7 +40,7 @@ export default function App() {
           <Route path="coin/send" Component={SendCoins}/>
           <Route path="coin/balance" Component={CoinBalance}/>
           <Route path="/checkout" Component={DepositForm}/>
-          <Route path="/transferhistory" Component={TransferHistory}/>
+          <Route path="/transactions" Component={Transactions}/>
           <Route path="/preferences" Component={Preferences}/>
           <Route path="/help" Component={Help}/>
           <Route path="/admin/faucet" Component={Faucet}/>

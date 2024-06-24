@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 
-export default function TransferHistory() {
+export default function Transactions() {
   return (
     <>
       <h3 className="page-header">Transfer History</h3>

@@ -33,8 +33,8 @@ export default function MainPage() {
             Balance Inquiry
           </Link>
 
-          <Link to="/transferhistory" className="action-btn">
-            Transaction History
+          <Link to="/transactions" className="action-btn">
+            Transactions
           </Link>
 
           <Link to="preferences" className="action-btn">
