@@ -3,8 +3,8 @@ import { AuthContext } from "../AuthContext";
 import supabase from '../../Config/supabaseConfig';
 
 
-export default function Faucet() {
-  const { userBalance, userInTable, userId } = useContext(AuthContext);
+export default function AdminFaucet() {
+  const { userBalance, userId } = useContext(AuthContext);
   const [currentBalance, setCurrentBalance] = useState(null);
   const [updatedCoinSupply, setUpdatedCoinSupply] = useState(null);
 
@@ -12,6 +12,7 @@ export default function Faucet() {
     const fetchTotalSupply = async () => {
       const { data, error } = await supabase.from('sirch-coins').select('*');
       if (error) {
+        // TODO: surface this error...
         console.error('Error fetching total supply:', error);
       } else {
         setUpdatedCoinSupply(data[0]['total_supply']);
@@ -34,6 +35,7 @@ export default function Faucet() {
         .single();
 
       if (error) {
+        // TODO: surface this error...
         console.error('Error fetching user balance:', error);
       } else {
         setCurrentBalance(data.balance);
@@ -53,6 +55,7 @@ export default function Faucet() {
         .single();
 
       if (updateError) {
+        // TODO: surface this error
         console.error('Error updating user balance:', updateError);
         return;
       }
@@ -69,6 +72,7 @@ export default function Faucet() {
         .single();
 
       if (decreaseError) {
+        // TODO: surface this error
         console.error('Error decreasing total supply:', decreaseError);
         return;
       }
@@ -76,6 +80,7 @@ export default function Faucet() {
       // Update the updatedCoinSupply state with the new total supply
       setUpdatedCoinSupply(updatedSupply.total_supply);
     } catch (error) {
+      // TODO: surface this error...
       console.error('Error adding coins:', error);
     }
   };
@@ -85,13 +90,13 @@ export default function Faucet() {
       <div>
         <h2>You currently have a balance of:</h2>
         {currentBalance !== null ? (
-          <h1>{currentBalance} Coins</h1>
+          <h1>{currentBalance} Sirch Coins</h1>
         ) : (
           <h1>Loading...</h1>
         )}
       </div>
       <div>
-        <button onClick={addCoins}>Click me to get 100 coins</button>
+        <button onClick={addCoins}>Click me to get 100 Sirch Coins</button>
       </div>
     </>
   );

@@ -47,6 +47,7 @@ export default function SendCoins() {
         .single();
 
       if (recipientError) {
+        // TODO: handle this error...
         alert("The recipient (" + recipientEmail + ") does not appear to have a Sirch Coins account. Please check the email address or invite this individual join Sirch Coins!");
         // TODO: either rework this use case, or conduct the invitation on the server
         // const confirmedResponse = confirm("The recipient (" + recipientEmail + ") does not appear to have a Sirch Coins account.  Would you like to send this person an invitation to join Sirch Coins?");
@@ -80,7 +81,6 @@ export default function SendCoins() {
           // TODO: surface this error
           console.error("Error during coin transfer:", error);
         } else {
-          console.log("Coin transfer successful!");
           setSendAmount("");
           setRecipientEmail("");
         }

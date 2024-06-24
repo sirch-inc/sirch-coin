@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { AuthContext } from "./components/AuthContext";
 import { useEffect, useContext } from "react";
-import supabase from "./Config/supabaseConfig"
 
 
 export default function MainPage() {

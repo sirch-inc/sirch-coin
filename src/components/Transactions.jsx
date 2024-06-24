@@ -8,7 +8,7 @@ export default function Transactions() {
       <h3 className="page-header">Transfer History</h3>
       <div className="balance-container">
         <p className="page-text">
-        Sorry, this page isn't available yet
+          Sorry, this page isn't available yet
         </p>
         <p className="page-text">
           <strong>Please try again later</strong>

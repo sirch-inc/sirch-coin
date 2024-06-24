@@ -4,8 +4,8 @@ import supabase from '../../Config/supabaseConfig'
 
 
 export default function ResetPassword() {
-    const [newPassword, setNewPassword] = useState('')
-    const [passwordRecoverySession, setPasswordRecoverySession] = useState(null)
+    const [newPassword, setNewPassword] = useState('');
+    const [passwordRecoverySession, setPasswordRecoverySession] = useState(null);
     const [confirmPassword, setConfirmPassword] = useState("");
     const [passwordsMatch, setPasswordsMatch] = useState(false);
     const navigate = useNavigate();
@@ -14,7 +14,7 @@ export default function ResetPassword() {
     useEffect(() => {
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
           if (event === "PASSWORD_RECOVERY") {
-            setPasswordRecoverySession(session)
+            setPasswordRecoverySession(session);
           }
         });
     
@@ -37,6 +37,7 @@ export default function ResetPassword() {
                 //TODO: Change from alert to error messaging on the frontend.
               alert('There was an error updating your password.');
             } else if (passwordsMatch === false) {
+              // TODO: surface this error
               alert("Make sure your passwords match before resetting your password.")
             } else {
                 //TODO: Change from alert to a success message once redirected to the homepage. 
@@ -49,7 +50,7 @@ export default function ResetPassword() {
         }
       }
 
-    // Compare passwords and ensure that they match before a user can successfully reset it.
+    // verify passwords match
     const handlePasswordConfirmation = (e) =>{
       const value = e.target.value;
       setConfirmPassword(value);
@@ -58,32 +59,33 @@ export default function ResetPassword() {
 
     return(
         <>
-            <h1>Enter a New Password:</h1>
-            <p> Choose a new password for your SirchCoin account by entering it below:</p>
+          <h1>Enter a New Password:</h1>
+          <p> Choose a new password for your SirchCoin account by entering it below:</p>
 
-            <form onSubmit={submitPassword}>
-                <input 
-                type="password"
-                placeholder="New Password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                required
-                autoComplete="current-password"/>
-                <input 
-                  type="password" 
-                  name="confirm-password" 
-                  placeholder="Confirm New Password" 
-                  autoComplete="current-password" 
-                  required value={confirmPassword}
-                  onChange={handlePasswordConfirmation}
-                />
-                {confirmPassword && (
-                  <p style={{ color: passwordsMatch ? "green" : "red" }}>
-                  {passwordsMatch ? "Passwords match!" : "Passwords do not match"}
-                  </p>
-                )}
-                <button>Change Password</button>
-            </form>
+          <form onSubmit={submitPassword}>
+            <input 
+              type="password"
+              placeholder="New Password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              required
+              autoComplete="current-password"
+            />
+            <input 
+              type="password" 
+              name="confirm-password" 
+              placeholder="Confirm New Password" 
+              autoComplete="current-password" 
+              required value={confirmPassword}
+              onChange={handlePasswordConfirmation}
+            />
+            {confirmPassword && (
+              <p style={{ color: passwordsMatch ? "green" : "red" }}>
+                {passwordsMatch ? "Passwords match!" : "Passwords do not match"}
+              </p>
+            )}
+            <button>Change Password</button>
+          </form>
         </>
     )
 }

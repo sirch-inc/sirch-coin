@@ -23,7 +23,7 @@ export default function NavBar({ supabase }) {
           </a>
         </li>
         <li className="navbar-item">
-          <a href="/">SirchCoin</a>
+          <a href="/">Sirch Coin</a>
         </li>
         <li>
           {session ? (
