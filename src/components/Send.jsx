@@ -4,18 +4,17 @@ import { Link } from "react-router-dom";
 import supabase from "../Config/supabaseConfig";
 
 
-export default function SendCoins() {
+export default function Send() {
   const { userInTable, session, userBalance } = useContext(AuthContext);
   const [recipientEmail, setRecipientEmail] = useState("");
   const [sendAmount, setSendAmount] = useState("");
   const [recipient, setRecipient] = useState(null);
   
-
   const handleAmountButtonClick = (amount) => {
     setSendAmount(amount);
   };
 
-  const handleCoinInputChange = (event) => {
+  const handleAmountInputChange = (event) => {
     const amount = event.target.value;
 
     // TODO: if the value is EQUAL to the user's balance, display a pretty warning
@@ -48,6 +47,7 @@ export default function SendCoins() {
         .single();
 
       if (recipientError) {
+        // TODO: handle this error...
         alert("The recipient (" + recipientEmail + ") does not appear to have a Sirch Coins account. Please check the email address or invite this individual join Sirch Coins!");
         // TODO: either rework this use case, or conduct the invitation on the server
         // const confirmedResponse = confirm("The recipient (" + recipientEmail + ") does not appear to have a Sirch Coins account.  Would you like to send this person an invitation to join Sirch Coins?");
@@ -70,7 +70,7 @@ export default function SendCoins() {
 
       // recheck if the logged-in user has enough balance
       if (sendAmount <= userBalance.balance) {
-        // Call the RPC function to handle the coin transfer
+        // Call the RPC function to handle the transfer
         const { data, error } = await supabase.rpc("transfer_coins", {
           sender_id: userInTable.user_id,
           receiver_id: recipientData.user_id,
@@ -79,9 +79,8 @@ export default function SendCoins() {
 
         if (error) {
           // TODO: surface this error
-          console.error("Error during coin transfer:", error);
+          console.error("Error during transfer:", error);
         } else {
-          console.log("Coin transfer successful!");
           setSendAmount("");
           setRecipientEmail("");
         }
@@ -104,9 +103,7 @@ export default function SendCoins() {
           <h1> {userBalance?.balance || "Loading..."} Sirch Coins</h1>
           <p>
             To send Sirch Coins to anyone with a Sirch Coins account,
-            please specify the amount and the recipient's email address below.
-            We will send the recipient an email notification.
-          </p>
+            please specify the amount and the recipient's email address below.</p>
         </div>
         <form onSubmit={handleSubmit}>
           <div className="price-container">
@@ -165,7 +162,7 @@ export default function SendCoins() {
               id="amountToSend"
               className="cash1-input other-amount-input"
               value={sendAmount}
-              onChange={handleCoinInputChange}
+              onChange={handleAmountInputChange}
             />
 
             <div className="email-inputs">

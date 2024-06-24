@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import supabase from "../Config/supabaseConfig"
+import supabase from "../../Config/supabaseConfig"
 
 
 export default function ForgotPassword() {
@@ -10,12 +10,13 @@ export default function ForgotPassword() {
     async function requestReset(e){
         e.preventDefault();
 
-        // Use supabase resetPasswordForEmail to trigger a password reset email event and redirect to the update password page.
+        // Use supabase resetPasswordForEmail() to trigger a password reset email event and redirect to the update password page
         try {
             const {data, error} = await supabase.auth.resetPasswordForEmail(userEmail, {
                 redirectTo: `${window.location.origin}/reset-password`, })
 
-            if (error){
+            if (error) {
+              // TODO: surface or handle error
                 throw error;
             } else {
                 setResetSent(true);
@@ -23,6 +24,7 @@ export default function ForgotPassword() {
         }
 
         catch (error) {
+            // TODO: surface or handle error...
             console.error('Error: ', error.message);
             setError(error.message);
         }
@@ -34,7 +36,7 @@ export default function ForgotPassword() {
           {/* If the reset hasn't been sent, display the form. Otherwise show "sent" messaging.*/}
           {!resetSent ? (
             <>
-              <p>Enter the email you used to sign up for SirchCoin:</p>
+              <p>Enter the email you used to sign up for Sirch Coin:</p>
               <form className="reset-password" onSubmit={requestReset}>
                 <input
                   type="email"
@@ -49,7 +51,7 @@ export default function ForgotPassword() {
               {error && <p className="error">{error}</p>}
             </>
           ) : (
-            <p>If the email address {userEmail} has a SirchCoin account, we've emailed you a link to reset your password. Please check your email inbox.</p>
+            <p>If the email address {userEmail} has a Sirch Coins account, we've emailed you a link to reset your password. Please check your email inbox.</p>
           )}
         </>
       );

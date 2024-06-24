@@ -1,13 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
+
 export default function Preferences () {
   return (
     <>
-      <h3 className="page-header">Preferences.</h3>
+      <h3 className="page-header">Preferences</h3>
       <div className="balance-container">
         <p className="page-text">
-          Sorry, there are no preferences, SirchCoins are simple.
+          Sorry, there are no preferences, Sirch Coins are simple.
         </p>
         <p className="page-text">
           <strong>Have a nice day</strong>

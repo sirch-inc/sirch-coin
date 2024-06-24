@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "./AuthContext";
 import supabase from "../Config/supabaseConfig";
 
-const DepositForm = () => {
+
+export default function Purchase() {
   const [stripe, setStripe] = useState(null);
   const [elements, setElements] = useState(null);
   const [paymentIntent, setPaymentIntent] = useState(null);
@@ -13,7 +14,6 @@ const DepositForm = () => {
   const [amount, setAmount] = useState(0);
   const paymentElementRef = useRef(null);
   const btnRef = useRef(null);
-
   const { userInTable, session, userBalance } = useContext(AuthContext);
 
   const initializeStripe = async () => {
@@ -22,10 +22,11 @@ const DepositForm = () => {
     setStripe(stripe);
 
     const { data: clientSecret, error } = await supabase.rpc("create_payment_intent", {
-      amount: amount * 100, // Convert to cents
+      amount: amount * 100, // TODO: Convert to cents
     });
 
     if (error) {
+      // TODO: surface this error
       console.error("Error creating payment intent:", error);
       return;
     }
@@ -36,6 +37,7 @@ const DepositForm = () => {
     const paymentElement = elements.create("payment", {
       layout: "tabs",
     });
+
     paymentElement.mount(paymentElementRef.current);
   };
 
@@ -50,13 +52,13 @@ const DepositForm = () => {
       const result = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: window.location.origin + "/stripe/success",
+          return_url: window.location.origin + "/stripe/Success",
         },
       });
 
       // Check if the payment was successful
       if (result.error) {
-        // Payment failed
+        // TODO: surface this error...
         console.error("Payment failed:", result.error);
         window.location.href = window.location.origin + "/stripe/Failure";
       } else if (
@@ -75,15 +77,18 @@ const DepositForm = () => {
         });
 
         if (error) {
+          // TODO: surface this error
           console.error("Error updating balance and total supply:", error);
         } else {
+          // TODO: surface this success
           console.log("Balance and total supply updated successfully!");
         }
       } else {
-        // Payment not yet completed, handle as necessary
+        // TODO: Payment not yet completed, handle as necessary
         console.log("Payment not yet completed:", result);
       }
     } catch (error) {
+      // TODO: surface or handle this error
       console.error("Error processing payment:", error);
     }
   };
@@ -106,19 +111,17 @@ const DepositForm = () => {
           </div>
         )}
         {successVisible && (
-          <div className="success">Payment succeeded! {paymentIntent}</div>
+          <div className="success">Payment succeeded!{paymentIntent}</div>
         )}
       </div>
       <div className="bottom-btn-container">
         <Link to="/" className="big-btn-red">
           Back
         </Link>
-        <Link to="/checkout" className="big-btn-blue">
+        <Link to="/purchase" className="big-btn-blue">
           Will do something eventually
         </Link>
       </div>
     </>
   );
 };
-
-export default DepositForm;

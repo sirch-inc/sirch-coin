@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "./AuthContext";
-import supabase from '../Config/supabaseConfig';
+import { AuthContext } from "../AuthContext";
+import supabase from '../../Config/supabaseConfig';
 
 
-const LoginSupabase = () => {
+export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [signInError, setSignInError] = useState(false);
@@ -95,5 +95,3 @@ const LoginSupabase = () => {
       </AuthContext.Consumer>
     );
   };
-
-export default LoginSupabase

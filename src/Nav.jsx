@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import LogoutSupabase from "./components/LogoutSupabase"
+import LogoutSupabase from "./components/Account/Logout"
 import { AuthContext } from "./components/AuthContext";
 
 
@@ -23,7 +23,7 @@ export default function NavBar({ supabase }) {
           </a>
         </li>
         <li className="navbar-item">
-          <a href="/">SirchCoin</a>
+          <a href="/">Sirch Coin</a>
         </li>
         <li>
           {session ? (

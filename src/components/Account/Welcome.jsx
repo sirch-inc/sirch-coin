@@ -1,7 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
-import { AuthContext } from "./AuthContext";
+import { AuthContext } from "../AuthContext";
 import { useState, useContext } from "react";
-import supabase from "../Config/supabaseConfig"
+import supabase from "../../Config/supabaseConfig"
+
 
 // TODO: handle errors here (esp 400-class, like "expired link", etc...)
 export default function Welcome() {
@@ -9,7 +10,6 @@ export default function Welcome() {
   const location = useLocation();
   const [resendEmailStatus, setResendEmailStatus] = useState('');
   const verificationError = location.hash.includes('error=access_denied');
-
   const [usersEmail, setUsersEmail] = useState('');
 
   const handleEmailChange = (event) => {
@@ -32,7 +32,7 @@ export default function Welcome() {
     } else {
       setResendEmailStatus('We are having trouble processing your request. Please try again.')
     }
-  };
+  }
 
   if (verificationError) {
     return (
@@ -51,15 +51,14 @@ export default function Welcome() {
           {session && userInTable ? 
           <div>
             <h1>Welcome {userInTable?.name}!</h1>
-            <h4>Your SirchCoins account has been created and you may now use all of the SirchCoin services!</h4>
+            <h4>Your Sirch Coins account has been created and you may now use all of the Sirch Coin services!</h4>
             <div className="button-container">
               <Link to="/" className="action-btn">
                 Get Started!
               </Link>
             </div>
           </div>
-             : <h1> Verifying... </h1> }
-            
+          : <h1> Verifying... </h1> }
         </>
     )
   }

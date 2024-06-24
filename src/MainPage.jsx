@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { AuthContext } from "./components/AuthContext";
 import { useEffect, useContext } from "react";
-import supabase from "./Config/supabaseConfig"
 
 
 export default function MainPage() {
@@ -17,24 +16,24 @@ export default function MainPage() {
       
       {session ? (
         <div className="button-container">
-          <Link to="/coin-faucet" className="action-btn">
-              Internal: Balance & Faucet
+          <Link to="admin/faucet" className="action-btn">
+              Admin: Faucet
+          </Link>
+
+          <Link to="purchase" className="action-btn">
+            Purchase Sirch Coins
           </Link>
 
           <Link to="coin/send" className="action-btn">
-            Send Money
-          </Link>
-
-          <Link to="checkout" className="action-btn">
-            Deposit
+            Send Sirch Coins
           </Link>
 
           <Link to="coin/balance" className="action-btn">
             Balance Inquiry
           </Link>
 
-          <Link to="/transferhistory" className="action-btn">
-            Transfer History
+          <Link to="/transactions" className="action-btn">
+            Transactions
           </Link>
 
           <Link to="preferences" className="action-btn">
@@ -46,11 +45,13 @@ export default function MainPage() {
           </Link>
         </div>
         ) : (
-        <Link to="help" className="action-btn">
-          Help
-        </Link>
+          <div className="button-container">
+            <Link to="help" className="action-btn">
+              Help
+            </Link>
+          </div>
         )}
-      {/* <ToastContainer /> */}
+      {/* TODO: <ToastContainer /> */}
     </>
   );
 }

@@ -4,7 +4,7 @@ import { AuthContext } from "./AuthContext";
 import supabase from '../Config/supabaseConfig';
 
 
-const CoinBalance = () => {
+export default function Balance() {
   const { userBalance, userInTable } = useContext(AuthContext);
   const [currentBalance, setCurrentBalance] = useState(null);
   const [error, setError] = useState("");
@@ -62,7 +62,7 @@ const CoinBalance = () => {
           <Link to="/" className="big-btn-red">
             Back
           </Link>
-          <Link to="/checkout" className="big-btn-blue">
+          <Link to="/purchase" className="big-btn-blue">
             Buy More
           </Link>
         </div>
@@ -70,5 +70,3 @@ const CoinBalance = () => {
     </>
   );
 }
-
-export default CoinBalance;
