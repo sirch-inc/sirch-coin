@@ -11,7 +11,7 @@ import VerifyAccount from "./components/Account/VerifyAccount";
 import Welcome from "./components/Account/Welcome";
 import ForgotPassword from "./components/Account/ForgotPassword";
 import ResetPassword from "./components/Account/ResetPassword";
-import SendCoins from "./components/SendCoins";
+import Send from "./components/Send";
 import CoinBalance from "./components/CoinBalance";
 import Purchase from "./components/Purchase";
 import Transactions from "./components/Transactions";
@@ -37,7 +37,7 @@ export default function App() {
           <Route path="/welcome" Component={Welcome}/>
           <Route path="/forgot-password" Component={ForgotPassword}/>
           <Route path="/reset-password" Component={ResetPassword}/>
-          <Route path="coin/send" Component={SendCoins}/>
+          <Route path="coin/send" Component={Send}/>
           <Route path="coin/balance" Component={CoinBalance}/>
           <Route path="/checkout" Component={Purchase}/>
           <Route path="/transactions" Component={Transactions}/>

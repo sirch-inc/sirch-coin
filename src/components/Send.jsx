@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import supabase from "../Config/supabaseConfig";
 
 
-export default function SendCoins() {
+export default function Send() {
   const { userInTable, session, userBalance } = useContext(AuthContext);
   const [recipientEmail, setRecipientEmail] = useState("");
   const [sendAmount, setSendAmount] = useState("");
