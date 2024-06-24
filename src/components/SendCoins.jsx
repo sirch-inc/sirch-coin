@@ -103,9 +103,7 @@ export default function SendCoins() {
           <h1> {userBalance?.balance || "Loading..."} Sirch Coins</h1>
           <p>
             To send Sirch Coins to anyone with a Sirch Coins account,
-            please specify the amount and the recipient's email address below.
-            We will send the recipient an email notification.
-          </p>
+            please specify the amount and the recipient's email address below.</p>
         </div>
         <form onSubmit={handleSubmit}>
           <div className="price-container">
