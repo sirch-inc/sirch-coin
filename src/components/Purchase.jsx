@@ -5,7 +5,7 @@ import { AuthContext } from "./AuthContext";
 import supabase from "../Config/supabaseConfig";
 
 
-export default function DepositForm() {
+export default function Purchase() {
   const [stripe, setStripe] = useState(null);
   const [elements, setElements] = useState(null);
   const [paymentIntent, setPaymentIntent] = useState(null);
