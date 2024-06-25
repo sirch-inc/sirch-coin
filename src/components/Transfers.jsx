@@ -96,15 +96,15 @@ export default function Transfers() {
         </div>
         <div className="sent-transfers">
           { userSentTransfers ? (
-            userSentTransfers.map((singleSendTransfer) => (
+            userSentTransfers.map((transfer) => (
               <TransferCard 
-              key={singleSendTransfer.id}
-              date={singleSendTransfer.created_at}
-              sender={singleSendTransfer.sender?.user?.email || singleSendTransfer.sender_id}
-              receiver={singleSendTransfer.receiver?.user?.email || singleSendTransfer.receiver_id}
-              amount={singleSendTransfer.amount} />
+                key={transfer.id}
+                date={transfer.created_at}
+                sender={transfer.sender?.user?.email || transfer.sender_id}
+                receiver={transfer.receiver?.user?.email || transfer.receiver_id}
+                amount={transfer.amount} />
           ))) : 
-          <p>Loading transfers...</p>} 
+          <p>Loading...</p>} 
         </div>
         
         <h3>Received Transfers</h3>
@@ -116,15 +116,15 @@ export default function Transfers() {
         </div>
         <div className="received-transfers">
           { userReceivedTransfers ? (
-            userReceivedTransfers.map((singleReceivedTransfer) => (
+            userReceivedTransfers.map((transfer) => (
               <TransferCard 
-              key={singleReceivedTransfer.id}
-              date={singleReceivedTransfer.created_at}
-              sender={singleReceivedTransfer.sender?.user?.email || singleReceivedTransfer.sender_id}
-              receiver={singleReceivedTransfer.receiver?.user?.email || singleReceivedTransfer.receiver_id}
-              amount={singleReceivedTransfer.amount} />
+                key={transfer.id}
+                date={transfer.created_at}
+                sender={transfer.sender?.user?.email || transfer.sender_id}
+                receiver={transfer.receiver?.user?.email || transfer.receiver_id}
+                amount={transfer.amount} />
           ))) : 
-          <p>Loading transfers...</p>} 
+          <p>Loading...</p>} 
         </div>
         
         <div className="bottom-btn-container">
