@@ -1,13 +1,16 @@
 import React, { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import LogoutSupabase from "./components/Account/Logout"
 import { AuthContext } from "./components/AuthContext";
 
 
 export default function NavBar({ supabase }) {
   const { session } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   function handleLogout(){
     LogoutSupabase({ supabase })
+    navigate('/')
   }
     
   return (
