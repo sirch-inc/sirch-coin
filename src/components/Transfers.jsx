@@ -33,13 +33,12 @@ export default function Transfers() {
         //TODO: handle error
         alert('Error fetching users sent transfers: ', error);
       } else {
-        console.log(data);
         setUserSentTransfers(data);
       }
     }
     else{
-      // alert('User not found.');
-      console.log("No user in table");
+      //TODO: handle error 
+      alert('User not found.');
     }
   }
 
@@ -67,12 +66,11 @@ export default function Transfers() {
         //TODO: handle error 
         alert('Error fetching users received transfers', error);
       } else {
-        console.log(data);
         setUserReceivedTransfers(data);
       }
     } else {
-      // alert('User not found.');
-      console.log("No user in table");
+      //TODO: handle error 
+      alert('User not found.');
     }
   }
 
