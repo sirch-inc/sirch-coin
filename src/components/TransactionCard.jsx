@@ -1,10 +1,18 @@
+import { parseISO, format } from 'date-fns';
 
 export default function TransactionCard({ date, sender, receiver, amount }){
+
+    const formatDate = (unformattedDate) => {
+        const formattedDate = parseISO(unformattedDate)
+        return format(formattedDate, "MMMM do, yyyy, hh:mma");
+    }
+
+    
 
     return (
         <>
             <div>
-                <p>{date}</p>
+                <p>{formatDate(date)}</p>
             </div>
             <div>
                 <p>{sender}</p>

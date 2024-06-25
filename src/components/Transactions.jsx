@@ -24,7 +24,8 @@ export default function Transactions() {
       const { data, error } = await supabase
       .from("transactions")
       .select('*')
-      .eq('sender_id', userInTable.user_id);
+      .eq('sender_id', userInTable.user_id)
+      .order('created_at', {ascending: false});
 
       if (error) {
         //TODO: handle error
@@ -45,7 +46,8 @@ export default function Transactions() {
       const { data, error } = await supabase
       .from("transactions")
       .select("*")
-      .eq('receiver_id', userInTable.user_id);
+      .eq('receiver_id', userInTable.user_id)
+      .order('created_at', {ascending: false});
 
       if (error){
         //TODO: handle error 
