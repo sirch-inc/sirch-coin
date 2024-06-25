@@ -88,7 +88,7 @@ export default function Send() {
           position: "top-right",
         });
       } else {
-        toast.success(sendAmount + " Sirch Coins successfully sent", {
+        toast.success(sendAmount + " Sirch Coins successfully sent to " + recipientEmail, {
           position: "top-right",
         });
 
