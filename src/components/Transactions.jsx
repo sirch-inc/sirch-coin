@@ -69,19 +69,19 @@ export default function Transactions() {
     <>
       <h3 className="page-header">Transaction History</h3>
       <div className="transactions-container">
-        <p className="page-text">
+        <h2 className="transactions-header">
           Your transactions:
-        </p>
+        </h2>
 
+        <h3>Sent Transactions</h3>
         <div className="transaction-headers">
           <p>Date Sent</p>
           <p>Sender</p>
           <p>Receiver</p>
           <p>Amount</p>
         </div>
-
         <div className="sent-transactions">
-          <p className="page-text">Sent Transactions: </p>
+          {/* <p className="page-text">Sent Transactions: </p> */}
           { userSentTransactions ? (
             userSentTransactions.map((singleSendTransaction) => (
               <TransactionCard 
@@ -93,9 +93,15 @@ export default function Transactions() {
           ))) : 
           <p>Loading transactions...</p>} 
         </div>
-
+        
+        <h3>Received Transactions</h3>
+        <div className="transaction-headers">
+          <p>Date Sent</p>
+          <p>Sender</p>
+          <p>Receiver</p>
+          <p>Amount</p>
+        </div>
         <div className="received-transactions">
-          <p className="page-text">Received Transactions: </p>
           { userReceivedTransactions ? (
             userReceivedTransactions.map((singleReceivedTransaction) => (
               <TransactionCard 
