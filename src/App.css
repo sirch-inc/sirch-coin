@@ -344,7 +344,27 @@ form {
 
 /* Start styles for Transfer History */
 
+.transfers-container {
+  margin: 20px;
+  height: 65vh;
+  overflow: scroll;
+}
 
+.transfers-header {
+  padding-bottom: 20px;
+  margin: 20px;
+}
+
+.sent-transfers, .received-transfers, .transfers-headers {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-column-gap: 10px;
+  grid-row-gap: 10px;
+  }
+
+  .transfers-headers p {
+    font-weight: 800;
+  }
 /* End styles for Transfer History */
 
 
