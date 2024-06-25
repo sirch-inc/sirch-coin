@@ -8,6 +8,7 @@ export default function Transfers() {
   const { userInTable } = useContext(AuthContext);
   const [userSentTransfers, setUserSentTransfers] = useState(null);
   const [userReceivedTransfers, setUserReceivedTransfers] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchUserSentTransfers = async (userInTable) => {
     if (userInTable){
@@ -75,8 +76,15 @@ export default function Transfers() {
   }
 
   useEffect(() => {
-    fetchUserSentTransfers(userInTable);
-    fetchUserReceivedTransfers(userInTable);
+    if (userInTable) {
+      setIsLoading(true);
+      Promise.all([
+        fetchUserSentTransfers(userInTable),
+        fetchUserReceivedTransfers(userInTable)
+      ]).then(() => {
+        setIsLoading(false);
+      });
+    }
   }, [userInTable]);
 
   return (
