@@ -346,10 +346,13 @@ form {
 
 .transfers-container {
   margin: 20px;
+  height: 65vh;
+  overflow: scroll;
 }
 
 .transfers-header {
   padding-bottom: 20px;
+  margin: 20px;
 }
 
 .sent-transfers, .received-transfers, .transfers-headers {

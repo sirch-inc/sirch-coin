@@ -82,10 +82,10 @@ export default function Transfers() {
   return (
     <>
       <h3 className="page-header">Transfer History</h3>
-      <div className="transfers-container">
-        <h2 className="transfers-header">
+      <h2 className="transfers-header">
           Your transfers:
         </h2>
+      <div className="transfers-container">
 
         <h3>Sent Transfers</h3>
         <div className="transfers-headers">
