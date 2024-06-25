@@ -2,6 +2,8 @@ import React, { useState, useContext } from "react";
 import { AuthContext } from "./AuthContext";
 import { Link } from "react-router-dom";
 import supabase from "../Config/supabaseConfig";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 export default function Send() {
@@ -17,11 +19,6 @@ export default function Send() {
   const handleAmountInputChange = (event) => {
     const amount = event.target.value;
 
-    // TODO: if the value is EQUAL to the user's balance, display a pretty warning
-    if (parseInt(amount, 10) === userBalance.balance) {
-      alert("Warning: the amount specified is your entire balance!");
-    }
-
     setSendAmount(amount < 0 ? "" : amount);
   };
 
@@ -31,12 +28,14 @@ export default function Send() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    // TODO: if the value is EQUAL to the user's balance, display a warning
-    if (
-        parseInt(sendAmount, 10) === userBalance.balance
-        && !confirm("Warning: the amount to send (" + sendAmount + " Sirch Coins) is your entire balance! Please confirm your intent."))
-      return;
+  
+    // if the send amount equals the user's balance, display a warning & confirmation dialog
+    if (parseInt(sendAmount, 10) === userBalance.balance) {
+      // TODO: handle this confirmation with a proper dialog
+      if (!confirm("Warning: the amount to send (" + sendAmount + " Sirch Coins) is your entire balance! Please confirm your intent.")) {
+        return;
+      }
+    }
   
     try {
       // Find the recipient user by email
@@ -68,33 +67,55 @@ export default function Send() {
 
       setRecipient(recipientData);
 
-      // recheck if the logged-in user has enough balance
-      if (sendAmount <= userBalance.balance) {
-        // Call the RPC function to handle the transfer
-        const { data, error } = await supabase.rpc("transfer_coins", {
-          sender_id: userInTable.user_id,
-          receiver_id: recipientData.user_id,
-          amount: sendAmount
+      // verify the sender has sufficient balance
+      if (sendAmount > userBalance.balance) {
+        toast.error('Insufficient balance', {
+          position: "top-right",
         });
 
-        if (error) {
-          // TODO: surface this error
-          console.error("Error during transfer:", error);
-        } else {
-          setSendAmount("");
-          setRecipientEmail("");
-        }
-      } else {
-        // TODO: surface this error
-        console.error("Insufficient balance");
+        return;
       }
-    } catch (error) {
-      // TODO: surface this error
-      console.error("An error occurred:", error);
+
+      // Call the RPC function to handle the transfer
+      const { data, transferError } = await supabase.rpc("transfer_coins", {
+        sender_id: userInTable.user_id,
+        receiver_id: recipientData.user_id,
+        amount: sendAmount
+      });
+
+      if (transferError?.message) {
+        toast.error(transferError?.message, {
+          position: "top-right",
+        });
+      } else {
+        toast.success(sendAmount + " Sirch Coins successfully sent", {
+          position: "top-right",
+        });
+
+        setSendAmount("");
+        setRecipientEmail("");
+
+        // TODO: refresh the user's balance here...
+      }
+    } catch (exception) {
+      // TODO: what do display here?
+      toast.error('An exception occurred', {
+        position: "top-right",
+      });
+      console.error("An exception occurred:", exception);
     }
   };
 
   return (
+    <div>
+    <ToastContainer
+      position="top-right"
+      autoClose={false}
+      newestOnTop={false}
+      closeOnClick
+      draggable
+      theme="colored"
+    />
     <div className="send-coin-container">
       <div>
         <h3 className="page-header">Send Sirch Coins</h3>
@@ -150,16 +171,16 @@ export default function Send() {
               </div>
             </div>
 
-            <label htmlFor="amountToSend">Amount to Send</label>
+            <label htmlFor="amountToSend">Amount to Send (S)</label>
             <input
-              placeholder="any positive value up your balance"
+              id="amountToSend"
+              name="amountToSend"
+              placeholder=""
               required
               type="number"
               min="0"
               max={userBalance?.balance || "0"}
-              step=".01"
-              name="amountToSend"
-              id="amountToSend"
+              step="1"
               className="cash1-input other-amount-input"
               value={sendAmount}
               onChange={handleAmountInputChange}
@@ -168,11 +189,11 @@ export default function Send() {
             <div className="email-inputs">
               <label htmlFor="recipientEmailAddress">Recipient's Email Address</label>
               <input
-                placeholder="any valid email address"
+                id="recipientEmailAddress"
+                name="recipientEmailAddress"
+                placeholder=""
                 required
                 type="email"
-                name="recipientEmailAddress"
-                id="recipientEmailAddress"
                 className="cash1-input recipient-email-input"
                 value={recipientEmail}
                 onChange={handleRecipientEmailAddressChange}
@@ -190,6 +211,7 @@ export default function Send() {
           </div>
         </form>
       </div>
+    </div>
     </div>
   );
 }
