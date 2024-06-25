@@ -344,18 +344,22 @@ form {
 
 /* Start styles for Transfer History */
 
-.transactions-header {
+.transfers-container {
+  margin: 20px;
+}
+
+.transfers-header {
   padding-bottom: 20px;
 }
 
-.sent-transactions, .received-transactions, .transaction-headers {
+.sent-transfers, .received-transfers, .transfers-headers {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-column-gap: 10px;
   grid-row-gap: 10px;
   }
 
-  .transaction-headers p {
+  .transfers-headers p {
     font-weight: 800;
   }
 /* End styles for Transfer History */

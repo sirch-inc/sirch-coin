@@ -39,8 +39,8 @@ export default function MainPage() {
             Balance Inquiry
           </Link>
 
-          <Link to="/transactions" className="action-btn">
-            Transaction History
+          <Link to="/transfers" className="action-btn">
+            Transfer History
           </Link>
 
           <Link to="preferences" className="action-btn">
