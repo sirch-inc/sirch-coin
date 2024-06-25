@@ -1,4 +1,4 @@
-import React, { useContext,useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import TransactionCard from "./TransactionCard";
 import { AuthContext } from "./AuthContext";
@@ -6,6 +6,8 @@ import supabase from '../Config/supabaseConfig';
 
 export default function Transactions() {
   const { userInTable } = useContext(AuthContext);
+  const [userSentTransactions, setUserSentTransactions] = useState(null);
+  const [userReceivedTransactions, setUserReceivedTransactions] = useState(null);
 
   const fetchUserSentTransactions = async (userInTable) => {
     if (userInTable){
@@ -18,12 +20,13 @@ export default function Transactions() {
         //TODO: handle error
         alert('Error fetching users sent transactions: ', error);
       } else {
-        console.log(data)
+        console.log(data);
+        setUserSentTransactions(data);
       }
     }
     else{
-      // alert('User not found.')
-      console.log("No user in table")
+      // alert('User not found.');
+      console.log("No user in table");
     }
   }
 
@@ -38,15 +41,22 @@ export default function Transactions() {
         //TODO: handle error 
         alert('Error fetching users received transactions', error);
       } else {
-        console.log(data)
+        console.log(data);
+        setUserReceivedTransactions(data);
       }
     } else {
-      // alert('User not found.')
-      console.log("No user in table")
+      // alert('User not found.');
+      console.log("No user in table");
     }
   }
-  fetchUserSentTransactions(userInTable);
-  fetchUserReceivedTransactions(userInTable);
+
+
+  useEffect(() => {
+    // (Re)fetch the user's balance when the component mounts
+    fetchUserSentTransactions(userInTable);
+    fetchUserReceivedTransactions(userInTable);
+  }, [userInTable]);
+  
 
   return (
     <>
@@ -55,6 +65,34 @@ export default function Transactions() {
         <p className="page-text">
           Your transactions:
         </p>
+
+        <div className="sent-transactions">
+          <p>Sent Transactions: </p>
+          { userSentTransactions ? (
+            userSentTransactions.map((singleSendTransaction) => (
+            <TransactionCard 
+            key={singleSendTransaction.id}
+            date={singleSendTransaction.created_at}
+            sender={singleSendTransaction.sender_id}
+            receiver={singleSendTransaction.receiver_id}
+            amount={singleSendTransaction.amount} />
+          ))) : 
+          <p>Loading transactions...</p>} 
+        </div>
+
+        <div className="received-transactions">
+          <p>Received Transactions: </p>
+          { userReceivedTransactions ? (
+            userReceivedTransactions.map((singleReceivedTransaction) => (
+            <TransactionCard 
+            key={singleReceivedTransaction.id}
+            date={singleReceivedTransaction.created_at}
+            sender={singleReceivedTransaction.sender_id}
+            receiver={singleReceivedTransaction.receiver_id}
+            amount={singleReceivedTransaction.amount} />
+          ))) : 
+          <p>Loading transactions...</p>} 
+        </div>
         
         <div className="bottom-btn-container">
           <Link to="/" className="big-btn-red">
