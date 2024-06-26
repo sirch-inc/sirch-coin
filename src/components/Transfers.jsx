@@ -96,7 +96,7 @@ export default function Transfers() {
         <div className="transfers-headers">
           <p>Date</p>
           <p>To</p>
-          <p>Amount</p>
+          <p>Sirch Coins (SC)</p>
         </div>
         <div className="sent-transfers">
           { userSentTransfers ? (
@@ -110,12 +110,12 @@ export default function Transfers() {
           ))) :
           <p>Loading...</p>} 
         </div>
-        
+        <br></br>
         <h3>Received by Me</h3>
         <div className="transfers-headers">
           <p>Date</p>
           <p>From</p>
-          <p>Amount</p>
+          <p>Sirch Coins (SC)</p>
         </div>
         <div className="received-transfers">
           { userReceivedTransfers ? (
