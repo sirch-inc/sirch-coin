@@ -1,18 +1,41 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from "./AuthContext";
-import { Link } from "react-router-dom";
 import supabase from "../Config/supabaseConfig";
+import { Link } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
 export default function Send() {
-  const { userInTable, session, userBalance } = useContext(AuthContext);
+  const { userInTable, userBalance } = useContext(AuthContext);
   const [recipientEmail, setRecipientEmail] = useState("");
   const [recipientError, setRecipientError] = useState(false);
   const [sendAmount, setSendAmount] = useState("");
-  const [recipient, setRecipient] = useState(null);
-  
+  const [currentBalance, setCurrentBalance] = useState(null);
+
+  useEffect(() => {
+    // (Re)fetch the user's balance when the component renders
+    fetchUserBalance(userInTable);
+  }, [userBalance]);
+
+  const fetchUserBalance = async (userInTable) => {
+    if (userInTable) {
+      const { data, error } = await supabase
+        .from('user-balances')
+        .select("*")
+        .eq('user_id', userInTable.user_id)
+        .single();
+
+        if (error) {
+          toast.error("Unable to load user balance", {
+            position: "top-right",
+          });
+        } else {
+        setCurrentBalance(data.balance);
+      }
+    }
+  };
+
   const handleAmountButtonClick = (amount) => {
     setSendAmount(amount);
   };
@@ -34,8 +57,10 @@ export default function Send() {
   const handleSubmit = async (event) => {
     event.preventDefault();
   
+    fetchUserBalance(userInTable);
+
     // if the send amount equals the user's balance, display a warning & confirmation dialog
-    if (parseInt(sendAmount, 10) === userBalance.balance) {
+    if (parseInt(sendAmount, 10) === currentBalance) {
       // TODO: handle this confirmation with a proper dialog
       if (!confirm("Warning: the amount to send (" + sendAmount + " Sirch Coins) is your entire balance! Please confirm your intent.")) {
         return;
@@ -71,10 +96,8 @@ export default function Send() {
         return;
       }
 
-      setRecipient(fetchRecipientData);
-
       // verify the sender has sufficient balance
-      if (sendAmount > userBalance.balance) {
+      if (sendAmount > currentBalance) {
         toast.error('Insufficient balance', {
           position: "top-right",
         });
@@ -101,7 +124,8 @@ export default function Send() {
         setSendAmount("");
         setRecipientEmail("");
 
-        // TODO: refresh the user's balance here...
+        // TODO: consider refactoring this and other similar calls into a provider or the context
+        fetchUserBalance(userInTable);
       }
     } catch (exception) {
       // TODO: what to display here?
@@ -112,7 +136,6 @@ export default function Send() {
     }
   };
 
-  
   return (
     <>
       <ToastContainer
@@ -144,7 +167,7 @@ export default function Send() {
           <h3 className="page-header">Send Sirch Coins</h3>
           <div>
             <h2>You currently have a balance of:</h2>
-            <h1> {userBalance?.balance || "Loading..."} Sirch Coins</h1>
+            <h1>{currentBalance !== null ? currentBalance : "Loading"} Sirch Coins</h1>
             <p>
               To send Sirch Coins to anyone with a Sirch Coins account,
               please specify the amount and the recipient's email address below.</p>
@@ -202,7 +225,7 @@ export default function Send() {
                 required
                 type="number"
                 min="0"
-                max={userBalance?.balance || "0"}
+                max={currentBalance || "0"}
                 step="1"
                 className="cash1-input other-amount-input"
                 value={sendAmount}
