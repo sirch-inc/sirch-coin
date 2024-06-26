@@ -92,7 +92,7 @@ export default function Transfers() {
       <h3 className="page-header">Transfer History</h3>
       <div className="transfers-container">
 
-        <h3>Sent</h3>
+        <h3>Sent by Me</h3>
         <div className="transfers-headers">
           <p>Date</p>
           <p>To</p>
@@ -111,7 +111,7 @@ export default function Transfers() {
           <p>Loading...</p>} 
         </div>
         
-        <h3>Received</h3>
+        <h3>Received by Me</h3>
         <div className="transfers-headers">
           <p>Date</p>
           <p>From</p>
