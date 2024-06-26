@@ -343,7 +343,6 @@ form {
 /* End styles for Balance Inquiry */
 
 /* Start styles for Transfer History */
-
 .transfers-container {
   margin: 20px;
   height: 65vh;
@@ -357,9 +356,9 @@ form {
 
 .sent-transfers, .received-transfers, .transfers-headers {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-column-gap: 10px;
-  grid-row-gap: 10px;
+  grid-template-columns: repeat(3, 1fr);
+  grid-column-gap: 4px;
+  grid-row-gap: 4px;
   }
 
   .transfers-headers p {

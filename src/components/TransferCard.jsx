@@ -1,9 +1,13 @@
-import { parseISO, format } from 'date-fns';
+import { parseISO, formatDistanceToNow } from 'date-fns';
 
-export default function TransferCard({ date, sender, receiver, amount }){
+
+export default function TransferCard({ date, target, amount }) {
     const formatDate = (unformattedDate) => {
         const formattedDate = parseISO(unformattedDate);
-        return format(formattedDate, "MMMM do, yyyy, hh:mma");
+        return formatDistanceToNow(
+            formattedDate,
+            { addSuffix: true }
+        );          
     }
 
     return (
@@ -12,13 +16,10 @@ export default function TransferCard({ date, sender, receiver, amount }){
                 <p>{formatDate(date)}</p>
             </div>
             <div>
-                <p>{sender}</p>
+                <p>{target}</p>
             </div>
             <div>
-                <p>{receiver}</p>
-            </div>
-            <div>
-                <p>{amount} Sirch Coins</p>
+                <p>{amount}</p>
             </div>
         </>
     )
