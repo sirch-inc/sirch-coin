@@ -90,17 +90,13 @@ export default function Transfers() {
   return (
     <>
       <h3 className="page-header">Transfer History</h3>
-      <h2 className="transfers-header">
-          Your transfers:
-        </h2>
       <div className="transfers-container">
 
-        <h3>Sent Transfers</h3>
+        <h3>Sent by Me</h3>
         <div className="transfers-headers">
-          <p>Date Sent</p>
-          <p>Sender</p>
-          <p>Receiver</p>
-          <p>Amount</p>
+          <p>Date</p>
+          <p>To</p>
+          <p>Sirch Coins (SC)</p>
         </div>
         <div className="sent-transfers">
           { userSentTransfers ? (
@@ -108,29 +104,28 @@ export default function Transfers() {
               <TransferCard 
                 key={transfer.id}
                 date={transfer.created_at}
-                sender={transfer.sender?.user?.email || transfer.sender_id}
-                receiver={transfer.receiver?.user?.email || transfer.receiver_id}
-                amount={transfer.amount} />
-          ))) : 
+                target={transfer.receiver?.user?.email || transfer.receiver_id}
+                amount={transfer.amount}
+              />
+          ))) :
           <p>Loading...</p>} 
         </div>
-        
-        <h3>Received Transfers</h3>
+        <br></br>
+        <h3>Received by Me</h3>
         <div className="transfers-headers">
-          <p>Date Sent</p>
-          <p>Sender</p>
-          <p>Receiver</p>
-          <p>Amount</p>
+          <p>Date</p>
+          <p>From</p>
+          <p>Sirch Coins (SC)</p>
         </div>
         <div className="received-transfers">
           { userReceivedTransfers ? (
             userReceivedTransfers.map((transfer) => (
-              <TransferCard 
+              <TransferCard
                 key={transfer.id}
                 date={transfer.created_at}
-                sender={transfer.sender?.user?.email || transfer.sender_id}
-                receiver={transfer.receiver?.user?.email || transfer.receiver_id}
-                amount={transfer.amount} />
+                target={transfer.sender?.user?.email || transfer.sender_id}
+                amount={transfer.amount}
+              />
           ))) : 
           <p>Loading...</p>} 
         </div>
