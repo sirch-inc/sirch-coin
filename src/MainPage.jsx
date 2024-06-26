@@ -58,7 +58,6 @@ export default function MainPage() {
             </Link>
           </div>
         )}
-      {/* TODO: <ToastContainer /> */}
     </>
   );
 }
