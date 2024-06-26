@@ -68,7 +68,7 @@ export const AuthProvider = ({ children }) => {
   
           if (error) {
             // TODO: surface this error...
-            alert('Error checking this user\'s balance:', error);
+            alert("Error checking this user's balance:", error);
           } else {
             setUserBalance(data);
           }
