@@ -104,7 +104,7 @@ export default function Send() {
         // TODO: refresh the user's balance here...
       }
     } catch (exception) {
-      // TODO: what do display here?
+      // TODO: what to display here?
       toast.error('An exception occurred', {
         position: "top-right",
       });
