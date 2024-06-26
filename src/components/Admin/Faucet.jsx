@@ -12,11 +12,6 @@ export default function AdminFaucet() {
   const env = import.meta.env.VITE_ENVIRONMENT;
   const isLocalEnvironment = env && env.toLowerCase() === 'local';
 
-  if (!isLocalEnvironment) {
-    alert("You don't belong here!");
-    return;
-  }
-
   useEffect(() => {
     const fetchTotalSupply = async () => {
       const { data, error } = await supabase.from('sirch-coins').select('*');
@@ -34,6 +29,11 @@ export default function AdminFaucet() {
     // Fetch the total supply of Sirch Coins
     fetchTotalSupply();
   }, [userBalance]);
+
+  if (!isLocalEnvironment) {
+    alert("You don't belong here!");
+    return;
+  }
 
   const fetchUserBalance = async (userInTable) => {
     if (userInTable) {
@@ -105,7 +105,7 @@ export default function AdminFaucet() {
         )}
       </div>
       <div>
-        <button onClick={addCoins}>Click me to get 100 Sirch Coins</button>
+        <button onClick={addCoins}>Click to get 100 Sirch Coins</button>
       </div>
     </>
   );
