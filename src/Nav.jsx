@@ -1,9 +1,10 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoutSupabase from "./components/Account/Logout"
 import { AuthContext } from "./components/AuthContext";
 
 
+// eslint-disable-next-line react/prop-types
 export default function NavBar({ supabase }) {
   const { session } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ export default function NavBar({ supabase }) {
             <img
               src="/sirch_logo.png"
               alt="Sirch Logo"
+              // TODO: move this style into our CSS
               style={{ width: "60px", height: "auto" }}
             />
           </a>
