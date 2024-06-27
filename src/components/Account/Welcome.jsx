@@ -38,7 +38,7 @@ export default function Welcome() {
     return (
       <div>
         <h1>There was a problem verifying your account.</h1>
-        <p>Your invite link is either invalid, or has expired. If you&apos;ve already verified your account, please try <a href="/supabase-login">logging in</a>. Alternatively, you can request a new verification link below:</p>
+        <p>Your invite link is either invalid, or has expired. If you&apos;ve already verified your account, please try <a href="/login">logging in</a>. Alternatively, you can request a new verification link below:</p>
         <input placeholder="Enter the email you used to create your account" value={usersEmail} onChange={handleEmailChange}>
         </input>
         <button onClick={resendVerificationEmail}>Resend Verification Email</button>

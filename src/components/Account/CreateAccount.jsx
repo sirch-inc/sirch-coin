@@ -58,7 +58,7 @@ export default function CreateAccount() {
         !session ? (
           <>
             <h2>Create an Account</h2>
-            <p>Already have an account? <a href="/supabase-login">Log in</a> instead.</p>
+            <p>Already have an account? <a href="/login">Log in</a> instead.</p>
             <form onSubmit={handleSignUp}>
               <input 
                 type="email" 
