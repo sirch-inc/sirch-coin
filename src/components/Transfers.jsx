@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import TransferCard from "./TransferCard";
 import { AuthContext } from "./AuthContext";
@@ -8,38 +8,37 @@ export default function Transfers() {
   const { userInTable } = useContext(AuthContext);
   const [userSentTransfers, setUserSentTransfers] = useState(null);
   const [userReceivedTransfers, setUserReceivedTransfers] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
 
   const fetchUserSentTransfers = async (userInTable) => {
     if (userInTable){
       const { data, error } = await supabase
       .from("transactions")
-        .select(`
-          *,
-          sender:user-balances!sender_id (
-            user:users!user_id (
-              email
-            )
-          ),
-          receiver:user-balances!receiver_id(
-            user:users!user_id (
+      .select(`
+        *,
+        sender:user-balances!sender_id (
+          user:users!user_id (
             email
-            )
           )
-        `)
+        ),
+        receiver:user-balances!receiver_id(
+          user:users!user_id (
+          email
+          )
+        )
+      `)
       .eq('sender_id', userInTable.user_id)
       .order('created_at', {ascending: false});
 
       if (error) {
-        //TODO: handle error
+        // TODO: surface this error appropriately...
         alert('Error fetching users sent transfers: ', error);
       } else {
         setUserSentTransfers(data);
       }
     }
     else{
-      //TODO: handle error 
-      alert('User not found.');
+      // TODO: surface this error appropriately... 
+      alert('User not found');
     }
   }
 
@@ -64,25 +63,24 @@ export default function Transfers() {
       .order('created_at', {ascending: false});
 
       if (error){
-        //TODO: handle error 
+        // TODO: surface this error appropriately...
         alert('Error fetching users received transfers', error);
       } else {
         setUserReceivedTransfers(data);
       }
     } else {
-      //TODO: handle error 
-      alert('User not found.');
+        // TODO: surface this error appropriately...
+        alert('User not found');
     }
   }
 
   useEffect(() => {
     if (userInTable) {
-      setIsLoading(true);
       Promise.all([
         fetchUserSentTransfers(userInTable),
         fetchUserReceivedTransfers(userInTable)
       ]).then(() => {
-        setIsLoading(false);
+        // TODO: do something?
       });
     }
   }, [userInTable]);
