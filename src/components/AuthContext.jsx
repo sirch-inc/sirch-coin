@@ -1,87 +1,90 @@
-import React, {createContext, useState, useEffect } from 'react';
+import {createContext, useState, useEffect } from 'react';
 import supabase from '../Config/supabaseConfig';
 
 
 export const AuthContext = createContext();
 
+// eslint-disable-next-line react/prop-types
 export const AuthProvider = ({ children }) => {
-    const [session, setSession] = useState(null);
-    const [userId, setUserId] = useState(null);
-    const [userInTable, setUserInTable] = useState(null);
-    const [userBalance, setUserBalance] = useState(null);
+  const [session, setSession] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [userInTable, setUserInTable] = useState(null);
+  const [userBalance, setUserBalance] = useState(null);
 
-    // Authenticate users
-    useEffect(() => {
-        supabase.auth.getSession().then(({ data: { session }}) => {
-            setSession(session);
-            if (session && session.user) {
-                setUserId(session.user.id);
-            }
-        });
+  // Authenticate users
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session }}) => {
+      setSession(session);
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
-            (_event, session) => {
-                setSession(session);
-                if (session && session.user) {
-                    setUserId(session.user.id);
-                } else {
-                    setUserId(null);
-                    setUserInTable(null);
-                }
-            }
-        );
+      if (session && session.user) {
+        setUserId(session.user.id);
+      }
+    });
 
-        return () => subscription.unsubscribe();
-    }, []);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
 
-    // Match authenticated user with associated users table
-    useEffect(() => {
-      const checkUserInTable = async () => {
-        if (userId) {
-          const { data, error } = await supabase
-            .from('users')
-            .select('*')
-            .eq('user_id', userId)
-            .single();
-  
-          if (error) {
-            // TODO: handle this error
-            alert('Error checking user in table:', error);
-          } else {
-            setUserInTable(data);
-          }
+        if (session && session.user) {
+          setUserId(session.user.id);
+        } else {
+          setUserId(null);
+          setUserInTable(null);
         }
-      };
-  
-      checkUserInTable();
-    }, [userId]);
-    
-    // Get user's current balance
-    useEffect(() => {
-      const getUserBalance = async () => {
-        if (userInTable) {
-          const { data, error } = await supabase
-            .from('user-balances')
-            .select('*')
-            .eq('user_id', userInTable.user_id)
-            .single();
-  
-          if (error) {
-            // TODO: surface this error...
-            alert("Error checking this user's balance:", error);
-          } else {
-            setUserBalance(data);
-          }
-        }
-      };
-  
-      getUserBalance();
-    }, [userInTable]);
-    
+      }
+    );
 
-    return (
-      <AuthContext.Provider value={{ session, userId, userInTable, userBalance }} supabase={ supabase }>
-          {children}
-      </AuthContext.Provider>
-    )
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Match authenticated user with associated users table
+  useEffect(() => {
+    const checkUserInTable = async () => {
+      if (userId) {
+        const { data, error } = await supabase
+          .from('users')
+          .select('*')
+          .eq('user_id', userId)
+          .single();
+
+        if (error) {
+          // TODO: surface this error
+          alert('Error checking user in table:', error);
+        } else {
+          setUserInTable(data);
+        }
+      }
+    };
+
+    checkUserInTable();
+  }, [userId]);
+  
+  // Get user's current balance
+  useEffect(() => {
+    const getUserBalance = async () => {
+      if (userInTable) {
+        const { data, error } = await supabase
+          .from('user-balances')
+          .select('*')
+          .eq('user_id', userInTable.user_id)
+          .single();
+
+        if (error) {
+          // TODO: surface this error...
+          alert("Error checking this user's balance:", error);
+        } else {
+          setUserBalance(data);
+        }
+      }
+    };
+
+    getUserBalance();
+  }, [userInTable]);
+  
+
+  return (
+    <AuthContext.Provider value={{ session, userId, userInTable, userBalance }} supabase={ supabase }>
+      {children}
+    </AuthContext.Provider>
+  )
 }
