@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 
@@ -11,6 +10,6 @@ export default function StripeSuccess() {
       <Link to="/" style={{ textDecoration: "none", color: "blue" }}>
         Back to Home
       </Link>
-  </div>
+    </div>
   );
-};
+}

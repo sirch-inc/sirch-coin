@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { AuthContext } from "./components/AuthContext";
-import { useEffect, useContext } from "react";
+import { useContext } from "react";
 
 
 export default function MainPage() {
@@ -20,7 +20,6 @@ export default function MainPage() {
       
       {session ? (
         <div className="button-container">
-        
           {isLocalEnvironment &&
           <Link to="admin/faucet" className="action-btn">
               Admin: Faucet
@@ -52,11 +51,11 @@ export default function MainPage() {
           </Link>
         </div>
         ) : (
-          <div className="button-container">
-            <Link to="help" className="action-btn">
-              Help
-            </Link>
-          </div>
+        <div className="button-container">
+          <Link to="help" className="action-btn">
+            Help
+          </Link>
+        </div>
         )}
     </>
   );

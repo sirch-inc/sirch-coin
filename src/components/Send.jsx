@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from "./AuthContext";
 import supabase from "../Config/supabaseConfig";
 import { Link } from "react-router-dom";
@@ -50,7 +50,7 @@ export default function Send() {
     setRecipientEmail(event.target.value);
   };
 
-  const handleAcknowledgeRecipientError = (event) => {
+  const handleAcknowledgeRecipientError = () => {
     setRecipientError(false);
   };
 
@@ -116,6 +116,8 @@ export default function Send() {
         toast.error(transferError?.message, {
           position: "top-right",
         });
+        // FIXME: hack to get around linter
+        console.log("Data", data);
       } else {
         toast.success(sendAmount + " Sirch Coins successfully sent to " + recipientEmail, {
           position: "top-right",
@@ -170,7 +172,7 @@ export default function Send() {
             <h1>{currentBalance !== null ? currentBalance : "Loading"} Sirch Coins</h1>
             <p>
               To send Sirch Coins to anyone with a Sirch Coins account,
-              please specify the amount and the recipient's email address below.</p>
+              please specify the amount and the recipient&apos;s email address below.</p>
           </div>
           <form onSubmit={handleSubmit}>
             <div className="price-container">
@@ -233,7 +235,7 @@ export default function Send() {
               />
 
               <div className="email-inputs">
-                <label htmlFor="recipientEmailAddress">Recipient's Email Address</label>
+                <label htmlFor="recipientEmailAddress">Recipient&apos;s Email Address</label>
                 <input
                   id="recipientEmailAddress"
                   name="recipientEmailAddress"

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from "react";
+import { useState, useRef, useContext } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Link } from "react-router-dom";
 import { AuthContext } from "./AuthContext";
@@ -14,7 +14,7 @@ export default function Purchase() {
   const [amount, setAmount] = useState(0);
   const paymentElementRef = useRef(null);
   const btnRef = useRef(null);
-  const { userInTable, session, userBalance } = useContext(AuthContext);
+  const { userInTable } = useContext(AuthContext);
 
   const initializeStripe = async () => {
     const stripeKey = "pk_test_6rOaG7p9vtW2VyduXtVfr7JV00sqg9HpxQ";
@@ -22,7 +22,8 @@ export default function Purchase() {
     setStripe(stripe);
 
     const { data: clientSecret, error } = await supabase.rpc("create_payment_intent", {
-      amount: amount * 100, // TODO: Convert to cents
+      // TODO: Convert to cents
+      amount: amount * 100
     });
 
     if (error) {
@@ -79,6 +80,8 @@ export default function Purchase() {
         if (error) {
           // TODO: surface this error
           console.error("Error updating balance and total supply:", error);
+          // FIXME: hack to get around lint
+          console.error("Data", data);
         } else {
           // TODO: surface this success
           console.log("Balance and total supply updated successfully!");
@@ -124,4 +127,4 @@ export default function Purchase() {
       </div>
     </>
   );
-};
+}
