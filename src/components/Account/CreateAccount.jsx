@@ -1,4 +1,3 @@
-import React from "react";
 import { useState } from 'react'
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../AuthContext";
@@ -27,14 +26,18 @@ export default function CreateAccount() {
               name: name
             },
           },
-        })
+        });
+        if (error) {
+          // TODO: surface this error...
+          throw error;
+        }
+        if (!user) {
+          // TODO: do something with user
+        }
         navigate("/verify-account");
       } else if (passwordsMatch === false) {
         // TODO: surface this error
         alert("Passwords do not match.");
-      } else {
-        // TODO: surface this error
-        throw error;
       }
     } catch (error) {
       // TODO: surface this error
@@ -97,9 +100,9 @@ export default function CreateAccount() {
             </form>
           </>
         ) : (
-          <div>You've successfully logged in as {session.user.email}!</div>
+          <div>You&apos;ve successfully logged in as {session.user.email}!</div>
         )
       }
     </AuthContext.Consumer>
   );
-};
+}
