@@ -8,7 +8,7 @@ export default function Transfers() {
   const { userInTable } = useContext(AuthContext);
   const [userSentTransfers, setUserSentTransfers] = useState(null);
   const [userReceivedTransfers, setUserReceivedTransfers] = useState(null);
-
+  
   const fetchUserSentTransfers = async (userInTable) => {
     if (userInTable){
       const { data, error } = await supabase
