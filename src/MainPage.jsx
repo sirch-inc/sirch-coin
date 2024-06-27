@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { AuthContext } from "./components/AuthContext";
-import { useEffect, useContext } from "react";
+import { useContext } from "react";
 
 
 export default function MainPage() {
