@@ -1,36 +1,36 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../AuthContext";
 import supabase from '../../Config/supabaseConfig';
 
 
 export default function Login() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [signInError, setSignInError] = useState(false);
-    const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [signInError, setSignInError] = useState(false);
+  const navigate = useNavigate();
   
-    const handleLogin = async (event) => {
-      event.preventDefault();
-  
-      try {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-  
-        if (error) {
-          setSignInError(true);
-          throw error;
-        }
-  
-        // Upon successful login, redir. user to homepage
-        navigate("/");
-        // TODO: Add login failure notification to user
-      } catch (error) {
-        console.error("Error logging in:", error.message);
+  const handleLogin = async (event) => {
+    event.preventDefault();
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) {
+        setSignInError(true);
+        throw error;
       }
-    };
+
+      // Upon successful login, redir. user to homepage
+      navigate("/");
+      // TODO: Add login failure notification to user
+    } catch (error) {
+      console.error("Error logging in:", error.message);
+    }
+  };
   
     // TODO: Style component
     return (
