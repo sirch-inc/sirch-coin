@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from "../AuthContext";
 import supabase from '../../Config/supabaseConfig';
 
@@ -55,7 +55,7 @@ export default function AdminFaucet() {
   const addCoins = async () => {
     try {
       // Increase the user's balance
-      let depositCoins = userBalance.balance + 100;
+      const depositCoins = userBalance.balance + 100;
       const { data: updatedBalance, error: updateError } = await supabase
         .from('user-balances')
         .update({ balance: depositCoins })
@@ -73,6 +73,7 @@ export default function AdminFaucet() {
       setCurrentBalance(updatedBalance.balance);
 
       // Decrease the total supply
+      // TODO: move this into a SupaBase function
       const { data: updatedSupply, error: decreaseError } = await supabase
         .from('sirch-coins')
         .update({ total_supply: updatedCoinSupply - 100 })
@@ -86,7 +87,7 @@ export default function AdminFaucet() {
         return;
       }
 
-      // Update the updated Coin Supply state with the new total supply
+      // Refresh the coin supply with the new total supply
       setUpdatedCoinSupply(updatedSupply.total_supply);
     } catch (error) {
       // TODO: surface this error...
