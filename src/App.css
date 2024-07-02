@@ -185,7 +185,21 @@
 }
 /* End of styles for send coin page */
 
+/*  Start Styles for My Account Page */
+.account-container{
+  margin: 2rem;
+}
 
+.account{
+  padding-bottom: 1.2rem;
+  padding-top: 1.2rem;
+}
+
+button.danger{
+  background-color: red;
+}
+
+/*  End of styles for My Account Page */
 
 
 /*  Start Styles for Buy coin (Deposit) Page */
