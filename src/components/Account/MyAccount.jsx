@@ -1,8 +1,13 @@
-import { useContext } from 'react';
+import { useState, useContext } from 'react';
 import { AuthContext } from '../AuthContext';
 
 export default function MyAccount(){
+  const [deleteDialogBox, setDeleteDialogBox] = useState(false);
   const { userInTable, userBalance } = useContext(AuthContext);
+
+  function showDeleteConfirmation(){
+    setDeleteDialogBox(true);
+  }
 
   return(
     <div className="account-container">
@@ -22,9 +27,18 @@ export default function MyAccount(){
             <p>Change Your Password</p>
             <button>Change Password</button>
             <p>Delete Your Account</p>
-            <p>Note: This action cannot be undone. Once you delete your account, it is gone forver.</p>
-            <button className="danger">Permanently Delete</button>
+            <p>Note: This action cannot be undone. Once you delete your account, it is gone forever.</p>
+            <button className="danger" onClick={showDeleteConfirmation}>Permanently Delete</button>
       </div>
+
+      {deleteDialogBox && 
+        <dialog open className="delete-dialog">
+          <h2>Confirm Account Deletion</h2>
+          <p>Are you sure you want to permanently delete your account? You will lose access to all of your Sirch Coins and will not be able to get them back.</p>
+          <button className="danger">Yes, permanently delete</button>
+          <button onClick={() => setDeleteDialogBox(false)}>Cancel</button>
+        </dialog> 
+      }
     </div>
 )
 }

@@ -32,10 +32,14 @@ export default function NavBar({ supabase }) {
         </li>
         <li>
           {session ? (
-            <>
-              <a href='/account'>My Account </a>
-              <a href="#" onClick={handleLogout}>Logout</a>
-            </>
+            <ul className='navbar-links'>
+              <li>
+                <a href='/account'>My Account </a>
+              </li>
+              <li>
+                <a href="#" onClick={handleLogout}>Logout</a>
+              </li>
+            </ul>
           ) : (
             <>
               <ul className='navbar-links'>
