@@ -1,4 +1,5 @@
 import { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
 import supabase from '../../Config/supabaseConfig'; 
 //TODO: Use Supabase to delete
@@ -6,14 +7,32 @@ import supabase from '../../Config/supabaseConfig';
 export default function MyAccount(){
   const [deleteDialogBox, setDeleteDialogBox] = useState(false);
   const { userInTable, userBalance } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   function showDeleteConfirmation(){
     setDeleteDialogBox(true);
   }
 
   function handleDelete(){
-    console.log("Delete Clicked.")
-    // TODO: Handle Supabase delete user here (cascade)
+    // TODO: Finish and test functions - on hold pending cascade discussions
+    const deleteUser = async (userInTable) => {
+      if (userInTable) {
+        const { data, error } = await supabase 
+        .from('users')
+        .delete()
+        .eq('user_id', userInTable.user_id)
+
+        if (error){
+          //TODO: Handle error
+          alert('Error deleting your account: ', error)
+        }
+        else{
+          // TODO: Handle alert notification with Toast
+          navigate('/')
+          alert("Your account has been deleted.")
+        }
+      }
+    }
   }
 
   return(
