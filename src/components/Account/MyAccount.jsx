@@ -1,5 +1,7 @@
 import { useState, useContext } from 'react';
 import { AuthContext } from '../AuthContext';
+import supabase from '../../Config/supabaseConfig'; 
+//TODO: Use Supabase to delete
 
 export default function MyAccount(){
   const [deleteDialogBox, setDeleteDialogBox] = useState(false);
@@ -7,6 +9,11 @@ export default function MyAccount(){
 
   function showDeleteConfirmation(){
     setDeleteDialogBox(true);
+  }
+
+  function handleDelete(){
+    console.log("Delete Clicked.")
+    // TODO: Handle Supabase delete user here (cascade)
   }
 
   return(
@@ -35,7 +42,7 @@ export default function MyAccount(){
         <dialog open className="delete-dialog">
           <h2>Confirm Account Deletion</h2>
           <p>Are you sure you want to permanently delete your account? You will lose access to all of your Sirch Coins and will not be able to get them back.</p>
-          <button className="danger">Yes, permanently delete</button>
+          <button className="danger" onClick={handleDelete}>Yes, permanently delete</button>
           <button onClick={() => setDeleteDialogBox(false)}>Cancel</button>
         </dialog> 
       }
