@@ -11,7 +11,10 @@ import CheckoutForm from "./Stripe/CheckoutForm";
 export default function Purchase() {
   const [stripePromise, setStripePromise] = useState(null);
   const [clientSecret, setClientSecret] = useState("");
-  const [coinAmount, setCoinAmount] = useState(10)
+  const [coinAmount, setCoinAmount] = useState(5);
+  const [pricePerCoin, setPricePerCoin] = useState("Loading...")
+  const [totalPrice, setTotalPrice] = useState("Loading...")
+  const [currency, setCurrency] = useState("Loading...")
   const { userInTable } = useContext(AuthContext);
 
   useEffect(() => {
@@ -39,16 +42,22 @@ export default function Purchase() {
         console.log('Fetch error: ', error.message);
       } else {
         console.log("Data: ", data);
-        setClientSecret(data.clientSecret)
+        setClientSecret(data.clientSecret);
+        setPricePerCoin(data.pricePerCoin);
+        setTotalPrice(data.totalAmount);
+        setCurrency(data.currency);
       }
     }
     stripeCreatePaymentIntent();
-  }, [userInTable])
+  }, [userInTable, coinAmount])
 
   return (
     <div className="purchase-container">
       <div>
-        <h2>How many Sirch Coins would you like to purchase?</h2>
+        <h2>Purchase Sirch Coins</h2>
+        <h3>How many Sirch Coins would you like to purchase?</h3>
+        <p>Current cost per coin: ${pricePerCoin}0</p>
+        <p>Currency: {currency.toUpperCase()}</p>
         <input
           type="number"
           name="coins"
@@ -59,6 +68,7 @@ export default function Purchase() {
         >
         </input>
         <p>Sirch Coins uses the payment provider Stripe for secure transactions. See more...</p>
+        <h4>Your total price: ${totalPrice}</h4>
       </div>
       <div>
         {stripePromise && clientSecret && 
