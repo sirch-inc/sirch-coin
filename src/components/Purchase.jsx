@@ -74,6 +74,7 @@ export default function Purchase() {
         <h4>Your total price: ${totalPrice}</h4>
       </div>
       <div>
+          
         {/* TODO: Fix remounting of Elements - clientSecret cannot change */}
         {stripePromise && clientSecret && 
          <Elements stripe={stripePromise} options={{clientSecret}}>
