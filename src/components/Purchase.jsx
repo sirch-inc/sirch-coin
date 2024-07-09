@@ -1,132 +1,85 @@
-import { useState, useRef, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
 import { Link } from "react-router-dom";
 import { AuthContext } from "./AuthContext";
 import supabase from "../Config/supabaseConfig";
+import { FunctionsHttpError, FunctionsRelayError, FunctionsFetchError } from "@supabase/supabase-js";
+import CheckoutForm from "./Stripe/CheckoutForm";
 
 
 export default function Purchase() {
-  const [stripe, setStripe] = useState(null);
-  const [elements, setElements] = useState(null);
-  const [paymentIntent, setPaymentIntent] = useState(null);
-  const [containerVisible, setContainerVisible] = useState(true);
-  const [successVisible, setSuccessVisible] = useState(false);
-  const [amount, setAmount] = useState(0);
-  const paymentElementRef = useRef(null);
-  const btnRef = useRef(null);
+  const [stripePromise, setStripePromise] = useState(null);
+  const [clientSecret, setClientSecret] = useState("");
+  const [coinAmount, setCoinAmount] = useState(5);
+  const [pricePerCoin, setPricePerCoin] = useState("Loading...");
+  const [totalPrice, setTotalPrice] = useState("Loading...");
+  const [currency, setCurrency] = useState("Loading...");
   const { userInTable } = useContext(AuthContext);
 
-  const initializeStripe = async () => {
-    // TODO: place this key into an environment variable
-    const stripeKey = "pk_test_6rOaG7p9vtW2VyduXtVfr7JV00sqg9HpxQ";
-    const stripe = await loadStripe(stripeKey);
-    setStripe(stripe);
+  useEffect(() => {
+    setStripePromise(loadStripe(import.meta.env.VITE_STRIPE_TEST_PUBLISHABLE_KEY))
+  }, [])
 
-  //   const { data, error } = await supabase.functions.invoke('stripe-create-payment-intent', {
-  //     body: {
-  //       email: 'jeffrinkdev@gmail.com',
-  //       numberOfCoins: 20
-  //     }
-  // });
-
-    const { data: clientSecret, error } = await supabase.rpc("create_payment_intent", {
-      // TODO: Convert to cents
-      amount: amount * 100
-    });
-
-    if (error) {
-      // TODO: surface this error
-      console.error("Error creating payment intent:", error);
-      return;
-    }
-
-    const elements = stripe.elements({ clientSecret });
-    setElements(elements);
-
-    const paymentElement = elements.create("payment", {
-      layout: "tabs",
-    });
-
-    paymentElement.mount(paymentElementRef.current);
-  };
-
-  const handleClick = async () => {
-    try {
-      if (!stripe) {
-        await initializeStripe();
-        return;
-      }
-
-      // Confirm the payment
-      const result = await stripe.confirmPayment({
-        elements,
-        confirmParams: {
-          return_url: window.location.origin + "/stripe/Success",
-        },
-      });
-
-      // Check if the payment was successful
-      if (result.error) {
-        // TODO: surface this error...
-        console.error("Payment failed:", result.error);
-        window.location.href = window.location.origin + "/stripe/Failure";
-      } else if (
-        result.paymentIntent &&
-        result.paymentIntent.status === "succeeded"
-      ) {
-        // Payment succeeded
-        setContainerVisible(false); // Hide the payment form
-        setSuccessVisible(true); // Show success message
-        setPaymentIntent(result.paymentIntent.id); // Store payment intent if needed
-
-        // Update user's balance and total supply
-        const { data, error } = await supabase.rpc("purchase_coins", {
-          user_id: userInTable.user_id,
-          amount: amount,
-        });
-
-        if (error) {
-          // TODO: surface this error
-          console.error("Error updating balance and total supply:", error);
-          // FIXME: hack to get around lint
-          console.error("Data", data);
-        } else {
-          // TODO: surface this success
-          console.log("Balance and total supply updated successfully!");
+  useEffect(()=> {
+    if (!userInTable) return;
+    const stripeCreatePaymentIntent = async () => {
+      const { data, error } = await supabase.functions.invoke('stripe-create-payment-intent', {
+        body: {
+          userId: userInTable?.user_id,
+          email: userInTable?.email,
+          numberOfCoins: coinAmount
         }
+      });
+  
+      if (error instanceof FunctionsHttpError) {
+        const errorMessage = await error.context.json();
+        console.log('Function returned an error: ', errorMessage);
+      } else if (error instanceof FunctionsRelayError) {
+        console.log('Relay error: ', error.message);
+      } else if (error instanceof FunctionsFetchError) {
+        console.log('Fetch error: ', error.message);
       } else {
-        // TODO: Payment not yet completed, handle as necessary
-        console.log("Payment not yet completed:", result);
+        console.log("Data: ", data);
+        setClientSecret(data.clientSecret);
+        setPricePerCoin(data.pricePerCoin);
+        setTotalPrice(data.totalAmount);
+        setCurrency(data.currency);
       }
-    } catch (error) {
-      // TODO: surface or handle this error
-      console.error("Error processing payment:", error);
     }
-  };
+    stripeCreatePaymentIntent();
+  }, [userInTable, coinAmount])
 
   return (
-    <>
+    <div className="purchase-container">
       <div>
-        {containerVisible && (
-          <div>
-            <label>Amount:</label>
-            <input
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
-            <div>
-              <p>Sirch Coins uses the payment provider Stripe for secure transactions.  See more...</p>
-            </div>
-            <div ref={paymentElementRef} />
-            <button ref={btnRef} onClick={handleClick}>
-              Submit
-            </button>
-          </div>
-        )}
-        {successVisible && (
-          <div className="success">Payment succeeded!{paymentIntent}</div>
-        )}
+        <h2>Purchase Sirch Coins</h2>
+        <h3>How many Sirch Coins would you like to purchase?</h3>
+        {/* TODO: Fix NaN on load */}
+        {/* TODO: Format for other currencies if we decide to accept them in the future */}
+        <p>Current cost per coin: ${Number(pricePerCoin).toFixed(2)} </p>
+        <p>Currency: {currency.toUpperCase()}</p>
+        <input
+          type="number"
+          name="coins"
+          placeholder="Enter the number of coins you want to purchase"
+          value= {coinAmount}
+          onChange={(e) => setCoinAmount(e.target.value)}
+          // TODO: Fix to not allow user to change below 5 (breaks paymentIntent)
+          min="5"
+          required
+        >
+        </input>
+        <p>Sirch Coins uses the payment provider Stripe for secure transactions. See more...</p>
+        <h4>Your total price: ${totalPrice}</h4>
+      </div>
+      <div>
+          
+        {/* TODO: Fix remounting of Elements - clientSecret cannot change */}
+        {stripePromise && clientSecret && 
+         <Elements stripe={stripePromise} options={{clientSecret}}>
+          <CheckoutForm/>
+         </Elements>}
       </div>
       <div className="bottom-btn-container">
         <Link to="/" className="big-btn-red">
@@ -136,6 +89,6 @@ export default function Purchase() {
           Will do something eventually
         </Link>
       </div>
-    </>
+    </div>
   );
 }
