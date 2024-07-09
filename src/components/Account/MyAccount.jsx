@@ -13,8 +13,8 @@ export default function MyAccount(){
     setDeleteDialogBox(true);
   }
 
+  // TODO: Finish and test functions - on hold pending cascade discussions
   function handleDelete(){
-    // TODO: Finish and test functions - on hold pending cascade discussions
     const deleteUser = async (userInTable) => {
       if (userInTable) {
         const { data, error } = await supabase 
