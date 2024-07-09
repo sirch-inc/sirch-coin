@@ -17,9 +17,17 @@ export default function Purchase() {
   const { userInTable } = useContext(AuthContext);
 
   const initializeStripe = async () => {
+    // TODO: place this key into an environment variable
     const stripeKey = "pk_test_6rOaG7p9vtW2VyduXtVfr7JV00sqg9HpxQ";
     const stripe = await loadStripe(stripeKey);
     setStripe(stripe);
+
+  //   const { data, error } = await supabase.functions.invoke('stripe-create-payment-intent', {
+  //     body: {
+  //       email: 'jeffrinkdev@gmail.com',
+  //       numberOfCoins: 20
+  //     }
+  // });
 
     const { data: clientSecret, error } = await supabase.rpc("create_payment_intent", {
       // TODO: Convert to cents
@@ -107,6 +115,9 @@ export default function Purchase() {
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
+            <div>
+              <p>Sirch Coins uses the payment provider Stripe for secure transactions.  See more...</p>
+            </div>
             <div ref={paymentElementRef} />
             <button ref={btnRef} onClick={handleClick}>
               Submit

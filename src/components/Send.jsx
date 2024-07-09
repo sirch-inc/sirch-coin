@@ -36,10 +36,6 @@ export default function Send() {
     }
   };
 
-  const handleAmountButtonClick = (amount) => {
-    setSendAmount(amount);
-  };
-
   const handleAmountInputChange = (event) => {
     const amount = event.target.value;
 
@@ -176,50 +172,7 @@ export default function Send() {
           </div>
           <form onSubmit={handleSubmit}>
             <div className="price-container">
-              <div className="cash-buttons">
-                <div className="first-row">
-                  <button
-                    className="cash1-btn"
-                    onClick={() => handleAmountButtonClick(20)}
-                  >
-                    20
-                  </button>
-                  <button
-                    className="cash1-btn"
-                    onClick={() => handleAmountButtonClick(40)}
-                  >
-                    40
-                  </button>
-                  <button
-                    className="cash1-btn"
-                    onClick={() => handleAmountButtonClick(100)}
-                  >
-                    100
-                  </button>
-                </div>
-                <div className="second-row">
-                  <button
-                    className="cash1-btn"
-                    onClick={() => handleAmountButtonClick(500)}
-                  >
-                    500
-                  </button>
-                  <button
-                    className="cash1-btn"
-                    onClick={() => handleAmountButtonClick(1000)}
-                  >
-                    1000
-                  </button>
-                  <button
-                    className="cash1-btn"
-                    onClick={() => handleAmountButtonClick("")}
-                  >
-                    Other Amount
-                  </button>
-                </div>
-              </div>
-
-              <label htmlFor="amountToSend">Amount to Send (S)</label>
+              <label htmlFor="amountToSend">Amount to Send (SC)</label>
               <input
                 id="amountToSend"
                 name="amountToSend"
