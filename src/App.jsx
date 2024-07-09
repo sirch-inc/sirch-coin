@@ -8,6 +8,7 @@ import Login from "./components/Account/Login";
 import Logout from "./components/Account/Logout"
 import CreateAccount from "./components/Account/CreateAccount";
 import VerifyAccount from "./components/Account/VerifyAccount";
+import MyAccount from "./components/Account/MyAccount"
 import Welcome from "./components/Account/Welcome";
 import ForgotPassword from "./components/Account/ForgotPassword";
 import ResetPassword from "./components/Account/ResetPassword";
@@ -38,6 +39,7 @@ export default function App() {
           <Route path="/logout" Component={Logout}/>
           <Route path="/create-account" Component={CreateAccount}/>
           <Route path="/verify-account" Component={VerifyAccount}/>
+          <Route path="/account" Component={MyAccount}/>
           <Route path="/welcome" Component={Welcome}/>
           <Route path="/forgot-password" Component={ForgotPassword}/>
           <Route path="/reset-password" Component={ResetPassword}/>
