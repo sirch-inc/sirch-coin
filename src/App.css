@@ -74,41 +74,12 @@
 }
 /* End Styles for Main page buttons */
 
-/* Start Styles for Send coin Page */
+
+/* Start Styles for Send Coins */
 .page-text {
   text-align: center;
   font-size: x-large;
   margin-top: 100px;
-}
-
-.price-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 50px;
-}
-
-.first-row {
-  margin-bottom: 20px;
-  display: flex;
-  gap: 15px;
-}
-
-.second-row {
-  display: flex;
-  gap: 15px;
-}
-
-.first-row > button,
-.second-row > button {
-  padding: 7px 20px;
-  background-color: #5590e2;
-  border: none;
-  color: white;
-  font-size: 20px;
-  font-weight: 700;
-  text-decoration: none;
-  margin: 0 auto;
 }
 
 .cash-input,
@@ -131,10 +102,6 @@
 .cash-input:focus,
 .total-input:focus {
   outline: none;
-}
-
-.cash-btn:hover {
-  background-color: #5d5d5d;
 }
 
 .other-amount-input {
@@ -183,7 +150,7 @@
 .recipient-email-input:focus {
   outline: none;
 }
-/* End of styles for send coin page */
+/* End styles for Send Coins */
 
 /*  Start Styles for My Account Page */
 .account-container{
@@ -215,11 +182,16 @@ button.danger{
 /*  End of styles for My Account Page */
 
 
-/*  Start Styles for Buy coin (Deposit) Page */
+/*  Start Styles for Purchase Page */
 
-
-
-
+.purchase-container{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: 1fr;
+    grid-column-gap: 20px;
+    grid-row-gap: 0px;
+    margin:2rem;
+}
 
 
 /* Styles for the success message */
