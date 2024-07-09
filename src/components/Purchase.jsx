@@ -12,9 +12,9 @@ export default function Purchase() {
   const [stripePromise, setStripePromise] = useState(null);
   const [clientSecret, setClientSecret] = useState("");
   const [coinAmount, setCoinAmount] = useState(5);
-  const [pricePerCoin, setPricePerCoin] = useState("Loading...")
-  const [totalPrice, setTotalPrice] = useState("Loading...")
-  const [currency, setCurrency] = useState("Loading...")
+  const [pricePerCoin, setPricePerCoin] = useState("Loading...");
+  const [totalPrice, setTotalPrice] = useState("Loading...");
+  const [currency, setCurrency] = useState("Loading...");
   const { userInTable } = useContext(AuthContext);
 
   useEffect(() => {
@@ -56,7 +56,9 @@ export default function Purchase() {
       <div>
         <h2>Purchase Sirch Coins</h2>
         <h3>How many Sirch Coins would you like to purchase?</h3>
-        <p>Current cost per coin: ${pricePerCoin}0</p>
+        {/* TODO: Fix NaN on load */}
+        {/* TODO: Format for other currencies if we decide to accept them in the future */}
+        <p>Current cost per coin: ${Number(pricePerCoin).toFixed(2)} </p>
         <p>Currency: {currency.toUpperCase()}</p>
         <input
           type="number"
@@ -64,6 +66,8 @@ export default function Purchase() {
           placeholder="Enter the number of coins you want to purchase"
           value= {coinAmount}
           onChange={(e) => setCoinAmount(e.target.value)}
+          // TODO: Fix to not allow user to change below 5 (breaks paymentIntent)
+          min="5"
           required
         >
         </input>
@@ -71,6 +75,7 @@ export default function Purchase() {
         <h4>Your total price: ${totalPrice}</h4>
       </div>
       <div>
+        {/* TODO: Fix remounting of Elements - clientSecret cannot change */}
         {stripePromise && clientSecret && 
          <Elements stripe={stripePromise} options={{clientSecret}}>
           <CheckoutForm/>

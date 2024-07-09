@@ -188,11 +188,16 @@
 
 
 
-/*  Start Styles for Buy coin (Deposit) Page */
+/*  Start Styles for Purchase Page */
 
-
-
-
+.purchase-container{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: 1fr;
+    grid-column-gap: 20px;
+    grid-row-gap: 0px;
+    margin:2rem;
+}
 
 
 /* Styles for the success message */
