@@ -23,7 +23,6 @@ export default function Purchase() {
 
   useEffect(()=> {
     if (!userInTable) return;
-
     const stripeCreatePaymentIntent = async () => {
       const { data, error } = await supabase.functions.invoke('stripe-create-payment-intent', {
         body: {
