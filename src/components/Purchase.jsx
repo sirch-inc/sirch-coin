@@ -24,13 +24,14 @@ export default function Purchase() {
   }, [])
 
   useEffect(()=> {
-    if (!userInTable) return;
+    if (!userInTable || coinAmount === '') return;
+    const timer = setTimeout(() => {
     const stripeCreatePaymentIntent = async () => {
       const { data, error } = await supabase.functions.invoke('stripe-create-payment-intent', {
         body: {
           userId: userInTable?.user_id,
           email: userInTable?.email,
-          numberOfCoins: coinAmount
+          numberOfCoins: Math.floor(coinAmount)
         }
       });
   
@@ -42,6 +43,7 @@ export default function Purchase() {
       } else if (error instanceof FunctionsFetchError) {
         console.log('Fetch error: ', error.message);
       } else {
+        console.log("Data:", data);
         setClientSecret(data.clientSecret);
         setPricePerCoin(data.pricePerCoin);
         setTotalPrice(data.totalAmount);
@@ -49,7 +51,10 @@ export default function Purchase() {
       }
     }
     stripeCreatePaymentIntent();
-  }, [userInTable, coinAmount])
+  }, 300);
+  
+  return () => clearTimeout(timer);
+}, [userInTable, coinAmount])
 
   // TODO: Update this logic once Sirch Coins discount period expires (e.g. users can purchase 1 Sirch Coin for $1)
   const handleAmountChange = (e) => {
@@ -60,20 +65,26 @@ export default function Purchase() {
       setCoinAmountError(false);
       return;
     }
-
-    const numValue = parseInt(value, 10);
-    if (!isNaN(numValue)) {
-      setCoinAmount(value);
-      setCoinAmountError(numValue < 5);
+  
+    const numValue = parseFloat(value);
+    if (!isNaN(numValue) && numValue >= 5) {
+      setCoinAmount(numValue);
+      setCoinAmountError(false);
+    } else {
+      setCoinAmountError(true);
     }
   };
 
   const handleBlur = () => {
-    if (coinAmount !== '' && parseInt(coinAmount, 10) < 5) {
-      setCoinAmount('5');
+    if (coinAmount === '' || coinAmount < 5) {
+      setCoinAmount(5);
       setCoinAmountError(false);
     }
   };
+
+  const formatPrice = (price) => {
+    return Number(price).toFixed(2);
+  }
 
   return (
     <div className="purchase-container">
@@ -83,7 +94,7 @@ export default function Purchase() {
         {/* TODO: Format for other currencies if we decide to accept them in the future */}
         { pricePerCoin === "Loading..." ? 
           <p>Current cost per coin: {pricePerCoin} </p> : 
-          <p>Current cost per coin: ${Number(pricePerCoin).toFixed(2)} </p>
+          <p>Current cost per coin: ${formatPrice(pricePerCoin)} </p>
           }
         <p>Currency: {currency.toUpperCase()}</p>
         <span className="sirch-symbol-large">ⓢ</span>
@@ -96,13 +107,17 @@ export default function Purchase() {
           onChange={handleAmountChange}
           onBlur={handleBlur}
           min="5"
+          step="0.01"
           required
         >
         </input>
         <p><strong>Note: At the current time, a minimum purchase of 5 Sirch Coins is required.</strong></p>
         {/* TODO: Add "See more" link with info on Stripe/purchasing */}
         <p>Sirch Coins uses the payment provider Stripe for secure transactions. See more...</p>
-        <h4>Your total price: ${totalPrice}</h4>
+        { totalPrice === "Loading..." ? 
+          <h4>Your total price: {totalPrice}</h4> :
+          <h4>Your total price: ${formatPrice(totalPrice)}</h4>
+        }
       </div>
       <div>
           
