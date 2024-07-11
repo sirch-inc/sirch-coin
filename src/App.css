@@ -193,6 +193,13 @@ button.danger{
     margin:2rem;
 }
 
+.coin-amount-input{
+  max-width: 40%;
+  border: 2px solid black;
+  font-size:xx-large;
+  margin-bottom: 10px;
+}
+
 
 /* Styles for the success message */
 .success {

@@ -12,6 +12,7 @@ export default function Purchase() {
   const [stripePromise, setStripePromise] = useState(null);
   const [clientSecret, setClientSecret] = useState("");
   const [coinAmount, setCoinAmount] = useState(5);
+  const [coinAmountError, setCoinAmountError] = useState(false);
   const [pricePerCoin, setPricePerCoin] = useState("Loading...");
   const [totalPrice, setTotalPrice] = useState("Loading...");
   const [currency, setCurrency] = useState("Loading...");
@@ -50,6 +51,30 @@ export default function Purchase() {
     stripeCreatePaymentIntent();
   }, [userInTable, coinAmount])
 
+  // TODO: Update this logic once Sirch Coins discount period expires (e.g. users can purchase 1 Sirch Coin for $1)
+  const handleAmountChange = (e) => {
+    const value = e.target.value;
+    
+    if (value === '') {
+      setCoinAmount('');
+      setCoinAmountError(false);
+      return;
+    }
+
+    const numValue = parseInt(value, 10);
+    if (!isNaN(numValue)) {
+      setCoinAmount(value);
+      setCoinAmountError(numValue < 5);
+    }
+  };
+
+  const handleBlur = () => {
+    if (coinAmount !== '' && parseInt(coinAmount, 10) < 5) {
+      setCoinAmount('5');
+      setCoinAmountError(false);
+    }
+  };
+
   return (
     <div className="purchase-container">
       <div>
@@ -62,16 +87,19 @@ export default function Purchase() {
           }
         <p>Currency: {currency.toUpperCase()}</p>
         <input
+          className="coin-amount-input"
           type="number"
           name="coins"
           placeholder="Enter the number of coins you want to purchase"
           value= {coinAmount}
-          onChange={(e) => setCoinAmount(e.target.value)}
-          // TODO: Fix to not allow user to change below 5 (breaks paymentIntent)
+          onChange={handleAmountChange}
+          onBlur={handleBlur}
           min="5"
           required
         >
         </input>
+        <p><strong>Note: At the current time, a minimum purchase of 5 Sirch Coins is required.</strong></p>
+        {/* TODO: Add "See more" link with info on Stripe/purchasing */}
         <p>Sirch Coins uses the payment provider Stripe for secure transactions. See more...</p>
         <h4>Your total price: ${totalPrice}</h4>
       </div>
