@@ -55,9 +55,11 @@ export default function Purchase() {
       <div>
         <h2>Purchase Sirch Coins</h2>
         <h3>How many Sirch Coins would you like to purchase?</h3>
-        {/* TODO: Fix NaN on load */}
         {/* TODO: Format for other currencies if we decide to accept them in the future */}
-        <p>Current cost per coin: ${Number(pricePerCoin).toFixed(2)} </p>
+        { pricePerCoin === "Loading..." ? 
+          <p>Current cost per coin: {pricePerCoin} </p> : 
+          <p>Current cost per coin: ${Number(pricePerCoin).toFixed(2)} </p>
+          }
         <p>Currency: {currency.toUpperCase()}</p>
         <input
           type="number"
