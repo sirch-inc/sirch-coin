@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useMemo } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import { Link } from "react-router-dom";
@@ -17,6 +17,7 @@ export default function Purchase() {
   const [totalPrice, setTotalPrice] = useState("Loading...");
   const [currency, setCurrency] = useState("Loading...");
   const { userInTable } = useContext(AuthContext);
+  const options = useMemo(() => ({clientSecret}), [clientSecret])
 
   useEffect(() => {
     setStripePromise(loadStripe(import.meta.env.VITE_STRIPE_TEST_PUBLISHABLE_KEY))
@@ -41,7 +42,6 @@ export default function Purchase() {
       } else if (error instanceof FunctionsFetchError) {
         console.log('Fetch error: ', error.message);
       } else {
-        console.log("Data: ", data);
         setClientSecret(data.clientSecret);
         setPricePerCoin(data.pricePerCoin);
         setTotalPrice(data.totalAmount);
@@ -108,7 +108,11 @@ export default function Purchase() {
           
         {/* TODO: Fix remounting of Elements - clientSecret cannot change */}
         {stripePromise && clientSecret && 
-         <Elements stripe={stripePromise} options={{clientSecret}}>
+         <Elements 
+          key={clientSecret}
+          stripe={stripePromise} 
+          options={options}
+         >
           <CheckoutForm/>
          </Elements>}
       </div>
