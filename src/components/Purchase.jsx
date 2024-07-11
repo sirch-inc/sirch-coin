@@ -86,6 +86,7 @@ export default function Purchase() {
           <p>Current cost per coin: ${Number(pricePerCoin).toFixed(2)} </p>
           }
         <p>Currency: {currency.toUpperCase()}</p>
+        <span className="sirch-symbol-large">ⓢ</span>
         <input
           className="coin-amount-input"
           type="number"

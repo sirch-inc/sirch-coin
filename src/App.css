@@ -200,6 +200,10 @@ button.danger{
   margin-bottom: 10px;
 }
 
+.sirch-symbol-large{
+  font-size: xx-large;
+  padding-right: 10px;
+}
 
 /* Styles for the success message */
 .success {
