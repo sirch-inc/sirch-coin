@@ -107,7 +107,6 @@ export default function Purchase() {
           onChange={handleAmountChange}
           onBlur={handleBlur}
           min="5"
-          step="0.01"
           required
         >
         </input>
