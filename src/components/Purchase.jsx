@@ -11,6 +11,8 @@ import CheckoutForm from "./Stripe/CheckoutForm";
 export default function Purchase() {
   const [stripePromise, setStripePromise] = useState(null);
   const [clientSecret, setClientSecret] = useState("");
+  const [localCoinAmount, setLocalCoinAmount] = useState(5);
+  const [localTotalPrice, setLocalTotalPrice] = useState(0);
   const [coinAmount, setCoinAmount] = useState(5);
   const [coinAmountError, setCoinAmountError] = useState(false);
   const [pricePerCoin, setPricePerCoin] = useState("Loading...");
@@ -23,53 +25,68 @@ export default function Purchase() {
     setStripePromise(loadStripe(import.meta.env.VITE_STRIPE_TEST_PUBLISHABLE_KEY))
   }, [])
 
-  useEffect(()=> {
-    if (!userInTable || coinAmount === '') return;
-    const timer = setTimeout(() => {
-    const stripeCreatePaymentIntent = async () => {
+  useEffect(() => {
+    const loadInitialData = async () => {
+      if (!userInTable) return;
+
       const { data, error } = await supabase.functions.invoke('stripe-create-payment-intent', {
-        body: {
-          userId: userInTable?.user_id,
-          email: userInTable?.email,
-          numberOfCoins: Math.floor(coinAmount)
-        }
+        body: { userId: userInTable?.user_id }
       });
-  
-      if (error instanceof FunctionsHttpError) {
-        const errorMessage = await error.context.json();
-        console.log('Function returned an error: ', errorMessage);
-      } else if (error instanceof FunctionsRelayError) {
-        console.log('Relay error: ', error.message);
-      } else if (error instanceof FunctionsFetchError) {
-        console.log('Fetch error: ', error.message);
+
+      if (error) {
+        console.error("Error loading initial data: ", error)
       } else {
-        console.log("Data:", data);
-        setClientSecret(data.clientSecret);
-        setPricePerCoin(data.pricePerCoin);
-        setTotalPrice(data.totalAmount);
-        setCurrency(data.currency);
+        console.log(data)
+      setPricePerCoin(data.pricePerCoin);
+      setCurrency(data.currency);
+      setLocalTotalPrice(5 * data.pricePerCoin)  //TODO: Remove 5 after discount period
       }
+    };
+
+    loadInitialData();
+  }, [userInTable])
+
+  const createPaymentIntent = async () => {
+    if (!userInTable || localCoinAmount === '') return;
+
+    const { data, error } = await supabase.functions.invoke('stripe-create-payment-intent', {
+      body: {
+        userId: userInTable?.user_id,
+        email: userInTable?.email,
+        numberOfCoins: Math.floor(localCoinAmount)
+      }
+    });
+
+    if (error){
+      // TODO: Handle error to user
+      console.error('Error creating payment intent: ', error);
+      alert("There was an error initiating your payment: ", error)
+    } else {
+      setClientSecret(data.clientSecret);
+      setCoinAmount(localCoinAmount);
+      setTotalPrice(data.totalAmount);
+      setCurrency(data.currency);
     }
-    stripeCreatePaymentIntent();
-  }, 300);
-  
-  return () => clearTimeout(timer);
-}, [userInTable, coinAmount])
+  }
+
+
 
   // TODO: Update this logic once Sirch Coins discount period expires (e.g. users can purchase 1 Sirch Coin for $1)
   const handleAmountChange = (e) => {
     const value = e.target.value;
     
     if (value === '') {
-      setCoinAmount('');
+      setLocalCoinAmount('');
       setCoinAmountError(false);
+      setLocalTotalPrice(0);
       return;
     }
   
     const numValue = parseFloat(value);
     if (!isNaN(numValue) && numValue >= 5) {
-      setCoinAmount(numValue);
+      setLocalCoinAmount(numValue);
       setCoinAmountError(false);
+      setLocalTotalPrice(numValue + parseFloat(pricePerCoin))
     } else {
       setCoinAmountError(true);
     }
@@ -103,7 +120,7 @@ export default function Purchase() {
           type="number"
           name="coins"
           placeholder="Enter the number of coins you want to purchase"
-          value= {coinAmount}
+          value= {localCoinAmount}
           onChange={handleAmountChange}
           onBlur={handleBlur}
           min="5"
@@ -115,8 +132,11 @@ export default function Purchase() {
         <p>Sirch Coins uses the payment provider Stripe for secure transactions. See more...</p>
         { totalPrice === "Loading..." ? 
           <h4>Your total price: {totalPrice}</h4> :
-          <h4>Your total price: ${formatPrice(totalPrice)}</h4>
+          <h4>Your total price: ${formatPrice(localTotalPrice)}</h4>
         }
+        <button onClick={createPaymentIntent} disabled={coinAmountError}>
+        Proceed to Payment
+      </button>
       </div>
       <div>
           
