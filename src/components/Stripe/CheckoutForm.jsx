@@ -46,6 +46,8 @@ export default function CheckoutForm({coinAmount, totalPrice, setShowCheckoutFor
   return (
     <>
     <h3>You&apos;re purchasing: <br></br>{coinAmount} coins for a total of ${totalPrice}</h3>
+    {/* TODO: Update this line with final timeout decision for price and update Purchase.jsx accordingly */}
+    <p><em>This price is locked in for the next 15 minutes. After that time, you may need to refresh and try again.</em></p>
     <form id="payment-form" onSubmit={handleSubmit}>
       <PaymentElement id="payment-element" />
       <button disabled={isProcessing || !stripe || !elements} id="submit">
@@ -57,8 +59,6 @@ export default function CheckoutForm({coinAmount, totalPrice, setShowCheckoutFor
       <button onClick={handleCancelPaymentIntent}>
         Cancel
       </button>
-      {/* TODO: Update this line with final timeout decision for price and update Purchase.jsx accordingly */}
-      <p><em>This price is locked in for the next 15 minutes. After that time, you may need to refresh and try again.</em></p>
       {/* Show any error or success messages */}
       {message && <div id="payment-message">{message}</div>}
     </form>
