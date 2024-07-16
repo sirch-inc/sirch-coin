@@ -2,6 +2,7 @@ import { PaymentElement } from "@stripe/react-stripe-js";
 import { useState } from "react";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
 
+// eslint-disable-next-line react/prop-types
 export default function CheckoutForm({coinAmount, totalPrice, setShowCheckoutForm}) {
   const stripe = useStripe();
   const elements = useElements();
