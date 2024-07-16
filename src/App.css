@@ -185,12 +185,25 @@ button.danger{
 /*  Start Styles for Purchase Page */
 
 .purchase-container{
-    display: grid;
+    /* display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: 1fr;
     grid-column-gap: 20px;
-    grid-row-gap: 0px;
+    grid-row-gap: 0px; */
     margin:2rem;
+}
+
+.checkout-form-popup{
+  z-index: 100;
+  max-width: 90%;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .coin-amount-input{

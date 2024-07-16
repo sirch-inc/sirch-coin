@@ -36,6 +36,11 @@ export default function CheckoutForm() {
     setIsProcessing(false);
   };
 
+  // TODO: Replace with supabase function to cancel payment intent
+  // const handleCancelPaymentIntent = async () => {
+  //   console.log("Replace this with the cancel payment intent supabase edge function")
+  // }
+
   return (
     <form id="payment-form" onSubmit={handleSubmit}>
       <PaymentElement id="payment-element" />
@@ -43,6 +48,10 @@ export default function CheckoutForm() {
         <span id="button-text">
           {isProcessing ? "Processing ... " : "Buy Sirch Coins"}
         </span>
+      </button>
+      {/* TODO: add onClick handleCancelPaymentIntent */}
+      <button>
+        Cancel
       </button>
       {/* Show any error or success messages */}
       {message && <div id="payment-message">{message}</div>}
