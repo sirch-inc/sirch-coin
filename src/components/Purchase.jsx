@@ -74,8 +74,6 @@ export default function Purchase() {
     }
   }
 
-
-
   // TODO: Update this logic once Sirch Coins discount period expires (e.g. users can purchase 1 Sirch Coin for $1)
   const handleAmountChange = (e) => {
     const value = e.target.value;
@@ -87,7 +85,7 @@ export default function Purchase() {
       return;
     }
   
-    const numValue = parseFloat(value);
+    const numValue = parseInt(value, 10);
     if (!isNaN(numValue)) {
       setLocalCoinAmount(numValue);
       setLocalTotalPrice(numValue * parseFloat(pricePerCoin));
@@ -130,6 +128,7 @@ export default function Purchase() {
           onChange={handleAmountChange}
           onBlur={handleBlur}
           min="5"
+          step="1"
           required
         />
         <p><strong>Note: At the current time, a minimum purchase of 5 Sirch Coins is required.</strong></p>
