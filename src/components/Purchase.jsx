@@ -18,6 +18,7 @@ export default function Purchase() {
   const [pricePerCoin, setPricePerCoin] = useState("Loading...");
   const [totalPrice, setTotalPrice] = useState("Loading...");
   const [currency, setCurrency] = useState("Loading...");
+  const [showCheckoutForm, setShowCheckoutForm] = useState(false);
   const { userInTable } = useContext(AuthContext);
   const options = useMemo(() => ({clientSecret}), [clientSecret]);
 
@@ -30,10 +31,8 @@ export default function Purchase() {
     const loadInitialData = async () => {
       if (!userInTable) return;
   
-      const { data, error } = await supabase.functions.invoke('stripe-create-payment-intent', {
+      const { data, error } = await supabase.functions.invoke('price-per-coin', {
         body: {
-          userId: userInTable?.user_id,
-          email: userInTable?.email,
           numberOfCoins: 5  
         }
       });
@@ -48,7 +47,6 @@ export default function Purchase() {
         console.log('Fetch error: ', error.message);
       } else {
         console.log("Data:", data);
-        setClientSecret(data.clientSecret);
         setPricePerCoin(data.pricePerCoin);
         setLocalTotalPrice(data.totalAmount);
         setCurrency(data.currency);
@@ -79,9 +77,10 @@ export default function Purchase() {
       console.log('Fetch error: ', error.message);
     } else {
       setClientSecret(data.clientSecret);
-      setCoinAmount(localCoinAmount);
+      setCoinAmount(data.numberOfCoins);
       setTotalPrice(data.totalAmount);
       setCurrency(data.currency);
+      setShowCheckoutForm(true)
     }
   }
 
@@ -125,10 +124,9 @@ export default function Purchase() {
         <h3>How many Sirch Coins would you like to purchase?</h3>
         {/* TODO: Format for other currencies if we decide to accept them in the future */}
         { pricePerCoin === "Loading..." ? 
-          <p>Current cost per coin: {pricePerCoin} </p> : 
-          <p>Current cost per coin: ${formatPrice(pricePerCoin)} </p>
+          <p>Current price per coin: {pricePerCoin} </p> : 
+          <p>Current price per coin: ${formatPrice(pricePerCoin)} </p>
           }
-        <p>Currency: {currency.toUpperCase()}</p>
         <span className="sirch-symbol-large">ⓢ</span>
         <input
           className="coin-amount-input"
@@ -146,8 +144,8 @@ export default function Purchase() {
         {/* TODO: Add "See more" link with info on Stripe/purchasing */}
         <p>Sirch Coins uses the payment provider Stripe for secure transactions. See more...</p>
         { localTotalPrice === 0 ? 
-          <h4>Your total price: {totalPrice}</h4> :
-          <h4>Your total price: ${formatPrice(localTotalPrice)}</h4>
+          <h4>Your total price: {totalPrice} {currency.toUpperCase()}</h4> :
+          <h4>Your total price: ${formatPrice(localTotalPrice)} {currency.toUpperCase()}</h4>
         }
         <button 
           onClick={createPaymentIntent} 
@@ -157,16 +155,23 @@ export default function Purchase() {
         </button>
       </div>
       <div>
-          
         {/* TODO: Fix remounting of Elements - clientSecret cannot change */}
-        {stripePromise && clientSecret && 
-         <Elements 
-          key={clientSecret}
-          stripe={stripePromise} 
-          options={options}
-         >
-          <CheckoutForm/>
-         </Elements>}
+        <div>
+          {stripePromise && clientSecret && showCheckoutForm && (
+            <>
+              <div className="overlay"></div>
+              <dialog open className="checkout-form-popup">
+                <Elements 
+                  key={clientSecret}
+                  stripe={stripePromise} 
+                  options={options}
+                >
+                  <CheckoutForm coinAmount={coinAmount} totalPrice={totalPrice} setShowCheckoutForm={setShowCheckoutForm}/>
+                </Elements>
+              </dialog>
+            </>
+          )}
+        </div>
       </div>
       <div className="bottom-btn-container">
         <Link to="/" className="big-btn-red">
