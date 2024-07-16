@@ -11,6 +11,8 @@ import CheckoutForm from "./Stripe/CheckoutForm";
 export default function Purchase() {
   const [stripePromise, setStripePromise] = useState(null);
   const [clientSecret, setClientSecret] = useState("");
+  const [localCoinAmount, setLocalCoinAmount] = useState(5);
+  const [localTotalPrice, setLocalTotalPrice] = useState(0);
   const [coinAmount, setCoinAmount] = useState(5);
   const [coinAmountError, setCoinAmountError] = useState(false);
   const [pricePerCoin, setPricePerCoin] = useState("Loading...");
@@ -23,18 +25,20 @@ export default function Purchase() {
     setStripePromise(loadStripe(import.meta.env.VITE_STRIPE_TEST_PUBLISHABLE_KEY))
   }, [])
 
-  useEffect(()=> {
-    if (!userInTable || coinAmount === '') return;
-    const timer = setTimeout(() => {
-    const stripeCreatePaymentIntent = async () => {
+  // TODO: Replace this with a new edge function in supabase instead of creating the payment intent on page load
+  useEffect(() => {
+    const loadInitialData = async () => {
+      if (!userInTable) return;
+  
       const { data, error } = await supabase.functions.invoke('stripe-create-payment-intent', {
         body: {
           userId: userInTable?.user_id,
           email: userInTable?.email,
-          numberOfCoins: Math.floor(coinAmount)
+          numberOfCoins: 5  
         }
       });
   
+      // TODO: Handle error messaging for user
       if (error instanceof FunctionsHttpError) {
         const errorMessage = await error.context.json();
         console.log('Function returned an error: ', errorMessage);
@@ -46,39 +50,67 @@ export default function Purchase() {
         console.log("Data:", data);
         setClientSecret(data.clientSecret);
         setPricePerCoin(data.pricePerCoin);
-        setTotalPrice(data.totalAmount);
+        setLocalTotalPrice(data.totalAmount);
         setCurrency(data.currency);
       }
-    }
-    stripeCreatePaymentIntent();
-  }, 300);
+    };
   
-  return () => clearTimeout(timer);
-}, [userInTable, coinAmount])
+    loadInitialData();
+  }, [userInTable]);
+
+  const createPaymentIntent = async () => {
+    if (!userInTable || localCoinAmount === '') return;
+
+    const { data, error } = await supabase.functions.invoke('stripe-create-payment-intent', {
+      body: {
+        userId: userInTable?.user_id,
+        email: userInTable?.email,
+        numberOfCoins: Math.floor(localCoinAmount)
+      }
+    });
+
+    // TODO: Handle error messaging for user
+    if (error instanceof FunctionsHttpError) {
+      const errorMessage = await error.context.json();
+      console.log('Function returned an error: ', errorMessage);
+    } else if (error instanceof FunctionsRelayError) {
+      console.log('Relay error: ', error.message);
+    } else if (error instanceof FunctionsFetchError) {
+      console.log('Fetch error: ', error.message);
+    } else {
+      setClientSecret(data.clientSecret);
+      setCoinAmount(localCoinAmount);
+      setTotalPrice(data.totalAmount);
+      setCurrency(data.currency);
+    }
+  }
 
   // TODO: Update this logic once Sirch Coins discount period expires (e.g. users can purchase 1 Sirch Coin for $1)
   const handleAmountChange = (e) => {
     const value = e.target.value;
     
     if (value === '') {
-      setCoinAmount('');
+      setLocalCoinAmount('');
       setCoinAmountError(false);
+      setLocalTotalPrice(0);
       return;
     }
   
-    const numValue = parseFloat(value);
-    if (!isNaN(numValue) && numValue >= 5) {
-      setCoinAmount(numValue);
-      setCoinAmountError(false);
+    const numValue = parseInt(value, 10);
+    if (!isNaN(numValue)) {
+      setLocalCoinAmount(numValue);
+      setLocalTotalPrice(numValue * parseFloat(pricePerCoin));
+      setCoinAmountError(numValue < 5);
     } else {
       setCoinAmountError(true);
     }
   };
 
   const handleBlur = () => {
-    if (coinAmount === '' || coinAmount < 5) {
-      setCoinAmount(5);
+    if (localCoinAmount === '' || localCoinAmount < 5) {
+      setLocalCoinAmount(5);
       setCoinAmountError(false);
+      setLocalTotalPrice(5 * parseFloat(pricePerCoin));
     }
   };
 
@@ -103,20 +135,26 @@ export default function Purchase() {
           type="number"
           name="coins"
           placeholder="Enter the number of coins you want to purchase"
-          value= {coinAmount}
+          value={localCoinAmount}
           onChange={handleAmountChange}
           onBlur={handleBlur}
           min="5"
+          step="1"
           required
-        >
-        </input>
+        />
         <p><strong>Note: At the current time, a minimum purchase of 5 Sirch Coins is required.</strong></p>
         {/* TODO: Add "See more" link with info on Stripe/purchasing */}
         <p>Sirch Coins uses the payment provider Stripe for secure transactions. See more...</p>
-        { totalPrice === "Loading..." ? 
+        { localTotalPrice === 0 ? 
           <h4>Your total price: {totalPrice}</h4> :
-          <h4>Your total price: ${formatPrice(totalPrice)}</h4>
+          <h4>Your total price: ${formatPrice(localTotalPrice)}</h4>
         }
+        <button 
+          onClick={createPaymentIntent} 
+          disabled={coinAmountError || localCoinAmount < 5}
+        >
+          Proceed to Payment
+        </button>
       </div>
       <div>
           
