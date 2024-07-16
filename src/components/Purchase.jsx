@@ -38,8 +38,14 @@ export default function Purchase() {
         }
       });
   
-      if (error) {
-        console.error('Error loading initial data:', error);
+      // TODO: Handle error messaging for user
+      if (error instanceof FunctionsHttpError) {
+        const errorMessage = await error.context.json();
+        console.log('Function returned an error: ', errorMessage);
+      } else if (error instanceof FunctionsRelayError) {
+        console.log('Relay error: ', error.message);
+      } else if (error instanceof FunctionsFetchError) {
+        console.log('Fetch error: ', error.message);
       } else {
         console.log("Data:", data);
         setClientSecret(data.clientSecret);
@@ -63,10 +69,14 @@ export default function Purchase() {
       }
     });
 
-    if (error){
-      // TODO: Handle error to user
-      console.error('Error creating payment intent: ', error);
-      alert("There was an error initiating your payment: ", error)
+    // TODO: Handle error messaging for user
+    if (error instanceof FunctionsHttpError) {
+      const errorMessage = await error.context.json();
+      console.log('Function returned an error: ', errorMessage);
+    } else if (error instanceof FunctionsRelayError) {
+      console.log('Relay error: ', error.message);
+    } else if (error instanceof FunctionsFetchError) {
+      console.log('Fetch error: ', error.message);
     } else {
       setClientSecret(data.clientSecret);
       setCoinAmount(localCoinAmount);
