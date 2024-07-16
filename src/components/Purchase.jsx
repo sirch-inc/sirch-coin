@@ -156,16 +156,22 @@ export default function Purchase() {
       </div>
       <div>
         {/* TODO: Fix remounting of Elements - clientSecret cannot change */}
-        {stripePromise && clientSecret && showCheckoutForm &&
-        <dialog open className="checkout-form-popup">
-         <Elements 
-          key={clientSecret}
-          stripe={stripePromise} 
-          options={options}
-         >
-          <CheckoutForm coinAmount={coinAmount} totalPrice={totalPrice}/>
-         </Elements>
-         </dialog>}
+        <div>
+          {stripePromise && clientSecret && showCheckoutForm && (
+            <>
+              <div className="overlay"></div>
+              <dialog open className="checkout-form-popup">
+                <Elements 
+                  key={clientSecret}
+                  stripe={stripePromise} 
+                  options={options}
+                >
+                  <CheckoutForm coinAmount={coinAmount} totalPrice={totalPrice} setShowCheckoutForm={setShowCheckoutForm}/>
+                </Elements>
+              </dialog>
+            </>
+          )}
+        </div>
       </div>
       <div className="bottom-btn-container">
         <Link to="/" className="big-btn-red">

@@ -2,7 +2,7 @@ import { PaymentElement } from "@stripe/react-stripe-js";
 import { useState } from "react";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
 
-export default function CheckoutForm({coinAmount, totalPrice}) {
+export default function CheckoutForm({coinAmount, totalPrice, setShowCheckoutForm}) {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -37,9 +37,10 @@ export default function CheckoutForm({coinAmount, totalPrice}) {
   };
 
   // TODO: Replace with supabase function to cancel payment intent
-  // const handleCancelPaymentIntent = async () => {
-  //   console.log("Replace this with the cancel payment intent supabase edge function")
-  // }
+  const handleCancelPaymentIntent = async () => {
+    setShowCheckoutForm(false)
+    console.log("Replace this with the cancel payment intent supabase edge function")
+  }
 
   return (
     <>
@@ -52,7 +53,7 @@ export default function CheckoutForm({coinAmount, totalPrice}) {
         </span>
       </button>
       {/* TODO: add onClick handleCancelPaymentIntent */}
-      <button>
+      <button onClick={handleCancelPaymentIntent}>
         Cancel
       </button>
       {/* Show any error or success messages */}
