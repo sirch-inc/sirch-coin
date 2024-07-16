@@ -31,10 +31,8 @@ export default function Purchase() {
     const loadInitialData = async () => {
       if (!userInTable) return;
   
-      const { data, error } = await supabase.functions.invoke('stripe-create-payment-intent', {
+      const { data, error } = await supabase.functions.invoke('price-per-coin', {
         body: {
-          userId: userInTable?.user_id,
-          email: userInTable?.email,
           numberOfCoins: 5  
         }
       });
@@ -49,7 +47,6 @@ export default function Purchase() {
         console.log('Fetch error: ', error.message);
       } else {
         console.log("Data:", data);
-        setClientSecret(data.clientSecret);
         setPricePerCoin(data.pricePerCoin);
         setLocalTotalPrice(data.totalAmount);
         setCurrency(data.currency);
@@ -80,7 +77,7 @@ export default function Purchase() {
       console.log('Fetch error: ', error.message);
     } else {
       setClientSecret(data.clientSecret);
-      setCoinAmount(localCoinAmount);
+      setCoinAmount(data.numberOfCoins);
       setTotalPrice(data.totalAmount);
       setCurrency(data.currency);
       setShowCheckoutForm(true)
@@ -166,7 +163,7 @@ export default function Purchase() {
           stripe={stripePromise} 
           options={options}
          >
-          <CheckoutForm/>
+          <CheckoutForm coinAmount={coinAmount} totalPrice={totalPrice}/>
          </Elements>
          </dialog>}
       </div>
