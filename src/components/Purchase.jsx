@@ -19,7 +19,7 @@ export default function Purchase() {
   const [totalPrice, setTotalPrice] = useState("Loading...");
   const [currency, setCurrency] = useState("Loading...");
   const { userInTable } = useContext(AuthContext);
-  const options = useMemo(() => ({clientSecret}), [clientSecret])
+  const options = useMemo(() => ({clientSecret}), [clientSecret]);
 
   useEffect(() => {
     setStripePromise(loadStripe(import.meta.env.VITE_STRIPE_TEST_PUBLISHABLE_KEY))
