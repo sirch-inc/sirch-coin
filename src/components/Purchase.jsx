@@ -28,23 +28,28 @@ export default function Purchase() {
   useEffect(() => {
     const loadInitialData = async () => {
       if (!userInTable) return;
-
+  
       const { data, error } = await supabase.functions.invoke('stripe-create-payment-intent', {
-        body: { userId: userInTable?.user_id }
+        body: {
+          userId: userInTable?.user_id,
+          email: userInTable?.email,
+          numberOfCoins: 5  
+        }
       });
-
+  
       if (error) {
-        console.error("Error loading initial data: ", error)
+        console.error('Error loading initial data:', error);
       } else {
-        console.log(data)
-      setPricePerCoin(data.pricePerCoin);
-      setCurrency(data.currency);
-      setLocalTotalPrice(5 * data.pricePerCoin)  //TODO: Remove 5 after discount period
+        console.log("Data:", data);
+        setClientSecret(data.clientSecret);
+        setPricePerCoin(data.pricePerCoin);
+        setLocalTotalPrice(data.totalAmount);
+        setCurrency(data.currency);
       }
     };
-
+  
     loadInitialData();
-  }, [userInTable])
+  }, [userInTable]);
 
   const createPaymentIntent = async () => {
     if (!userInTable || localCoinAmount === '') return;
@@ -83,19 +88,20 @@ export default function Purchase() {
     }
   
     const numValue = parseFloat(value);
-    if (!isNaN(numValue) && numValue >= 5) {
+    if (!isNaN(numValue)) {
       setLocalCoinAmount(numValue);
-      setCoinAmountError(false);
-      setLocalTotalPrice(numValue + parseFloat(pricePerCoin))
+      setLocalTotalPrice(numValue * parseFloat(pricePerCoin));
+      setCoinAmountError(numValue < 5);
     } else {
       setCoinAmountError(true);
     }
   };
 
   const handleBlur = () => {
-    if (coinAmount === '' || coinAmount < 5) {
-      setCoinAmount(5);
+    if (localCoinAmount === '' || localCoinAmount < 5) {
+      setLocalCoinAmount(5);
       setCoinAmountError(false);
+      setLocalTotalPrice(5 * parseFloat(pricePerCoin));
     }
   };
 
@@ -120,23 +126,25 @@ export default function Purchase() {
           type="number"
           name="coins"
           placeholder="Enter the number of coins you want to purchase"
-          value= {localCoinAmount}
+          value={localCoinAmount}
           onChange={handleAmountChange}
           onBlur={handleBlur}
           min="5"
           required
-        >
-        </input>
+        />
         <p><strong>Note: At the current time, a minimum purchase of 5 Sirch Coins is required.</strong></p>
         {/* TODO: Add "See more" link with info on Stripe/purchasing */}
         <p>Sirch Coins uses the payment provider Stripe for secure transactions. See more...</p>
-        { totalPrice === "Loading..." ? 
+        { localTotalPrice === 0 ? 
           <h4>Your total price: {totalPrice}</h4> :
           <h4>Your total price: ${formatPrice(localTotalPrice)}</h4>
         }
-        <button onClick={createPaymentIntent} disabled={coinAmountError}>
-        Proceed to Payment
-      </button>
+        <button 
+          onClick={createPaymentIntent} 
+          disabled={coinAmountError || localCoinAmount < 5}
+        >
+          Proceed to Payment
+        </button>
       </div>
       <div>
           
