@@ -25,6 +25,7 @@ export default function Purchase() {
     setStripePromise(loadStripe(import.meta.env.VITE_STRIPE_TEST_PUBLISHABLE_KEY))
   }, [])
 
+  // TODO: Replace this with a new edge function in supabase instead of creating the payment intent on page load
   useEffect(() => {
     const loadInitialData = async () => {
       if (!userInTable) return;
