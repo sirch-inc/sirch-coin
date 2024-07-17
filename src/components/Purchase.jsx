@@ -166,7 +166,7 @@ export default function Purchase() {
                   stripe={stripePromise} 
                   options={options}
                 >
-                  <CheckoutForm coinAmount={coinAmount} totalPrice={totalPrice} setShowCheckoutForm={setShowCheckoutForm}/>
+                  <CheckoutForm coinAmount={coinAmount} totalPrice={totalPrice} setShowCheckoutForm={setShowCheckoutForm} formatPrice={formatPrice} currency={currency}/>
                 </Elements>
               </dialog>
             </>

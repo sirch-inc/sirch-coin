@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
 
 // eslint-disable-next-line react/prop-types
-export default function CheckoutForm({coinAmount, totalPrice, setShowCheckoutForm}) {
+export default function CheckoutForm({coinAmount, totalPrice, setShowCheckoutForm, formatPrice, currency}) {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -45,7 +45,7 @@ export default function CheckoutForm({coinAmount, totalPrice, setShowCheckoutFor
 
   return (
     <>
-    <h3>You&apos;re purchasing: <br></br>{coinAmount} coins for a total of ${totalPrice}</h3>
+    <h3>You&apos;re purchasing: <br></br>ⓢ {coinAmount} Sirch Coins for a total of ${formatPrice(totalPrice)} {currency.toUpperCase()}</h3>
     {/* TODO: Update this line with final timeout decision for price and update Purchase.jsx accordingly */}
     <p><em>This price is locked in for the next 15 minutes. After that time, you may need to refresh and try again.</em></p>
     <form id="payment-form" onSubmit={handleSubmit}>
