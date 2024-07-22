@@ -12,21 +12,18 @@ export default function Transfers() {
   const fetchUserSentTransfers = async (userInTable) => {
     if (userInTable){
       const { data, error } = await supabase
-      .from("transactions")
+      .from('transactions')
       .select(`
         *,
-        sender:user-balances!sender_id (
-          user:users!user_id (
-            email
-          )
+        sender:balances!user_id (
+          user:users!user_id (email)
         ),
-        receiver:user-balances!receiver_id(
-          user:users!user_id (
-          email
-          )
+        receiver:balances!receiver_id(
+          user:users!user_id (email)
         )
       `)
-      .eq('sender_id', userInTable.user_id)
+      .eq('user_id', userInTable.user_id)
+      .eq('type', 'TRANSFER')
       .order('created_at', {ascending: false});
 
       if (error) {
@@ -45,21 +42,18 @@ export default function Transfers() {
   const fetchUserReceivedTransfers = async (userInTable) => {
     if (userInTable) {
       const { data, error } = await supabase
-      .from("transactions")
+      .from('transactions')
       .select(`
         *,
-        receiver:user-balances!receiver_id(
-          user:users!user_id (
-            email
-          )
+        sender:balances!user_id (
+          user:users!user_id (email)
         ),
-        sender:user-balances!sender_id(
-          user:users!user_id(
-            email
-          )
+        receiver:balances!receiver_id(
+          user:users!user_id (email)
         )
       `)
       .eq('receiver_id', userInTable.user_id)
+      .eq('type', 'TRANSFER')
       .order('created_at', {ascending: false});
 
       if (error){
@@ -121,7 +115,7 @@ export default function Transfers() {
               <TransferCard
                 key={transfer.id}
                 date={transfer.created_at}
-                target={transfer.sender?.user?.email || transfer.sender_id}
+                target={transfer.sender?.user?.email || transfer.user_id}
                 amount={transfer.amount}
               />
           ))) : 
