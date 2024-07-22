@@ -21,8 +21,8 @@ export default function Send() {
   const fetchUserBalance = async (userInTable) => {
     if (userInTable) {
       const { data, error } = await supabase
-        .from('user-balances')
-        .select("*")
+        .from('balances')
+        .select('*')
         .eq('user_id', userInTable.user_id)
         .single();
 

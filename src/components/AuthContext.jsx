@@ -64,7 +64,7 @@ export const AuthProvider = ({ children }) => {
     const getUserBalance = async () => {
       if (userInTable) {
         const { data, error } = await supabase
-          .from('user-balances')
+          .from('balances')
           .select('*')
           .eq('user_id', userInTable.user_id)
           .single();

@@ -38,8 +38,8 @@ export default function AdminFaucet() {
   const fetchUserBalance = async (userInTable) => {
     if (userInTable) {
       const { data, error } = await supabase
-        .from('user-balances')
-        .select("*")
+        .from('balances')
+        .select('*')
         .eq('user_id', userInTable.user_id)
         .single();
 
@@ -57,7 +57,7 @@ export default function AdminFaucet() {
       // Increase the user's balance
       const depositCoins = userBalance.balance + 100;
       const { data: updatedBalance, error: updateError } = await supabase
-        .from('user-balances')
+        .from('balances')
         .update({ balance: depositCoins })
         .eq('user_id', userId)
         .select('balance')
