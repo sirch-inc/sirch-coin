@@ -52,8 +52,6 @@ export default function Transfers() {
     <>
       <h3 className="page-header">Transaction History</h3>
       <div className="transfers-container">
-
-        <h3>Sent by Me</h3>
         <div className="transfers-headers">
           <p>Date</p>
           <p>Type</p>
