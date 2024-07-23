@@ -40,12 +40,7 @@ export default function Transfers() {
 
   useEffect(() => {
     if (userInTable) {
-      // JEFF: remove this promise?
-      Promise.all([
-        fetchUserTransactions(userInTable)
-      ]).then(() => {
-        // TODO: do something?
-      });
+      fetchUserTransactions(userInTable);
     }
   }, [userInTable]);
 
