@@ -65,10 +65,10 @@ export default function Transfers() {
               <TransferCard 
                 key={userTransaction.id}
                 id={userTransaction.id}
-                date={userTransaction.date}
-                // type={userTransaction.type}
-                // amount={userTransaction.amount}
-                // status={userTransaction.status}
+                date={userTransaction.created_at}
+                type={userTransaction.type}
+                amount={userTransaction.amount}
+                status={userTransaction.status}
               />
           ))) :
           <p>Loading...</p>

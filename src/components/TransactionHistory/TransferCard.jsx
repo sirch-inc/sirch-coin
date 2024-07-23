@@ -1,7 +1,7 @@
 import { parseISO, formatDistanceToNow } from 'date-fns';
 
 // eslint-disable-next-line react/prop-types
-export default function TransferCard({ id, date, /*type, amount, status*/ }) {
+export default function TransferCard({ id, date, type, amount, status }) {
   const formatDate = (unformattedDate) => {
     const parsedDate = parseISO(unformattedDate);
     return formatDistanceToNow(

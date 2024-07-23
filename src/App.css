@@ -390,7 +390,7 @@ form {
 
 .sent-transfers, .received-transfers, .transfers-headers {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   grid-column-gap: 4px;
   grid-row-gap: 4px;
   }
