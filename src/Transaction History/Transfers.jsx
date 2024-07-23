@@ -1,8 +1,9 @@
 import { useContext, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import TransferCard from "./TransferCard";
-import { AuthContext } from "./AuthContext";
+import { AuthContext } from "../components/AuthContext";
 import supabase from '../Config/supabaseConfig';
+
 
 export default function Transfers() {
   const { userInTable } = useContext(AuthContext);
