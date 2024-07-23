@@ -15,7 +15,7 @@ import ResetPassword from "./components/Account/ResetPassword";
 import Send from "./components/Send";
 import Balance from "./components/Balance";
 import Purchase from "./components/Purchase";
-import Transfers from "./components/TransactionHistory/Transfers";
+import Transactions from "./components/TransactionHistory/Transactions";
 import Preferences from "./components/Preferences";
 import Help from "./components/Help";
 import Faucet from "./components/Admin/Faucet";
@@ -46,7 +46,7 @@ export default function App() {
           <Route path="coin/send" Component={Send}/>
           <Route path="coin/balance" Component={Balance}/>
           <Route path="/purchase" Component={Purchase}/>
-          <Route path="/transfers" Component={Transfers}/>
+          <Route path="/transactions" Component={Transactions}/>
           <Route path="/preferences" Component={Preferences}/>
           <Route path="/help" Component={Help}/>
           {isLocalEnvironment &&

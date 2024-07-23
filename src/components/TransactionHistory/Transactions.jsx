@@ -1,14 +1,13 @@
 import { useContext, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import TransferCard from "./TransferCard";
+import TransferCard from "./TransactionCard";
 import { AuthContext } from "../AuthContext";
 import supabase from '../../Config/supabaseConfig';
 
 
-export default function Transfers() {
+export default function Transactions() {
   const { userInTable } = useContext(AuthContext);
   const [userTransactions, setUserTransactions] = useState(null);
-  // const [userReceivedTransfers, setUserReceivedTransfers] = useState(null);
   
   const fetchUserTransactions = async (userInTable) => {
     if (userInTable){
