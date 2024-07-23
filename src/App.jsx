@@ -15,7 +15,7 @@ import ResetPassword from "./components/Account/ResetPassword";
 import Send from "./components/Send";
 import Balance from "./components/Balance";
 import Purchase from "./components/Purchase";
-import Transfers from "./components/Transfers";
+import Transfers from "./components/TransactionHistory/Transfers";
 import Preferences from "./components/Preferences";
 import Help from "./components/Help";
 import Faucet from "./components/Admin/Faucet";
