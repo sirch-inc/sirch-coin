@@ -15,6 +15,7 @@ export default function Transfers() {
       const { data, error } = await supabase
       .from('transactions')
       .select('*')
+      // FIXME: handle fetching other named columns via our foreign-keys
       // .select(`
       //   *,
       //   user:balances!user_id (
