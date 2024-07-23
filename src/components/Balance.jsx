@@ -12,7 +12,7 @@ export default function Balance() {
   const fetchUserBalance = async (userInTable) => {
     if (userInTable) {
       const { data, error } = await supabase
-        .from('user-balances')
+        .from('balances')
         .select("*")
         .eq('user_id', userInTable.user_id)
         .single();
