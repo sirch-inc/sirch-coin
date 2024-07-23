@@ -56,8 +56,10 @@ export default function Transfers() {
         <h3>Sent by Me</h3>
         <div className="transfers-headers">
           <p>Date</p>
-          <p>To</p>
-          <p>Sirch Coins (SC)</p>
+          <p>Type</p>
+          <p>Sirch Coins</p>
+          <p>Status</p>
+          <p>Details</p>
         </div>
         <div className="sent-transfers">
           { userTransactions ? (

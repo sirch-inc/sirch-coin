@@ -16,16 +16,16 @@ export default function TransferCard({ id, date, type, amount, status }) {
         <p>{formatDate(date)}</p>
       </div>
       <div>
-        <p>{id}</p>
-      </div>
-      <div>
         <p>{type}</p>
       </div>
       <div>
-        <p>{amount}</p>
+        <p>ⓢ {amount}</p>
       </div>
       <div>
         <p>{status}</p>
+      </div>
+      <div>
+        <p>{id}</p>
       </div>
     </>
   );
