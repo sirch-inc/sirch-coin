@@ -18,6 +18,7 @@ export default function Purchase() {
   const [pricePerCoin, setPricePerCoin] = useState("Loading...");
   const [totalPrice, setTotalPrice] = useState("Loading...");
   const [currency, setCurrency] = useState("Loading...");
+  const [paymentIntentId, setPaymentIntentId] = useState(null)
   const [showCheckoutForm, setShowCheckoutForm] = useState(false);
   const { userInTable } = useContext(AuthContext);
   const options = useMemo(() => ({clientSecret}), [clientSecret]);
@@ -75,12 +76,13 @@ export default function Purchase() {
       console.log('Relay error: ', error.message);
     } else if (error instanceof FunctionsFetchError) {
       console.log('Fetch error: ', error.message);
-    } else {
+    } else {      
       setClientSecret(data.clientSecret);
       setCoinAmount(data.numberOfCoins);
       setTotalPrice(data.totalAmount);
       setCurrency(data.currency);
-      setShowCheckoutForm(true)
+      setPaymentIntentId(data.paymentIntentId)
+      setShowCheckoutForm(true);
     }
   }
 
@@ -166,7 +168,7 @@ export default function Purchase() {
                   stripe={stripePromise} 
                   options={options}
                 >
-                  <CheckoutForm coinAmount={coinAmount} totalPrice={totalPrice} setShowCheckoutForm={setShowCheckoutForm} formatPrice={formatPrice} currency={currency}/>
+                  <CheckoutForm coinAmount={coinAmount} totalPrice={totalPrice} setShowCheckoutForm={setShowCheckoutForm} formatPrice={formatPrice} currency={currency} paymentIntentId={paymentIntentId}/>
                 </Elements>
               </dialog>
             </>

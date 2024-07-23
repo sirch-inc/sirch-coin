@@ -52,7 +52,7 @@ export default function App() {
           {isLocalEnvironment &&
           <Route path="/admin/faucet" Component={Faucet}/>
           }
-          <Route path="/Stripe/Success" Component={StripeSuccess}/>
+          <Route path="/Stripe/Success/:paymentIntentId?" Component={StripeSuccess}/>
           <Route path="/Stripe/Failure" Component={StripeFailure}/>
         </Routes>
       </BrowserRouter>

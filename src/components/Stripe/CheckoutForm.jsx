@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
 
 // eslint-disable-next-line react/prop-types
-export default function CheckoutForm({coinAmount, totalPrice, setShowCheckoutForm, formatPrice, currency}) {
+export default function CheckoutForm({coinAmount, totalPrice, setShowCheckoutForm, formatPrice, currency, paymentIntentId}) {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -24,7 +24,7 @@ export default function CheckoutForm({coinAmount, totalPrice, setShowCheckoutFor
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${window.location.origin}/Stripe/Success`,
+        return_url: `${window.location.origin}/Stripe/Success/${paymentIntentId}`,
       },
     });
 
