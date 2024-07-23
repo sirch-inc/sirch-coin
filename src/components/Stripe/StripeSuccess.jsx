@@ -1,22 +1,29 @@
-import { Link } from "react-router-dom";
-import { useParams } from 'react-router-dom';
-// import supabase from "../Config/supabaseConfig";
+import { Link, useParams } from "react-router-dom";
+import { useContext } from 'react';
+import { AuthContext } from "../AuthContext"
+import supabase from "../../Config/supabaseConfig"
 
 
 export default function StripeSuccess() {
   const { paymentIntentId } = useParams();
-  // const validatePayment = async () => {
+  const { userInTable } = useContext(AuthContext);
 
-  //   const paymentIntentId = 
+  const validatePayment = async () => {
+    const { data, error } = await supabase.functions.invoke('validate-payment', {
+      body: {
+        userId: userInTable?.user_id,
+        email: userInTable?.email,
+      }
+    }
+  )
+    if (data){
+      console.log(data)
+    } else {
+      console.log("Not working at all")
+    }
+  }
 
-  //   const { data, error } = await supabase.functions.invoke('validate-payment', {
-  //     body: {
-  //       userId: userInTable?.user_id,
-  //       email: userInTable?.email,
-  //       numberOfCoins: Math.floor(localCoinAmount)
-  //     }
-  //   });
-  // }
+  validatePayment()
   return (
     <div style={{ textAlign: "center", padding: "50px" }}>
       <h1 style={{ color: "green" }}>Payment Successful!</h1>
