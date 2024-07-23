@@ -376,29 +376,31 @@ form {
 }
 /* End styles for Balance Inquiry */
 
-/* Start styles for Transfer History */
-.transfers-container {
+
+
+/* Start styles for Transaction History */
+.transactions-container {
   margin: 20px;
   height: 65vh;
   overflow: scroll;
 }
 
-.transfers-header {
+.transactions-header {
   padding-bottom: 20px;
   margin: 20px;
 }
 
-.sent-transfers, .received-transfers, .transfers-headers {
+.transactions, .transactions-headers {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-column-gap: 4px;
   grid-row-gap: 4px;
   }
 
-  .transfers-headers p {
+  .transactions-headers p {
     font-weight: 800;
   }
-/* End styles for Transfer History */
+/* End styles for Transaction History */
 
 
 

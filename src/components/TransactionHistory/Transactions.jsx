@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import TransferCard from "./TransactionCard";
+import TransactionCard from "./TransactionCard";
 import { AuthContext } from "../AuthContext";
 import supabase from '../../Config/supabaseConfig';
 
@@ -46,18 +46,18 @@ export default function Transactions() {
   return (
     <>
       <h3 className="page-header">Transaction History</h3>
-      <div className="transfers-container">
-        <div className="transfers-headers">
+      <div className="transactions-container">
+        <div className="transactions-headers">
           <p>Date</p>
           <p>Type</p>
           <p>Sirch Coins</p>
           <p>Status</p>
           <p>Details</p>
         </div>
-        <div className="sent-transfers">
+        <div className="transactions">
           { userTransactions ? (
             userTransactions.map((userTransaction) => (
-              <TransferCard 
+              <TransactionCard 
                 key={userTransaction.id}
                 id={userTransaction.id}
                 date={userTransaction.created_at}
