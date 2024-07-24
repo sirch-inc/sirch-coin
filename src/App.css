@@ -129,6 +129,12 @@
   align-items: center;
 }
 
+.memo-input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .your-email-input,
 .recipient-email-input {
   margin: 10px 0;
@@ -151,6 +157,7 @@
   outline: none;
 }
 /* End styles for Send Coins */
+
 
 /*  Start Styles for My Account Page */
 .account-container{

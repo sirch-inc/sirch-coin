@@ -63,7 +63,7 @@ export default function Send() {
     // if the send amount equals the user's balance, display a warning & confirmation dialog
     if (parseInt(sendAmount, 10) === currentBalance) {
       // TODO: handle this confirmation with a proper dialog
-      if (!confirm("Warning: the amount to send (" + sendAmount + " Sirch Coins) is your entire balance! Please confirm your intent.")) {
+      if (!confirm("Warning: the amount to send (ⓢ " + sendAmount + ") is your entire balance! Please confirm your intent.")) {
         return;
       }
     }
@@ -121,7 +121,7 @@ export default function Send() {
         // FIXME: hack to get around linter
         console.log("Data", data);
       } else {
-        toast.success(sendAmount + " Sirch Coins successfully sent to " + recipientEmail, {
+        toast.success("ⓢ " + sendAmount + " successfully sent to " + recipientEmail, {
           position: "top-right",
         });
 
@@ -172,14 +172,14 @@ export default function Send() {
           <h3 className="page-header">Send Sirch Coins</h3>
           <div>
             <h2>You currently have a balance of:</h2>
-            <h1>{currentBalance !== null ? currentBalance : "Loading"} Sirch Coins</h1>
+            <h1>{currentBalance !== null ? "ⓢ " + currentBalance : "Loading"} Sirch Coins</h1>
             <p>
-              To send Sirch Coins to anyone with a Sirch Coins account,
+              To send ⓢ Sirch Coins to anyone with a Sirch Coins account,
               please specify the amount and the recipient&apos;s email address below.</p>
           </div>
           <form onSubmit={handleSubmit}>
             <div className="price-container">
-              <label htmlFor="amountToSend">Amount to Send (SC)</label>
+              <label htmlFor="amountToSend">Number of ⓢ Sirch Coins to send</label>
               <input
                 id="amountToSend"
                 name="amountToSend"
@@ -209,7 +209,7 @@ export default function Send() {
                 />
               </div>
 
-              <div className="email-inputs">
+              <div className="memo-input">
                 <label htmlFor="memo">Optional Memo / Reason / Note</label>
                 <input
                   id="memo"
