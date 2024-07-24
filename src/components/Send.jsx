@@ -127,6 +127,7 @@ export default function Send() {
 
         setSendAmount("");
         setRecipientEmail("");
+        setMemo("");
 
         // TODO: consider refactoring this and other similar calls into a provider or the context
         fetchUserBalance(userInTable);
@@ -209,7 +210,7 @@ export default function Send() {
               </div>
 
               <div className="email-inputs">
-                <label htmlFor="memo">Memo/Reason/Note</label>
+                <label htmlFor="memo">Optional Memo / Reason / Note</label>
                 <input
                   id="memo"
                   name="memo"
@@ -217,6 +218,7 @@ export default function Send() {
                   type="text"
                   className="cash1-input recipient-email-input"
                   value={memo}
+                  maxLength="60"
                   onChange={handleMemoChange}
                   autoComplete="memo"
                 />
