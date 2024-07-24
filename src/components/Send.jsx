@@ -8,10 +8,11 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export default function Send() {
   const { userInTable, userBalance } = useContext(AuthContext);
-  const [recipientEmail, setRecipientEmail] = useState("");
-  const [recipientError, setRecipientError] = useState(false);
   const [sendAmount, setSendAmount] = useState("");
+  const [recipientEmail, setRecipientEmail] = useState("");
+  const [memo, setMemo] = useState("");
   const [currentBalance, setCurrentBalance] = useState(null);
+  const [recipientError, setRecipientError] = useState(false);
 
   useEffect(() => {
     // (Re)fetch the user's balance when the component renders
@@ -44,6 +45,10 @@ export default function Send() {
 
   const handleRecipientEmailAddressChange = (event) => {
     setRecipientEmail(event.target.value);
+  };
+
+  const handleMemoChange = (event) => {
+    setMemo(event.target.value);
   };
 
   const handleAcknowledgeRecipientError = () => {
@@ -105,7 +110,8 @@ export default function Send() {
       const { data, transferError } = await supabase.rpc("transfer_coins", {
         sender_id: userInTable.user_id,
         receiver_id: fetchRecipientData.user_id,
-        amount: sendAmount
+        amount: sendAmount,
+        memo
       });
 
       if (transferError?.message) {
@@ -152,7 +158,7 @@ export default function Send() {
             The recipient ({recipientEmail}) does not appear to have a Sirch Coins account.
             <br/>
             <br/>
-            Please check the email address or invite this individual join Sirch Coins!
+            Please check the email address or invite this individual to join Sirch Coins!
           </h3>
           <button
             onClick={handleAcknowledgeRecipientError}
@@ -201,6 +207,21 @@ export default function Send() {
                   autoComplete="email"
                 />
               </div>
+
+              <div className="email-inputs">
+                <label htmlFor="memo">Memo/Reason/Note</label>
+                <input
+                  id="memo"
+                  name="memo"
+                  placeholder="A gift for you..."
+                  type="text"
+                  className="cash1-input recipient-email-input"
+                  value={memo}
+                  onChange={handleMemoChange}
+                  autoComplete="memo"
+                />
+              </div>
+
             </div>
             <div className="bottom-btn-container">
               <Link to="/" className="big-btn-red">
