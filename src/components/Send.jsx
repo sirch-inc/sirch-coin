@@ -97,6 +97,11 @@ export default function Send() {
         return;
       }
 
+      if (fetchRecipientData.user_id == userInTable.user_id) {
+        alert("You cannot send ⓢ Sirch Coins to yourself!")
+        return;
+      }
+      
       // verify the sender has sufficient balance
       if (sendAmount > currentBalance) {
         toast.error('Insufficient balance', {
@@ -186,7 +191,7 @@ export default function Send() {
                 placeholder=""
                 required
                 type="number"
-                min="0"
+                min="1"
                 max={currentBalance || "0"}
                 step="1"
                 className="cash1-input other-amount-input"
