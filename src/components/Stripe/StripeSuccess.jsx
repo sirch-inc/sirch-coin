@@ -8,7 +8,7 @@ export default function StripeSuccess() {
   const { paymentIntentId } = useParams();
   const { userInTable } = useContext(AuthContext);
   const [paymentDetails, setPaymentDetails] = useState(null);
-  const [error, setError] = useState(null);
+  const [paymentError, setPaymentError] = useState(null);
 
   useEffect(() => {
     const validatePayment = async () => {
@@ -26,22 +26,29 @@ export default function StripeSuccess() {
           setPaymentDetails(data);
         }
       } catch (error) {
-        console.log("Payment validation failed:", error);
-        setError(error.message || "An error occurred");
+        setPaymentError(error.message || "An error occurred");
+        alert("There was an error processing your payment details: ", paymentError)
       }
     };
 
     if (userInTable?.user_id && paymentIntentId) {
       validatePayment();
     }
-  }, [userInTable, paymentIntentId]);
+  }, [userInTable, paymentIntentId, paymentError]);
 
   return (
     <div style={{ textAlign: "center", padding: "50px" }}>
       <h1 style={{ color: "green" }}>Payment Successful!</h1>
-      {paymentIntentId && <p>Payment Intent ID: {paymentIntentId}</p>}
       <p style={{ color: "black" }}>Thank you for your purchase.</p>
-      <p style={{ color: "black" }}>Your transaction with Stripe has been completed successfully.</p>
+      <p style={{ color: "black" }}>Your transaction with Stripe has been completed successfully. Your transaction details are below: </p>
+      {paymentDetails ? (
+        <div>
+          <h3>ⓢ {paymentDetails.numberOfCoins} Sirch Coins have been added to your account.</h3>
+          <p>You paid: ${paymentDetails.totalAmount} {paymentDetails.currency.toUpperCase()}  </p>
+        </div>
+      ) : (
+        <p>Validating payment...</p>
+      )}
       <Link to="/" style={{ textDecoration: "none", color: "blue" }}>
         Back to Home
       </Link>

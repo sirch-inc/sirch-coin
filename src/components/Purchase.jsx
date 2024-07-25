@@ -47,7 +47,6 @@ export default function Purchase() {
       } else if (error instanceof FunctionsFetchError) {
         console.log('Fetch error: ', error.message);
       } else {
-        console.log("Data:", data);
         setPricePerCoin(data.pricePerCoin);
         setLocalTotalPrice(data.totalAmount);
         setCurrency(data.currency);
