@@ -46,11 +46,17 @@ export default function StripeSuccess() {
         <div style={{ textAlign: "center", padding: "50px" }}>
           <h1 style={{ color: "green" }}>Payment Successful!</h1>
           <p style={{ color: "black" }}>Thank you for your purchase.</p>
-          <p style={{ color: "black" }}>Your transaction with Stripe has been completed successfully. Your transaction details are below: </p>
           <h3>ⓢ {paymentDetails.numberOfCoins} Sirch Coins have been added to your account.</h3>
           <p>You paid: $ {formatPrice(paymentDetails.totalAmount)} {paymentDetails.currency.toUpperCase()} for this transaction.</p>
           {/* TODO: Probably should think about including some kind of receipt ID for customer service inquiries in the future. REPLACE THIS! */}
-          <p>Transaction Reference ID: {paymentDetails.paymentIntentId}</p>
+          {paymentDetails.receipt_link ? (
+            <a target="_blank" href={paymentDetails.receipt_link}>
+              View your Stripe Receipt (opens in new tab)
+            </a>
+          ) : (
+            <p>A Stripe Receipt will be sent to your email address.</p>
+          )
+          }
           <div style={{ textAlign: "center", padding: "50px" }}>
           <Link to="/" className="big-btn-blue">
             Back to Home
