@@ -129,6 +129,12 @@
   align-items: center;
 }
 
+.memo-input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .your-email-input,
 .recipient-email-input {
   margin: 10px 0;
@@ -151,6 +157,7 @@
   outline: none;
 }
 /* End styles for Send Coins */
+
 
 /*  Start Styles for My Account Page */
 .account-container{
@@ -376,29 +383,31 @@ form {
 }
 /* End styles for Balance Inquiry */
 
-/* Start styles for Transfer History */
-.transfers-container {
+
+
+/* Start styles for Transaction History */
+.transactions-container {
   margin: 20px;
   height: 65vh;
   overflow: scroll;
 }
 
-.transfers-header {
+.transactions-header {
   padding-bottom: 20px;
   margin: 20px;
 }
 
-.sent-transfers, .received-transfers, .transfers-headers {
+.transactions, .transactions-headers {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   grid-column-gap: 4px;
   grid-row-gap: 4px;
   }
 
-  .transfers-headers p {
+  .transactions-headers p {
     font-weight: 800;
   }
-/* End styles for Transfer History */
+/* End styles for Transaction History */
 
 
 
