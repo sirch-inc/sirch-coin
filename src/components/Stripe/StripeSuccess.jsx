@@ -51,15 +51,17 @@ export default function StripeSuccess() {
           <p>You paid: $ {formatPrice(paymentDetails.totalAmount)} {paymentDetails.currency.toUpperCase()} for this transaction.</p>
           {/* TODO: Probably should think about including some kind of receipt ID for customer service inquiries in the future. REPLACE THIS! */}
           <p>Transaction Reference ID: {paymentDetails.paymentIntentId}</p>
+          <div style={{ textAlign: "center", padding: "50px" }}>
+          <Link to="/" className="big-btn-blue">
+            Back to Home
+          </Link>
+          </div>
         </div>
       ) : (
+        <div style={{ textAlign: "center", padding: "50px" }}>
         <h1>Please wait, validating payment...</h1>
+        </div>
       )}
-      <div style={{ textAlign: "center", padding: "50px" }}>
-        <Link to="/" className="big-btn-blue">
-          Back to Home
-        </Link>
-      </div>
     </>
   );
 }
