@@ -15,8 +15,10 @@ export default function MyAccount(){
 
   // TODO: Finish and test functions - on hold pending cascade discussions
   function handleDelete(){
+    // eslint-disable-next-line no-unused-vars
     const deleteUser = async (userInTable) => {
       if (userInTable) {
+        // eslint-disable-next-line no-unused-vars
         const { data, error } = await supabase 
         .from('users')
         .delete()
