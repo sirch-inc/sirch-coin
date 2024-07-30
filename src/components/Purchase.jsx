@@ -118,6 +118,10 @@ export default function Purchase() {
     return Number(price).toFixed(2);
   }
 
+  const formatCurrency = (currency) => {
+    return currency.toUpperCase();
+  }
+
   return (
     <div className="purchase-container">
       <div>
@@ -145,8 +149,8 @@ export default function Purchase() {
         {/* TODO: Add "See more" link with info on Stripe/purchasing */}
         <p>Sirch Coins uses the payment provider Stripe for secure transactions. See more...</p>
         { localTotalPrice === 0 ? 
-          <h4>Your total price: {totalPrice} {currency.toUpperCase()}</h4> :
-          <h4>Your total price: ${formatPrice(localTotalPrice)} {currency.toUpperCase()}</h4>
+          <h4>Your total price: {totalPrice} {formatCurrency(currency)}</h4> :
+          <h4>Your total price: ${formatPrice(localTotalPrice)} {formatCurrency(currency)}</h4>
         }
         <button 
           onClick={createPaymentIntent} 
@@ -167,7 +171,7 @@ export default function Purchase() {
                   stripe={stripePromise} 
                   options={options}
                 >
-                  <CheckoutForm coinAmount={coinAmount} totalPrice={totalPrice} setShowCheckoutForm={setShowCheckoutForm} formatPrice={formatPrice} currency={currency} paymentIntentId={paymentIntentId}/>
+                  <CheckoutForm coinAmount={coinAmount} totalPrice={totalPrice} setShowCheckoutForm={setShowCheckoutForm} formatPrice={formatPrice} formatCurrency={formatCurrency} currency={currency} paymentIntentId={paymentIntentId}/>
                 </Elements>
               </dialog>
             </>
