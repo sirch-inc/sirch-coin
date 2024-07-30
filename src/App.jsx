@@ -18,7 +18,6 @@ import Purchase from "./components/Purchase";
 import Transactions from "./components/TransactionHistory/Transactions";
 import Preferences from "./components/Preferences";
 import Help from "./components/Help";
-import Faucet from "./components/Admin/Faucet";
 import StripeSuccess from "./components/Stripe/StripeSuccess";
 import StripeFailure from "./components/Stripe/StripeFailure";
 import "@stripe/stripe-js";
@@ -49,9 +48,6 @@ export default function App() {
           <Route path="/transactions" Component={Transactions}/>
           <Route path="/preferences" Component={Preferences}/>
           <Route path="/help" Component={Help}/>
-          {isLocalEnvironment &&
-          <Route path="/admin/faucet" Component={Faucet}/>
-          }
           <Route path="/Stripe/Success/:paymentIntentId?" Component={StripeSuccess}/>
           <Route path="/Stripe/Failure" Component={StripeFailure}/>
         </Routes>
