@@ -1,12 +1,14 @@
 import { PaymentElement } from "@stripe/react-stripe-js";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
+import supabase from "../../Config/supabaseConfig";
+import { AuthContext } from "../AuthContext";
 
 // eslint-disable-next-line react/prop-types
 export default function CheckoutForm({coinAmount, totalPrice, setShowCheckoutForm, formatPrice, formatCurrency, currency, paymentIntentId}) {
   const stripe = useStripe();
   const elements = useElements();
-
+  const { userInTable } = useContext(AuthContext);
   const [message, setMessage] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -37,10 +39,24 @@ export default function CheckoutForm({coinAmount, totalPrice, setShowCheckoutFor
     setIsProcessing(false);
   };
 
-  // TODO: Replace with supabase function to cancel payment intent
   const handleCancelPaymentIntent = async () => {
     setShowCheckoutForm(false)
-    console.log("Replace this with the cancel payment intent supabase edge function")
+    try {
+      const { data, error } = await supabase.functions.invoke('cancel-payment-intent', {
+        body: {
+          userId: userInTable?.user_id,
+          paymentIntentId: paymentIntentId
+        }
+      });
+
+      if (error) throw error;
+      // TODO: remove console logs
+      if (data) {
+        console.log(data)
+      }
+    } catch (error) {
+        console.log(error)
+    }
   }
 
   return (
