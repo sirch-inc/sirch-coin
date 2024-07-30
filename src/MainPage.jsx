@@ -20,12 +20,6 @@ export default function MainPage() {
       
       {session ? (
         <div className="button-container">
-          {isLocalEnvironment &&
-          <Link to="admin/faucet" className="action-btn">
-              Admin: Faucet
-          </Link>
-          }
-
           <Link to="purchase" className="action-btn">
             Purchase Sirch Coins
           </Link>
