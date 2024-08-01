@@ -14,16 +14,16 @@ export default function CreateAccount() {
 
   const handleSignUp = async (event) => {
     event.preventDefault();
-
+    
     try {
       if (passwordsMatch) {
         const { user, error } = await supabase.auth.signUp({
-          email: email,
-          password: password,
+          email,
+          password,
           options: {
-            emailRedirectTo: 'http://localhost:5173/welcome',
+            emailRedirectTo: `${window.location.origin}/welcome`,
             data: {
-              name: name
+              name
             },
           },
         });
