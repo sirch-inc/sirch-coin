@@ -24,14 +24,18 @@ import "@stripe/stripe-js";
 
 
 export default function App() {
-  // TODO: this is a hack; the "admin" view(s) should be conditionally compiled out of the app in PROD
-  const env = import.meta.env.VITE_ENVIRONMENT;
-  const isLocalEnvironment = env && env.toLowerCase() === 'local';
-
   return (
+    
     <AuthProvider supabase={supabase} >
       <BrowserRouter>
-        <NavBar supabase={supabase} />
+      {import.meta.env.DEV &&
+        <header>
+          <small><strong>
+          {import.meta.env.VITE_BUILD_VERSION} DEV
+          </strong></small>
+        </header>
+      }
+      <NavBar supabase={supabase} />
         <Routes>
           <Route path="/" Component={MainPage}/>
           <Route path="/login" Component={Login}/>
@@ -51,6 +55,11 @@ export default function App() {
           <Route path="/Stripe/Success/:paymentIntentId?" Component={StripeSuccess}/>
           <Route path="/Stripe/Failure" Component={StripeFailure}/>
         </Routes>
+      <footer>
+        <small><strong>
+        Copyright © 2024 Sirch Inc. All Rights Reserved.
+        </strong></small>
+      </footer>
       </BrowserRouter>
     </AuthProvider>
   );
