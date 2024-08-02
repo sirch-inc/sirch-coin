@@ -25,8 +25,7 @@ import "@stripe/stripe-js";
 
 export default function App() {
   return (
-    
-    <AuthProvider supabase={supabase} >
+    <AuthProvider supabase={supabase}>
       <BrowserRouter>
       {import.meta.env.DEV &&
         <header>
