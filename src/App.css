@@ -1,3 +1,24 @@
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  text-align: right;
+  color: red;
+  margin: 4px;
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  left: 0;
+  right: 0;
+  text-align: right;
+  margin: 4px;
+}
+
 /* Styles for Navbar */
 .navbar {
   list-style-type: none;
