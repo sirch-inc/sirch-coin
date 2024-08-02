@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { AuthContext } from "./components/AuthContext";
+import { AuthContext } from "../AuthContext";
 import { useContext } from "react";
 
 
