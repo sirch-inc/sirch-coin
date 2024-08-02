@@ -6,10 +6,6 @@ import { useContext } from "react";
 export default function MainPage() {
   const { session, userInTable } = useContext(AuthContext);
 
-  // TODO: this is a hack; the "admin" view(s) should be conditionally compiled out of the app in PROD
-  const env = import.meta.env.VITE_ENVIRONMENT;
-  const isLocalEnvironment = env && env.toLowerCase() === 'local';
-
   return (
     <>
       {session && userInTable ? (
@@ -50,7 +46,13 @@ export default function MainPage() {
             Help
           </Link>
         </div>
-        )}
+        )
+      }
+      <footer>
+        <small><strong>
+        Copyright © 2024 Sirch Inc. All Rights Reserved.
+        </strong></small>
+      </footer>  
     </>
   );
 }
