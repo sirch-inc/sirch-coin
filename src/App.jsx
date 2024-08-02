@@ -1,10 +1,10 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import supabase from './Config/supabaseConfig'
+import { AuthProvider } from "./components/AuthContext";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import NavBar from "./Nav";
-import { AuthProvider } from "./components/AuthContext";
 import MainPage from "./MainPage";
 import Login from "./components/Account/Login";
 import Logout from "./components/Account/Logout"
@@ -29,8 +29,8 @@ export default function App() {
   return (
     <AuthProvider supabase={supabase}>
       <BrowserRouter>
-      <Header/>
-      <NavBar supabase={supabase} />
+        <Header/>
+        <NavBar supabase={supabase}/>
         <Routes>
           <Route path="/" Component={MainPage}/>
           <Route path="/login" Component={Login}/>
@@ -50,7 +50,7 @@ export default function App() {
           <Route path="/Stripe/Success/:paymentIntentId?" Component={StripeSuccess}/>
           <Route path="/Stripe/Failure" Component={StripeFailure}/>
         </Routes>
-      <Footer/>
+        <Footer/>
       </BrowserRouter>
     </AuthProvider>
   );
