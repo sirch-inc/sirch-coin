@@ -1,6 +1,8 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import supabase from './Config/supabaseConfig'
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 import NavBar from "./Nav";
 import { AuthProvider } from "./components/AuthContext";
 import MainPage from "./MainPage";
@@ -27,13 +29,7 @@ export default function App() {
   return (
     <AuthProvider supabase={supabase}>
       <BrowserRouter>
-      {import.meta.env.DEV &&
-        <header>
-          <small><strong>
-          {import.meta.env.VITE_BUILD_VERSION} DEV
-          </strong></small>
-        </header>
-      }
+      <Header/>
       <NavBar supabase={supabase} />
         <Routes>
           <Route path="/" Component={MainPage}/>
@@ -54,11 +50,7 @@ export default function App() {
           <Route path="/Stripe/Success/:paymentIntentId?" Component={StripeSuccess}/>
           <Route path="/Stripe/Failure" Component={StripeFailure}/>
         </Routes>
-      <footer>
-        <small><strong>
-        Copyright © 2024 Sirch Inc. All Rights Reserved.
-        </strong></small>
-      </footer>
+      <Footer/>
       </BrowserRouter>
     </AuthProvider>
   );
