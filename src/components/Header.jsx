@@ -4,7 +4,7 @@ export default function Header() {
       {import.meta.env.DEV &&
         <header>
           <small><strong>
-          {import.meta.env.VITE_BUILD_VERSION} DEV
+          {import.meta.env.VITE_BUILD_VERSION_VERBOSE} DEV
           </strong></small>
         </header>
       }
