@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import supabase from "../../Config/supabaseConfig"
+import supabase from "../App/supabaseConfig"
 
 
 export default function ForgotPassword() {

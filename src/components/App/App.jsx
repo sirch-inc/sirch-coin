@@ -1,5 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import supabase from '../../Config/supabaseConfig'
+import supabase from './supabaseConfig'
 import { AuthProvider } from "../AuthContext";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Header from "./Header";
