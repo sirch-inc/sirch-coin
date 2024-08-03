@@ -29,6 +29,8 @@ footer {
   right: 0;
   text-align: right;
   margin: 4px;
+  background-color:darkslategray;
+  color: lightgray;
 }
 
 /* Styles for Navbar */
