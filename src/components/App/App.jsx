@@ -1,5 +1,4 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import 'react-tooltip/dist/react-tooltip.css';
 import supabase from './supabaseConfig';
 import { AuthProvider } from "../AuthContext";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
