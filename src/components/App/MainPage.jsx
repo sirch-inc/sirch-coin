@@ -11,7 +11,7 @@ export default function MainPage() {
       {session && userInTable ? (
         <h3 className="page-header">Welcome, {userInTable.name}!</h3>
       ) : (
-        <h3 className="page-header"> Welcome! Please sign in to use Sirch Coins.</h3>
+        <h3 className="page-header"> Welcome! Please sign in to use the Sirch Coins application.</h3>
       )}
       
       {session ? (
