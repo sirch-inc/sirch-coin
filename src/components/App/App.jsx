@@ -23,6 +23,8 @@ import Help from "../Help";
 import StripeSuccess from "../Stripe/StripeSuccess";
 import StripeFailure from "../Stripe/StripeFailure";
 import "@stripe/stripe-js";
+import 'react-tooltip/dist/react-tooltip.css'
+
 
 
 export default function App() {

@@ -31,10 +31,9 @@ footer {
   margin: 4px;
 }
 
-
-
 /* Styles for Navbar */
 .navbar {
+  width: 50vw;
   list-style-type: none;
   margin: 0;
   padding: 0;
