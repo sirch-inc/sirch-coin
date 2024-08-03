@@ -8,11 +8,14 @@ export default function MainPage() {
 
   return (
     <>
+      <h3 className="page-header">
       {session && userInTable ? (
         <h3 className="page-header">Welcome, {userInTable.name}!</h3>
       ) : (
-        <h3 className="page-header"> Welcome! Please sign in to use the Sirch Coins application.</h3>
+        <h3 className="page-header">Welcome! Please sign in to use the Sirch Coins application.</h3>
       )}
+
+      </h3>
       
       {session ? (
         <div className="button-container">
