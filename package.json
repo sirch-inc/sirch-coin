@@ -4,8 +4,15 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev":              ". ./build-variables.sh && vite --mode development",
+    "test":             ". ./build-variables.sh && vite --mode test",
+    "staging":          ". ./build-variables.sh && vite --mode staging",
+    "production":       ". ./build-variables.sh && vite --mode production",
+    "build-dev":        ". ./build-variables.sh && vite build --mode development",
+    "build-test":       ". ./build-variables.sh && vite build --mode test",
+    "build-staging":    ". ./build-variables.sh && vite build --mode staging",
+    "build-production": ". ./build-variables.sh && vite build --mode production",
+    "build":            ". ./build-variables.sh && vite build --mode production",
     "preview": "vite preview",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
   },
@@ -30,6 +37,7 @@
     "react-router-dom": "^6.17.0",
     "react-stripe-checkout": "^2.6.3",
     "react-toastify": "^10.0.5",
+    "react-tooltip": "^5.27.1",
     "stripe": "^14.1.0",
     "web-vitals": "^2.1.4"
   },

@@ -1,21 +1,17 @@
 import { Link } from "react-router-dom";
-import { AuthContext } from "./components/AuthContext";
+import { AuthContext } from "../AuthContext";
 import { useContext } from "react";
 
 
 export default function MainPage() {
   const { session, userInTable } = useContext(AuthContext);
 
-  // TODO: this is a hack; the "admin" view(s) should be conditionally compiled out of the app in PROD
-  const env = import.meta.env.VITE_ENVIRONMENT;
-  const isLocalEnvironment = env && env.toLowerCase() === 'local';
-
   return (
     <>
       {session && userInTable ? (
         <h3 className="page-header">Welcome, {userInTable.name}!</h3>
       ) : (
-        <h3 className="page-header"> Welcome! Please sign in to use Sirch Coins.</h3>
+        <h3 className="page-header">Welcome! Please sign in or create an account to use the Sirch Coins application.</h3>
       )}
       
       {session ? (
@@ -50,7 +46,8 @@ export default function MainPage() {
             Help
           </Link>
         </div>
-        )}
+        )
+      }
     </>
   );
 }

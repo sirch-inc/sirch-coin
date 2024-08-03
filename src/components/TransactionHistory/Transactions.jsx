@@ -2,7 +2,7 @@ import { useContext, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import TransactionCard from "./TransactionCard";
 import { AuthContext } from "../AuthContext";
-import supabase from '../../Config/supabaseConfig';
+import supabase from '../App/supabaseConfig';
 
 
 export default function Transactions() {

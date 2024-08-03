@@ -3,7 +3,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import { Link } from "react-router-dom";
 import { AuthContext } from "./AuthContext";
-import supabase from "../Config/supabaseConfig";
+import supabase from "./App/supabaseConfig";
 import { FunctionsHttpError, FunctionsRelayError, FunctionsFetchError } from "@supabase/supabase-js";
 import CheckoutForm from "./Stripe/CheckoutForm";
 

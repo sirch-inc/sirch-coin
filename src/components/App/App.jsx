@@ -1,37 +1,38 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import supabase from './Config/supabaseConfig'
+import supabase from './supabaseConfig';
+import { AuthProvider } from "../AuthContext";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Header from "./Header";
+import Footer from "./Footer";
 import NavBar from "./Nav";
-import { AuthProvider } from "./components/AuthContext";
 import MainPage from "./MainPage";
-import Login from "./components/Account/Login";
-import Logout from "./components/Account/Logout"
-import CreateAccount from "./components/Account/CreateAccount";
-import VerifyAccount from "./components/Account/VerifyAccount";
-import MyAccount from "./components/Account/MyAccount"
-import Welcome from "./components/Account/Welcome";
-import ForgotPassword from "./components/Account/ForgotPassword";
-import ResetPassword from "./components/Account/ResetPassword";
-import Send from "./components/Send";
-import Balance from "./components/Balance";
-import Purchase from "./components/Purchase";
-import Transactions from "./components/TransactionHistory/Transactions";
-import Preferences from "./components/Preferences";
-import Help from "./components/Help";
-import StripeSuccess from "./components/Stripe/StripeSuccess";
-import StripeFailure from "./components/Stripe/StripeFailure";
+import Login from "../Account/Login";
+import Logout from "../Account/Logout"
+import CreateAccount from "../Account/CreateAccount";
+import VerifyAccount from "../Account/VerifyAccount";
+import MyAccount from "../Account/MyAccount"
+import Welcome from "../Account/Welcome";
+import ForgotPassword from "../Account/ForgotPassword";
+import ResetPassword from "../Account/ResetPassword";
+import Send from "../Send";
+import Balance from "../Balance";
+import Purchase from "../Purchase";
+import Transactions from "../TransactionHistory/Transactions";
+import Preferences from "../Preferences";
+import Help from "../Help";
+import StripeSuccess from "../Stripe/StripeSuccess";
+import StripeFailure from "../Stripe/StripeFailure";
 import "@stripe/stripe-js";
+import 'react-tooltip/dist/react-tooltip.css'
+
 
 
 export default function App() {
-  // TODO: this is a hack; the "admin" view(s) should be conditionally compiled out of the app in PROD
-  const env = import.meta.env.VITE_ENVIRONMENT;
-  const isLocalEnvironment = env && env.toLowerCase() === 'local';
-
   return (
-    <AuthProvider supabase={supabase} >
+    <AuthProvider supabase={supabase}>
       <BrowserRouter>
-        <NavBar supabase={supabase} />
+        <Header/>
+        <NavBar supabase={supabase}/>
         <Routes>
           <Route path="/" Component={MainPage}/>
           <Route path="/login" Component={Login}/>
@@ -51,6 +52,7 @@ export default function App() {
           <Route path="/Stripe/Success/:paymentIntentId?" Component={StripeSuccess}/>
           <Route path="/Stripe/Failure" Component={StripeFailure}/>
         </Routes>
+        <Footer/>
       </BrowserRouter>
     </AuthProvider>
   );

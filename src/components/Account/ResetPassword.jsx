@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import supabase from '../../Config/supabaseConfig'
+import supabase from '../App/supabaseConfig'
 
 
 export default function ResetPassword() {
