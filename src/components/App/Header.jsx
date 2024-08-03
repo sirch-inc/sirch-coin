@@ -7,7 +7,7 @@ export default function Header() {
       {import.meta.env.DEV &&    
         <header>
           <small><strong>
-          <span className="environment-indicator">TEST ENVIRONMENT</span>
+          <span className="environment-indicator">{import.meta.env.MODE.toUpperCase()} ENVIRONMENT</span>
           </strong></small>
         </header>
       }
