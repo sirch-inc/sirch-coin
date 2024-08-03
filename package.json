@@ -7,8 +7,11 @@
     "dev": "VITE_BUILD_VERSION=`git describe --tags --abbrev=0` VITE_BUILD_VERSION_VERBOSE=`git describe --tags --dirty --broken` vite --mode development",
     "test": "VITE_BUILD_VERSION=`git describe --tags --abbrev=0` VITE_BUILD_VERSION_VERBOSE=`git describe --tags --dirty --broken` vite --mode test",
     "staging": "VITE_BUILD_VERSION=`git describe --tags --abbrev=0` VITE_BUILD_VERSION_VERBOSE=`git describe --tags --dirty --broken` vite --mode staging",
-    "production": "VITE_BUILD_VERSION=`git describe --tags --abbrev=0` VITE_BUILD_VERSION_VERBOSE=`git describe --tags --dirty --broken` vite build --mode production; vite preview",
+    "production": "VITE_BUILD_VERSION=`git describe --tags --abbrev=0` VITE_BUILD_VERSION_VERBOSE=`git describe --tags --dirty --broken` vite --mode production",
     "build": "VITE_BUILD_VERSION=`git describe --tags --abbrev=0` VITE_BUILD_VERSION_VERBOSE=`git describe --tags --dirty --broken` vite build --mode production",
+    "build-test": "VITE_BUILD_VERSION=`git describe --tags --abbrev=0` VITE_BUILD_VERSION_VERBOSE=`git describe --tags --dirty --broken` vite build --mode test",
+    "build-staging": "VITE_BUILD_VERSION=`git describe --tags --abbrev=0` VITE_BUILD_VERSION_VERBOSE=`git describe --tags --dirty --broken` vite build --mode staging",
+    "build-production": "VITE_BUILD_VERSION=`git describe --tags --abbrev=0` VITE_BUILD_VERSION_VERBOSE=`git describe --tags --dirty --broken` vite build --mode production",
     "preview": "vite preview",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
   },
