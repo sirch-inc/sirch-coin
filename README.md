@@ -1,4 +1,6 @@
-# Overview
+# SirchCoin Frontend Dashboard
+
+## Overview
 This is the frontend dashboard for SirchCoin, written in React/JSX and uses the `Vite.js` command-line toolchain. The SirchCoin dashboard allows users to login to their accounts, send coins, purchase coins, etc. The interface is meant to be extremely simple and mimic the actions & functionality of an ATM machine
 
 ### Services
@@ -16,7 +18,7 @@ Ask a developer for invites to access any of these services.
 * [sirchcoin.com](https://sirchcoin.com) is our production environment.  Must be deployed manually in Netlify.
 
 
-# SirchCoin Frontend Dashboard: Quickstart
+# Developer Quickstart
 
 ## Prerequisites (one-time-chores)
 
