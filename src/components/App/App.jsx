@@ -18,7 +18,6 @@ import Send from "../Send";
 import Balance from "../Balance";
 import Purchase from "../Purchase";
 import Transactions from "../TransactionHistory/Transactions";
-import Preferences from "../Preferences";
 import Help from "../Help";
 import StripeSuccess from "../Stripe/StripeSuccess";
 import StripeFailure from "../Stripe/StripeFailure";
@@ -47,7 +46,6 @@ export default function App() {
           <Route path="coin/balance" Component={Balance}/>
           <Route path="/purchase" Component={Purchase}/>
           <Route path="/transactions" Component={Transactions}/>
-          <Route path="/preferences" Component={Preferences}/>
           <Route path="/help" Component={Help}/>
           <Route path="/Stripe/Success/:paymentIntentId?" Component={StripeSuccess}/>
           <Route path="/Stripe/Failure" Component={StripeFailure}/>
