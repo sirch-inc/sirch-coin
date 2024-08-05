@@ -31,11 +31,7 @@ export default function MainPage() {
           <Link to="/transactions" className="action-btn">
             Transaction History
           </Link>
-
-          <Link to="preferences" className="action-btn">
-            Preferences
-          </Link>
-
+          
           <Link to="help" className="action-btn">
             Help
           </Link>

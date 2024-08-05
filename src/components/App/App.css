@@ -446,43 +446,6 @@ form {
 /* End styles for Transaction History */
 
 
-
-/* Start styles for Preferences */
-.bottom-btn-container {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-}
-
-.big-btn-red,
-.big-btn-blue {
-  display: inline-block;
-  text-decoration: none;
-  text-align: center;
-  font-size: x-large;
-  font-weight: 600;
-  color: white;
-  border: 7px solid black;
-  border-radius: 30px;
-  padding: 10px;
-  width: 45%;
-  box-sizing: border-box;
-}
-
-.big-btn-red {
-  background-color: #df4343;
-}
-
-.big-btn-blue {
-  background-color: #5590e2;
-}
-
-.page-text {
-  margin-bottom: -55px;
-}
-
-/* End styles for Preferences */
-
 /* Mobile styles */
 
 @media only screen and (min-width: 768px) {
