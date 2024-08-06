@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import LogoutSupabase from "../Account/Logout"
+import LogoutSupabase from "../Account/Logout";
 import { AuthContext } from "../AuthContext";
 
 

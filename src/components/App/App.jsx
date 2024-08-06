@@ -33,7 +33,7 @@ export default function App() {
         <Header/>
         <NavBar supabase={supabase}/>
         <Routes>
-          <Route path="/" Component={MainPage}/>
+          <Route path="/" Component={MainPage} supabase={supabase}/>
           <Route path="/login" Component={Login}/>
           <Route path="/logout" Component={Logout}/>
           <Route path="/create-account" Component={CreateAccount}/>

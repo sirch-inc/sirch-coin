@@ -87,32 +87,50 @@ footer {
 
 /* Start Styles for Main page & buttons */
 
-.mainpage{
+.mainpage {
   display: flex;
-  flex-direction: row-reverse;
-  height:80vh;
+  justify-content: space-between;
+  height: 80vh;
+  width: 100%;
 }
 
-.button-container {
+.right-button-container {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   justify-content: flex-end;
 }
 
-.button-container > a:hover {
-  background-color: #3AD820;
-  color: black;
+.left-button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
 }
 
-.button-container > a {
+.login-button-container{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.right-button-container > a,
+.left-button-container > a, 
+.login-button-container > a {
   text-decoration: none;
   color: white;
 }
 
+.right-button-container > a:hover,
+.left-button-container > a:hover, 
+.login-button-container > a:hover {
+  background-color: #3AD820;
+  color: black;
+}
+
 .action-btn {
   margin-top: 30px;
-  margin-right: 50px;
   width: 260px;
   height: 80px;
   border-radius: 5px;
@@ -122,8 +140,16 @@ footer {
   text-align: center;
   font-weight: 500;
   font-family: Haskoy;
-  font-size: 30px;
   padding: 18px;
+}
+
+.right-button-container {
+  margin-right: 50px;
+}
+
+.left-button-container,
+.login-button-container {
+  margin-left: 50px;
 }
 /* End Styles for Main page buttons */
 
