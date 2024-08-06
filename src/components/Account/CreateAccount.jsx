@@ -61,6 +61,7 @@ export default function CreateAccount() {
             <p>Already have an account? <a href="/login">Log in</a> instead.</p>
             <form onSubmit={handleSignUp}>
               <input 
+                className="account-input"
                 type="email" 
                 name="email" 
                 placeholder="Email" 
@@ -69,6 +70,7 @@ export default function CreateAccount() {
                 required 
                 autoComplete="username" />
               <input 
+                className="account-input"
                 type="password" 
                 name="password" 
                 placeholder="Password"
@@ -76,6 +78,7 @@ export default function CreateAccount() {
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password" required />
               <input 
+                className="account-input"
                 type="password" 
                 name="confirm-password" 
                 placeholder="Confirm Your Password" 
@@ -89,6 +92,7 @@ export default function CreateAccount() {
                   </p>
                 )}
               <input 
+                className="account-input"
                 type="text" 
                 name="name" 
                 placeholder="First Name"
@@ -96,7 +100,7 @@ export default function CreateAccount() {
                 onChange={(e) => setName(e.target.value)} 
                 required
               />
-              <button type="submit">Sign Up</button>
+              <button className="account-button" type="submit">Sign Up →</button>
             </form>
           </>
         ) : (

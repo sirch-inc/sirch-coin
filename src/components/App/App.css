@@ -8,6 +8,19 @@
   src: url(../../../public/Haskoy-Regular.woff2);
 }
 
+h1, h2, h3, h4, h5, h6, li, p, a, button{
+  font-family: Haskoy;
+}
+
+h2 {
+  font-size: 60px;
+  text-align: center;
+}
+
+p {
+  text-align: center;
+}
+
 header {
   position: fixed;
   top: 0;
@@ -87,8 +100,27 @@ footer {
 
 /* Start styles for Login Page */
 
-input .account-input {
-  
+.account-input {
+  background-color:#231F20;
+  color:white;
+  font-family: Haskoy;
+  font-size:30px;
+  padding:10px;
+  padding-left:15px;
+  margin:15px;
+  width: 75%;
+  border-radius: 5px;
+}
+
+.account-button{
+  background-color: #231F20;
+  font-size: 30px;
+  margin-bottom: 25px;
+}
+
+.account-button:hover {
+  background-color: #3AD820;
+  color: black;
 }
 
 /* Start Styles for Main page & buttons */
