@@ -48,11 +48,11 @@ export default function Balance() {
 
   return (
     <>
-      <h3 className="page-header">Balance Inquiry</h3>
       <div className="balance-container">
         <div>
-          <h2>You currently have a balance of:</h2>
-          <h4>{currentBalanceString}</h4>
+          <h2>Balance</h2>
+          {/* TODO: Fix USD conversion dynamically based on sirch to dollar conv. */}
+          <h4 className="balance-box">You&apos;ve got <span className="bold-coin green-coin">ⓢ{currentBalance}</span> / ${currentBalance*0.10}</h4>
         </div>
         <div>
           <button className="balance-btn" onClick={onRefreshBalance}>Refresh Balance</button>

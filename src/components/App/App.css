@@ -400,6 +400,21 @@ button {
   align-items: center;
 }
 
+.balance-box{
+  background-color: #231F20;
+  border-radius: 5px;
+  color:white;
+  height:65px;
+  width: 400px;
+  text-align: center;
+  padding:15px;
+}
+
+.green-coin{
+  font-size: 26px;
+  color:#3AD820;
+}
+
 form {
   display: flex;
   flex-direction: column;
