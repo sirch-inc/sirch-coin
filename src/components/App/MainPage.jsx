@@ -7,12 +7,7 @@ export default function MainPage() {
   const { session, userInTable } = useContext(AuthContext);
 
   return (
-    <>
-      {session && userInTable ? (
-        <h3 className="page-header">Welcome, {userInTable.name}!</h3>
-      ) : (
-        <h3 className="page-header">Welcome! Please sign in or create an account to use the Sirch Coins application.</h3>
-      )}
+    <div className="mainpage">
       
       {session ? (
         <div className="button-container">
@@ -50,6 +45,6 @@ export default function MainPage() {
         </div>
         )
       }
-    </>
+    </div>
   );
 }

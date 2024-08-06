@@ -85,11 +85,19 @@ footer {
 }
 /* End styles for nav bar/header */
 
-/* Start Styles for Main page buttons */
+/* Start Styles for Main page & buttons */
+
+.mainpage{
+  display: flex;
+  flex-direction: row-reverse;
+  height:80vh;
+}
+
 .button-container {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  justify-content: flex-end;
 }
 
 .button-container > a:hover {
@@ -103,8 +111,8 @@ footer {
 }
 
 .action-btn {
-  margin-top: 20px;
-  margin-right: 30px;
+  margin-top: 30px;
+  margin-right: 50px;
   width: 260px;
   height: 80px;
   border-radius: 5px;
