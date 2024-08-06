@@ -174,40 +174,33 @@ export default function Send() {
         </>
         :
         <div>
-          <h3 className="page-header">Send Sirch Coins</h3>
           <div>
-            <h2>You currently have a balance of:</h2>
-            <h1>{currentBalance !== null ? "ⓢ " + currentBalance : "Loading"} Sirch Coins</h1>
-            <p>
-              To send ⓢ Sirch Coins to anyone with a Sirch Coins account,
-              please specify the amount and the recipient&apos;s email address below.</p>
+            <h2>Send</h2>
           </div>
           <form onSubmit={handleSubmit}>
             <div className="price-container">
-              <label htmlFor="amountToSend">Number of ⓢ Sirch Coins to send</label>
               <input
                 id="amountToSend"
                 name="amountToSend"
-                placeholder=""
+                placeholder="how much?"
                 required
                 type="number"
                 min="1"
                 max={currentBalance || "0"}
                 step="1"
-                className="cash1-input other-amount-input"
+                className="coin-input"
                 value={sendAmount}
                 onChange={handleAmountInputChange}
               />
 
               <div className="email-inputs">
-                <label htmlFor="recipientEmailAddress">Recipient&apos;s Email Address</label>
                 <input
                   id="recipientEmailAddress"
                   name="recipientEmailAddress"
-                  placeholder=""
+                  placeholder="to whom?"
                   required
                   type="email"
-                  className="cash1-input recipient-email-input"
+                  className="coin-input"
                   value={recipientEmail}
                   onChange={handleRecipientEmailAddressChange}
                   autoComplete="email"
@@ -215,13 +208,12 @@ export default function Send() {
               </div>
 
               <div className="memo-input">
-                <label htmlFor="memo">Optional Memo / Reason / Note</label>
                 <input
                   id="memo"
                   name="memo"
-                  placeholder="A gift for you..."
+                  placeholder="leave a note?"
                   type="text"
-                  className="cash1-input recipient-email-input"
+                  className="coin-input"
                   value={memo}
                   maxLength="60"
                   onChange={handleMemoChange}
@@ -229,12 +221,17 @@ export default function Send() {
                 />
               </div>
 
+              {/* TODO: Dynamically update dollar amount based on coin to dollar */}
+              <div>
+                <p>You now have <span className="bold-coin"> {currentBalance !== null ? "ⓢ " + currentBalance : "Loading"}</span> / $ {currentBalance*0.10}</p>
+              </div>
+
             </div>
             <div className="bottom-btn-container">
-              <Link to="/" className="big-btn-red">
+              <Link to="/" className="big-btn">
                 Back
               </Link>
-              <button type="submit" className="send-btn big-btn-blue">
+              <button type="submit" className="send-btn big-btn">
                 Send
               </button>
             </div>

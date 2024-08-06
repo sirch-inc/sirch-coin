@@ -8,7 +8,12 @@
   src: url(../../../public/Haskoy-Regular.woff2);
 }
 
-h1, h2, h3, h4, h5, h6, li, p, a, button{
+@font-face {
+  font-family: Haskoy-bold;
+  src: url(../../../public/Haskoy-Bold.woff2);
+}
+
+h1, h2, h3, h4, h5, h6, li, p, a, button, input {
   font-family: Haskoy;
 }
 
@@ -103,7 +108,6 @@ footer {
 .account-input {
   background-color:#231F20;
   color:white;
-  font-family: Haskoy;
   font-size:30px;
   padding:10px;
   padding-left:15px;
@@ -193,86 +197,46 @@ footer {
 
 
 /* Start Styles for Send Coins */
-.page-text {
-  text-align: center;
-  font-size: x-large;
-  margin-top: 100px;
+.price-container{
+  margin-top:60px;
+  position:relative;
+  display: inline-block;
 }
 
-.cash-input,
-.total-input {
+.coin-input {
   margin: 0 auto;
   padding: 20px;
   width: 350px;
-  background-color: #5590e2;
+  background-color: #231F20;
   color: white;
   border: none;
-  font-size: 18px;
+  font-size: 24px;
+  margin:10px;
 }
 
-.cash-input::placeholder,
-.total-input::placeholder {
+.coin-input::before{
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 70%; 
+  width: 2px;
+  background-color: white;
+  z-index: 1;
+}
+
+.coin-input::placeholder {
   color: white;
   font-weight: 500;
 }
 
-.cash-input:focus,
-.total-input:focus {
-  outline: none;
+.bold-coin{
+  font-family: Haskoy-bold;
+  font-size: 21px;
 }
 
-.other-amount-input {
-  margin: 10px 0;
-  padding: 20px;
-  width: 350px;
-  background-color: #5590e2;
-  color: white;
-  border: none;
-  font-size: 18px;
-}
 
-.other-amount-input::placeholder {
-  color: white;
-  font-weight: 500;
-}
-
-.other-amount-input:focus {
-  outline: none;
-}
-
-.email-inputs {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.memo-input {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.your-email-input,
-.recipient-email-input {
-  margin: 10px 0;
-  padding: 20px;
-  width: 350px;
-  background-color: #5590e2;
-  color: white;
-  border: none;
-  font-size: 18px;
-}
-
-.your-email-input::placeholder,
-.recipient-email-input::placeholder {
-  color: white;
-  font-weight: 500;
-}
-
-.your-email-input:focus,
-.recipient-email-input:focus {
-  outline: none;
-}
 /* End styles for Send Coins */
 
 
@@ -407,33 +371,24 @@ button {
   padding: 20px;
 }
 
-.big-btn-red {
-  background-color: #df4343;
+.big-btn {
+  background-color: #231F20;
   text-decoration: none;
   text-align: center;
   font-size: x-large;
   font-weight: 600;
   color: white;
-  border: 7px solid black;
-  border-radius: 30px;
+  border-radius: 5px;
   padding: 10px;
   margin-bottom: 20px;
   width: 300px;
 }
 
-.big-btn-blue {
-  background-color: #5590e2;
-  text-decoration: none;
-  text-align: center;
-  font-size: x-large;
-  font-weight: 600;
-  color: white;
-  border: 7px solid black;
-  border-radius: 30px;
-  padding: 10px;
-  margin-bottom: 20px;
-  width: 300px;
+.big-btn:hover{
+  background-color: #3AD820;
+  color: black;
 }
+
 /* End of styles for buy coin (Deposit) page
 
 
@@ -556,8 +511,7 @@ form {
     max-width: 300px;
   }
 
-  .big-btn-red,
-  .big-btn-blue {
+  .big-btn {
     width: 70%;
     max-width: 350px;
   }
@@ -568,10 +522,6 @@ form {
   .page-text {
     margin-top: 15px;
     font-size: large;
-  }
-
-  .price-container {
-    margin-top: 5px;
   }
 
   .first-row,
@@ -608,8 +558,7 @@ form {
     font-size: 18px;
   }
 
-  .big-btn-red,
-  .big-btn-blue {
+  .big-btn {
     width: 70%;
     max-width: 350px;
   }
@@ -619,9 +568,6 @@ form {
 /* Start Styles for send money Mobile */
 @media (max-width: 767px) {
   .send-coin-container {
-  }
-
-  .price-container {
   }
 
   .cash-btn {
@@ -640,8 +586,7 @@ form {
     padding: 10px;
   }
 
-  .big-btn-red,
-  .big-btn-blue {
+  .big-btn {
     width: 100%;
     margin-bottom: 10px;
   }
