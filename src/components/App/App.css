@@ -92,18 +92,6 @@ footer {
   align-items: flex-end;
 }
 
-.button-container > a {
-  margin-top: 20px;
-  margin-right: 30px;
-  padding: 25px;
-  width: 363px;
-  height: 80px;
-  list-style: none;
-  border-radius: 5px;
-  font-size: 20px;
-  background-color: #231F20;
-}
-
 .button-container > a:hover {
   background-color: #3AD820;
   color: black;
@@ -115,10 +103,19 @@ footer {
 }
 
 .action-btn {
+  margin-top: 20px;
+  margin-right: 30px;
+  width: 260px;
+  height: 80px;
+  border-radius: 5px;
+  font-size: 30px;
+  background-color: #231F20;
   cursor: pointer;
   text-align: center;
   font-weight: 500;
   font-family: Haskoy;
+  font-size: 30px;
+  padding: 18px;
 }
 /* End Styles for Main page buttons */
 
@@ -479,12 +476,6 @@ form {
   .page-header {
     padding: 10px;
     font-size: 1.2em;
-  }
-
-  .button-container > a {
-    width: 60%;
-    font-size: 20px;
-    max-width: 300px;
   }
 
   .cash-input,

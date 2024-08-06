@@ -33,15 +33,19 @@ export default function MainPage() {
           <Link to="purchase" className="action-btn">
             Buy ⓢ
           </Link>
-          
+
           <Link to="help" className="action-btn">
             Help
           </Link>
         </div>
         ) : (
         <div className="button-container">
-          <Link to="help" className="action-btn">
-            Help
+          <Link to="login" className="action-btn">
+            Log in
+          </Link>
+
+          <Link to="create-account" className="action-btn">
+            Sign up
           </Link>
         </div>
         )
