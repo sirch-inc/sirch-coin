@@ -16,20 +16,22 @@ export default function MainPage() {
       
       {session ? (
         <div className="button-container">
-          <Link to="purchase" className="action-btn">
-            Purchase Sirch Coins
-          </Link>
 
           <Link to="coin/send" className="action-btn">
-            Send Sirch Coins
+            Send ⓢ
           </Link>
 
+
           <Link to="coin/balance" className="action-btn">
-            Balance Inquiry
+            Balance
           </Link>
 
           <Link to="/transactions" className="action-btn">
-            Transaction History
+            History
+          </Link>
+          
+          <Link to="purchase" className="action-btn">
+            Buy ⓢ
           </Link>
           
           <Link to="help" className="action-btn">
