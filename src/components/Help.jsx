@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 export default function Help() {
   return (
     <>
-      <h3 className="page-header">Help</h3>
+      <h2>Help</h2>
       <div className="balance-container">
         <p className="page-text">
           Sorry, this page isn&apos;t available yet
@@ -13,7 +13,7 @@ export default function Help() {
           <strong>Please try again later</strong>
         </p>
         <div className="bottom-btn-container">
-          <Link to="/" className="big-btn-red">
+          <Link to="/" className="big-btn">
             Back
           </Link>
         </div>

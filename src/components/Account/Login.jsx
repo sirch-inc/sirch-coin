@@ -46,6 +46,7 @@ export default function Login() {
           <p> New users should <a href="/create-account">create an account</a> first.</p>
           <form onSubmit={handleLogin}>
             <input
+              className="account-input"
               type="email"
               placeholder="Email"
               value={email}
@@ -54,6 +55,7 @@ export default function Login() {
               autoComplete="username"
             />
             <input
+              className="account-input"
               type="password"
               placeholder="Password"
               value={password}
@@ -61,7 +63,7 @@ export default function Login() {
               required
               autoComplete="current-password"
             />
-            <button type="submit">Log In</button>
+            <button className="account-button" type="submit">Log In →</button>
             <a href="/forgot-password">Forgot Password?</a>
           </form>
           </>
@@ -86,7 +88,7 @@ export default function Login() {
               required
               autoComplete="current-password"
             />
-            <button type="submit">Log In</button>
+            <button className="account-button" type="submit">Log In →</button>
             <a href="/forgot-password">Forgot Password?</a>
           </form>
           <div>

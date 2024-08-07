@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import LogoutSupabase from "../Account/Logout"
+import LogoutSupabase from "../Account/Logout";
 import { AuthContext } from "../AuthContext";
 
 
@@ -29,29 +29,6 @@ export default function NavBar({ supabase }) {
         </li>
         <li className="navbar-item">
           <a href="/">Sirch Coin</a>
-        </li>
-        <li>
-          {session ? (
-            <ul className='navbar-links'>
-              <li>
-                <a href='/account'>My Account </a>
-              </li>
-              <li>
-                <a href="#" onClick={handleLogout}>Logout</a>
-              </li>
-            </ul>
-          ) : (
-            <>
-              <ul className='navbar-links'>
-                <li>
-                  <a href="login">Login</a>
-                </li>
-                <li>
-                  <a href="create-account">Create an Account</a>
-                </li>
-              </ul>
-            </>
-          )}
         </li>
       </ul>
     </>

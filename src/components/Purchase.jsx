@@ -123,8 +123,8 @@ export default function Purchase() {
   }
 
   return (
-    <div className="purchase-container">
-      <div>
+    <div>
+      <div className="purchase-container">
         <h2>Purchase Sirch Coins</h2>
         <h3>How many Sirch Coins would you like to purchase?</h3>
         {/* TODO: Format for other currencies if we decide to accept them in the future */}
@@ -132,19 +132,21 @@ export default function Purchase() {
           <p>Current price per coin: {pricePerCoin} </p> : 
           <p>Current price per coin: ${formatPrice(pricePerCoin)} </p>
           }
-        <span className="sirch-symbol-large">ⓢ</span>
-        <input
-          className="coin-amount-input"
-          type="number"
-          name="coins"
-          placeholder="Enter the number of coins you want to purchase"
-          value={localCoinAmount}
-          onChange={handleAmountChange}
-          onBlur={handleBlur}
-          min="5"
-          step="1"
-          required
-        />
+        <div className="purchase-form">
+          <span className="sirch-symbol-large">ⓢ</span>
+          <input
+            className="coin-input"
+            type="number"
+            name="coins"
+            placeholder="Enter the number of coins you want to purchase"
+            value={localCoinAmount}
+            onChange={handleAmountChange}
+            onBlur={handleBlur}
+            min="5"
+            step="1"
+            required
+          />
+        </div>
         <p><strong>Note: At the current time, a minimum purchase of 5 Sirch Coins is required.</strong></p>
         {/* TODO: Add "See more" link with info on Stripe/purchasing */}
         <p>Sirch Coins uses the payment provider Stripe for secure transactions. See more...</p>
@@ -155,12 +157,12 @@ export default function Purchase() {
         <button 
           onClick={createPaymentIntent} 
           disabled={coinAmountError || localCoinAmount < 5}
+          className="big-btn"
         >
-          Proceed to Payment
+          Buy with Stripe
         </button>
       </div>
       <div>
-        {/* TODO: Fix remounting of Elements - clientSecret cannot change */}
         <div>
           {stripePromise && clientSecret && showCheckoutForm && (
             <>
@@ -179,10 +181,10 @@ export default function Purchase() {
         </div>
       </div>
       <div className="bottom-btn-container">
-        <Link to="/" className="big-btn-red">
+        <Link to="/" className="big-btn">
           Back
         </Link>
-        <Link to="/purchase" className="big-btn-blue">
+        <Link to="/purchase" className="big-btn">
           Will do something eventually
         </Link>
       </div>

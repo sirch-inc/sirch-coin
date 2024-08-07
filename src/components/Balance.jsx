@@ -33,7 +33,7 @@ export default function Balance() {
   useEffect(() => {
     // (Re)fetch the user's balance when the component mounts
     fetchUserBalance(userInTable);
-  }, [userBalance]);
+  }, [userBalance, userInTable]);
 
   const onRefreshBalance = async (event) => {
     event.preventDefault();
@@ -42,27 +42,23 @@ export default function Balance() {
     fetchUserBalance(userInTable);
   };
 
-  let currentBalanceString = currentBalance !== null
-    ?  currentBalance + " Sirch Coins"
-    :  "Loading...";
-
   return (
     <>
-      <h3 className="page-header">Balance Inquiry</h3>
       <div className="balance-container">
         <div>
-          <h2>You currently have a balance of:</h2>
-          <h4>{currentBalanceString}</h4>
+          <h2>Balance</h2>
+          {/* TODO: Fix USD conversion dynamically based on sirch to dollar conv. */}
+          <h4 className="balance-box">You&apos;ve got <span className="bold-coin green-coin">ⓢ{currentBalance}</span> / ${(currentBalance*0.10).toFixed(2)}</h4>
         </div>
         <div>
           <button className="balance-btn" onClick={onRefreshBalance}>Refresh Balance</button>
         </div>
         {error && <p className="text-danger">{error}</p>}
         <div className="bottom-btn-container">
-          <Link to="/" className="big-btn-red">
+          <Link to="/" className="big-btn">
             Back
           </Link>
-          <Link to="/purchase" className="big-btn-blue">
+          <Link to="/purchase" className="big-btn">
             Buy More
           </Link>
         </div>

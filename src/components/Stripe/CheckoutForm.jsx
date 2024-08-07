@@ -66,13 +66,13 @@ export default function CheckoutForm({coinAmount, totalPrice, setShowCheckoutFor
     <p><em>This price is locked in for the next 15 minutes. After that time, you may need to refresh and try again.</em></p>
     <form id="payment-form" onSubmit={handleSubmit}>
       <PaymentElement id="payment-element" />
-      <button disabled={isProcessing || !stripe || !elements} id="submit">
+      <button  className="big-btn" disabled={isProcessing || !stripe || !elements} id="submit">
         <span id="button-text">
           {isProcessing ? "Processing ... " : "Buy Sirch Coins"}
         </span>
       </button>
       {/* TODO: add onClick handleCancelPaymentIntent */}
-      <button onClick={handleCancelPaymentIntent}>
+      <button className="big-btn" onClick={handleCancelPaymentIntent}>
         Cancel
       </button>
       {/* Show any error or success messages */}
