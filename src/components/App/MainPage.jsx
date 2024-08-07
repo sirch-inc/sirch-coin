@@ -53,7 +53,14 @@ export default function MainPage({ supabase }) {
 
         </>
         ) : (
-        <div className="login-button-container">
+        <>
+          <div className="left-button-container">
+          <Link to="$" className="action-btn">
+            About
+          </Link>
+          </div>
+
+        <div className="right-button-container">
           <Link to="login" className="action-btn">
             Log in
           </Link>
@@ -62,6 +69,7 @@ export default function MainPage({ supabase }) {
             Sign up
           </Link>
         </div>
+        </>
         )
       }
     </div>

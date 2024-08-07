@@ -154,23 +154,14 @@ footer {
   justify-content: flex-end;
 }
 
-.login-button-container{
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: flex-end;
-}
-
 .right-button-container > a,
-.left-button-container > a, 
-.login-button-container > a {
+.left-button-container > a {
   text-decoration: none;
   color: white;
 }
 
 .right-button-container > a:hover,
-.left-button-container > a:hover, 
-.login-button-container > a:hover {
+.left-button-container > a:hover {
   background-color: #3AD820;
   color: black;
 }
@@ -193,8 +184,7 @@ footer {
   margin-right: 50px;
 }
 
-.left-button-container,
-.login-button-container {
+.left-button-container {
   margin-left: 50px;
 }
 /* End Styles for Main page buttons */
