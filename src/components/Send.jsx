@@ -223,7 +223,7 @@ export default function Send() {
 
               {/* TODO: Dynamically update dollar amount based on coin to dollar */}
               <div>
-                <p>You now have <span className="bold-coin"> {currentBalance !== null ? "ⓢ " + currentBalance : "Loading"}</span> / $ {currentBalance*0.10}</p>
+                <p>You now have <span className="bold-coin"> {currentBalance !== null ? "ⓢ " + currentBalance : "Loading"}</span> / $ {(currentBalance*0.10).toFixed(2)}</p>
               </div>
 
             </div>
