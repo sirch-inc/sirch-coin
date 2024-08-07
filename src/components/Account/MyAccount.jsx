@@ -39,10 +39,10 @@ export default function MyAccount(){
 
   return(
     <div className="account-container">
-      <h1>My Account</h1>
+      <h2>My Account</h2>
 
       <div className="account personal-info">
-        <h2>Personal Information</h2>
+        <h3>Personal Information</h3>
         <p>Name: {userInTable?.name}</p>
         <p>Email: {userInTable?.email}</p>
         {/* TODO: Remove UserID */}
@@ -50,21 +50,23 @@ export default function MyAccount(){
         <p>Sirch Coins Balance: {userBalance?.balance}</p>
       </div>
 
-      <div className="account actions">
-            <h2>Account Actions</h2>
+      <div className="account-actions">
+            <h3>Account Actions</h3>
             <p>Change Your Password</p>
-            <button>Change Password</button>
+            <button className="big-btn">Change Password</button>
             <p>Delete Your Account</p>
             <p>Note: This action cannot be undone. Once you delete your account, it is gone forever.</p>
-            <button className="danger" onClick={showDeleteConfirmation}>Permanently Delete</button>
+            <button className="big-btn danger" onClick={showDeleteConfirmation}>Permanently Delete</button>
       </div>
 
       {deleteDialogBox && 
         <dialog open className="delete-dialog">
           <h2>Confirm Account Deletion</h2>
-          <p>Are you sure you want to permanently delete your account? You will lose access to all of your Sirch Coins and will not be able to get them back.</p>
-          <button className="danger" onClick={handleDelete}>Yes, permanently delete</button>
-          <button onClick={() => setDeleteDialogBox(false)}>Cancel</button>
+          <p className="delete-msg">Are you sure you want to permanently delete your account? You will lose access to all of your Sirch Coins and will not be able to get them back.</p>
+          <div className="bottom-btn-container">
+            <button className="big-btn danger" onClick={handleDelete}>Yes, permanently delete</button>
+            <button className="big-btn" onClick={() => setDeleteDialogBox(false)}>Cancel</button>
+          </div>
         </dialog> 
       }
     </div>
