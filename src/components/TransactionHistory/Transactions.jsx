@@ -45,7 +45,7 @@ export default function Transactions() {
 
   return (
     <>
-      <h3 className="page-header">Transaction History</h3>
+      <h2>Transaction History</h2>
       <div className="transactions-container">
         <div className="transactions-headers">
           <p>Date</p>
@@ -70,7 +70,7 @@ export default function Transactions() {
           } 
         </div>        
         <div className="bottom-btn-container">
-          <Link to="/" className="big-btn-red">
+          <Link to="/" className="big-btn">
             Back
           </Link>
         </div>
