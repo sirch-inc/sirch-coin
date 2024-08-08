@@ -189,6 +189,34 @@ footer {
 }
 /* End Styles for Main page buttons */
 
+/* Start Styles for About Page */
+
+.about-container{
+  position: fixed;
+  background-color: #231F20;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 0;
+  grid-column-gap: 10px;
+  grid-row-gap: 0px;
+}
+
+.about-img{
+  padding:50px;
+}
+
+.about-text{
+  padding: 40px;
+}
+
+.about-container p {
+  color:white;
+  font-size: 28px;
+}
+
+/* End Styles for About Page */
+
 
 /* Start Styles for Send Coins */
 .price-container{
@@ -400,6 +428,24 @@ button {
 }
 
 .big-btn:hover{
+  background-color: #3AD820;
+  color: black;
+}
+
+.big-btn-light {
+  background-color: #F7F7F7;
+  text-decoration: none;
+  text-align: center;
+  font-size: x-large;
+  font-weight: 600;
+  color: #231F20;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 20px;
+  width: 300px;
+}
+
+.big-btn-light:hover{
   background-color: #3AD820;
   color: black;
 }
