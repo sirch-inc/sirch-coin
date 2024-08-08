@@ -1,4 +1,4 @@
-import coin from "../../public/ⓢ.png"
+import coinSymbol from "../../public/ⓢ.png"
 import { Link } from "react-router-dom";
 
 export default function About() {
@@ -7,7 +7,7 @@ export default function About() {
         <>
             <div className="about-container">
                 <div className="about-img">
-                    <img src={coin}></img>
+                    <img src={coinSymbol}></img>
                 </div>
             <div className="about-text">
                 <p>Sirch Coins are a unique form of currency integral to the Sirch search platform. Unlike traditional cryptocurrencies, Sirch Coins are specifically tied to the ad space on the Sirch platform. This connection to ad space is reminiscent of the gold standard, where the Federal Reserve held gold to back the value of the dollar. To buy ad space on Sirch, one must use Sirch Coins, which are burned once used, limiting their supply and potentially increasing their value over time. </p>
