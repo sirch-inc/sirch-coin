@@ -69,7 +69,7 @@ export default function Transactions() {
           <p>Loading...</p>
           } 
         </div>        
-        <div className="bottom-btn-container">
+        <div className="bottom-btn-container-light">
           <Link to="/" className="big-btn">
             Back
           </Link>

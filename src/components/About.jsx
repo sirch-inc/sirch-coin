@@ -16,7 +16,7 @@ export default function About() {
             </div>
             </div>
         
-            <div className="bottom-btn-container">
+            <div className="bottom-btn-container-light">
                 <Link to="/" className="big-btn-light">
                 Back
                 </Link>

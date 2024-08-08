@@ -213,6 +213,7 @@ footer {
 .about-container p {
   color:white;
   font-size: 28px;
+  text-align: justify;
 }
 
 /* End Styles for About Page */
@@ -430,6 +431,17 @@ button {
 .big-btn:hover{
   background-color: #3AD820;
   color: black;
+}
+
+.bottom-btn-container-light {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: start;
+  margin-top: 20px;
+  padding: 20px;
 }
 
 .big-btn-light {
