@@ -73,6 +73,7 @@ export default function Login() {
             <p>New users should <a href="/create-account">create an account</a> first.</p>
             <form onSubmit={handleLogin}>
             <input
+              className="account-input"
               type="email"
               placeholder="Email"
               value={email}
@@ -81,6 +82,7 @@ export default function Login() {
               autoComplete="username"
             />
             <input
+              className="account-input"
               type="password"
               placeholder="Password"
               value={password}
