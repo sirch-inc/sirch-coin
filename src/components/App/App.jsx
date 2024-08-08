@@ -6,6 +6,7 @@ import Header from "./Header";
 import Footer from "./Footer";
 import NavBar from "./Nav";
 import MainPage from "./MainPage";
+import About from "../About"
 import Login from "../Account/Login";
 import Logout from "../Account/Logout"
 import CreateAccount from "../Account/CreateAccount";
@@ -40,6 +41,7 @@ export default function App() {
           <Route path="/verify-account" Component={VerifyAccount}/>
           <Route path="/account" Component={MyAccount}/>
           <Route path="/welcome" Component={Welcome}/>
+          <Route path="/about" Component={About}/>
           <Route path="/forgot-password" Component={ForgotPassword}/>
           <Route path="/reset-password" Component={ResetPassword}/>
           <Route path="coin/send" Component={Send}/>

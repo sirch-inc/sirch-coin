@@ -55,7 +55,7 @@ export default function MainPage({ supabase }) {
         ) : (
         <>
           <div className="left-button-container">
-          <Link to="$" className="action-btn">
+          <Link to="about" className="action-btn">
             About
           </Link>
           </div>
