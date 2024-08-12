@@ -6,11 +6,9 @@
   "scripts": {
     "dev":              ". ./build-variables.sh && vite --mode development",
     "test":             ". ./build-variables.sh && vite --mode test",
-    "staging":          ". ./build-variables.sh && vite --mode staging",
     "production":       ". ./build-variables.sh && vite --mode production",
     "build-dev":        ". ./build-variables.sh && vite build --mode development",
     "build-test":       ". ./build-variables.sh && vite build --mode test",
-    "build-staging":    ". ./build-variables.sh && vite build --mode staging",
     "build-production": ". ./build-variables.sh && vite build --mode production",
     "build":            ". ./build-variables.sh && vite build --mode production",
     "preview": "vite preview",
