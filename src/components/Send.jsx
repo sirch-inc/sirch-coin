@@ -69,14 +69,26 @@ export default function Send() {
     }
   
     try {
-      // Find the recipient user by email
-      const { data: fetchRecipientData, error: fetchRecipientError } = await supabase
-        .from("users")
-        .select("*")
-        .eq("email", recipientEmail)
-        .single();
-
+        const { data: fetchRecipientData, error: fetchRecipientError } = await supabase.functions.invoke('does_user_exist_with_email', {
+          body: {
+            userId: userInTable.user_id,
+            email: recipientEmail
+          }
+        });
+  
       if (fetchRecipientError) {
+        // TODO: hande this error gracefully
+        alert('Error checking recipient exists');
+        return;
+      }
+
+      if (fetchRecipientData.isMe) {
+        // TODO: handle this gracefully
+        alert("You cannot send ⓢ Sirch Coins to yourself!")
+        return;
+      }
+
+      if (!fetchRecipientData.exists) {
         setRecipientError(true);
 
         // TODO: either rework this use case, or conduct the invitation on the server
@@ -97,11 +109,6 @@ export default function Send() {
         return;
       }
 
-      if (fetchRecipientData.user_id == userInTable.user_id) {
-        alert("You cannot send ⓢ Sirch Coins to yourself!")
-        return;
-      }
-      
       // verify the sender has sufficient balance
       if (sendAmount > currentBalance) {
         toast.error('Insufficient balance', {
@@ -111,20 +118,27 @@ export default function Send() {
         return;
       }
 
-      // Call the RPC function to handle the transfer
-      const { data, transferError } = await supabase.rpc("transfer_coins", {
-        sender_id: userInTable.user_id,
-        receiver_id: fetchRecipientData.user_id,
-        amount: sendAmount,
-        memo
+      const { data: transferData, error: transferError } = await supabase.functions.invoke('transfer_coins', {
+        body: {
+          sender_id: userInTable.user_id,
+          recipient_id: fetchRecipientData.user_id,
+          amount: sendAmount,
+          memo
+        }
       });
+
+      if (transferError) {
+        // TODO: hande this error gracefully
+        alert('Error transferring coins');
+        return;
+      }
 
       if (transferError?.message) {
         toast.error(transferError?.message, {
           position: "top-right",
         });
         // FIXME: hack to get around linter
-        console.log("Data", data);
+        console.log("Data", transferData);
       } else {
         toast.success("ⓢ " + sendAmount + " successfully sent to " + recipientEmail, {
           position: "top-right",
@@ -138,11 +152,12 @@ export default function Send() {
         fetchUserBalance(userInTable);
       }
     } catch (exception) {
+      console.error("An exception occurred:", exception);
+
       // TODO: what to display here?
       toast.error('An exception occurred', {
         position: "top-right",
       });
-      console.error("An exception occurred:", exception);
     }
   };
 
