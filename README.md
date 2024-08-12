@@ -13,8 +13,8 @@ Ask a developer for invites to access any of these services.
 * Domain/DNS:  Godaddy (for now).  Josh can provide access if necessary.
 
 ### Hosts
-* [test.sirchcoin.com](https://test.sirchcoin.com) is for testing in our "dev/test" sandboxes.  Autodeploys.
-* [sirchcoin.com](https://sirchcoin.com) is our production environment.  Must be deployed manually in Netlify.
+* [testallthethings.sirchcoin.com](https://testallthethings.sirchcoin.com) is for testing in our "dev/test" sandboxes.  Autodeploys.
+* [sirchcoin.com](https://sirchcoin.com) is our production environment.  Deployed manually in Netlify.
 
 
 # Developer Quickstart
@@ -52,6 +52,6 @@ Ask a developer for invites to access any of these services.
 ## Deployment / Dependencies
 
 ### Deployment Status
-* [Test](https://test.sirchcoin.com): [![Netlify Status](https://api.netlify.com/api/v1/badges/b698fbd0-b01b-43a5-8aa7-7586633a38a6/deploy-status)](https://app.netlify.com/sites/test-sirchcoin/deploys)
+* [Test](https://testallthethings.sirchcoin.com): [![Netlify Status](https://api.netlify.com/api/v1/badges/b698fbd0-b01b-43a5-8aa7-7586633a38a6/deploy-status)](https://app.netlify.com/sites/testallthethings-sirch-coin/deploys)
 * [Production](https://sirchcoin.com): [![Netlify Status](https://api.netlify.com/api/v1/badges/a61cc530-886d-4ceb-b386-bc37b9cddc78/deploy-status)](https://app.netlify.com/sites/sirch-coin/deploys)
 
