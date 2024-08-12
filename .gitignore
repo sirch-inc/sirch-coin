@@ -2,15 +2,10 @@
 node_modules
 dist
 dist-ssr
-*.local
 
 
 ######################### environments
-# .env.local
-# .env.development.local
-# .env.test.local
-# .env.staging.local
-# .env.production.local
+*.local
 
 
 ######################### production
