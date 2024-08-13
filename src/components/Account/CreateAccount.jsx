@@ -27,10 +27,12 @@ export default function CreateAccount() {
             },
           },
         });
+
         if (error) {
           // TODO: surface this error...
           throw error;
         }
+
         if (!user) {
           // TODO: do something with user
         }

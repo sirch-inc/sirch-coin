@@ -1,6 +1,6 @@
 export default function VerifyAccount() {
   return(
-    // TODO: Style component and add customization (ie. "An email confirmation link was sent to [usersEmail@whaterver.com")
+    // TODO: Style component and add customization (ie. "An email confirmation link was sent to [users@somewhere.com]")
     // TODO: Only make page accessible to a newly created user
     <>
       <h1>Please Check Your Email</h1>
