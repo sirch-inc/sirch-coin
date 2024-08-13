@@ -70,5 +70,5 @@ export default function MyAccount(){
         </dialog> 
       }
     </div>
-)
+  )
 }

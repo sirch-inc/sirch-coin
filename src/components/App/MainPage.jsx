@@ -28,11 +28,9 @@ export default function MainPage({ supabase }) {
           </div>
 
           <div className="right-button-container">
-
             <Link to="coin/send" className="action-btn">
               Send ⓢ
             </Link>
-
 
             <Link to="coin/balance" className="action-btn">
               Balance
