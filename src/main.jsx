@@ -6,6 +6,8 @@ import "./components/App/App.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
+document.title = import.meta.env.VITE_PAGE_TITLE;
+
 root.render(
   <React.StrictMode>
     <App/>
