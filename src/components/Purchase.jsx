@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext, useMemo } from "react";
-import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
 import { Link } from "react-router-dom";
 import { AuthContext } from "./AuthContext";
 import supabase from "./App/supabaseConfig";
@@ -173,7 +173,15 @@ export default function Purchase() {
                   stripe={stripePromise} 
                   options={options}
                 >
-                  <CheckoutForm coinAmount={coinAmount} totalPrice={totalPrice} setShowCheckoutForm={setShowCheckoutForm} formatPrice={formatPrice} formatCurrency={formatCurrency} currency={currency} paymentIntentId={paymentIntentId}/>
+                  <CheckoutForm
+                    coinAmount={coinAmount}
+                    totalPrice={totalPrice}
+                    setShowCheckoutForm={setShowCheckoutForm}
+                    formatPrice={formatPrice}
+                    formatCurrency={formatCurrency}
+                    currency={currency}
+                    paymentIntentId={paymentIntentId}
+                  />
                 </Elements>
               </dialog>
             </>
@@ -183,9 +191,6 @@ export default function Purchase() {
       <div className="bottom-btn-container">
         <Link to="/" className="big-btn">
           Back
-        </Link>
-        <Link to="/purchase" className="big-btn">
-          Will do something eventually
         </Link>
       </div>
     </div>

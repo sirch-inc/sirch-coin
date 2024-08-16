@@ -4,8 +4,17 @@ import { useStripe, useElements } from "@stripe/react-stripe-js";
 import supabase from "../App/supabaseConfig";
 import { AuthContext } from "../AuthContext";
 
+
 // eslint-disable-next-line react/prop-types
-export default function CheckoutForm({coinAmount, totalPrice, setShowCheckoutForm, formatPrice, formatCurrency, currency, paymentIntentId}) {
+export default function CheckoutForm({
+    coinAmount,
+    totalPrice,
+    setShowCheckoutForm,
+    formatPrice,
+    formatCurrency,
+    currency,
+    paymentIntentId
+  }) {
   const stripe = useStripe();
   const elements = useElements();
   const { userInTable } = useContext(AuthContext);
@@ -40,7 +49,8 @@ export default function CheckoutForm({coinAmount, totalPrice, setShowCheckoutFor
   };
 
   const handleCancelPaymentIntent = async () => {
-    setShowCheckoutForm(false)
+    setShowCheckoutForm(false);
+    
     try {
       const { data, error } = await supabase.functions.invoke('cancel-payment-intent', {
         body: {
@@ -54,8 +64,8 @@ export default function CheckoutForm({coinAmount, totalPrice, setShowCheckoutFor
       if (data) {
         console.log(data)
       }
-    } catch (error) {
-        console.log(error)
+    } catch (exception) {
+        console.log(exception)
     }
   }
 
