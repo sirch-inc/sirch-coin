@@ -6,6 +6,12 @@ import "./components/App/App.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
+if (import.meta.env.PROD)
+{
+  alert("PRELAUCH WARNING:\n\nThis is the public production Sirch Coin site.\n\n\
+Only create real accounts here, and use real credit cards.\n\nPurchases are ACTUAL.");  
+}
+
 document.title = import.meta.env.VITE_PAGE_TITLE;
 
 root.render(
