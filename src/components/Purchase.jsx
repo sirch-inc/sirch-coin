@@ -24,7 +24,7 @@ export default function Purchase() {
   const options = useMemo(() => ({clientSecret}), [clientSecret]);
 
   useEffect(() => {
-    setStripePromise(loadStripe(import.meta.env.VITE_STRIPE_TEST_PUBLISHABLE_KEY))
+    setStripePromise(loadStripe(import.meta.env.VITE_STRIPE_API_PUBLISHABLE_KEY))
   }, [])
 
   // TODO: Replace this with a new edge function in supabase instead of creating the payment intent on page load
