@@ -1,4 +1,4 @@
-import coinSymbol from "../../../public/ⓢ.png"
+import coinSymbol from "../../ⓢ.png"
 
 
 export default function ComingSoon() {
