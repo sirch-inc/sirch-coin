@@ -5,12 +5,12 @@
 
 @font-face {
   font-family: Haskoy;
-  src: url(../../../Haskoy-Regular.woff2);
+  src: url(/Haskoy-Regular.woff2);
 }
 
 @font-face {
   font-family: Haskoy-bold;
-  src: url(../../../Haskoy-Bold.woff2);
+  src: url(/Haskoy-Bold.woff2);
 }
 
 h1, h2, h3, h4, h5, h6, li, p, a, button, input {
@@ -31,6 +31,7 @@ p {
 }
 
 header {
+  z-index: 100;
   position: fixed;
   top: 0;
   left: 0;
@@ -55,6 +56,7 @@ header {
 }
 
 footer {
+  z-index: 100;
   position: fixed;
   bottom: 0;
   left: 0;
@@ -189,6 +191,75 @@ footer {
 }
 /* End Styles for Main page buttons */
 
+
+/* Start Styles for Coming Soon Page */
+
+.coming-soon-container {
+  position: fixed;
+  background-color: #231F20;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 0;
+  grid-column-gap: 10px;
+  grid-row-gap: 0px;
+}
+
+.coming-soon-img {
+  padding: 50px;
+}
+
+.coming-soon-text {
+  padding: 40px;
+}
+
+.coming-soon-container h1 {
+  color:white;
+}
+
+.coming-soon-container p {
+  color:white;
+  font-size: 24px;
+  text-align: left;
+}
+
+/* End Styles for Coming Soon Page */
+
+
+/* Start Styles for Offline Page */
+
+.offline-container {
+  position: fixed;
+  background-color: #231F20;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 0;
+  grid-column-gap: 10px;
+  grid-row-gap: 0px;
+}
+
+.offline-img {
+  padding: 50px;
+}
+
+.offline-text {
+  padding: 40px;
+}
+
+.offline-container h1 {
+  color:white;
+}
+
+.offline-container p {
+  color:white;
+  font-size: 24px;
+  text-align: left;
+}
+
+/* End Styles for Offline Page */
+
+
 /* Start Styles for About Page */
 
 .about-container{
@@ -203,7 +274,7 @@ footer {
 }
 
 .about-img{
-  padding:50px;
+  padding: 50px;
 }
 
 .about-text{
@@ -213,7 +284,7 @@ footer {
 .about-container p {
   color:white;
   font-size: 24px;
-  text-align: justify;
+  text-align: left;
 }
 
 /* End Styles for About Page */

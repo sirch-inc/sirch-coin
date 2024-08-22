@@ -1,24 +1,41 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./components/App/App";
 import "./components/App/App.css";
+// #v-ifdef VITE_IS_COMING_SOON
+import ComingSoonApp from "./components/App/LandingPages/ComingSoonApp";
+// #v-elif VITE_IS_OFFLINE
+import OfflineApp from "./components/App/LandingPages/OfflineApp";
+// #v-else
+import App from "./components/App/App";
+// #v-endif
 
+
+document.title = import.meta.env.VITE_PAGE_TITLE;
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
-if (import.meta.env.MODE === 'production')
-{
-  alert("PRE-ALPHA WARNING:\n\nThis is the pre-alpha public production Sirch Coin site.\n\n\
-Transactions are real and recorded.\n\n\
-You must use real credit cards for purchases at this time, which will be processed and debited.\n\n\
-If you require additional support or adjustments to your balance or transaction history, contact us."
-);
-}
+// #v-ifdef VITE_IS_COMING_SOON
 
-document.title = import.meta.env.VITE_PAGE_TITLE;
+root.render(
+  <React.StrictMode>
+    <ComingSoonApp/>
+  </React.StrictMode>
+);
+
+// #v-elif VITE_IS_OFFLINE
+
+root.render(
+  <React.StrictMode>
+    <OfflineApp/>
+  </React.StrictMode>
+);
+
+// #v-else
 
 root.render(
   <React.StrictMode>
     <App/>
   </React.StrictMode>
 );
+
+// #v-endif
