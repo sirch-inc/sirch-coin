@@ -11,7 +11,7 @@ export default function Offline() {
         <div className="offline-text">
           <h1>Sirch Coins is currently unavailable.</h1>
           <br/>
-          <p>We are working on making our services available soon. Stay tuned!</p>
+          <p>We are working on making our services available soon. Please stay tuned!</p>
         </div>
       </div>
     </>
