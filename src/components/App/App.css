@@ -192,7 +192,7 @@ footer {
 
 /* Start Styles for Coming Soon Page */
 
-.coming-soon-container{
+.coming-soon-container {
   position: fixed;
   background-color: #231F20;
   height: 100vh;
@@ -203,11 +203,11 @@ footer {
   grid-row-gap: 0px;
 }
 
-.coming-soon-img{
+.coming-soon-img {
   padding: 50px;
 }
 
-.coming-soon-text{
+.coming-soon-text {
   padding: 40px;
 }
 
