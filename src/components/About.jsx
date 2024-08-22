@@ -1,4 +1,4 @@
-import coinSymbol from "../../public/ⓢ.png"
+import coinSymbol from "../ⓢ.png"
 import { Link } from "react-router-dom";
 
 export default function About() {
