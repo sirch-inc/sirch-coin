@@ -4,13 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev":              ". ./build-variables.sh && vite --mode development",
-    "test":             ". ./build-variables.sh && vite --mode test",
-    "production":       ". ./build-variables.sh && vite --mode production",
-    "build-dev":        ". ./build-variables.sh && vite build --mode development",
-    "build-test":       ". ./build-variables.sh && vite build --mode test",
+    "dev": ". ./build-variables.sh && vite --mode development",
+    "test": ". ./build-variables.sh && vite --mode test",
+    "production": ". ./build-variables.sh && vite --mode production",
+    "build-dev": ". ./build-variables.sh && vite build --mode development",
+    "build-test": ". ./build-variables.sh && vite build --mode test",
     "build-production": ". ./build-variables.sh && vite build --mode production",
-    "build":            ". ./build-variables.sh && vite build --mode production",
+    "build": ". ./build-variables.sh && vite build --mode production",
     "preview": "vite preview",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
   },
@@ -37,6 +37,7 @@
     "react-toastify": "^10.0.5",
     "react-tooltip": "^5.27.1",
     "stripe": "^14.1.0",
+    "vite-plugin-conditional-compiler": "^0.3.1",
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
