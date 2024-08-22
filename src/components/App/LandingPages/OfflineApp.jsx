@@ -1,7 +1,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Header from "./Header.jsx";
-import Footer from "./Footer.jsx";
+import Header from "../Header.jsx";
+import Footer from "../Footer.jsx";
 import Offline from "./Offline.jsx";
 
 

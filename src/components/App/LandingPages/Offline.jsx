@@ -1,4 +1,4 @@
-import coinSymbol from "../../ⓢ.png"
+import coinSymbol from "../../../ⓢ.png"
 
 
 export default function Offline() {
@@ -9,9 +9,10 @@ export default function Offline() {
           <img src={coinSymbol}></img>
         </div>
         <div className="offline-text">
-          <h1>Sirch Coins is currently unavailable.</h1>
+          <h1>Gone Fishing!</h1>
           <br/>
-          <p>We are working on making our services available soon. Please stay tuned!</p>
+          <p>Sirch Coins is undergoing systems maintenance for a brief period.</p>
+          <p>Please check back soon!</p>
         </div>
       </div>
     </>

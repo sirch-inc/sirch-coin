@@ -2,9 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./components/App/App.css";
 // #v-ifdef VITE_IS_COMING_SOON
-import ComingSoonApp from "./components/App/ComingSoonApp";
+import ComingSoonApp from "./components/App/LandingPages/ComingSoonApp";
 // #v-elif VITE_IS_OFFLINE
-import OfflineApp from "./components/App/OfflineApp";
+import OfflineApp from "./components/App/LandingPages/OfflineApp";
 // #v-else
 import App from "./components/App/App";
 // #v-endif
