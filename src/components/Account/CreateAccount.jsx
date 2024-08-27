@@ -7,7 +7,9 @@ import supabase from '../App/supabaseConfig';
 export default function CreateAccount() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [isNamePrivate, setIsNamePrivate] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordsMatch, setPasswordsMatch] = useState(false);
   const navigate = useNavigate();
@@ -23,7 +25,10 @@ export default function CreateAccount() {
           options: {
             emailRedirectTo: `${window.location.origin}/welcome`,
             data: {
-              name
+              full_name: firstName + " " + lastName,
+              first_name: firstName,
+              last_name: lastName,
+              is_name_private: isNamePrivate
             },
           },
         });
@@ -43,7 +48,7 @@ export default function CreateAccount() {
       }
     } catch (error) {
       // TODO: surface this error
-      console.error("Error signing up:", error.message);
+      console.error("Error signing up:", error);
     }
   };
 
@@ -61,33 +66,54 @@ export default function CreateAccount() {
           <>
             <h2>Create an Account</h2>
             <p>Already have an account? <a href="/login">Log in</a> instead.</p>
+            <br></br>
+            <h3>Your Account & Privacy</h3>
+            <p>
+              Sirch and the Sirch Coins product and services take your privacy very seriously.
+              We believe your data (email address, name, photo, activity, and social connections) belong to <i>you</i>, and
+              that <i>you</i> should decide how and when to share them or make them accessible to others.
+            </p>
+            <p>
+              That said, we also encourage our users to share their profile with others to create a networked community
+              and to make it easier for people on our platforms to find and connect with you.
+            </p>
+            <p>
+              The choice is yours; you can adjust your Privacy settings at any time in your Account Profile.
+            </p>
+
             <form onSubmit={handleSignUp}>
               <input 
                 className="account-input"
                 type="email" 
+                id="email" 
                 name="email" 
                 placeholder="Email" 
                 value={email} 
-                onChange={(e) => setEmail(e.target.value)} 
                 required 
+                onChange={(e) => setEmail(e.target.value)} 
                 autoComplete="username" />
-              <input 
+              <input
                 className="account-input"
                 type="password" 
+                id="password" 
                 name="password" 
                 placeholder="Password"
                 value = {password}
+                required
                 onChange={(e) => setPassword(e.target.value)}
-                autoComplete="current-password" required />
-              <input 
+                autoComplete="current-password"
+              />
+              <input
                 className="account-input"
                 type="password" 
                 name="confirm-password" 
+                id="confirm-password" 
                 placeholder="Confirm Your Password" 
-                autoComplete="current-password" 
-                required value={confirmPassword}
+                value={confirmPassword}
+                required
                 onChange={handlePasswordConfirmation}
-                />
+                autoComplete="off" 
+              />
                 {confirmPassword && (
                   <p style={{ color: passwordsMatch ? "green" : "red" }}>
                     {passwordsMatch ? "Passwords match!" : "Passwords do not match"}
@@ -95,13 +121,33 @@ export default function CreateAccount() {
                 )}
               <input 
                 className="account-input"
-                type="text" 
-                name="name" 
+                type="text"
+                id="first-name"
+                name="first-name"
                 placeholder="First Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)} 
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
                 required
               />
+              <input
+                className="account-input"
+                type="text"
+                id="last-name"
+                name="last-name"
+                placeholder="Last Name"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required
+              />
+              <input
+                className="account-input"
+                type="checkbox"
+                id="is-name-private"
+                name="is-name-private"
+                value={isNamePrivate}
+                onChange={(e) => setIsNamePrivate(e.target.checked)}
+              />
+              <label htmlFor="is-name-private">Keep my name PRIVATE among other users in Sirch Coins</label>
               <button className="account-button" type="submit">Sign Up →</button>
             </form>
           </>
