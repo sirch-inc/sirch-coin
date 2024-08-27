@@ -2,8 +2,9 @@ import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
 import supabase from '../App/supabaseConfig'; 
-//TODO: Use Supabase to delete
 
+
+// TODO: Use Supabase to delete
 export default function MyAccount(){
   const [deleteDialogBox, setDeleteDialogBox] = useState(false);
   const { userInTable, userBalance } = useContext(AuthContext);
@@ -25,7 +26,7 @@ export default function MyAccount(){
         .eq('user_id', userInTable.user_id)
 
         if (error){
-          //TODO: Handle error
+          // TODO: Handle error
           alert('Error deleting your account: ', error)
         }
         else{
@@ -43,11 +44,13 @@ export default function MyAccount(){
 
       <div className="account personal-info">
         <h3>Personal Information</h3>
-        <p>Name: {userInTable?.name}</p>
+        <p>First Name: {userInTable?.first_name}</p>
+        <p>Last Name: {userInTable?.last_name}</p>
+        <p>Full Name: {userInTable?.full_name}</p>
+        <p>Privacy: {userInTable?.is_name_private && "PRIVATE"}</p>
         <p>Email: {userInTable?.email}</p>
-        {/* TODO: Remove UserID */}
-        <p>ID: {userInTable?.id} | UserID: {userInTable?.user_id}</p>
-        <p>Sirch Coins Balance: {userBalance?.balance}</p>
+        <p>User ID: {userInTable?.user_id}</p>
+        <p>Balance: ⓢ {userBalance?.balance}</p>
       </div>
 
       <div className="account-actions">
