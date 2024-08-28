@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../AuthContext";
 import supabase from '../App/supabaseConfig';
@@ -7,48 +7,57 @@ import supabase from '../App/supabaseConfig';
 export default function CreateAccount() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordsMatch, setPasswordsMatch] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [isNamePrivate, setIsNamePrivate] = useState(false);
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [passwordsMatch, setPasswordsMatch] = useState(false);
+  const [userHandle, setUserHandle] = useState('Loading...');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // TODO: fetch the user's balance when the component mounts
+    handleSuggestNewHandle();//(userInTable);
+  }, []);
 
   const handleSignUp = async (event) => {
     event.preventDefault();
     
     try {
-      if (passwordsMatch) {
-        const { user, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/welcome`,
-            data: {
-              full_name: firstName + " " + lastName,
-              first_name: firstName,
-              last_name: lastName,
-              is_name_private: isNamePrivate
-            },
-          },
-        });
-
-        if (error) {
-          // TODO: surface this error...
-          throw error;
-        }
-
-        if (!user) {
-          // TODO: do something with user
-        }
-        navigate("/verify-account");
-      } else if (passwordsMatch === false) {
+      if (!passwordsMatch) {
         // TODO: surface this error
         alert("Passwords do not match.");
+        return;
       }
-    } catch (error) {
+
+      const { user, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/welcome`,
+          data: {
+            full_name: firstName + " " + lastName,
+            first_name: firstName,
+            last_name: lastName,
+            is_name_private: isNamePrivate,
+            user_handle: userHandle
+          },
+        },
+      });
+
+      if (error) {
+        // TODO: surface this error...
+        throw error;
+      }
+
+      if (!user) {
+        // TODO: do something with user
+      }
+
+      navigate("/verify-account");
+    } catch (exception) {
       // TODO: surface this error
-      console.error("Error signing up:", error);
+      alert("Error signing up:", exception);
     }
   };
 
@@ -59,6 +68,12 @@ export default function CreateAccount() {
     setPasswordsMatch(value === password);
   };
 
+  // refresh user handle
+  const handleSuggestNewHandle = () => {
+    // TODO: invoke backend service
+    setUserHandle("refreshed");
+  };
+  
   return (
     <AuthContext.Consumer>
       {({ session }) =>
@@ -89,9 +104,10 @@ export default function CreateAccount() {
                 name="email" 
                 placeholder="Email" 
                 value={email} 
-                required 
                 onChange={(e) => setEmail(e.target.value)} 
-                autoComplete="username" />
+                autoComplete="username"
+                required
+              />
               <input
                 className="account-input"
                 type="password" 
@@ -99,9 +115,9 @@ export default function CreateAccount() {
                 name="password" 
                 placeholder="Password"
                 value = {password}
-                required
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
+                required
               />
               <input
                 className="account-input"
@@ -110,15 +126,15 @@ export default function CreateAccount() {
                 id="confirm-password" 
                 placeholder="Confirm Your Password" 
                 value={confirmPassword}
-                required
                 onChange={handlePasswordConfirmation}
                 autoComplete="off" 
+                required
               />
-                {confirmPassword && (
-                  <p style={{ color: passwordsMatch ? "green" : "red" }}>
-                    {passwordsMatch ? "Passwords match!" : "Passwords do not match"}
-                  </p>
-                )}
+              {confirmPassword && (
+                <p style={{ color: passwordsMatch ? "green" : "red" }}>
+                  {passwordsMatch ? "Passwords match!" : "Passwords do not match"}
+                </p>
+              )}
               <input 
                 className="account-input"
                 type="text"
@@ -148,6 +164,25 @@ export default function CreateAccount() {
                 onChange={(e) => setIsNamePrivate(e.target.checked)}
               />
               <label htmlFor="is-name-private">Keep my name PRIVATE among other users in Sirch Coins</label>
+              <input
+                className="account-input"
+                type="text"
+                id="user-handle"
+                name="user-handle"
+                placeholder="Loading..."
+                value={userHandle}
+                // onChange={(e) => setUserHandle(e.target.value)}
+                readOnly
+                required
+              />
+              <button
+                className="account-button"
+                type="button"
+                onClick={handleSuggestNewHandle}
+              >
+                Suggest New Handle
+              </button>
+              <br></br>
               <button className="account-button" type="submit">Sign Up →</button>
             </form>
           </>
