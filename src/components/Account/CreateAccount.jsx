@@ -12,12 +12,12 @@ export default function CreateAccount() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [isNamePrivate, setIsNamePrivate] = useState(false);
-  const [userHandle, setUserHandle] = useState('Loading...');
+  const [userHandle, setUserHandle] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
     // TODO: fetch the user's balance when the component mounts
-    handleSuggestNewHandle();//(userInTable);
+    handleSuggestNewHandle();
   }, []);
 
   const handleSignUp = async (event) => {
@@ -69,9 +69,28 @@ export default function CreateAccount() {
   };
 
   // refresh user handle
-  const handleSuggestNewHandle = () => {
+  const handleSuggestNewHandle = async () => {
     // TODO: invoke backend service
-    setUserHandle("refreshed");
+
+    setUserHandle('');
+
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-valid-user-handles', {
+        body: {
+          handleCount: 1
+        }
+      });
+    
+      if (error) {
+        // TODO: surface this error...
+        throw error;
+      }
+
+      setUserHandle(data.handles[0]);
+    } catch (exception) {
+      // TODO: surface this error
+      alert("Error generating new handle(s):", exception);
+    }
   };
   
   return (
