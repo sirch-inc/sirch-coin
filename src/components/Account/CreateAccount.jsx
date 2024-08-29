@@ -101,21 +101,26 @@ export default function CreateAccount() {
             <h2>Create an Account</h2>
             <p>Already have an account? <a href="/login">Log in</a> instead.</p>
             <br></br>
-            <h3>Your Account & Privacy</h3>
-            <p>
-              Sirch and the Sirch Coins product and services take your privacy very seriously.
-              We believe your data (email address, name, photo, activity, and social connections) belong to <i>you</i>, and
-              that <i>you</i> should decide how and when to share them or make them accessible to others.
-            </p>
-            <p>
-              That said, we also encourage our users to share their profile with others to create a networked community
-              and to make it easier for people on our platforms to find and connect with you.
-            </p>
-            <p>
-              The choice is yours; you can adjust your Privacy settings at any time in your Account Profile.
-            </p>
 
             <form onSubmit={handleSignUp} autoComplete="off">
+              <div className="account-privacy-statement">
+                <h3>Your Account & Privacy</h3>
+                <p>
+                  Sirch and the Sirch Coins product and services take your privacy very seriously.
+                  We believe your data (email address, name, photo, activity, and social connections) belong to <i>you</i>, and
+                  that <i>you</i> should decide how and when to share them or make them accessible to others.
+                </p>
+                <p>
+                  That said, we also encourage our users to share their profile with others to create a networked community
+                  and to make it easier for people on our platforms to find and connect with you.
+                </p>
+                <p>
+                  The choice is yours; you can adjust your Privacy settings at any time in your Account Profile.
+                </p>
+              </div>
+
+              <br></br>
+
               <input 
                 className="account-input"
                 type="email" 
@@ -124,11 +129,11 @@ export default function CreateAccount() {
                 placeholder="Email" 
                 value={email} 
                 onChange={(e) => setEmail(e.target.value)} 
-                autoComplete="off"
+                autoComplete="email"
                 required
               />
 
-              <div id="account-passwords-row">
+              <div className="account-row">
                 <input
                   className="account-input"
                   type="password" 
@@ -158,7 +163,7 @@ export default function CreateAccount() {
                 </p>
               )}
 
-              <div id="account-names-row">
+              <div className="account-row">
                 <input 
                   className="account-input"
                   type="text"
@@ -197,15 +202,16 @@ export default function CreateAccount() {
                 </div>
               </div>
 
-              <p>
-              Your Sirch account includes a unique, random, short, two-word phrase to help other users find you
-              easily, and to help keep your Name and Email private if you choose not to share them.
-              </p>
-              <p>
-              You may change this phrase at any time in your Account Profile.
-              </p>
-
               <div id='account-user-handle-row'>
+                <div width="30%">
+                  <p>
+                  Your Sirch account includes a unique, random, two-word phrase to help other users find you
+                  easily and to help keep your Name and Email private if you choose not to share them.
+                  </p>
+                  <p>
+                  You may change this phrase at any time in your Account Profile.
+                  </p>
+                </div>
                 <input
                   className="account-input"
                   type="text"
@@ -213,7 +219,6 @@ export default function CreateAccount() {
                   name="user-handle"
                   placeholder="Loading..."
                   value={userHandle}
-                  // onChange={(e) => setUserHandle(e.target.value)}
                   readOnly
                   required
                 />
@@ -221,12 +226,10 @@ export default function CreateAccount() {
                   className="account-button"
                   type="button"
                   onClick={handleSuggestNewHandle}
-                >
-                  Pick Another
-                </button>
+                > Pick Another ↺ </button>
               </div>
               <br></br>
-              <button className="account-button" type="submit">Sign Up →</button>
+              <button className="account-button" type="submit"> Sign Up → </button>
             </form>
           </>
         ) : (

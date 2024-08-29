@@ -109,6 +109,9 @@ footer {
 /* End styles for nav bar/header */
 
 /* Start styles for Login Page */
+.account-privacy-statement {
+  width: 75%;
+}
 
 .account-input {
   background-color:#231F20;
@@ -132,19 +135,14 @@ footer {
   color: black;
 }
 
-div#account-passwords-row {
+.account-row {
   width: 75%;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 20px;
 }
 
-div#account-names-row {
-  width: 75%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
 
 input#first-name, input#last-name {
   width: 30%;
@@ -162,6 +160,22 @@ input#is-name-private-checkbox {
 label#is-name-private-label {
   vertical-align: middle;
   margin: 0px;
+}
+
+div#account-user-handle-row {
+  width: 75%;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 20px;
+
+  button {
+    margin: 10px 0px;
+  }
+
+  div {
+    width: 30%;
+  }
 }
 
 input#user-handle {
@@ -259,12 +273,10 @@ input#user-handle {
   font-size: 24px;
   text-align: left;
 }
-
 /* End Styles for Coming Soon Page */
 
 
 /* Start Styles for Offline Page */
-
 .offline-container {
   position: fixed;
   background-color: #231F20;
@@ -293,12 +305,10 @@ input#user-handle {
   font-size: 24px;
   text-align: left;
 }
-
 /* End Styles for Offline Page */
 
 
 /* Start Styles for About Page */
-
 .about-container{
   position: fixed;
   background-color: #231F20;
@@ -323,7 +333,6 @@ input#user-handle {
   font-size: 24px;
   text-align: left;
 }
-
 /* End Styles for About Page */
 
 
@@ -366,8 +375,6 @@ input#user-handle {
   font-family: Haskoy-bold;
   font-size: 21px;
 }
-
-
 /* End styles for Send Coins */
 
 
