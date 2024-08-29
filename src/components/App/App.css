@@ -13,7 +13,7 @@
   src: url(/Haskoy-Bold.woff2);
 }
 
-h1, h2, h3, h4, h5, h6, li, p, a, button, input {
+h1, h2, h3, h4, h5, h6, li, p, a, button, input, label {
   font-family: Haskoy;
 }
 
@@ -112,16 +112,16 @@ footer {
 
 .account-input {
   background-color:#231F20;
-  color:white;
-  font-size:30px;
-  padding:10px;
-  padding-left:15px;
-  margin:15px;
+  color: white;
+  font-size: 30px;
+  padding: 10px;
+  padding-left: 15px;
+  margin: 15px;
   width: 75%;
   border-radius: 5px;
 }
 
-.account-button{
+.account-button {
   background-color: #231F20;
   font-size: 30px;
   margin-bottom: 25px;
@@ -130,6 +130,24 @@ footer {
 .account-button:hover {
   background-color: #3AD820;
   color: black;
+}
+
+input#first-name, input#last-name {
+  width: 25%;
+}
+
+input#is-name-private {
+  width: 2%;
+}
+
+label#is-name-private-label {
+  vertical-align: middle;
+}
+
+input#user-handle {
+  width: 30%;
+  text-align: center;
+  padding-left: unset;
 }
 
 /* Start Styles for Main page & buttons */

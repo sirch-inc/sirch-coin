@@ -124,7 +124,7 @@ export default function CreateAccount() {
                 placeholder="Email" 
                 value={email} 
                 onChange={(e) => setEmail(e.target.value)} 
-                autoComplete="username"
+                autoComplete="off"
                 required
               />
               <input
@@ -135,7 +135,7 @@ export default function CreateAccount() {
                 placeholder="Password"
                 value = {password}
                 onChange={(e) => setPassword(e.target.value)}
-                autoComplete="current-password"
+                autoComplete="off"
                 required
               />
               <input
@@ -154,53 +154,72 @@ export default function CreateAccount() {
                   {passwordsMatch ? "Passwords match!" : "Passwords do not match"}
                 </p>
               )}
-              <input 
-                className="account-input"
-                type="text"
-                id="first-name"
-                name="first-name"
-                placeholder="First Name"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                required
-              />
-              <input
-                className="account-input"
-                type="text"
-                id="last-name"
-                name="last-name"
-                placeholder="Last Name"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                required
-              />
-              <input
-                className="account-input"
-                type="checkbox"
-                id="is-name-private"
-                name="is-name-private"
-                value={isNamePrivate}
-                onChange={(e) => setIsNamePrivate(e.target.checked)}
-              />
-              <label htmlFor="is-name-private">Keep my name PRIVATE among other users in Sirch Coins</label>
-              <input
-                className="account-input"
-                type="text"
-                id="user-handle"
-                name="user-handle"
-                placeholder="Loading..."
-                value={userHandle}
-                // onChange={(e) => setUserHandle(e.target.value)}
-                readOnly
-                required
-              />
-              <button
-                className="account-button"
-                type="button"
-                onClick={handleSuggestNewHandle}
-              >
-                Suggest New Handle
-              </button>
+
+              <div>
+                <input 
+                  className="account-input"
+                  type="text"
+                  id="first-name"
+                  name="first-name"
+                  placeholder="First Name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  required
+                />
+                <input
+                  className="account-input"
+                  type="text"
+                  id="last-name"
+                  name="last-name"
+                  placeholder="Last Name"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  required
+                />
+                <input
+                  className="account-input"
+                  type="checkbox"
+                  id="is-name-private"
+                  name="is-name-private"
+                  value={isNamePrivate}
+                  onChange={(e) => setIsNamePrivate(e.target.checked)}
+                />
+                <label
+                  htmlFor="is-name-private"
+                  id="is-name-private-label"
+                >
+                  Keep my name PRIVATE<br />among other users in Sirch services
+                </label>
+              </div>
+
+              <p>
+              Your Sirch account includes a unique, random, short, two-word phrase to help other users find you
+              easily, and to help keep your Name and Email private if you choose not to share them.
+              </p>
+              <p>
+              You may change this phrase at any time in your Account Profile.
+              </p>
+
+              <div>
+                <input
+                  className="account-input"
+                  type="text"
+                  id="user-handle"
+                  name="user-handle"
+                  placeholder="Loading..."
+                  value={userHandle}
+                  // onChange={(e) => setUserHandle(e.target.value)}
+                  readOnly
+                  required
+                />
+                <button
+                  className="account-button"
+                  type="button"
+                  onClick={handleSuggestNewHandle}
+                >
+                  Suggest New User Phrase
+                </button>
+              </div>
               <br></br>
               <button className="account-button" type="submit">Sign Up →</button>
             </form>

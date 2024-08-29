@@ -49,7 +49,7 @@ export default function MyAccount(){
         <p>Last Name: {userInTable?.last_name}</p>
         <p>Full Name: {userInTable?.full_name}</p>
         <p>Privacy: {userInTable?.is_name_private && "PRIVATE"}</p>
-        <p>Handle: {userInTable?.user_handle}</p>
+        <p>User Phrase: {userInTable?.user_handle}</p>
         <p>User ID: {userInTable?.user_id}</p>
         <p>Balance: ⓢ {userBalance?.balance}</p>
       </div>
