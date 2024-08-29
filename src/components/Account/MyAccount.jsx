@@ -44,11 +44,12 @@ export default function MyAccount(){
 
       <div className="account personal-info">
         <h3>Personal Information</h3>
+        <p>Account Email: {userInTable?.email}</p>
         <p>First Name: {userInTable?.first_name}</p>
         <p>Last Name: {userInTable?.last_name}</p>
         <p>Full Name: {userInTable?.full_name}</p>
         <p>Privacy: {userInTable?.is_name_private && "PRIVATE"}</p>
-        <p>Email: {userInTable?.email}</p>
+        <p>User Phrase: {userInTable?.user_handle}</p>
         <p>User ID: {userInTable?.user_id}</p>
         <p>Balance: ⓢ {userBalance?.balance}</p>
       </div>

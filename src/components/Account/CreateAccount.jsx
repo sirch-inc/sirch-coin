@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../AuthContext";
 import supabase from '../App/supabaseConfig';
@@ -7,48 +7,57 @@ import supabase from '../App/supabaseConfig';
 export default function CreateAccount() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordsMatch, setPasswordsMatch] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [isNamePrivate, setIsNamePrivate] = useState(false);
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [passwordsMatch, setPasswordsMatch] = useState(false);
+  const [userHandle, setUserHandle] = useState('');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // TODO: fetch the user's balance when the component mounts
+    handleSuggestNewHandle();
+  }, []);
 
   const handleSignUp = async (event) => {
     event.preventDefault();
     
     try {
-      if (passwordsMatch) {
-        const { user, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/welcome`,
-            data: {
-              full_name: firstName + " " + lastName,
-              first_name: firstName,
-              last_name: lastName,
-              is_name_private: isNamePrivate
-            },
-          },
-        });
-
-        if (error) {
-          // TODO: surface this error...
-          throw error;
-        }
-
-        if (!user) {
-          // TODO: do something with user
-        }
-        navigate("/verify-account");
-      } else if (passwordsMatch === false) {
+      if (!passwordsMatch) {
         // TODO: surface this error
         alert("Passwords do not match.");
+        return;
       }
-    } catch (error) {
+
+      const { user, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/welcome`,
+          data: {
+            full_name: firstName + " " + lastName,
+            first_name: firstName,
+            last_name: lastName,
+            is_name_private: isNamePrivate,
+            user_handle: userHandle
+          },
+        },
+      });
+
+      if (error) {
+        // TODO: surface this error...
+        throw error;
+      }
+
+      if (!user) {
+        // TODO: do something with user
+      }
+
+      navigate("/verify-account");
+    } catch (exception) {
       // TODO: surface this error
-      console.error("Error signing up:", error);
+      alert("Error signing up:", exception);
     }
   };
 
@@ -59,6 +68,31 @@ export default function CreateAccount() {
     setPasswordsMatch(value === password);
   };
 
+  // refresh user handle
+  const handleSuggestNewHandle = async () => {
+    // TODO: invoke backend service
+
+    setUserHandle('');
+
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-valid-user-handles', {
+        body: {
+          handleCount: 1
+        }
+      });
+    
+      if (error) {
+        // TODO: surface this error...
+        throw error;
+      }
+
+      setUserHandle(data.handles[0]);
+    } catch (exception) {
+      // TODO: surface this error
+      alert("Error generating new handle(s):", exception);
+    }
+  };
+  
   return (
     <AuthContext.Consumer>
       {({ session }) =>
@@ -81,7 +115,7 @@ export default function CreateAccount() {
               The choice is yours; you can adjust your Privacy settings at any time in your Account Profile.
             </p>
 
-            <form onSubmit={handleSignUp}>
+            <form onSubmit={handleSignUp} autoComplete="off">
               <input 
                 className="account-input"
                 type="email" 
@@ -89,65 +123,109 @@ export default function CreateAccount() {
                 name="email" 
                 placeholder="Email" 
                 value={email} 
-                required 
                 onChange={(e) => setEmail(e.target.value)} 
-                autoComplete="username" />
-              <input
-                className="account-input"
-                type="password" 
-                id="password" 
-                name="password" 
-                placeholder="Password"
-                value = {password}
-                required
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="current-password"
-              />
-              <input
-                className="account-input"
-                type="password" 
-                name="confirm-password" 
-                id="confirm-password" 
-                placeholder="Confirm Your Password" 
-                value={confirmPassword}
-                required
-                onChange={handlePasswordConfirmation}
-                autoComplete="off" 
-              />
-                {confirmPassword && (
-                  <p style={{ color: passwordsMatch ? "green" : "red" }}>
-                    {passwordsMatch ? "Passwords match!" : "Passwords do not match"}
-                  </p>
-                )}
-              <input 
-                className="account-input"
-                type="text"
-                id="first-name"
-                name="first-name"
-                placeholder="First Name"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
+                autoComplete="off"
                 required
               />
-              <input
-                className="account-input"
-                type="text"
-                id="last-name"
-                name="last-name"
-                placeholder="Last Name"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                required
-              />
-              <input
-                className="account-input"
-                type="checkbox"
-                id="is-name-private"
-                name="is-name-private"
-                value={isNamePrivate}
-                onChange={(e) => setIsNamePrivate(e.target.checked)}
-              />
-              <label htmlFor="is-name-private">Keep my name PRIVATE among other users in Sirch Coins</label>
+
+              <div id="account-passwords-row">
+                <input
+                  className="account-input"
+                  type="password" 
+                  id="password" 
+                  name="password" 
+                  placeholder="Password"
+                  value = {password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="off"
+                  required
+                />
+                <input
+                  className="account-input"
+                  type="password" 
+                  name="confirm-password" 
+                  id="confirm-password" 
+                  placeholder="Confirm Your Password" 
+                  value={confirmPassword}
+                  onChange={handlePasswordConfirmation}
+                  autoComplete="off" 
+                  required
+                />
+              </div>
+              {confirmPassword && (
+                <p style={{ color: passwordsMatch ? "green" : "red" }}>
+                  {passwordsMatch ? "Passwords match!" : "Passwords do not match"}
+                </p>
+              )}
+
+              <div id="account-names-row">
+                <input 
+                  className="account-input"
+                  type="text"
+                  id="first-name"
+                  name="first-name"
+                  placeholder="First Name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  required
+                />
+                <input
+                  className="account-input"
+                  type="text"
+                  id="last-name"
+                  name="last-name"
+                  placeholder="Last Name"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  required
+                />
+                <div id="is-name-private">
+                  <input
+                    className="account-input"
+                    type="checkbox"
+                    id="is-name-private-checkbox"
+                    name="is-name-private"
+                    value={isNamePrivate}
+                    onChange={(e) => setIsNamePrivate(e.target.checked)}
+                  />
+                  <label
+                    htmlFor="is-name-private"
+                    id="is-name-private-label"
+                  >
+                    Keep my name PRIVATE<br />among other users in Sirch services
+                  </label>
+                </div>
+              </div>
+
+              <p>
+              Your Sirch account includes a unique, random, short, two-word phrase to help other users find you
+              easily, and to help keep your Name and Email private if you choose not to share them.
+              </p>
+              <p>
+              You may change this phrase at any time in your Account Profile.
+              </p>
+
+              <div id='account-user-handle-row'>
+                <input
+                  className="account-input"
+                  type="text"
+                  id="user-handle"
+                  name="user-handle"
+                  placeholder="Loading..."
+                  value={userHandle}
+                  // onChange={(e) => setUserHandle(e.target.value)}
+                  readOnly
+                  required
+                />
+                <button
+                  className="account-button"
+                  type="button"
+                  onClick={handleSuggestNewHandle}
+                >
+                  Pick Another
+                </button>
+              </div>
+              <br></br>
               <button className="account-button" type="submit">Sign Up →</button>
             </form>
           </>

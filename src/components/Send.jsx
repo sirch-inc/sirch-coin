@@ -69,12 +69,12 @@ export default function Send() {
     }
   
     try {
-        const { data: fetchRecipientData, error: fetchRecipientError } = await supabase.functions.invoke('does_user_exist_with_email', {
-          body: {
-            userId: userInTable.user_id,
-            email: recipientEmail
-          }
-        });
+      const { data: fetchRecipientData, error: fetchRecipientError } = await supabase.functions.invoke('does_user_exist_with_email', {
+        body: {
+          userId: userInTable.user_id,
+          email: recipientEmail
+        }
+      });
   
       if (fetchRecipientError) {
         // TODO: hande this error gracefully
