@@ -115,7 +115,7 @@ export default function CreateAccount() {
               The choice is yours; you can adjust your Privacy settings at any time in your Account Profile.
             </p>
 
-            <form onSubmit={handleSignUp}>
+            <form onSubmit={handleSignUp} autoComplete="off">
               <input 
                 className="account-input"
                 type="email" 
@@ -127,35 +127,38 @@ export default function CreateAccount() {
                 autoComplete="off"
                 required
               />
-              <input
-                className="account-input"
-                type="password" 
-                id="password" 
-                name="password" 
-                placeholder="Password"
-                value = {password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="off"
-                required
-              />
-              <input
-                className="account-input"
-                type="password" 
-                name="confirm-password" 
-                id="confirm-password" 
-                placeholder="Confirm Your Password" 
-                value={confirmPassword}
-                onChange={handlePasswordConfirmation}
-                autoComplete="off" 
-                required
-              />
+
+              <div id="account-passwords-row">
+                <input
+                  className="account-input"
+                  type="password" 
+                  id="password" 
+                  name="password" 
+                  placeholder="Password"
+                  value = {password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="off"
+                  required
+                />
+                <input
+                  className="account-input"
+                  type="password" 
+                  name="confirm-password" 
+                  id="confirm-password" 
+                  placeholder="Confirm Your Password" 
+                  value={confirmPassword}
+                  onChange={handlePasswordConfirmation}
+                  autoComplete="off" 
+                  required
+                />
+              </div>
               {confirmPassword && (
                 <p style={{ color: passwordsMatch ? "green" : "red" }}>
                   {passwordsMatch ? "Passwords match!" : "Passwords do not match"}
                 </p>
               )}
 
-              <div>
+              <div id="account-names-row">
                 <input 
                   className="account-input"
                   type="text"
@@ -176,20 +179,22 @@ export default function CreateAccount() {
                   onChange={(e) => setLastName(e.target.value)}
                   required
                 />
-                <input
-                  className="account-input"
-                  type="checkbox"
-                  id="is-name-private"
-                  name="is-name-private"
-                  value={isNamePrivate}
-                  onChange={(e) => setIsNamePrivate(e.target.checked)}
-                />
-                <label
-                  htmlFor="is-name-private"
-                  id="is-name-private-label"
-                >
-                  Keep my name PRIVATE<br />among other users in Sirch services
-                </label>
+                <div id="is-name-private">
+                  <input
+                    className="account-input"
+                    type="checkbox"
+                    id="is-name-private-checkbox"
+                    name="is-name-private"
+                    value={isNamePrivate}
+                    onChange={(e) => setIsNamePrivate(e.target.checked)}
+                  />
+                  <label
+                    htmlFor="is-name-private"
+                    id="is-name-private-label"
+                  >
+                    Keep my name PRIVATE<br />among other users in Sirch services
+                  </label>
+                </div>
               </div>
 
               <p>
@@ -200,7 +205,7 @@ export default function CreateAccount() {
               You may change this phrase at any time in your Account Profile.
               </p>
 
-              <div>
+              <div id='account-user-handle-row'>
                 <input
                   className="account-input"
                   type="text"
@@ -217,7 +222,7 @@ export default function CreateAccount() {
                   type="button"
                   onClick={handleSuggestNewHandle}
                 >
-                  Suggest New User Phrase
+                  Pick Another
                 </button>
               </div>
               <br></br>

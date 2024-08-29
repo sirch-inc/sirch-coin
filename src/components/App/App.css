@@ -116,7 +116,7 @@ footer {
   font-size: 30px;
   padding: 10px;
   padding-left: 15px;
-  margin: 15px;
+  margin: 10px 0px 10px 0px;
   width: 75%;
   border-radius: 5px;
 }
@@ -132,16 +132,36 @@ footer {
   color: black;
 }
 
-input#first-name, input#last-name {
-  width: 25%;
+div#account-passwords-row {
+  width: 75%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-input#is-name-private {
-  width: 2%;
+div#account-names-row {
+  width: 75%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+input#first-name, input#last-name {
+  width: 30%;
+}
+
+div#is-name-private {
+  display: contents;
+}
+
+input#is-name-private-checkbox {
+  width: min-content;
+  margin: 0px;
 }
 
 label#is-name-private-label {
   vertical-align: middle;
+  margin: 0px;
 }
 
 input#user-handle {
