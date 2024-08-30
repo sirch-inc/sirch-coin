@@ -16,7 +16,6 @@ export default function CreateAccount() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // TODO: fetch the user's balance when the component mounts
     handleSuggestNewHandle();
   }, []);
 
