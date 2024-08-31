@@ -24,9 +24,6 @@ export default function Balance() {
         // TODO: handle NULL or otherwise malformed balances
         setCurrentBalance(data.balance);
       }
-    } else {
-      // TODO: handle no userInTable
-      alert('User not found');
     }
   };
 
