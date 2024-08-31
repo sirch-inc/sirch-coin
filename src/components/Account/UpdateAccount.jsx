@@ -1,24 +1,37 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../AuthContext";
 import supabase from '../App/supabaseConfig';
 
 
 export default function UpdateAccount() {
-  const [email, setEmail] = useState('');
+  const { userInTable, userEmail } = useContext(AuthContext);
+  const [email, setEmail] = useState(userEmail || '');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [passwordsMatch, setPasswordsMatch] = useState(false);
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [isNamePrivate, setIsNamePrivate] = useState(false);
-  const [userHandle, setUserHandle] = useState('');
-  const navigate = useNavigate();
-  const { userInTable } = useContext(AuthContext);
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
+  const [firstName, setFirstName] = useState(userInTable?.first_name);
+  const [lastName, setLastName] = useState(userInTable?.last_name);
+  const [isNamePrivate, setIsNamePrivate] = useState(userInTable?.is_name_private);
+  const [userHandle, setUserHandle] = useState(userInTable?.user_handle);
+  // const navigate = useNavigate();
+
+  // JEFF: remove this --------------------------------------------------------------
+  // useEffect(() => {
+  //   console.log("userEmail", userEmail)
+  //   setEmail(userEmail);
+  // }, []);
+
+  // const fetchUserBalance = async (userInTable) => {
+  //   if (userInTable) {
+  //     console.log("LOADED-----------------------", userInTable)
+  //   }
+  // };
 
   // useEffect(() => {
-  //   handleSuggestNewHandle();
-  // }, []);
+  //   // (Re)fetch the user's balance when the component mounts
+  //   fetchUserBalance(userInTable);
+  // }, [userEmail, userInTable]);
 
   const handleUpdate = async (event) => {
     event.preventDefault();
@@ -30,21 +43,27 @@ export default function UpdateAccount() {
         return;
       }
 
-      const { user, error } = await supabase.auth.updateUser({
+      const userMetaData = {
+        full_name: firstName + " " + lastName,
+        first_name: firstName,
+        last_name: lastName,
+        is_name_private: isNamePrivate,
+        user_handle: userHandle
+      };
+
+      console.log('meta', userMetaData);
+
+      let updatedUser = {
         email,
-        password,
+        // password,
         options: {
           // JEFF: change this redirect to something else???
           emailRedirectTo: `${window.location.origin}/welcome`,
-          data: {
-            full_name: firstName + " " + lastName,
-            first_name: firstName,
-            last_name: lastName,
-            is_name_private: isNamePrivate,
-            user_handle: userHandle
-          },
-        },
-      });
+          // data: userMetaData
+        }
+      };
+
+      const { user, error } = await supabase.auth.updateUser(updatedUser);
 
       if (error) {
         // TODO: surface this error...
@@ -67,6 +86,9 @@ export default function UpdateAccount() {
   const handlePasswordConfirmation = (e) => {
     const value = e.target.value;
     setConfirmPassword(value);
+    // JEFF__________________________________________________
+    console.log("value", value);
+    console.logt("password", password);
     setPasswordsMatch(value === password);
   };
 
@@ -96,39 +118,19 @@ export default function UpdateAccount() {
   return (
     <AuthContext.Consumer>
       {({ session }) =>
-        !session ? (
+        session ? (
           <>
-            <h2>Create an Account</h2>
-            <p>Already have an account? <a href="/login">Log in</a> instead.</p>
-            <br></br>
+            <h2>Update Account</h2>
 
             <form onSubmit={handleUpdate} autoComplete="off">
-              <div className="account-privacy-statement">
-                <h3>Your Account & Privacy</h3>
-                <p>
-                  Sirch and the Sirch Coins product and services take your privacy very seriously.
-                  We believe your data (email address, name, photo, activity, and social connections) belong to <i>you</i>, and
-                  that <i>you</i> should decide how and when to share them or make them accessible to others.
-                </p>
-                <p>
-                  That said, we also encourage our users to share their profile with others to create a networked community
-                  and to make it easier for people on our platforms to find and connect with you.
-                </p>
-                <p>
-                  The choice is yours; you can adjust your Privacy settings at any time in your Account Profile.
-                </p>
-              </div>
-
-              <br></br>
-
               <input 
                 className="account-input"
-                type="email" 
-                id="email" 
-                name="email" 
-                placeholder="Email" 
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Email"
                 value={email} 
-                onChange={(e) => setEmail(e.target.value)} 
+                onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"
                 required
               />
@@ -136,25 +138,25 @@ export default function UpdateAccount() {
               <div className="account-row">
                 <input
                   className="account-input"
-                  type="password" 
-                  id="password" 
-                  name="password" 
-                  placeholder="Password"
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="New Password"
                   value = {password}
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete="off"
-                  required
                 />
                 <input
                   className="account-input"
                   type="password" 
                   name="confirm-password" 
                   id="confirm-password" 
-                  placeholder="Confirm Your Password" 
+                  placeholder="Confirm New Password" 
                   value={confirmPassword}
                   onChange={handlePasswordConfirmation}
-                  autoComplete="off" 
-                  required
+                  autoComplete="off"
+                  // JEFF: make this required if a new password was entered
+                  // required
                 />
               </div>
               {confirmPassword && (
@@ -205,11 +207,7 @@ export default function UpdateAccount() {
               <div id='account-user-handle-row'>
                 <div width="30%">
                   <p>
-                  Your Sirch account includes a unique, random, two-word phrase to help other users find you
-                  easily and to help keep your Name and Email private if you choose not to share them.
-                  </p>
-                  <p>
-                  You may change this phrase at any time in your Account Profile.
+                  Sirch User Phrase:
                   </p>
                 </div>
                 <input
@@ -228,12 +226,14 @@ export default function UpdateAccount() {
                   onClick={handleSuggestNewHandle}
                 > Pick Another ↺ </button>
               </div>
+
               <br></br>
-              <button className="account-button" type="submit"> Sign Up → </button>
+
+              <button className="account-button" type="submit"> Update → </button>
             </form>
           </>
         ) : (
-          <div>You&apos;ve successfully logged in as {session.user.email}!</div>
+          <div>You must be logged in to change your user account settings.</div>
         )
       }
     </AuthContext.Consumer>
