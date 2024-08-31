@@ -69,8 +69,6 @@ export default function CreateAccount() {
 
   // refresh user handle
   const handleSuggestNewHandle = async () => {
-    // TODO: invoke backend service
-
     setUserHandle('');
 
     try {
