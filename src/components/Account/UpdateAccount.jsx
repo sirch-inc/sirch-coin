@@ -14,6 +14,7 @@ export default function UpdateAccount() {
   const [isNamePrivate, setIsNamePrivate] = useState(false);
   const [userHandle, setUserHandle] = useState('');
   const navigate = useNavigate();
+  const { userInTable } = useContext(AuthContext);
 
   // useEffect(() => {
   //   handleSuggestNewHandle();
@@ -29,10 +30,11 @@ export default function UpdateAccount() {
         return;
       }
 
-      const { user, error } = await supabase.auth.signUp({
+      const { user, error } = await supabase.auth.updateUser({
         email,
         password,
         options: {
+          // JEFF: change this redirect to something else???
           emailRedirectTo: `${window.location.origin}/welcome`,
           data: {
             full_name: firstName + " " + lastName,
@@ -53,10 +55,11 @@ export default function UpdateAccount() {
         // TODO: do something with user
       }
 
-      navigate("/verify-account");
+      // JEFF: where do we go after this?
+      // navigate("/verify-account");
     } catch (exception) {
       // TODO: surface this error
-      alert("Error signing up:", exception);
+      alert("Error updating user account details:", exception);
     }
   };
 
@@ -69,8 +72,6 @@ export default function UpdateAccount() {
 
   // refresh user handle
   const handleSuggestNewHandle = async () => {
-    // TODO: invoke backend service
-
     setUserHandle('');
 
     try {
