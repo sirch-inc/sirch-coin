@@ -34,6 +34,8 @@ VITE_IS_OFFLINE="false"
 1. Install whatever other `git` tools you like (`GitHub Desktop` for example).
 1. After an invite by the team, configure your platform credentials to connect to the `sirch-inc` GitHub organization (which might require RSA keys, etc).
 1. Configure your `git` tools to use those credentials.
+1. We currently use Linear to track dev/product tasks, so download the app, get signed on (or invited), and join the "SirchCoins" team.
+1. Except for micro-changes, we generally use the GitHub create-branch, modify/commit, push/publish, and pull-request flow to introduce changes to our code base. Deployment to "test" is automatic on merge, but requires manual operations to publish to "prod".
 
 ### Set up Sirch-Coins (Front-End)
 1. Pull down the latest version of the `sirch-inc/sirch-coin` github repository onto your local machine (https://github.com/sirch-inc/sirch-coin)
