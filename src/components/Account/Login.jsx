@@ -71,7 +71,7 @@ export default function Login() {
           <div>
             <h2>Log In</h2>
             <p>New users should <a href="/create-account">create an account</a> first.</p>
-            <form onSubmit={handleLogin}>
+            <form onSubmit={handleLogin} autoComplete="off">
             <input
               className="account-input"
               type="email"
@@ -79,7 +79,7 @@ export default function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              autoComplete="username"
+              autoComplete="email"
             />
             <input
               className="account-input"
@@ -88,7 +88,7 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              autoComplete="current-password"
+              autoComplete="off"
             />
             <button className="account-button" type="submit">Log In →</button>
             <a href="/forgot-password">Forgot Password?</a>
