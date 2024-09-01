@@ -13,7 +13,7 @@ Ask a developer for invites to access any of these services.
 * Domain/DNS:  Godaddy (for now).  Josh can provide access if necessary.
 
 ### Hosts
-* [testallthethings.sirchcoin.com](https://testallthethings.sirchcoin.com) is for testing in our "dev/test" sandboxes.  Autodeploys.
+* [testallthethings.sirchcoin.com](https://testallthethings.sirchcoin.com) is for testing in our "dev/test" sandboxes.  Autodeploys in Netlify.
 * [sirchcoin.com](https://sirchcoin.com) is our production environment.  Deployed manually in Netlify.
 
 ### Custom Deployment Environment Flags
@@ -23,23 +23,33 @@ VITE_IS_COMING_SOON="false"
 VITE_IS_OFFLINE="false"
 ```
 
-# Developer Quickstart
-
-## Process
+# Development Process
 1. We currently use Linear (https://linear.app/) to track dev/product tasks, so download the app, get signed on (or invited), and join the "SirchCoins" team.
 1. Except for micro-changes (commit directly to `main`), we generally use this process:
-    1. Create branch (from `main` or wherever).  Ideally, name it using the "Copy git branch name" from the Linear task/story you're working on, which helps correlate your changes to Linear. To get this name, open the issue in Linear then press (Command-Shift-.), or use the issue menu to `Copy git branch name`. If you are creating a branch for an untracked issue, name it `UNTRACKED: <details>`.
+    1. Create a branch (from `main` or wherever).  Ideally, name it using the `Copy git branch name` from the Linear task/story you're working on, which helps correlate your changes to Linear. To get this name, open the issue in Linear then press (Command-Shift-.), or use the issue menu to `Copy git branch name`. If you are creating a branch for an untracked issue, name it `UNTRACKED: <details>`.
     1. Modify/commit your changes to your branch.
     1. Push/publish the branch to GitHub.
     1. Create a pull-request and nominate reviewer(s).
     1. (As necessary) Announce your request for review to the reviewer(s).
     1. (Iterate on changes until approved...)
-    1. Merge the pull-request. Deployment to TEST is automatic on merge using preconfigured GitHub Actions, but requires manual operations to publish to PROD.
+    1. Merge the pull-request. Deployment to TEST is automatic on merge via Netlify, but requires manual operations to publish to PROD.
     1. Delete the GitHub branch (it can be restored later if needed).
     1. After a few minutes, verify your changes deployed to our TEST environment.  Remember to also PR/merge any dependent changes from the `sirch-coin-supabase` project if necessary.
-    1. When ready, MANULLY deploy the changes to PROD.  See a developer for instructions.
+    1. Announce to relevant testers that the changes are present in our TEST environment. Iterate on validating the changes.
+    1. When ready for release:
+        1. Verify with developers/testers your intention to release:  be careful here as you may be releasing OTHER changes on `main` that aren't production-ready.
+        1. Consider ramifications:
+            1. Does the backend need to update/migrate user records to support your changes?
+            1. Do we need to reset/invalidate caches or CDN's to provide the new functionality?
+            1. etc... think through the possible issues...
+        1. Create a Tag/Release in GitHub for the project (usually just rev the release number).
+        1. MANUALLY deploy the changes to PROD using Netlify.  See a developer for instructions.  Also remember to deploy any dependent changes from `sirch-coin-supabase` as necessary.
+        1. Test the release on PROD (be careful!).
+        1. Announce the release to our Slack channel, perhaps with a changelog (details to be worked out...).
 
-## Prerequisites (one-time-chores)
+# Developer Quickstart
+
+## Prerequisites (one-time chores)
 
 ### Tools
 1. Install the latest (long-term stable) `node.js` suite, which includes `npm`.
