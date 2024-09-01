@@ -133,9 +133,9 @@ export default function CreateAccount() {
               <div className="account-row">
                 <input
                   className="account-input"
-                  type="password" 
-                  id="password" 
-                  name="password" 
+                  type="password"
+                  id="password"
+                  name="password"
                   placeholder="Password"
                   value = {password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -144,13 +144,13 @@ export default function CreateAccount() {
                 />
                 <input
                   className="account-input"
-                  type="password" 
-                  name="confirm-password" 
-                  id="confirm-password" 
-                  placeholder="Confirm Your Password" 
+                  type="password"
+                  name="confirm-password"
+                  id="confirm-password"
+                  placeholder="Confirm Your Password"
                   value={confirmPassword}
                   onChange={handlePasswordConfirmation}
-                  autoComplete="off" 
+                  autoComplete="off"
                   required
                 />
               </div>
