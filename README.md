@@ -25,6 +25,20 @@ VITE_IS_OFFLINE="false"
 
 # Developer Quickstart
 
+## Process
+1. We currently use Linear (https://linear.app/) to track dev/product tasks, so download the app, get signed on (or invited), and join the "SirchCoins" team.
+1. Except for micro-changes (commit directly to `main`), we generally use this process:
+    1. Create branch (from `main` or wherever).  Ideally, name it using the "Copy git branch name" from the Linear task/story you're working on, which helps correlate your changes to Linear. To get this name, open the issue in Linear then press (Command-Shift-.), or use the issue menu to `Copy git branch name`. If you are creating a branch for an untracked issue, name it `UNTRACKED: <details>`.
+    1. Modify/commit your changes to your branch.
+    1. Push/publish the branch to GitHub.
+    1. Create a pull-request and nominate reviewer(s).
+    1. (As necessary) Announce your request for review to the reviewer(s).
+    1. (Iterate on changes until approved...)
+    1. Merge the pull-request. Deployment to TEST is automatic on merge using preconfigured GitHub Actions, but requires manual operations to publish to PROD.
+    1. Delete the GitHub branch (it can be restored later if needed).
+    1. After a few minutes, verify your changes deployed to our TEST environment.  Remember to also PR/merge any dependent changes from the `sirch-coin-supabase` project if necessary.
+    1. When ready, MANULLY deploy the changes to PROD.  See a developer for instructions.
+
 ## Prerequisites (one-time-chores)
 
 ### Tools
@@ -34,8 +48,6 @@ VITE_IS_OFFLINE="false"
 1. Install whatever other `git` tools you like (`GitHub Desktop` for example).
 1. After an invite by the team, configure your platform credentials to connect to the `sirch-inc` GitHub organization (which might require RSA keys, etc).
 1. Configure your `git` tools to use those credentials.
-1. We currently use Linear to track dev/product tasks, so download the app, get signed on (or invited), and join the "SirchCoins" team.
-1. Except for micro-changes, we generally use the GitHub create-branch, modify/commit, push/publish, and pull-request flow to introduce changes to our code base. Deployment to "test" is automatic on merge, but requires manual operations to publish to "prod".
 
 ### Set up Sirch-Coins (Front-End)
 1. Pull down the latest version of the `sirch-inc/sirch-coin` github repository onto your local machine (https://github.com/sirch-inc/sirch-coin)
