@@ -35,7 +35,7 @@ export default function ResetPassword() {
       
       if (error) {
         //TODO: surface this error appropriately
-        alert('There was an error updating your password.', error);
+        alert('There was an error updating your password:\n' + error);
         console.log("Data", data);
       } else if (!passwordsMatch) {
         //TODO: surface this error appropriately

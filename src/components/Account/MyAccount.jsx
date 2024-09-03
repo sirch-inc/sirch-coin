@@ -30,7 +30,7 @@ export default function MyAccount(){
 
         if (error){
           // TODO: Handle error
-          alert('Error deleting your account: ', error)
+          alert('Error deleting your account:\n' + error)
         } else {
           // TODO: Handle alert notification with Toast
           navigate('/')

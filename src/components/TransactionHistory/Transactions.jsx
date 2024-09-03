@@ -26,7 +26,7 @@ export default function Transactions() {
 
       if (error) {
         // TODO: surface this error appropriately...
-        alert('Error fetching users transactions: ', error);
+        alert('Error fetching users transactions:\n' + error);
       } else {
         setUserTransactions(data);
       }
