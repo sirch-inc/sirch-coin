@@ -1,12 +1,16 @@
 import { useState, useEffect, useContext } from 'react'
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../AuthContext";
 import supabase from '../App/supabaseConfig';
+import { isAuthApiError } from '@supabase/supabase-js';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 export default function UpdateAccount() {
   const { userInTable, userEmail } = useContext(AuthContext);
   const [email, setEmail] = useState(userEmail || '');
+  const [hasEmailChanged, setHasEmailChanged] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordsMatch, setPasswordsMatch] = useState(true);
@@ -15,23 +19,6 @@ export default function UpdateAccount() {
   const [isNamePrivate, setIsNamePrivate] = useState(userInTable?.is_name_private);
   const [userHandle, setUserHandle] = useState(userInTable?.user_handle);
   // const navigate = useNavigate();
-
-  // JEFF: remove this --------------------------------------------------------------
-  // useEffect(() => {
-  //   console.log("userEmail", userEmail)
-  //   setEmail(userEmail);
-  // }, []);
-
-  // const fetchUserBalance = async (userInTable) => {
-  //   if (userInTable) {
-  //     console.log("LOADED-----------------------", userInTable)
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   // (Re)fetch the user's balance when the component mounts
-  //   fetchUserBalance(userInTable);
-  // }, [userEmail, userInTable]);
 
   const handleUpdate = async (event) => {
     event.preventDefault();
@@ -43,52 +30,56 @@ export default function UpdateAccount() {
         return;
       }
 
-      const userMetaData = {
-        full_name: firstName + " " + lastName,
-        first_name: firstName,
-        last_name: lastName,
-        is_name_private: isNamePrivate,
-        user_handle: userHandle
-      };
-
-      console.log('meta', userMetaData);
-
-      let updatedUser = {
+      const { data: updatedUser, error } = await supabase.auth.updateUser({
         email,
-        // password,
+        password: password !== '' ? password : null,
+        data: {
+          full_name: firstName + " " + lastName,
+          first_name: firstName,
+          last_name: lastName,
+          is_name_private: isNamePrivate,
+          user_handle: userHandle
+        },
         options: {
           // JEFF: change this redirect to something else???
           emailRedirectTo: `${window.location.origin}/welcome`,
-          // data: userMetaData
         }
-      };
-
-      const { user, error } = await supabase.auth.updateUser(updatedUser);
+      });
 
       if (error) {
-        // TODO: surface this error...
-        throw error;
+        if (isAuthApiError(error)) {
+          toast.error(error.message);
+        }
+        return;
       }
 
-      if (!user) {
-        // TODO: do something with user
-      }
+      toast.success("Account updated!");
 
-      // JEFF: where do we go after this?
-      // navigate("/verify-account");
+      // reset form
+      setPassword('');
+      setConfirmPassword('');
+      
+      if (hasEmailChanged) {
+        toast.success("A verification email was sent to your new email address.");
+      }
     } catch (exception) {
-      // TODO: surface this error
-      alert("Error updating user account details:", exception);
+      toast.error(exception.message, {
+        position: "top-right",
+      });
     }
   };
 
+  const handleEmailChange = (e) => {
+    const newEmail = e.target.value;
+
+    setEmail(newEmail);
+    setHasEmailChanged(newEmail !== userEmail);
+  }
   // verify passwords match
   const handlePasswordConfirmation = (e) => {
     const value = e.target.value;
+
     setConfirmPassword(value);
-    // JEFF__________________________________________________
-    console.log("value", value);
-    console.logt("password", password);
     setPasswordsMatch(value === password);
   };
 
@@ -111,7 +102,7 @@ export default function UpdateAccount() {
       setUserHandle(data.handles[0]);
     } catch (exception) {
       // TODO: surface this error
-      alert("Error generating new handle(s):", exception);
+      alert("Error generating new handle(s): \n" + exception);
     }
   };
   
@@ -120,6 +111,15 @@ export default function UpdateAccount() {
       {({ session }) =>
         session ? (
           <>
+            <ToastContainer
+              position="top-right"
+              autoClose={false}
+              newestOnTop={false}
+              closeOnClick
+              draggable
+              theme="colored"
+            />
+
             <h2>Update Account</h2>
 
             <form onSubmit={handleUpdate} autoComplete="off">
@@ -130,10 +130,14 @@ export default function UpdateAccount() {
                 name="email"
                 placeholder="Email"
                 value={email} 
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={ handleEmailChange }
                 autoComplete="email"
-                required
               />
+              {hasEmailChanged &&
+                <p style={{color: "green"}}>
+                  Note: Changes to your email address will require email reverification.
+                </p>
+              }
 
               <div className="account-row">
                 <input
@@ -155,8 +159,7 @@ export default function UpdateAccount() {
                   value={confirmPassword}
                   onChange={handlePasswordConfirmation}
                   autoComplete="off"
-                  // JEFF: make this required if a new password was entered
-                  // required
+                  required={password !== ''}
                 />
               </div>
               {confirmPassword && (
@@ -174,7 +177,6 @@ export default function UpdateAccount() {
                   placeholder="First Name"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  required
                 />
                 <input
                   className="account-input"
@@ -184,7 +186,6 @@ export default function UpdateAccount() {
                   placeholder="Last Name"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  required
                 />
                 <div id="is-name-private">
                   <input
@@ -218,7 +219,6 @@ export default function UpdateAccount() {
                   placeholder="Loading..."
                   value={userHandle}
                   readOnly
-                  required
                 />
                 <button
                   className="account-button"
