@@ -129,7 +129,7 @@ export default function Send() {
 
       if (transferError) {
         // TODO: hande this error gracefully
-        alert('Error transferring coins');
+        alert('Error transferring coins:\n' + transferError);
         return;
       }
 

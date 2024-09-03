@@ -27,7 +27,7 @@ export default function StripeSuccess() {
       } catch (error) {
         setPaymentError(error.message || "An error occurred");
         // TODO: Handle alert to user and redirect(?)
-        alert("There was an error processing your payment details: ", paymentError)
+        alert("There was an error processing your payment details:\n" + paymentError)
       }
     };
 

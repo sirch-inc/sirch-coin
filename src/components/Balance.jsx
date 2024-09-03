@@ -19,14 +19,11 @@ export default function Balance() {
 
       if (error) {
         // TODO: handle error
-        alert('Error fetching user balance:', error);
+        alert('Error fetching user balance:\n' + error);
       } else {
         // TODO: handle NULL or otherwise malformed balances
         setCurrentBalance(data.balance);
       }
-    } else {
-      // TODO: handle no userInTable
-      alert('User not found');
     }
   };
 

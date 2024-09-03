@@ -1,25 +1,26 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useContext } from 'react'
+// import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../AuthContext";
 import supabase from '../App/supabaseConfig';
+import { isAuthApiError } from '@supabase/supabase-js';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
-export default function CreateAccount() {
-  const [email, setEmail] = useState('');
+export default function UpdateAccount() {
+  const { userInTable, userEmail } = useContext(AuthContext);
+  const [email, setEmail] = useState(userEmail || '');
+  const [hasEmailChanged, setHasEmailChanged] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [passwordsMatch, setPasswordsMatch] = useState(false);
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [isNamePrivate, setIsNamePrivate] = useState(false);
-  const [userHandle, setUserHandle] = useState('');
-  const navigate = useNavigate();
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
+  const [firstName, setFirstName] = useState(userInTable?.first_name);
+  const [lastName, setLastName] = useState(userInTable?.last_name);
+  const [isNamePrivate, setIsNamePrivate] = useState(userInTable?.is_name_private);
+  const [userHandle, setUserHandle] = useState(userInTable?.user_handle);
+  // const navigate = useNavigate();
 
-  useEffect(() => {
-    handleSuggestNewHandle();
-  }, []);
-
-  const handleSignUp = async (event) => {
+  const handleUpdate = async (event) => {
     event.preventDefault();
     
     try {
@@ -29,40 +30,55 @@ export default function CreateAccount() {
         return;
       }
 
-      const { user, error } = await supabase.auth.signUp({
+      const { data: updatedUser, error } = await supabase.auth.updateUser({
         email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/welcome`,
-          data: {
-            full_name: firstName + " " + lastName,
-            first_name: firstName,
-            last_name: lastName,
-            is_name_private: isNamePrivate,
-            user_handle: userHandle
-          },
+        password: password !== '' ? password : null,
+        data: {
+          full_name: firstName + " " + lastName,
+          first_name: firstName,
+          last_name: lastName,
+          is_name_private: isNamePrivate,
+          user_handle: userHandle
         },
+        options: {
+          // JEFF: change this redirect to something else???
+          emailRedirectTo: `${window.location.origin}/welcome`,
+        }
       });
 
       if (error) {
-        // TODO: surface this error...
-        throw error;
+        if (isAuthApiError(error)) {
+          toast.error(error.message);
+        }
+        return;
       }
 
-      if (!user) {
-        // TODO: do something with user
-      }
+      toast.success("Account updated!");
 
-      navigate("/verify-account");
+      // reset form
+      setPassword('');
+      setConfirmPassword('');
+      
+      if (hasEmailChanged) {
+        toast.success("A verification email was sent to your new email address.");
+      }
     } catch (exception) {
-      // TODO: surface this error
-      alert("Error signing up:\n" + exception);
+      toast.error(exception.message, {
+        position: "top-right",
+      });
     }
   };
 
+  const handleEmailChange = (e) => {
+    const newEmail = e.target.value;
+
+    setEmail(newEmail);
+    setHasEmailChanged(newEmail !== userEmail);
+  }
   // verify passwords match
   const handlePasswordConfirmation = (e) => {
     const value = e.target.value;
+
     setConfirmPassword(value);
     setPasswordsMatch(value === password);
   };
@@ -93,42 +109,35 @@ export default function CreateAccount() {
   return (
     <AuthContext.Consumer>
       {({ session }) =>
-        !session ? (
+        session ? (
           <>
-            <h2>Create an Account</h2>
-            <p>Already have an account? <a href="/login">Log in</a> instead.</p>
-            <br></br>
+            <ToastContainer
+              position="top-right"
+              autoClose={false}
+              newestOnTop={false}
+              closeOnClick
+              draggable
+              theme="colored"
+            />
 
-            <form onSubmit={handleSignUp} autoComplete="off">
-              <div className="account-privacy-statement">
-                <h3>Your Account & Privacy</h3>
-                <p>
-                  Sirch and the Sirch Coins product and services take your privacy very seriously.
-                  We believe your data (email address, name, photo, activity, and social connections) belong to <i>you</i>, and
-                  that <i>you</i> should decide how and when to share them or make them accessible to others.
-                </p>
-                <p>
-                  That said, we also encourage our users to share their profile with others to create a networked community
-                  and to make it easier for people on our platforms to find and connect with you.
-                </p>
-                <p>
-                  The choice is yours; you can adjust your Privacy settings at any time in your Account Profile.
-                </p>
-              </div>
+            <h2>Update Account</h2>
 
-              <br></br>
-
+            <form onSubmit={handleUpdate} autoComplete="off">
               <input 
                 className="account-input"
-                type="email" 
-                id="email" 
-                name="email" 
-                placeholder="Email" 
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Email"
                 value={email} 
-                onChange={(e) => setEmail(e.target.value)} 
+                onChange={ handleEmailChange }
                 autoComplete="email"
-                required
               />
+              {hasEmailChanged &&
+                <p style={{color: "green"}}>
+                  Note: Changes to your email address will require email reverification.
+                </p>
+              }
 
               <div className="account-row">
                 <input
@@ -136,22 +145,21 @@ export default function CreateAccount() {
                   type="password"
                   id="password"
                   name="password"
-                  placeholder="Password"
+                  placeholder="New Password"
                   value = {password}
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete="off"
-                  required
                 />
                 <input
                   className="account-input"
-                  type="password"
-                  name="confirm-password"
-                  id="confirm-password"
-                  placeholder="Confirm Your Password"
+                  type="password" 
+                  name="confirm-password" 
+                  id="confirm-password" 
+                  placeholder="Confirm New Password" 
                   value={confirmPassword}
                   onChange={handlePasswordConfirmation}
                   autoComplete="off"
-                  required
+                  required={password !== ''}
                 />
               </div>
               {confirmPassword && (
@@ -169,7 +177,6 @@ export default function CreateAccount() {
                   placeholder="First Name"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  required
                 />
                 <input
                   className="account-input"
@@ -179,7 +186,6 @@ export default function CreateAccount() {
                   placeholder="Last Name"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  required
                 />
                 <div id="is-name-private">
                   <input
@@ -202,11 +208,7 @@ export default function CreateAccount() {
               <div id='account-user-handle-row'>
                 <div width="30%">
                   <p>
-                  Your Sirch account includes a unique, random, two-word phrase to help other users find you
-                  easily and to help keep your Name and Email private if you choose not to share them.
-                  </p>
-                  <p>
-                  You may change this phrase at any time in your Account Profile.
+                  Sirch User Phrase:
                   </p>
                 </div>
                 <input
@@ -217,7 +219,6 @@ export default function CreateAccount() {
                   placeholder="Loading..."
                   value={userHandle}
                   readOnly
-                  required
                 />
                 <button
                   className="account-button"
@@ -225,12 +226,14 @@ export default function CreateAccount() {
                   onClick={handleSuggestNewHandle}
                 > Pick Another ↺ </button>
               </div>
+
               <br></br>
-              <button className="account-button" type="submit"> Sign Up → </button>
+
+              <button className="account-button" type="submit"> Update → </button>
             </form>
           </>
         ) : (
-          <div>You&apos;ve successfully logged in as {session.user.email}!</div>
+          <div>You must be logged in to change your user account settings.</div>
         )
       }
     </AuthContext.Consumer>
