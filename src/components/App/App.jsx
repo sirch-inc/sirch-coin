@@ -9,12 +9,13 @@ import MainPage from "./MainPage";
 import About from "../About"
 import Login from "../Account/Login";
 import Logout from "../Account/Logout"
+import MyAccount from "../Account/MyAccount"
 import CreateAccount from "../Account/CreateAccount";
 import VerifyAccount from "../Account/VerifyAccount";
-import MyAccount from "../Account/MyAccount"
-import Welcome from "../Account/Welcome";
+import UpdateAccount from "../Account/UpdateAccount"
 import ForgotPassword from "../Account/ForgotPassword";
 import ResetPassword from "../Account/ResetPassword";
+import Welcome from "../Account/Welcome";
 import Send from "../Send";
 import Balance from "../Balance";
 import Purchase from "../Purchase";
@@ -30,7 +31,7 @@ if (import.meta.env.MODE === 'production') {
   alert("PRE-ALPHA WARNING:\n\nThis is a pre-alpha public production Sirch Coin site.\n\n\
     Transactions are real and recorded.\n\n\
     You must use real credit cards for purchases at this time, which will be processed and debited.\n\n\
-    If you require additional support or adjustments to your balance or transaction history, contact us."
+    If you require additional support or adjustments to your balance or transaction history, contact the dev team."
   );
 }
 
@@ -44,9 +45,10 @@ export default function App() {
           <Route path="/" Component={MainPage} supabase={supabase}/>
           <Route path="/login" Component={Login}/>
           <Route path="/logout" Component={Logout}/>
+          <Route path="/account" Component={MyAccount}/>
           <Route path="/create-account" Component={CreateAccount}/>
           <Route path="/verify-account" Component={VerifyAccount}/>
-          <Route path="/account" Component={MyAccount}/>
+          <Route path="/update-account" Component={UpdateAccount}/>
           <Route path="/welcome" Component={Welcome}/>
           <Route path="/about" Component={About}/>
           <Route path="/forgot-password" Component={ForgotPassword}/>
