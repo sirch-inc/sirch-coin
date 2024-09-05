@@ -194,6 +194,7 @@ export default function UpdateAccount() {
                     id="is-name-private-checkbox"
                     name="is-name-private"
                     value={isNamePrivate}
+                    checked={isNamePrivate}
                     onChange={(e) => setIsNamePrivate(e.target.checked)}
                   />
                   <label
