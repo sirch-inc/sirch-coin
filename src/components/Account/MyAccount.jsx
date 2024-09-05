@@ -46,7 +46,7 @@ export default function MyAccount(){
 
       <div className="account personal-info">
         <p>Email: {userInTable?.email}</p>
-        <p>Name: {userInTable?.full_name + " (" + (userInTable?.is_name_private && "PRIVATE") + ")"}</p>
+        <p>Name: {userInTable?.full_name + " (" + (userInTable?.is_name_private ? "PRIVATE" : "PUBLIC") + ")"}</p>
         <p>User Phrase: {userInTable?.user_handle}</p>
         <p>Balance: ⓢ {userBalance?.balance}</p>
       </div>
