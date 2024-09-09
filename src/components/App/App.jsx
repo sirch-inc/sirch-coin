@@ -16,7 +16,7 @@ import UpdateAccount from "../Account/UpdateAccount"
 import ForgotPassword from "../Account/ForgotPassword";
 import ResetPassword from "../Account/ResetPassword";
 import Welcome from "../Account/Welcome";
-import UserDeleted from "../Account/UserDeleted";
+import AccountDeleted from "../Account/AccountDeleted";
 import Send from "../Send";
 import Balance from "../Balance";
 import Purchase from "../Purchase";
@@ -28,6 +28,7 @@ import "@stripe/stripe-js";
 import 'react-tooltip/dist/react-tooltip.css'
 
 
+// TODO: remove this before PROD release
 if (import.meta.env.MODE === 'production') {
   alert("PRE-ALPHA WARNING:\n\nThis is a pre-alpha public production Sirch Coin site.\n\n\
     Transactions are real and recorded.\n\n\
@@ -44,7 +45,7 @@ export default function App() {
         <NavBar supabase={supabase}/>
         <Routes>
           <Route path="/" Component={MainPage} supabase={supabase}/>
-          <Route path="/user-deleted" Component={UserDeleted}/>
+          <Route path="/user-deleted" Component={AccountDeleted}/>
           <Route path="/login" Component={Login}/>
           <Route path="/logout" Component={Logout}/>
           <Route path="/account" Component={MyAccount}/>

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 
 
-export default function UserDeleted() {
+export default function AccountDeleted() {
   return(
     <>
       <h1>Your Sirch Coins account was successfully deleted.</h1>
