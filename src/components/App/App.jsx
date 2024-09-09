@@ -16,6 +16,7 @@ import UpdateAccount from "../Account/UpdateAccount"
 import ForgotPassword from "../Account/ForgotPassword";
 import ResetPassword from "../Account/ResetPassword";
 import Welcome from "../Account/Welcome";
+import UserDeleted from "../Account/UserDeleted";
 import Send from "../Send";
 import Balance from "../Balance";
 import Purchase from "../Purchase";
@@ -43,6 +44,7 @@ export default function App() {
         <NavBar supabase={supabase}/>
         <Routes>
           <Route path="/" Component={MainPage} supabase={supabase}/>
+          <Route path="/user-deleted" Component={UserDeleted}/>
           <Route path="/login" Component={Login}/>
           <Route path="/logout" Component={Logout}/>
           <Route path="/account" Component={MyAccount}/>
