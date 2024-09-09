@@ -3,12 +3,13 @@ import { AuthContext } from "../AuthContext";
 import { useContext } from "react";
 import LogoutSupabase from "../Account/Logout";
 
+
 // eslint-disable-next-line react/prop-types
 export default function MainPage({ supabase }) {
   const { session } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  function handleLogout(){
+  function handleLogout() {
     LogoutSupabase({ supabase })
     navigate('/')
   }
@@ -48,25 +49,24 @@ export default function MainPage({ supabase }) {
               Help
             </Link>
           </div>
-
         </>
         ) : (
         <>
           <div className="left-button-container">
-          <Link to="about" className="action-btn">
-            About
-          </Link>
+            <Link to="about" className="action-btn">
+              About
+            </Link>
           </div>
 
-        <div className="right-button-container">
-          <Link to="login" className="action-btn">
-            Log in
-          </Link>
+          <div className="right-button-container">
+            <Link to="login" className="action-btn">
+              Log in
+            </Link>
 
-          <Link to="create-account" className="action-btn">
-            Sign up
-          </Link>
-        </div>
+            <Link to="create-account" className="action-btn">
+              Sign up
+            </Link>
+          </div>
         </>
         )
       }
