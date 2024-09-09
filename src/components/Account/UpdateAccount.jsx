@@ -75,7 +75,7 @@ export default function UpdateAccount() {
     setEmail(newEmail);
     setHasEmailChanged(newEmail !== userEmail);
   }
-  // verify passwords match
+
   const handlePasswordConfirmation = (e) => {
     const value = e.target.value;
 
