@@ -9,7 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 export default function Send() {
   const { userInTable, userBalance } = useContext(AuthContext);
   const [sendAmount, setSendAmount] = useState("");
-  const [recipientEmail, setRecipientEmail] = useState("");
+  const [searchText, setSearchText] = useState("");
   const [memo, setMemo] = useState("");
   const [currentBalance, setCurrentBalance] = useState(null);
   const [recipientError, setRecipientError] = useState(false);
@@ -43,8 +43,8 @@ export default function Send() {
     setSendAmount(amount < 0 ? "" : amount);
   };
 
-  const handleRecipientEmailAddressChange = (event) => {
-    setRecipientEmail(event.target.value);
+  const handleSearchTextChange = (event) => {
+    setSearchText(event.target.value);
   };
 
   const handleMemoChange = (event) => {
@@ -72,7 +72,7 @@ export default function Send() {
       const { data: fetchRecipientData, error: fetchRecipientError } = await supabase.functions.invoke('lookup-user', {
         body: {
           userId: userInTable.user_id,
-          searchText: recipientEmail
+          searchText: searchText
         }
       });
 
@@ -94,9 +94,9 @@ export default function Send() {
       //   setRecipientError(true);
 
         // TODO: either rework this use case, or conduct the invitation on the server
-        // const confirmedResponse = confirm("The recipient (" + recipientEmail + ") does not appear to have a Sirch Coins account.  Would you like to send this person an invitation to join Sirch Coins?");
+        // const confirmedResponse = confirm("The recipient (" + searchText + ") does not appear to have a Sirch Coins account.  Would you like to send this person an invitation to join Sirch Coins?");
         // if (confirmedResponse) {
-        //   const { data, error } = await supabase.auth.admin.inviteUserByEmail(recipientEmail);
+        //   const { data, error } = await supabase.auth.admin.inviteUserByEmail(searchText);
         //   if (error) {
         //     // TODO: surface this error
         //     console.error("Error inviting recipient:", error);
@@ -104,7 +104,7 @@ export default function Send() {
         //     // TODO: indicate success to the user
         //     alert("Invitation successful!");
         //     setSendAmount("");
-        //     setRecipientEmail("");
+        //     setSearchText("");
         //   }
       //   }
 
@@ -142,12 +142,12 @@ export default function Send() {
         // FIXME: hack to get around linter
         console.log("Data", transferData);
       } else {
-        toast.success("ⓢ " + sendAmount + " successfully sent to " + recipientEmail, {
+        toast.success("ⓢ " + sendAmount + " successfully sent to " + searchText, {
           position: "top-right",
         });
 
         setSendAmount("");
-        setRecipientEmail("");
+        setSearchText('');
         setMemo("");
 
         // TODO: consider refactoring this and other similar calls into a provider or the context
@@ -178,7 +178,7 @@ export default function Send() {
         ?
         <>
           <h3>
-            The recipient ({recipientEmail}) does not appear to have a Sirch Coins account.
+            The recipient ({searchText}) does not appear to have a Sirch Coins account.
             <br/>
             <br/>
             Please check the email address or invite this individual to join Sirch Coins!
@@ -212,16 +212,15 @@ export default function Send() {
 
               <div className="email-inputs">
                 <input
-                  id="recipientEmailAddress"
-                  name="recipientEmailAddress"
+                  id="searchText"
+                  name="searchText"
                   placeholder="to whom?"
-                   // value={recipientEmail}                
-                  defaultValue={recipientEmail}
-                  required
+                   // value={searchText}                
+                  defaultValue={searchText}
                   type="text"
                   className="coin-input"
-                  onBlur={handleRecipientEmailAddressChange}
-                  // autoComplete="email"
+                  onBlur={handleSearchTextChange}
+                  required
                 />
               </div>
 
