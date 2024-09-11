@@ -37,7 +37,7 @@ export default function Send() {
     }
   };
 
-  const handleAmountInputChange = (event) => {
+  const handleAmountChange = (event) => {
     const amount = event.target.value;
 
     setSendAmount(amount < 0 ? "" : amount);
@@ -69,27 +69,29 @@ export default function Send() {
     }
   
     try {
-      const { data: fetchRecipientData, error: fetchRecipientError } = await supabase.functions.invoke('does_user_exist_with_email', {
+      const { data: fetchRecipientData, error: fetchRecipientError } = await supabase.functions.invoke('lookup-user', {
         body: {
           userId: userInTable.user_id,
-          email: recipientEmail
+          searchText: recipientEmail
         }
       });
-  
+
+      debugger;
       if (fetchRecipientError) {
         // TODO: hande this error gracefully
         alert('Error checking recipient exists');
         return;
       }
 
-      if (fetchRecipientData.isMe) {
-        // TODO: handle this gracefully
-        alert("You cannot send ⓢ Sirch Coins to yourself!")
-        return;
-      }
+      console.log(fetchRecipientData);
+      // if (fetchRecipientData.isMe) {
+      //   // TODO: handle this gracefully
+      //   alert("You cannot send ⓢ Sirch Coins to yourself!")
+      //   return;
+      // }
 
-      if (!fetchRecipientData.exists) {
-        setRecipientError(true);
+      // if (!fetchRecipientData.exists) {
+      //   setRecipientError(true);
 
         // TODO: either rework this use case, or conduct the invitation on the server
         // const confirmedResponse = confirm("The recipient (" + recipientEmail + ") does not appear to have a Sirch Coins account.  Would you like to send this person an invitation to join Sirch Coins?");
@@ -104,10 +106,10 @@ export default function Send() {
         //     setSendAmount("");
         //     setRecipientEmail("");
         //   }
-        // }
+      //   }
 
-        return;
-      }
+      //   return;
+      // }
 
       // verify the sender has sufficient balance
       if (sendAmount > currentBalance) {
@@ -205,7 +207,7 @@ export default function Send() {
                 step="1"
                 className="coin-input"
                 value={sendAmount}
-                onChange={handleAmountInputChange}
+                onChange={handleAmountChange}
               />
 
               <div className="email-inputs">
@@ -213,12 +215,13 @@ export default function Send() {
                   id="recipientEmailAddress"
                   name="recipientEmailAddress"
                   placeholder="to whom?"
+                   // value={recipientEmail}                
+                  defaultValue={recipientEmail}
                   required
-                  type="email"
+                  type="text"
                   className="coin-input"
-                  value={recipientEmail}
-                  onChange={handleRecipientEmailAddressChange}
-                  autoComplete="email"
+                  onBlur={handleRecipientEmailAddressChange}
+                  // autoComplete="email"
                 />
               </div>
 
