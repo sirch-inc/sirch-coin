@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export default function Send() {
   const { userInTable, userBalance } = useContext(AuthContext);
-  const [amount, setAmount] = useState("");
+  const [sendAmount, setAmount] = useState("");
   const [searchText, setSearchText] = useState("");
   const [memo, setMemo] = useState("");
   const [currentBalance, setCurrentBalance] = useState(null);
@@ -61,9 +61,9 @@ export default function Send() {
     fetchUserBalance(userInTable);
 
     // if the send amount equals the user's balance, display a warning & confirmation dialog
-    if (parseInt(amount, 10) === currentBalance) {
+    if (parseInt(sendAmount, 10) === currentBalance) {
       // TODO: handle this confirmation with a proper dialog
-      if (!confirm("Warning: the amount to send (ⓢ " + amount + ") is your entire balance! Please confirm your intent.")) {
+      if (!confirm("Warning: the amount to send (ⓢ " + sendAmount + ") is your entire balance! Please confirm your intent.")) {
         return;
       }
     }
@@ -112,10 +112,8 @@ export default function Send() {
       // }
 
       // verify the sender has sufficient balance
-      if (amount > currentBalance) {
-        toast.error('Insufficient balance', {
-          position: "top-right",
-        });
+      if (sendAmount > currentBalance) {
+        toast.error('Insufficient balance');
 
         return;
       }
@@ -124,7 +122,7 @@ export default function Send() {
         body: {
           sender_id: userInTable.user_id,
           recipient_id: fetchRecipientData.user_id,
-          amount: amount,
+          amount: sendAmount,
           memo
         }
       });
@@ -136,15 +134,11 @@ export default function Send() {
       }
 
       if (transferError?.message) {
-        toast.error(transferError?.message, {
-          position: "top-right",
-        });
+        toast.error(transferError?.message);
         // FIXME: hack to get around linter
         console.log("Data", transferData);
       } else {
-        toast.success("ⓢ " + amount + " successfully sent to " + searchText, {
-          position: "top-right",
-        });
+        toast.success("ⓢ " + sendAmount + " successfully sent to " + searchText);
 
         setAmount("");
         setSearchText('');
@@ -157,9 +151,7 @@ export default function Send() {
       console.error("An exception occurred:", exception);
 
       // TODO: what to display here?
-      toast.error('An exception occurred', {
-        position: "top-right",
-      });
+      toast.error('An exception occurred', exception);
     }
   };
 
@@ -206,7 +198,7 @@ export default function Send() {
                 max={currentBalance || "0"}
                 step="1"
                 className="coin-input"
-                value={amount}
+                value={sendAmount}
                 onChange={handleAmountChange}
               />
 
