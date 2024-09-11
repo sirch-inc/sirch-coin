@@ -14,11 +14,6 @@ export default function Send() {
   const [currentBalance, setCurrentBalance] = useState(null);
   const [recipientError, setRecipientError] = useState(false);
 
-  useEffect(() => {
-    // (Re)fetch the user's balance when the component renders
-    fetchUserBalance(userInTable);
-  }, [userBalance]);
-
   const fetchUserBalance = async (userInTable) => {
     if (userInTable) {
       const { data, error } = await supabase
@@ -28,14 +23,18 @@ export default function Send() {
         .single();
 
         if (error) {
-          toast.error("Unable to load user balance", {
-            position: "top-right",
-          });
+          toast.error("Unable to load user balance");
         } else {
         setCurrentBalance(data.balance);
       }
     }
   };
+
+  useEffect(() => {
+    // (Re)fetch the user's balance when the component renders
+    fetchUserBalance(userInTable);
+  }, [userBalance]);
+
 
   const handleAmountChange = (event) => {
     const amount = event.target.value;
