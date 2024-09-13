@@ -4,6 +4,7 @@ import supabase from "./App/supabaseConfig";
 import { Link } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import useDebounce from "../helpers/debounce.js"
 
 
 // TODO: move this into its own component file with proper react props validations
@@ -48,31 +49,16 @@ export default function Send() {
     }
   };
 
-  useEffect(() => {
-    // (Re)fetch the user's balance when the component renders
-    fetchUserBalance(userInTable);
-  }, [userBalance]);
+  const debouncedLookupUsers = useDebounce(async () => {
+    console.log("lookin up", searchText);
 
-
-  const handleAmountChange = (event) => {
-    const amount = event.target.value;
-
-    setSendAmount(amount < 0 ? "" : amount);
-  };
-
-  const handleSearchTextChange = async (event) => {
-    // TODO: debounce this!
-    const newSearchText = event.target.value;
-    
-    setSearchText(newSearchText);
-    
     setSelectedRecipient(null);
 
     try {
       const { data: foundUsersData, error: foundUsersError } = await supabase.functions.invoke('lookup-user', {
         body: {
           userId: userInTable.user_id,
-          searchText: newSearchText
+          searchText: searchText
         }
       });
 
@@ -105,16 +91,38 @@ export default function Send() {
       // TODO: what to display here?
       toast.error('An exception occurred', exception);
     }
+  });
+
+  const handleAmountChange = (event) => {
+    const amount = event.target.value;
+
+    setSendAmount(amount < 0 ? "" : amount);
+  };
+
+  const handleSearchTextChange = (event) => {
+    const newSearchText = event.target.value;
+
+    setSearchText(newSearchText);
+
+    if (newSearchText.length === 0) {
+      setSelectedRecipient(null);
+      setFoundUsers([]);
+
+      // cancel any pending lookups
+      debouncedLookupUsers.cancel();
+    } else {
+      debouncedLookupUsers();
+    }
+  }
+
+  const handleUserCardSelected = (user) => {
+    setSelectedRecipient(user);
   };
 
   const handleMemoChange = (event) => {
     setMemo(event.target.value);
   };
 
-  const handleUserCardSelected = (user) => {
-    setSelectedRecipient(user);
-  };
-  
   const handleSubmit = async (event) => {
     event.preventDefault();
   
@@ -201,6 +209,18 @@ export default function Send() {
       toast.error('An exception occurred', exception);
     }
   };
+
+  // (re)fetch the user's balance when the component renders
+  useEffect(() => {
+    fetchUserBalance(userInTable);
+  }, [userBalance]);
+
+  // cancel any pending lookup when unmounting component
+  useEffect(() => {
+    return () => {
+      debouncedLookupUsers.cancel();
+    };
+   }, [debouncedLookupUsers]);
 
   return (  
     <>
