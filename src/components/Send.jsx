@@ -6,7 +6,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
-// TODO: move this into its own component file with proper PROPs validation
+// TODO: move this into its own component file with proper react props validations
 export function UserCard({user, handleUserCardSelected}) {
   return (
     <div
