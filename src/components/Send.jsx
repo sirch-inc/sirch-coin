@@ -6,12 +6,31 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
+
+export function UserCard({user, handleUserCardSelected}) {
+  return (
+    <div
+      className="user-card"
+      onClick={(e) => handleUserCardSelected(user)}
+      >
+      <p>
+        Handle: {user.user_handle}
+      </p>
+      <p>
+        Name: {user.full_name}
+      </p>
+    </div>
+  );
+}
+
 export default function Send() {
   const { userInTable, userBalance } = useContext(AuthContext);
-  const [sendAmount, setAmount] = useState("");
+  const [sendAmount, setSendAmount] = useState("");
   const [searchText, setSearchText] = useState("");
   const [memo, setMemo] = useState("");
   const [currentBalance, setCurrentBalance] = useState(null);
+  const [foundUsers, setFoundUsers] = useState([]);
+  const [selectedRecipient, setSelectedRecipient] = useState(null);
   const [recipientError, setRecipientError] = useState(false);
 
   const fetchUserBalance = async (userInTable) => {
@@ -39,7 +58,7 @@ export default function Send() {
   const handleAmountChange = (event) => {
     const amount = event.target.value;
 
-    setAmount(amount < 0 ? "" : amount);
+    setSendAmount(amount < 0 ? "" : amount);
   };
 
   const handleSearchTextChange = (event) => {
@@ -54,11 +73,67 @@ export default function Send() {
     setRecipientError(false);
   };
 
+  const handleUserCardSelected = (user) => {
+    setSelectedRecipient(user);
+  };
+  
+  const handleSearchTextBlur = async (event) => {
+    const newSearchText = event.target.value;
+    setSelectedRecipient(null);
+
+    try {
+      const { data: foundUsersData, error: foundUsersError } = await supabase.functions.invoke('lookup-user', {
+        body: {
+          userId: userInTable.user_id,
+          searchText: newSearchText
+        }
+      });
+
+      if (foundUsersError) {
+        // TODO: surface this error in a toast
+        alert('Error looking up users: \n' + foundUsersError);
+        return;
+      }
+
+      const newFoundUsers = foundUsersData.found;
+      setFoundUsers(newFoundUsers);
+
+      // none found
+      if (newFoundUsers.length === 0) {
+        console.log('found none');
+        setSelectedRecipient(null);
+      }
+
+      // one found
+      if (newFoundUsers.length === 1) {
+        console.log('found one');
+        setSelectedRecipient(newFoundUsers[0]);
+      }
+
+      // many found
+      if (foundUsers.length > 1) {
+        console.log('found many');
+        setSelectedRecipient(null);
+      } 
+    } catch (exception) {
+      console.error("An exception occurred:", exception);
+
+      // TODO: what to display here?
+      toast.error('An exception occurred', exception);
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
   
     fetchUserBalance(userInTable);
 
+    // verify the sender has sufficient balance
+    if (sendAmount > currentBalance) {
+      toast.error('Insufficient balance');
+      return;
+    }
+    
     // if the send amount equals the user's balance, display a warning & confirmation dialog
     if (parseInt(sendAmount, 10) === currentBalance) {
       // TODO: handle this confirmation with a proper dialog
@@ -67,32 +142,19 @@ export default function Send() {
       }
     }
   
+    if (selectedRecipient === null) {
+      alert("No selected recipient");
+      return;
+    }
+
+    if (selectedRecipient.user_id === userInTable.user_id) {
+      // TODO: handle this gracefully
+      alert("You cannot send ⓢ Sirch Coins to yourself!")
+      return;
+    }
+
     try {
-      const { data: fetchRecipientData, error: fetchRecipientError } = await supabase.functions.invoke('lookup-user', {
-        body: {
-          userId: userInTable.user_id,
-          searchText: searchText
-        }
-      });
-
-      debugger;
-      if (fetchRecipientError) {
-        // TODO: hande this error gracefully
-        alert('Error checking recipient exists');
-        return;
-      }
-
-      console.log(fetchRecipientData);
-      // if (fetchRecipientData.isMe) {
-      //   // TODO: handle this gracefully
-      //   alert("You cannot send ⓢ Sirch Coins to yourself!")
-      //   return;
-      // }
-
-      // if (!fetchRecipientData.exists) {
-      //   setRecipientError(true);
-
-        // TODO: either rework this use case, or conduct the invitation on the server
+        // TODO: Invite User; either rework this use case, or conduct the invitation on the server
         // const confirmedResponse = confirm("The recipient (" + searchText + ") does not appear to have a Sirch Coins account.  Would you like to send this person an invitation to join Sirch Coins?");
         // if (confirmedResponse) {
         //   const { data, error } = await supabase.auth.admin.inviteUserByEmail(searchText);
@@ -102,25 +164,16 @@ export default function Send() {
         //   } else {
         //     // TODO: indicate success to the user
         //     alert("Invitation successful!");
-        //     setAmount("");
+        //     setSendAmount("");
         //     setSearchText("");
         //   }
-      //   }
-
-      //   return;
-      // }
-
-      // verify the sender has sufficient balance
-      if (sendAmount > currentBalance) {
-        toast.error('Insufficient balance');
-
-        return;
-      }
+        //   return;
+        // }
 
       const { data: transferData, error: transferError } = await supabase.functions.invoke('transfer_coins', {
         body: {
           sender_id: userInTable.user_id,
-          recipient_id: fetchRecipientData.user_id,
+          recipient_id: selectedRecipient.user_id,
           amount: sendAmount,
           memo
         }
@@ -137,17 +190,19 @@ export default function Send() {
         // FIXME: hack to get around linter
         console.log("Data", transferData);
       } else {
-        toast.success("ⓢ " + sendAmount + " successfully sent to " + searchText);
+        toast.success("ⓢ " + sendAmount + " successfully sent to " + selectedRecipient.user_handle);
 
-        setAmount("");
+        setSendAmount('');
         setSearchText('');
-        setMemo("");
+        setSelectedRecipient(null);
+        setFoundUsers([]);
+        setMemo('');
 
         // TODO: consider refactoring this and other similar calls into a provider or the context
         fetchUserBalance(userInTable);
       }
     } catch (exception) {
-      console.error("An exception occurred:", exception);
+      console.error("An exception occurred", exception);
 
       // TODO: what to display here?
       toast.error('An exception occurred', exception);
@@ -205,16 +260,53 @@ export default function Send() {
                 <input
                   id="searchText"
                   name="searchText"
-                  placeholder="to whom?"
+                  placeholder="Name, email, or user handle..."
                    // value={searchText}                
                   defaultValue={searchText}
                   type="text"
                   className="coin-input"
-                  onBlur={handleSearchTextChange}
+                  onChange={handleSearchTextChange}
+                  onBlur={handleSearchTextBlur}
                   required
                 />
               </div>
 
+              {searchText.length && foundUsers.length === 0 &&
+                <>
+                  <h3 style={{ color: 'red' }}>
+                    No user found; please search again<br/>
+                    or invite the user for whom you are looking<br/>
+                    to join Sirch Coins.
+                  </h3>
+                </>
+              }
+
+              {searchText.length && selectedRecipient !== null &&
+                <>
+                  <h3 style={{ color: 'green' }}>
+                    Selected User <br/>
+                    {selectedRecipient?.full_name} (@{selectedRecipient?.user_handle})
+                  </h3>
+                </>
+              }
+
+              { foundUsers.length > 1 && selectedRecipient === null &&
+                <>
+                  <h3>Multiple users found. Please select one...</h3>
+                  { foundUsers.length > 1 &&
+                    (
+                      foundUsers.map((foundUser) => (
+                        <UserCard 
+                          key={foundUser.user_id}
+                          user={foundUser}
+                          handleUserCardSelected={handleUserCardSelected}
+                        />
+                      ))
+                    )
+                  }
+                </>
+              }
+              
               <div className="memo-input">
                 <input
                   id="memo"
