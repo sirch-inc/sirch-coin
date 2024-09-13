@@ -207,17 +207,17 @@ export default function Send() {
     }
   };
 
-  return (
+  return (  
     <>
       <ToastContainer
-        position="top-right"
-        autoClose={false}
-        newestOnTop={false}
+        position = 'top-right'
+        autoClose = {false}
+        newestOnTop = {false}
         closeOnClick
         draggable
-        theme="colored"
+        theme = 'colored'
       />
-      <div className="send-coin-container">
+      <div className = 'send-coin-container'>
       {recipientError
         ?
         <>
@@ -238,31 +238,31 @@ export default function Send() {
           <div>
             <h2>Send</h2>
           </div>
-          <form onSubmit={handleSubmit}>
-            <div className="price-container">
+          <form onSubmit = {handleSubmit}>
+            <div className = 'price-container'>
               <input
-                className="coin-input"
-                id="amountToSend"
-                name="amountToSend"
-                placeholder="how much?"
+                className = 'coin-input'
+                id = 'amountToSend'
+                name = 'amountToSend'
+                placeholder = "how many ⓢ coins?"
                 required
-                type="number"
-                min="1"
-                max={currentBalance || "0"}
-                step="1"
-                value={sendAmount}
-                onChange={handleAmountChange}
+                type = 'number'
+                min = '1'
+                max = {currentBalance || '0'}
+                step = '1'
+                value = {sendAmount}
+                onChange = {handleAmountChange}
               />
 
-              <div className="search-text">
+              <div className = 'search-text'>
                 <input
-                  className="coin-input"
-                  id="searchText"
-                  name="searchText"
-                  placeholder="Name, email, or user handle..."
-                  value={searchText}                
-                  type="text"
-                  onChange={handleSearchTextChange}
+                  className = 'coin-input'
+                  id = 'searchText'
+                  name = 'searchText'
+                  placeholder = "Name, email, or user handle..."
+                  value = {searchText}                
+                  type = 'text'
+                  onChange = {handleSearchTextChange}
                   required
                 />
               </div>
@@ -303,31 +303,30 @@ export default function Send() {
                 </>
               }
               
-              <div className="memo-input">
+              <div className = 'memo-input'>
                 <input
-                  id="memo"
-                  name="memo"
-                  placeholder="leave a note?"
-                  type="text"
-                  className="coin-input"
-                  value={memo}
-                  maxLength="60"
-                  onChange={handleMemoChange}
-                  autoComplete="memo"
+                  className = 'coin-input'
+                  id = 'memo'
+                  name = 'memo'
+                  placeholder = "leave a note?"
+                  type = 'text'
+                  value = {memo}
+                  maxLength = '60'
+                  onChange = {handleMemoChange}
+                  autoComplete = 'memo'
                 />
               </div>
 
               {/* TODO: Dynamically update dollar amount based on coin to dollar */}
               <div>
-                <p>You now have <span className="bold-coin"> {currentBalance !== null ? "ⓢ " + currentBalance : "Loading"}</span> / $ {(currentBalance*0.10).toFixed(2)}</p>
+                <p>You now have <span className = 'bold-coin'> {currentBalance !== null ? "ⓢ " + currentBalance : "Loading"}</span> / $ {(currentBalance*0.10).toFixed(2)}</p>
               </div>
-
             </div>
-            <div className="bottom-btn-container">
-              <Link to="/" className="big-btn">
+            <div className = 'bottom-btn-container'>
+              <Link to = '/' className = 'big-btn'>
                 Back
               </Link>
-              <button type="submit" className="send-btn big-btn">
+              <button type = 'submit' className = 'send-btn big-btn'>
                 Send
               </button>
             </div>
