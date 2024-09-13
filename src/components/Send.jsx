@@ -31,7 +31,6 @@ export default function Send() {
   const [currentBalance, setCurrentBalance] = useState(null);
   const [foundUsers, setFoundUsers] = useState([]);
   const [selectedRecipient, setSelectedRecipient] = useState(null);
-  const [recipientError, setRecipientError] = useState(false);
 
   const fetchUserBalance = async (userInTable) => {
     if (userInTable) {
@@ -110,10 +109,6 @@ export default function Send() {
 
   const handleMemoChange = (event) => {
     setMemo(event.target.value);
-  };
-
-  const handleAcknowledgeRecipientError = () => {
-    setRecipientError(false);
   };
 
   const handleUserCardSelected = (user) => {
@@ -217,122 +212,101 @@ export default function Send() {
         draggable
         theme = 'colored'
       />
+
       <div className = 'send-coin-container'>
-      {recipientError
-        ?
-        <>
-          <h3>
-            The recipient ({searchText}) does not appear to have a Sirch Coins account.
-            <br/>
-            <br/>
-            Please check the email address or invite this individual to join Sirch Coins!
-          </h3>
-          <button
-            onClick={handleAcknowledgeRecipientError}
-          >
-            Got it!
-          </button>
-        </>
-        :
-        <div>
-          <div>
-            <h2>Send</h2>
-          </div>
-          <form onSubmit = {handleSubmit}>
-            <div className = 'price-container'>
+        <h2>Send</h2>
+        <form onSubmit = {handleSubmit}>
+          <div className = 'price-container'>
+            <input
+              className = 'coin-input'
+              id = 'amountToSend'
+              name = 'amountToSend'
+              placeholder = "how many ⓢ coins?"
+              required
+              type = 'number'
+              min = '1'
+              max = {currentBalance || '0'}
+              step = '1'
+              value = {sendAmount}
+              onChange = {handleAmountChange}
+            />
+
+            <div className = 'search-text'>
               <input
                 className = 'coin-input'
-                id = 'amountToSend'
-                name = 'amountToSend'
-                placeholder = "how many ⓢ coins?"
+                id = 'searchText'
+                name = 'searchText'
+                placeholder = "Name, email, or user handle..."
+                value = {searchText}                
+                type = 'text'
+                onChange = {handleSearchTextChange}
                 required
-                type = 'number'
-                min = '1'
-                max = {currentBalance || '0'}
-                step = '1'
-                value = {sendAmount}
-                onChange = {handleAmountChange}
               />
-
-              <div className = 'search-text'>
-                <input
-                  className = 'coin-input'
-                  id = 'searchText'
-                  name = 'searchText'
-                  placeholder = "Name, email, or user handle..."
-                  value = {searchText}                
-                  type = 'text'
-                  onChange = {handleSearchTextChange}
-                  required
-                />
-              </div>
-
-              {searchText.length && foundUsers.length === 0 &&
-                <>
-                  <h3 style={{ color: 'red' }}>
-                    No user found; please search again<br/>
-                    or invite the user for whom you are looking<br/>
-                    to join Sirch Coins.
-                  </h3>
-                </>
-              }
-
-              {searchText.length && selectedRecipient !== null &&
-                <>
-                  <h3 style={{ color: 'green' }}>
-                    Selected User <br/>
-                    {selectedRecipient?.full_name} (@{selectedRecipient?.user_handle})
-                  </h3>
-                </>
-              }
-
-              { foundUsers.length > 1 && selectedRecipient === null &&
-                <>
-                  <h3>Multiple users found. Please select one...</h3>
-                  { foundUsers.length > 1 &&
-                    (
-                      foundUsers.map((foundUser) => (
-                        <UserCard 
-                          key={foundUser.user_id}
-                          user={foundUser}
-                          handleUserCardSelected={handleUserCardSelected}
-                        />
-                      ))
-                    )
-                  }
-                </>
-              }
-              
-              <div className = 'memo-input'>
-                <input
-                  className = 'coin-input'
-                  id = 'memo'
-                  name = 'memo'
-                  placeholder = "leave a note?"
-                  type = 'text'
-                  value = {memo}
-                  maxLength = '60'
-                  onChange = {handleMemoChange}
-                  autoComplete = 'memo'
-                />
-              </div>
-
-              {/* TODO: Dynamically update dollar amount based on coin to dollar */}
-              <div>
-                <p>You currently have <span className = 'bold-coin'> {currentBalance !== null ? "ⓢ " + currentBalance : "Loading"}</span> / $ {(currentBalance*0.10).toFixed(2)}</p>
-              </div>
             </div>
-            <div className = 'bottom-btn-container'>
-              <Link to = '/' className = 'big-btn'>
-                Back
-              </Link>
-              <button type = 'submit' className = 'send-btn big-btn'>
-                Send
-              </button>
+
+            {searchText.length !== 0 && foundUsers.length === 0 &&
+              <>
+                <h3 style={{ color: 'red' }}>
+                  No user found; please search again<br/>
+                  or invite the user for whom you are looking<br/>
+                  to join Sirch Coins.
+                </h3>
+              </>
+            }
+
+            {searchText.length !== 0 && selectedRecipient !== null &&
+              <>
+                <h3 style={{ color: 'green' }}>
+                  {selectedRecipient?.full_name} (@{selectedRecipient?.user_handle})
+                </h3>
+              </>
+            }
+
+            {foundUsers.length > 1 && selectedRecipient === null &&
+              <>
+                <h3>Multiple users found. Please select one...</h3>
+                { foundUsers.length > 1 &&
+                  (
+                    foundUsers.map((foundUser) => (
+                      <UserCard 
+                        key={foundUser.user_id}
+                        user={foundUser}
+                        handleUserCardSelected={handleUserCardSelected}
+                      />
+                    ))
+                  )
+                }
+              </>
+            }
+            
+            <div className = 'memo-input'>
+              <input
+                className = 'coin-input'
+                id = 'memo'
+                name = 'memo'
+                placeholder = "leave a note?"
+                type = 'text'
+                value = {memo}
+                maxLength = '60'
+                onChange = {handleMemoChange}
+                autoComplete = 'memo'
+              />
             </div>
-          </form>
-        </div>
-      }
+
+            {/* TODO: Dynamically update dollar amount based on coin-to-dollar valuation */}
+            <div>
+              <p>You currently have <span className = 'bold-coin'> {currentBalance !== null ? "ⓢ " + currentBalance : "Loading"}</span> / $ {(currentBalance*0.10).toFixed(2)}</p>
+            </div>
+          </div>
+          <div className = 'bottom-btn-container'>
+            <Link to = '/' className = 'big-btn'>
+              Back
+            </Link>
+            <button type = 'submit' className = 'send-btn big-btn'>
+              Send
+            </button>
+          </div>
+        </form>
       </div>
     </>
   );
