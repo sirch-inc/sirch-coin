@@ -6,7 +6,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
-
+// TODO: move this into its own component file with proper PROPs validation
 export function UserCard({user, handleUserCardSelected}) {
   return (
     <div
@@ -25,9 +25,9 @@ export function UserCard({user, handleUserCardSelected}) {
 
 export default function Send() {
   const { userInTable, userBalance } = useContext(AuthContext);
-  const [sendAmount, setSendAmount] = useState("");
-  const [searchText, setSearchText] = useState("");
-  const [memo, setMemo] = useState("");
+  const [sendAmount, setSendAmount] = useState('');
+  const [searchText, setSearchText] = useState('');
+  const [memo, setMemo] = useState('');
   const [currentBalance, setCurrentBalance] = useState(null);
   const [foundUsers, setFoundUsers] = useState([]);
   const [selectedRecipient, setSelectedRecipient] = useState(null);
@@ -61,24 +61,12 @@ export default function Send() {
     setSendAmount(amount < 0 ? "" : amount);
   };
 
-  const handleSearchTextChange = (event) => {
-    setSearchText(event.target.value);
-  };
-
-  const handleMemoChange = (event) => {
-    setMemo(event.target.value);
-  };
-
-  const handleAcknowledgeRecipientError = () => {
-    setRecipientError(false);
-  };
-
-  const handleUserCardSelected = (user) => {
-    setSelectedRecipient(user);
-  };
-  
-  const handleSearchTextBlur = async (event) => {
+  const handleSearchTextChange = async (event) => {
+    // TODO: debounce this!
     const newSearchText = event.target.value;
+    
+    setSearchText(newSearchText);
+    
     setSelectedRecipient(null);
 
     try {
@@ -100,19 +88,16 @@ export default function Send() {
 
       // none found
       if (newFoundUsers.length === 0) {
-        console.log('found none');
         setSelectedRecipient(null);
       }
 
       // one found
       if (newFoundUsers.length === 1) {
-        console.log('found one');
         setSelectedRecipient(newFoundUsers[0]);
       }
 
       // many found
       if (foundUsers.length > 1) {
-        console.log('found many');
         setSelectedRecipient(null);
       } 
     } catch (exception) {
@@ -123,6 +108,18 @@ export default function Send() {
     }
   };
 
+  const handleMemoChange = (event) => {
+    setMemo(event.target.value);
+  };
+
+  const handleAcknowledgeRecipientError = () => {
+    setRecipientError(false);
+  };
+
+  const handleUserCardSelected = (user) => {
+    setSelectedRecipient(user);
+  };
+  
   const handleSubmit = async (event) => {
     event.preventDefault();
   
@@ -190,8 +187,9 @@ export default function Send() {
         // FIXME: hack to get around linter
         console.log("Data", transferData);
       } else {
-        toast.success("ⓢ " + sendAmount + " successfully sent to " + selectedRecipient.user_handle);
+        toast.success("ⓢ " + sendAmount + " successfully sent to " + selectedRecipient?.full_name + "(@" + selectedRecipient?.user_handle + ")");
 
+        // reset the form
         setSendAmount('');
         setSearchText('');
         setSelectedRecipient(null);
@@ -243,6 +241,7 @@ export default function Send() {
           <form onSubmit={handleSubmit}>
             <div className="price-container">
               <input
+                className="coin-input"
                 id="amountToSend"
                 name="amountToSend"
                 placeholder="how much?"
@@ -251,22 +250,19 @@ export default function Send() {
                 min="1"
                 max={currentBalance || "0"}
                 step="1"
-                className="coin-input"
                 value={sendAmount}
                 onChange={handleAmountChange}
               />
 
-              <div className="email-inputs">
+              <div className="search-text">
                 <input
+                  className="coin-input"
                   id="searchText"
                   name="searchText"
                   placeholder="Name, email, or user handle..."
-                   // value={searchText}                
-                  defaultValue={searchText}
+                  value={searchText}                
                   type="text"
-                  className="coin-input"
                   onChange={handleSearchTextChange}
-                  onBlur={handleSearchTextBlur}
                   required
                 />
               </div>
