@@ -55,8 +55,7 @@ export default function Send() {
     try {
       const { data: foundUsersData, error: foundUsersError } = await supabase.functions.invoke('lookup-user', {
         body: {
-          userId: userInTable.user_id,
-          searchText: searchText
+          searchText
         }
       });
 
