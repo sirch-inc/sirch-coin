@@ -9,6 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 export default function UpdateAccount() {
   const { userInTable, userEmail } = useContext(AuthContext);
   const [email, setEmail] = useState(userEmail || '');
+  const [isEmailPrivate, setIsEmailPrivate] = useState(userInTable?.is_email_private);
   const [hasEmailChanged, setHasEmailChanged] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -28,7 +29,7 @@ export default function UpdateAccount() {
         return;
       }
 
-      const { data: updatedUser, error } = await supabase.auth.updateUser({
+      const { error } = await supabase.auth.updateUser({
         email,
         password: password !== '' ? password : null,
         data: {
@@ -36,17 +37,18 @@ export default function UpdateAccount() {
           first_name: firstName,
           last_name: lastName,
           is_name_private: isNamePrivate,
-          user_handle: userHandle
+          user_handle: userHandle,
+          is_email_private: isEmailPrivate
         },
         options: {
-          // JEFF: change this redirect to something else???
+          // TODO: change this redirect to something else???
           emailRedirectTo: `${window.location.origin}/welcome`,
         }
       });
 
       if (error) {
         if (isAuthApiError(error)) {
-          toast.error("There was an error updating your user account.  Please try again later or contact technical support.");
+          toast.error("There was an error updating your user account. Please try again later or contact technical support.");
         }
         return;
       }
@@ -121,16 +123,36 @@ export default function UpdateAccount() {
             <h2>Update Account</h2>
 
             <form onSubmit={handleUpdate} autoComplete="off">
-              <input 
-                className="account-input"
-                type="email"
-                id="email"
-                name="email"
-                placeholder="Email"
-                value={email} 
-                onChange={ handleEmailChange }
-                autoComplete="email"
-              />
+              <div className="account-row">
+                <input 
+                  className="account-input"
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="Email"
+                  value={email} 
+                  onChange={ handleEmailChange }
+                  autoComplete="email"
+                />
+                <div id="is-email-private">
+                  <input
+                    className="account-input"
+                    type="checkbox"
+                    id="is-email-private-checkbox"
+                    name="is-email-private"
+                    value={isEmailPrivate}
+                    checked={isEmailPrivate}
+                    onChange={(e) => setIsEmailPrivate(e.target.checked)}
+                  />
+                  <label
+                    htmlFor="is-email-private"
+                    id="is-email-private-label"
+                  >
+                    Keep my name PRIVATE<br />among other users in Sirch services
+                  </label>
+                </div>
+              </div>
+
               {hasEmailChanged &&
                 <p style={{color: "green"}}>
                   Note: Changes to your email address will require email reverification.

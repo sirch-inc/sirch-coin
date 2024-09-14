@@ -6,6 +6,7 @@ import supabase from '../App/supabaseConfig';
 
 export default function CreateAccount() {
   const [email, setEmail] = useState('');
+  const [isEmailPrivate, setIsEmailPrivate] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordsMatch, setPasswordsMatch] = useState(false);
@@ -39,7 +40,8 @@ export default function CreateAccount() {
             first_name: firstName,
             last_name: lastName,
             is_name_private: isNamePrivate,
-            user_handle: userHandle
+            user_handle: userHandle,
+            is_email_private: isEmailPrivate
           },
         },
       });
@@ -118,17 +120,36 @@ export default function CreateAccount() {
 
               <br></br>
 
-              <input 
-                className="account-input"
-                type="email" 
-                id="email" 
-                name="email" 
-                placeholder="Email" 
-                value={email} 
-                onChange={(e) => setEmail(e.target.value)} 
-                autoComplete="email"
-                required
-              />
+              <div className="account-row">
+                <input 
+                  className="account-input"
+                  type="email" 
+                  id="email" 
+                  name="email" 
+                  placeholder="Email" 
+                  value={email} 
+                  onChange={(e) => setEmail(e.target.value)} 
+                  autoComplete="email"
+                  required
+                />
+
+                <div id="is-email-private">
+                  <input
+                    className="account-input"
+                    type="checkbox"
+                    id="is-email-private-checkbox"
+                    name="is-email-private"
+                    value={isEmailPrivate}
+                    onChange={(e) => setIsEmailPrivate(e.target.checked)}
+                  />
+                  <label
+                    htmlFor="is-email-private"
+                    id="is-email-private-label"
+                  >
+                    Keep my email PRIVATE<br />among other users in Sirch services
+                  </label>
+                </div>
+              </div>
 
               <div className="account-row">
                 <input

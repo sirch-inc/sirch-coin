@@ -147,10 +147,28 @@ footer {
   gap: 20px;
 }
 
+input#email {
+  width: 65%;
+}
 
 input#first-name, input#last-name {
   width: 30%;
 }
+
+div#is-email-private {
+  display: contents;
+}
+
+input#is-email-private-checkbox {
+  width: min-content;
+  margin: 0px;
+}
+
+label#is-email-private-label {
+  vertical-align: middle;
+  margin: 0px;
+}
+
 
 div#is-name-private {
   display: contents;
