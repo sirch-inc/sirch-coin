@@ -173,7 +173,7 @@ export default function Send() {
       if (transferError?.message) {
         toast.error("An error occurred sending Sirch Coins to your recipient. Please try again later.");
       } else {
-        toast.success("ⓢ " + sendAmount + " successfully sent to " + selectedRecipient?.full_name + "(@" + selectedRecipient?.user_handle + ")");
+        toast.success("ⓢ " + sendAmount + " successfully sent to " + selectedRecipient?.full_name + " (@" + selectedRecipient?.user_handle + ")");
 
         // reset the form
         setSendAmount('');
