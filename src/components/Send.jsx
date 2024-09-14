@@ -4,20 +4,34 @@ import supabase from "./App/supabaseConfig";
 import { Link } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import useDebounce from "../helpers/debounce.js"
 
+
+// TODO: move this into its own component file with proper react props validations
+export function UserCard({user, handleUserCardSelected}) {
+  return (
+    <div
+      className="user-card"
+      onClick={(e) => handleUserCardSelected(user)}
+      >
+      <p>
+        Handle: {user.user_handle}
+      </p>
+      <p>
+        Name: {user.full_name}
+      </p>
+    </div>
+  );
+}
 
 export default function Send() {
   const { userInTable, userBalance } = useContext(AuthContext);
-  const [sendAmount, setSendAmount] = useState("");
-  const [recipientEmail, setRecipientEmail] = useState("");
-  const [memo, setMemo] = useState("");
+  const [sendAmount, setSendAmount] = useState('');
+  const [searchText, setSearchText] = useState('');
+  const [memo, setMemo] = useState('');
   const [currentBalance, setCurrentBalance] = useState(null);
-  const [recipientError, setRecipientError] = useState(false);
-
-  useEffect(() => {
-    // (Re)fetch the user's balance when the component renders
-    fetchUserBalance(userInTable);
-  }, [userBalance]);
+  const [foundUsers, setFoundUsers] = useState(null);
+  const [selectedRecipient, setSelectedRecipient] = useState(null);
 
   const fetchUserBalance = async (userInTable) => {
     if (userInTable) {
@@ -28,31 +42,79 @@ export default function Send() {
         .single();
 
         if (error) {
-          toast.error("Unable to load user balance", {
-            position: "top-right",
-          });
+          toast.error("Unable to load user balance");
         } else {
         setCurrentBalance(data.balance);
       }
     }
   };
 
-  const handleAmountInputChange = (event) => {
+  const debouncedLookupUsers = useDebounce(async () => {
+    setSelectedRecipient(null);
+
+    try {
+      const { data: foundUsersData, error: foundUsersError } = await supabase.functions.invoke('lookup-user', {
+        body: {
+          searchText
+        }
+      });
+
+      if (foundUsersError) {
+        toast.error("Unable to look up users at this time. Please try again later.");
+        return;
+      }
+
+      const newFoundUsers = foundUsersData.found;
+      setFoundUsers(newFoundUsers);
+
+      // none found
+      if (newFoundUsers.length === 0) {
+        setSelectedRecipient(null);
+      }
+
+      // one found
+      if (newFoundUsers.length === 1) {
+        setSelectedRecipient(newFoundUsers[0]);
+      }
+
+      // many found
+      if (newFoundUsers.length > 1) {
+        setSelectedRecipient(null);
+      }
+    } catch (exception) {
+      console.error("An exception occurred:", exception);
+
+      toast.error("Unable to look up users at this time. Please try again later.");
+    }
+  });
+
+  const handleAmountChange = (event) => {
     const amount = event.target.value;
 
     setSendAmount(amount < 0 ? "" : amount);
   };
 
-  const handleRecipientEmailAddressChange = (event) => {
-    setRecipientEmail(event.target.value);
+  const handleSearchTextChange = (event) => {
+    const newSearchText = event.target.value;
+
+    setSearchText(newSearchText);
+    setFoundUsers(null);
+    setSelectedRecipient(null);
+
+    if (newSearchText.length === 0) {
+      // cancel any pending lookups
+      debouncedLookupUsers.cancel();
+    } else {
+      debouncedLookupUsers();
+    }
+  }
+
+  const handleUserCardSelected = (user) => {
+    setSelectedRecipient(user);
   };
 
   const handleMemoChange = (event) => {
     setMemo(event.target.value);
-  };
-
-  const handleAcknowledgeRecipientError = () => {
-    setRecipientError(false);
   };
 
   const handleSubmit = async (event) => {
@@ -60,41 +122,27 @@ export default function Send() {
   
     fetchUserBalance(userInTable);
 
-    // if the send amount equals the user's balance, display a warning & confirmation dialog
-    if (parseInt(sendAmount, 10) === currentBalance) {
-      // TODO: handle this confirmation with a proper dialog
-      if (!confirm("Warning: the amount to send (ⓢ " + sendAmount + ") is your entire balance! Please confirm your intent.")) {
-        return;
-      }
+    // verify the sender has sufficient balance
+    if (sendAmount > currentBalance) {
+      toast.error('Insufficient balance.');
+      return;
     }
   
+    if (selectedRecipient === null) {
+      toast.error("Please select a recipient.");
+      return;
+    }
+
+    if (selectedRecipient.user_id === userInTable.user_id) {
+      toast.error("You cannot send ⓢ Sirch Coins to yourself! Please select a different recipient.")
+      return;
+    }
+
     try {
-      const { data: fetchRecipientData, error: fetchRecipientError } = await supabase.functions.invoke('does_user_exist_with_email', {
-        body: {
-          userId: userInTable.user_id,
-          email: recipientEmail
-        }
-      });
-  
-      if (fetchRecipientError) {
-        // TODO: hande this error gracefully
-        alert('Error checking recipient exists');
-        return;
-      }
-
-      if (fetchRecipientData.isMe) {
-        // TODO: handle this gracefully
-        alert("You cannot send ⓢ Sirch Coins to yourself!")
-        return;
-      }
-
-      if (!fetchRecipientData.exists) {
-        setRecipientError(true);
-
-        // TODO: either rework this use case, or conduct the invitation on the server
-        // const confirmedResponse = confirm("The recipient (" + recipientEmail + ") does not appear to have a Sirch Coins account.  Would you like to send this person an invitation to join Sirch Coins?");
+        // TODO: invite user; either rework this use case, or conduct the invitation on the server
+        // const confirmedResponse = confirm("The recipient (" + searchText + ") does not appear to have a Sirch Coins account.  Would you like to send this person an invitation to join Sirch Coins?");
         // if (confirmedResponse) {
-        //   const { data, error } = await supabase.auth.admin.inviteUserByEmail(recipientEmail);
+        //   const { data, error } = await supabase.auth.admin.inviteUserByEmail(searchText);
         //   if (error) {
         //     // TODO: surface this error
         //     console.error("Error inviting recipient:", error);
@@ -102,157 +150,167 @@ export default function Send() {
         //     // TODO: indicate success to the user
         //     alert("Invitation successful!");
         //     setSendAmount("");
-        //     setRecipientEmail("");
+        //     setSearchText("");
         //   }
+        //   return;
         // }
 
-        return;
-      }
-
-      // verify the sender has sufficient balance
-      if (sendAmount > currentBalance) {
-        toast.error('Insufficient balance', {
-          position: "top-right",
-        });
-
-        return;
-      }
-
-      const { data: transferData, error: transferError } = await supabase.functions.invoke('transfer_coins', {
+      const { error: transferError } = await supabase.functions.invoke('transfer_coins', {
         body: {
           sender_id: userInTable.user_id,
-          recipient_id: fetchRecipientData.user_id,
+          recipient_id: selectedRecipient.user_id,
           amount: sendAmount,
           memo
         }
       });
 
       if (transferError) {
-        // TODO: hande this error gracefully
-        alert('Error transferring coins:\n' + transferError);
+        toast.error("An error occurred sending Sirch Coins to your recipient. Please try again later.");
         return;
       }
 
       if (transferError?.message) {
-        toast.error(transferError?.message, {
-          position: "top-right",
-        });
-        // FIXME: hack to get around linter
-        console.log("Data", transferData);
+        toast.error("An error occurred sending Sirch Coins to your recipient. Please try again later.");
       } else {
-        toast.success("ⓢ " + sendAmount + " successfully sent to " + recipientEmail, {
-          position: "top-right",
-        });
+        toast.success("ⓢ " + sendAmount + " successfully sent to " + selectedRecipient?.full_name + " (@" + selectedRecipient?.user_handle + ")");
 
-        setSendAmount("");
-        setRecipientEmail("");
-        setMemo("");
+        // reset the form
+        setSendAmount('');
+        setSearchText('');
+        setSelectedRecipient(null);
+        setFoundUsers(null);
+        setMemo('');
 
         // TODO: consider refactoring this and other similar calls into a provider or the context
         fetchUserBalance(userInTable);
       }
     } catch (exception) {
-      console.error("An exception occurred:", exception);
+      console.error("An exception occurred", exception);
 
-      // TODO: what to display here?
-      toast.error('An exception occurred', {
-        position: "top-right",
-      });
+      toast.error("An error occurred sending Sirch Coins to your recipient. Please try again later.");
     }
   };
 
-  return (
+  // (re)fetch the user's balance when the component renders
+  useEffect(() => {
+    fetchUserBalance(userInTable);
+  }, [userBalance]);
+
+  // cancel any pending lookup when unmounting component
+  useEffect(() => {
+    return () => {
+      debouncedLookupUsers.cancel();
+    };
+   }, [debouncedLookupUsers]);
+
+  return (  
     <>
       <ToastContainer
-        position="top-right"
-        autoClose={false}
-        newestOnTop={false}
+        position = 'top-right'
+        autoClose = {false}
+        newestOnTop = {false}
         closeOnClick
         draggable
-        theme="colored"
+        theme = 'colored'
       />
-      <div className="send-coin-container">
-      {recipientError
-        ?
-        <>
-          <h3>
-            The recipient ({recipientEmail}) does not appear to have a Sirch Coins account.
-            <br/>
-            <br/>
-            Please check the email address or invite this individual to join Sirch Coins!
-          </h3>
-          <button
-            onClick={handleAcknowledgeRecipientError}
-          >
-            Got it!
-          </button>
-        </>
-        :
-        <div>
-          <div>
-            <h2>Send</h2>
-          </div>
-          <form onSubmit={handleSubmit}>
-            <div className="price-container">
+
+      <div className = 'send-coin-container'>
+        <h2>Send</h2>
+        <form onSubmit = {handleSubmit}>
+          <div className = 'price-container'>
+            <div className = 'search-text'>
+              <h2>To whom:</h2>
               <input
-                id="amountToSend"
-                name="amountToSend"
-                placeholder="how much?"
-                required
-                type="number"
-                min="1"
-                max={currentBalance || "0"}
-                step="1"
-                className="coin-input"
-                value={sendAmount}
-                onChange={handleAmountInputChange}
+                className = 'coin-input'
+                id = 'searchText'
+                name = 'searchText'
+                placeholder = "User name, email, or @handle..."
+                value = {searchText}                
+                type = 'text'
+                onChange = {handleSearchTextChange}
               />
-
-              <div className="email-inputs">
-                <input
-                  id="recipientEmailAddress"
-                  name="recipientEmailAddress"
-                  placeholder="to whom?"
-                  required
-                  type="email"
-                  className="coin-input"
-                  value={recipientEmail}
-                  onChange={handleRecipientEmailAddressChange}
-                  autoComplete="email"
-                />
-              </div>
-
-              <div className="memo-input">
-                <input
-                  id="memo"
-                  name="memo"
-                  placeholder="leave a note?"
-                  type="text"
-                  className="coin-input"
-                  value={memo}
-                  maxLength="60"
-                  onChange={handleMemoChange}
-                  autoComplete="memo"
-                />
-              </div>
-
-              {/* TODO: Dynamically update dollar amount based on coin to dollar */}
-              <div>
-                <p>You now have <span className="bold-coin"> {currentBalance !== null ? "ⓢ " + currentBalance : "Loading"}</span> / $ {(currentBalance*0.10).toFixed(2)}</p>
-              </div>
-
             </div>
-            <div className="bottom-btn-container">
-              <Link to="/" className="big-btn">
-                Back
-              </Link>
-              <button type="submit" className="send-btn big-btn">
-                Send
-              </button>
+
+            <>
+              {searchText.length !== 0 && foundUsers === null &&
+                <h3 style={{ color: 'black' }}>
+                  Loading...
+                </h3>
+              }
+
+              {searchText.length !== 0 && foundUsers?.length === 0 &&
+                <h3 style={{ color: 'red' }}>
+                  No users found; please refine your search<br/>
+                  or invite the user for whom you are looking<br/>
+                  to join Sirch Coins.
+                </h3>
+              }
+
+              {selectedRecipient !== null &&
+                <h3 style={{ color: 'green' }}>
+                  {selectedRecipient?.full_name} (@{selectedRecipient?.user_handle})
+                </h3>
+              }
+
+              {foundUsers?.length > 1 && selectedRecipient === null &&
+                (
+                  <h3>Multiple users found. Please select one...</h3> &&
+                  (
+                    foundUsers.map((foundUser) => (
+                      <UserCard 
+                        key={foundUser.user_id}
+                        user={foundUser}
+                        handleUserCardSelected={handleUserCardSelected}
+                      />
+                    ))
+                  )
+                )
+              }
+            </>
+
+            <input
+              className = 'coin-input'
+              id = 'amountToSend'
+              name = 'amountToSend'
+              placeholder = "how many ⓢ coins?"
+              required
+              type = 'number'
+              min = '1'
+              max = {currentBalance || '0'}
+              step = '1'
+              value = {sendAmount}
+              onChange = {handleAmountChange}
+            />
+
+            <div className = 'memo-input'>
+              <input
+                className = 'coin-input'
+                id = 'memo'
+                name = 'memo'
+                placeholder = "leave a note?"
+                type = 'text'
+                value = {memo}
+                maxLength = '60'
+                onChange = {handleMemoChange}
+                autoComplete = 'memo'
+              />
             </div>
-          </form>
-        </div>
-      }
+
+            {/* TODO: Dynamically update dollar amount based on coin-to-dollar valuation */}
+            <div>
+              <p>You currently have <span className = 'bold-coin'> {currentBalance !== null ? "ⓢ " + currentBalance : "Loading..."}</span> / $ {(currentBalance*0.10).toFixed(2)}</p>
+            </div>
+          </div>
+          
+          <div className = 'bottom-btn-container'>
+            <Link to = '/' className = 'big-btn'>
+              Back
+            </Link>
+            <button type = 'submit' className = 'send-btn big-btn'>
+              Send
+            </button>
+          </div>
+        </form>
       </div>
     </>
   );

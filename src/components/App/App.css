@@ -341,9 +341,18 @@ input#user-handle {
 
 
 /* Start Styles for Send Coins */
+.user-card {
+  border: 2px solid black;
+}
+
+.user-card:hover {
+  background-color: #3AD820;
+  color: black;
+}
+
 .price-container{
-  margin-top:60px;
-  position:relative;
+  margin-top: 60px;
+  position: relative;
   display: inline-block;
 }
 
@@ -482,7 +491,6 @@ button.danger{
 
 /* Styles for the success message */
 .success {
-  /* Your styles here */
   background-color: lightgreen;
   padding: 10px;
   border-radius: 5px;
@@ -491,7 +499,6 @@ button.danger{
 
 /* Styles for labels */
 label {
-  /* Your styles here */
   font-weight: bold;
   display: block; /* Ensure labels are on separate lines */
   margin-bottom: 5px; /* Add some space below labels */
@@ -499,7 +506,6 @@ label {
 
 /* Styles for inputs */
 input {
-  /* Your styles here */
   padding: 5px;
   border-radius: 3px;
   border: 1px solid #ccc;
@@ -509,7 +515,6 @@ input {
 
 /* Styles for the submit button */
 button {
-  /* Your styles here */
   background-color: #007bff; /* Blue color */
   color: white; /* Text color */
   padding: 10px 20px; /* Adjust padding as needed */
