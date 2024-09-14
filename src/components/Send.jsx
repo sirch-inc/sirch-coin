@@ -30,7 +30,7 @@ export default function Send() {
   const [searchText, setSearchText] = useState('');
   const [memo, setMemo] = useState('');
   const [currentBalance, setCurrentBalance] = useState(null);
-  const [foundUsers, setFoundUsers] = useState([]);
+  const [foundUsers, setFoundUsers] = useState(null);
   const [selectedRecipient, setSelectedRecipient] = useState(null);
 
   const fetchUserBalance = async (userInTable) => {
@@ -50,8 +50,6 @@ export default function Send() {
   };
 
   const debouncedLookupUsers = useDebounce(async () => {
-    console.log("lookin up", searchText);
-
     setSelectedRecipient(null);
 
     try {
@@ -63,8 +61,7 @@ export default function Send() {
       });
 
       if (foundUsersError) {
-        // TODO: surface this error in a toast
-        alert('Error looking up users: \n' + foundUsersError);
+        toast.error("Unable to look up users at this time. Please try again later.");
         return;
       }
 
@@ -82,14 +79,13 @@ export default function Send() {
       }
 
       // many found
-      if (foundUsers.length > 1) {
+      if (newFoundUsers.length > 1) {
         setSelectedRecipient(null);
-      } 
+      }
     } catch (exception) {
       console.error("An exception occurred:", exception);
 
-      // TODO: what to display here?
-      toast.error('An exception occurred', exception);
+      toast.error("Unable to look up users at this time. Please try again later.");
     }
   });
 
@@ -103,11 +99,10 @@ export default function Send() {
     const newSearchText = event.target.value;
 
     setSearchText(newSearchText);
+    setFoundUsers(null);
+    setSelectedRecipient(null);
 
     if (newSearchText.length === 0) {
-      setSelectedRecipient(null);
-      setFoundUsers([]);
-
       // cancel any pending lookups
       debouncedLookupUsers.cancel();
     } else {
@@ -143,13 +138,12 @@ export default function Send() {
     }
   
     if (selectedRecipient === null) {
-      alert("No selected recipient");
+      toast.error("Please select a recipient.");
       return;
     }
 
     if (selectedRecipient.user_id === userInTable.user_id) {
-      // TODO: handle this gracefully
-      alert("You cannot send ⓢ Sirch Coins to yourself!")
+      toast.error("You cannot send ⓢ Sirch Coins to yourself! Please select a different recipient.")
       return;
     }
 
@@ -170,7 +164,7 @@ export default function Send() {
         //   return;
         // }
 
-      const { data: transferData, error: transferError } = await supabase.functions.invoke('transfer_coins', {
+      const { error: transferError } = await supabase.functions.invoke('transfer_coins', {
         body: {
           sender_id: userInTable.user_id,
           recipient_id: selectedRecipient.user_id,
@@ -180,15 +174,12 @@ export default function Send() {
       });
 
       if (transferError) {
-        // TODO: hande this error gracefully
-        alert('Error transferring coins:\n' + transferError);
+        toast.error("An error occurred sending Sirch Coins to your recipient. Please try again later.");
         return;
       }
 
       if (transferError?.message) {
-        toast.error(transferError?.message);
-        // FIXME: hack to get around linter
-        console.log("Data", transferData);
+        toast.error("An error occurred sending Sirch Coins to your recipient. Please try again later.");
       } else {
         toast.success("ⓢ " + sendAmount + " successfully sent to " + selectedRecipient?.full_name + "(@" + selectedRecipient?.user_handle + ")");
 
@@ -196,7 +187,7 @@ export default function Send() {
         setSendAmount('');
         setSearchText('');
         setSelectedRecipient(null);
-        setFoundUsers([]);
+        setFoundUsers(null);
         setMemo('');
 
         // TODO: consider refactoring this and other similar calls into a provider or the context
@@ -205,8 +196,7 @@ export default function Send() {
     } catch (exception) {
       console.error("An exception occurred", exception);
 
-      // TODO: what to display here?
-      toast.error('An exception occurred', exception);
+      toast.error("An error occurred sending Sirch Coins to your recipient. Please try again later.");
     }
   };
 
@@ -237,6 +227,57 @@ export default function Send() {
         <h2>Send</h2>
         <form onSubmit = {handleSubmit}>
           <div className = 'price-container'>
+            <div className = 'search-text'>
+              <h2>To whom:</h2>
+              <input
+                className = 'coin-input'
+                id = 'searchText'
+                name = 'searchText'
+                placeholder = "User name, email, or @handle..."
+                value = {searchText}                
+                type = 'text'
+                onChange = {handleSearchTextChange}
+                required
+              />
+            </div>
+
+            <>
+              {searchText.length !== 0 && foundUsers === null &&
+                <h3 style={{ color: 'black' }}>
+                  Loading...
+                </h3>
+              }
+
+              {searchText.length !== 0 && foundUsers?.length === 0 &&
+                <h3 style={{ color: 'red' }}>
+                  No users found; please refine your search<br/>
+                  or invite the user for whom you are looking<br/>
+                  to join Sirch Coins.
+                </h3>
+              }
+
+              {selectedRecipient !== null &&
+                <h3 style={{ color: 'green' }}>
+                  {selectedRecipient?.full_name} (@{selectedRecipient?.user_handle})
+                </h3>
+              }
+
+              {foundUsers?.length > 1 && selectedRecipient === null &&
+                (
+                  <h3>Multiple users found. Please select one...</h3> &&
+                  (
+                    foundUsers.map((foundUser) => (
+                      <UserCard 
+                        key={foundUser.user_id}
+                        user={foundUser}
+                        handleUserCardSelected={handleUserCardSelected}
+                      />
+                    ))
+                  )
+                )
+              }
+            </>
+
             <input
               className = 'coin-input'
               id = 'amountToSend'
@@ -251,54 +292,6 @@ export default function Send() {
               onChange = {handleAmountChange}
             />
 
-            <div className = 'search-text'>
-              <input
-                className = 'coin-input'
-                id = 'searchText'
-                name = 'searchText'
-                placeholder = "Name, email, or user handle..."
-                value = {searchText}                
-                type = 'text'
-                onChange = {handleSearchTextChange}
-                required
-              />
-            </div>
-
-            {searchText.length !== 0 && foundUsers.length === 0 &&
-              <>
-                <h3 style={{ color: 'red' }}>
-                  No user found; please search again<br/>
-                  or invite the user for whom you are looking<br/>
-                  to join Sirch Coins.
-                </h3>
-              </>
-            }
-
-            {searchText.length !== 0 && selectedRecipient !== null &&
-              <>
-                <h3 style={{ color: 'green' }}>
-                  {selectedRecipient?.full_name} (@{selectedRecipient?.user_handle})
-                </h3>
-              </>
-            }
-
-            {foundUsers.length > 1 && selectedRecipient === null &&
-              <>
-                <h3>Multiple users found. Please select one...</h3>
-                { foundUsers.length > 1 &&
-                  (
-                    foundUsers.map((foundUser) => (
-                      <UserCard 
-                        key={foundUser.user_id}
-                        user={foundUser}
-                        handleUserCardSelected={handleUserCardSelected}
-                      />
-                    ))
-                  )
-                }
-              </>
-            }
-            
             <div className = 'memo-input'>
               <input
                 className = 'coin-input'
