@@ -125,16 +125,8 @@ export default function Send() {
 
     // verify the sender has sufficient balance
     if (sendAmount > currentBalance) {
-      toast.error('Insufficient balance');
+      toast.error('Insufficient balance.');
       return;
-    }
-    
-    // if the send amount equals the user's balance, display a warning & confirmation dialog
-    if (parseInt(sendAmount, 10) === currentBalance) {
-      // TODO: handle this confirmation with a proper dialog
-      if (!confirm("Warning: the amount to send (ⓢ " + sendAmount + ") is your entire balance! Please confirm your intent.")) {
-        return;
-      }
     }
   
     if (selectedRecipient === null) {
@@ -148,7 +140,7 @@ export default function Send() {
     }
 
     try {
-        // TODO: Invite User; either rework this use case, or conduct the invitation on the server
+        // TODO: invite user; either rework this use case, or conduct the invitation on the server
         // const confirmedResponse = confirm("The recipient (" + searchText + ") does not appear to have a Sirch Coins account.  Would you like to send this person an invitation to join Sirch Coins?");
         // if (confirmedResponse) {
         //   const { data, error } = await supabase.auth.admin.inviteUserByEmail(searchText);
@@ -237,7 +229,6 @@ export default function Send() {
                 value = {searchText}                
                 type = 'text'
                 onChange = {handleSearchTextChange}
-                required
               />
             </div>
 
@@ -308,9 +299,10 @@ export default function Send() {
 
             {/* TODO: Dynamically update dollar amount based on coin-to-dollar valuation */}
             <div>
-              <p>You currently have <span className = 'bold-coin'> {currentBalance !== null ? "ⓢ " + currentBalance : "Loading"}</span> / $ {(currentBalance*0.10).toFixed(2)}</p>
+              <p>You currently have <span className = 'bold-coin'> {currentBalance !== null ? "ⓢ " + currentBalance : "Loading..."}</span> / $ {(currentBalance*0.10).toFixed(2)}</p>
             </div>
           </div>
+          
           <div className = 'bottom-btn-container'>
             <Link to = '/' className = 'big-btn'>
               Back
