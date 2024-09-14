@@ -1,5 +1,4 @@
 import { useState, useEffect, useContext } from 'react'
-// import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../AuthContext";
 import supabase from '../App/supabaseConfig';
 import { isAuthApiError } from '@supabase/supabase-js';
@@ -18,7 +17,6 @@ export default function UpdateAccount() {
   const [lastName, setLastName] = useState(userInTable?.last_name);
   const [isNamePrivate, setIsNamePrivate] = useState(userInTable?.is_name_private);
   const [userHandle, setUserHandle] = useState(userInTable?.user_handle);
-  // const navigate = useNavigate();
 
   const handleUpdate = async (event) => {
     event.preventDefault();
@@ -48,7 +46,7 @@ export default function UpdateAccount() {
 
       if (error) {
         if (isAuthApiError(error)) {
-          toast.error(error.message);
+          toast.error("There was an error updating your user account.  Please try again later or contact technical support.");
         }
         return;
       }
@@ -75,7 +73,7 @@ export default function UpdateAccount() {
     setEmail(newEmail);
     setHasEmailChanged(newEmail !== userEmail);
   }
-  // verify passwords match
+
   const handlePasswordConfirmation = (e) => {
     const value = e.target.value;
 

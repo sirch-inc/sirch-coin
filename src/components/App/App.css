@@ -26,6 +26,10 @@ h3 {
   text-align: center;
 }
 
+h4 {
+  text-align: center;
+}
+
 p {
   text-align: center;
 }
@@ -418,6 +422,10 @@ button.danger{
   padding: 20px;
   border-radius: 5px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  p, .big-btn, #user-handle {
+    width: 100%
+  }
 }
 
 /*  End of styles for My Account Page */
