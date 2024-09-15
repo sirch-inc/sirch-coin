@@ -69,6 +69,10 @@ footer {
   padding: 0px 4px 0px 4px;
   background-color:darkslategray;
   color: lightgray;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
 }
 
 /* Styles for Navbar */
@@ -462,6 +466,8 @@ button.danger{
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    min-height: 90vh;
+    overflow-y: auto; /* Enable vertical scrollbars */
 }
 
 .purchase-form{
@@ -485,6 +491,7 @@ button.danger{
 .checkout-form-popup{
   z-index: 100;
   max-width: 90%;
+  max-height: 90vh;
   position: fixed;
   top: 50%;
   left: 50%;
@@ -539,7 +546,8 @@ button {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  margin-top: 20px; /* Add some space on top */
+  margin-top: 10px; /* Add some space on top */
+  width: 300px;
 }
 
 /* Additional styles as needed */
@@ -555,6 +563,7 @@ button {
   justify-content: space-around;
   margin-top: 20px;
   padding: 20px;
+  bottom: 40px;
 }
 
 .big-btn {
@@ -602,6 +611,54 @@ button {
 .big-btn-light:hover{
   background-color: #3AD820;
   color: black;
+}
+
+/* General container adjustments for mobile screens */
+@media (max-width: 768px) {
+  .purchase-container {
+    margin: 1rem; 
+    min-height: 90vh;
+    padding: 0 1rem;
+    justify-content: flex-start;
+    align-items: stretch; 
+  }
+
+  /* Styles for buttons on mobile */
+  button {
+    padding: 12px;
+    font-size: 1rem;
+    margin-top: 10px; /* Reduce space on mobile */
+  }
+
+  /* Bottom button container adjustments */
+  .bottom-btn-container {
+    position: fixed; 
+    left: 0;
+    right: 0;
+    bottom: 40px; /* to move it up */
+    display: flex;
+    justify-content: center;
+    padding: 15px 0;
+    margin-top: 20px;
+  }
+
+  .big-btn {
+    font-size: large; 
+    padding: 12px;
+    margin-bottom: 20px;
+    bottom: 40px;
+  }
+
+  /* Adjust input field responsiveness */
+  .coin-input {
+    padding: 10px;
+    font-size: 1rem;
+  }
+}
+.checkout-form-popup {
+  max-width: 95%; /* narrower on smaller screens */
+  max-height: 80vh; /* Reduces the height slightly on smaller screens */
+  padding: 10px; /* Reduces padding for better fit */
 }
 
 /* End of styles for buy coin (Deposit) page
