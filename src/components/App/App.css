@@ -467,7 +467,7 @@ button.danger{
     justify-content: center;
     align-items: center;
     min-height: 90vh;
-    overflow-y: auto; /* Enable vertical scrollbars */
+    overflow-y: auto;
 }
 
 .purchase-form{
@@ -649,16 +649,15 @@ button {
     bottom: 40px;
   }
 
-  /* Adjust input field responsiveness */
   .coin-input {
     padding: 10px;
     font-size: 1rem;
   }
 }
 .checkout-form-popup {
-  max-width: 95%; /* narrower on smaller screens */
-  max-height: 80vh; /* Reduces the height slightly on smaller screens */
-  padding: 10px; /* Reduces padding for better fit */
+  max-width: 95%; 
+  max-height: 80vh; 
+  padding: 10px;
 }
 
 /* End of styles for buy coin (Deposit) page
