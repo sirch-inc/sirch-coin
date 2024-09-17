@@ -551,10 +551,12 @@ button {
 }
 
 /* Additional styles as needed */
-
+.button-group {
+  margin-bottom: 20px;
+}
 
 .bottom-btn-container {
-  position: fixed;
+  position: relative;
   bottom: 0;
   left: 0;
   right: 0;
@@ -623,19 +625,17 @@ button {
     align-items: stretch; 
   }
 
-  /* Styles for buttons on mobile */
   button {
     padding: 12px;
     font-size: 1rem;
-    margin-top: 10px; /* Reduce space on mobile */
+    margin-top: 10px;
   }
 
-  /* Bottom button container adjustments */
   .bottom-btn-container {
     position: fixed; 
     left: 0;
     right: 0;
-    bottom: 40px; /* to move it up */
+    bottom: 40px; 
     display: flex;
     justify-content: center;
     padding: 15px 0;
