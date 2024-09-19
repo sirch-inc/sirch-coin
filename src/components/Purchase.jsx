@@ -154,6 +154,7 @@ export default function Purchase() {
           <h4>Your total price: {totalPrice} {formatCurrency(currency)}</h4> :
           <h4>Your total price: ${formatPrice(localTotalPrice)} {formatCurrency(currency)}</h4>
         }
+        <div className="button-group">
         <button 
           onClick={createPaymentIntent} 
           disabled={coinAmountError || localCoinAmount < 5}
@@ -161,6 +162,7 @@ export default function Purchase() {
         >
           Buy with Stripe
         </button>
+      </div>
       </div>
       <div>
         <div>
