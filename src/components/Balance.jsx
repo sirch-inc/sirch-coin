@@ -48,7 +48,9 @@ export default function Balance() {
           <h4 className="balance-box">You&apos;ve got <span className="bold-coin green-coin">ⓢ {currentBalance}</span> / ${(currentBalance*0.10).toFixed(2)}</h4>
         </div>
         <div>
+        <div className="button-group">
           <button className="balance-btn" onClick={onRefreshBalance}>Refresh Balance</button>
+        </div>
         </div>
         {error && <p className="text-danger">{error}</p>}
         <div className="bottom-btn-container">

@@ -1,6 +1,7 @@
 #root, body {
   background: #F7F7F7;
   height: 100vh;
+  overflow-y: auto;
 }
 
 @font-face {
@@ -217,6 +218,8 @@ input#user-handle {
   justify-content: space-between;
   height: 80vh;
   width: 100%;
+  flex-wrap: wrap;
+  align-content: space-around;
 }
 
 .right-button-container {
@@ -332,6 +335,16 @@ input#user-handle {
   text-align: left;
 }
 /* End Styles for Offline Page */
+
+/* Help page */
+
+.help-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 70vh;
+  overflow-y: auto;  
+}
 
 
 /* Start Styles for About Page */
@@ -669,6 +682,8 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
+  height: 90vh;
+  overflow-y: auto;
 }
 
 .balance-box{
@@ -728,12 +743,22 @@ form {
   margin-top: 15px;
 }
 
+.button-group {
+  margin-bottom: 20px;
+}
+
 .bottom-btn-container {
+  position: relative;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
   justify-content: space-around;
   margin-top: 20px;
-  padding: 10px;
+  padding: 20px;
+  bottom: 40px;
 }
 
 .bottom-btn-container a {
@@ -799,7 +824,7 @@ form {
   }
 
   .big-btn {
-    width: 70%;
+    width: 100%;
     max-width: 350px;
   }
 }
@@ -868,6 +893,7 @@ form {
   }
 
   .bottom-btn-container {
+    display: flex;
     flex-direction: column;
     align-items: center;
     padding: 10px;
@@ -884,11 +910,19 @@ form {
 @media screen and (max-width: 600px) {
   .balance-container {
     text-align: center;
+    min-height: 70vh;
+    overflow-y: auto;
+  }
+
+  .balance-box{
+    width: 100%;
   }
 
   .bottom-btn-container {
+    display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 10px;
   }
 
   .page-text {
