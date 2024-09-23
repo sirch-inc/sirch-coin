@@ -513,6 +513,7 @@ button.danger{
   padding: 20px;
   border-radius: 5px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
 }
 
 .coin-amount-input{
@@ -671,6 +672,7 @@ button {
   max-width: 95%; 
   max-height: 80vh; 
   padding: 10px;
+  overflow-y: auto;
 }
 
 /* End of styles for buy coin (Deposit) page
@@ -705,6 +707,8 @@ form {
   display: flex;
   flex-direction: column;
   align-items: center;
+  height: 90vh;
+  overflow-y: auto;
 }
 
 .email-balance {
@@ -771,8 +775,8 @@ form {
 /* Start styles for Transaction History */
 .transactions-container {
   margin: 20px;
-  height: 65vh;
-  overflow: scroll;
+  height: 90vh;
+  overflow-y: auto;
 }
 
 .transactions-header {
@@ -791,6 +795,32 @@ form {
     font-family: Haskoy-bold;
     font-size: 20px;
   }
+  .bottom-btn-container-light {
+    position: relative;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    margin-top: 20px;
+    padding: 20px;
+    bottom: 20px;
+  }
+  
+  .big-btn {
+    background-color: #231F20;
+    text-decoration: none;
+    text-align: center;
+    font-size: x-large;
+    font-weight: 600;
+    color: white;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 20px;
+    width: 300px;
+  }
+  
 /* End styles for Transaction History */
 
 
