@@ -9,7 +9,7 @@ import CheckoutForm from "./Stripe/CheckoutForm";
 
 
 export default function Purchase() {
-  const [stripePromise, setStripePromise] = useState(null);
+  // const [stripePromise, setStripePromise] = useState(null);
   const [clientSecret, setClientSecret] = useState("");
   const [localCoinAmount, setLocalCoinAmount] = useState(5);
   const [localTotalPrice, setLocalTotalPrice] = useState(0);
@@ -23,9 +23,15 @@ export default function Purchase() {
   const { userInTable } = useContext(AuthContext);
   const options = useMemo(() => ({clientSecret}), [clientSecret]);
 
-  useEffect(() => {
-    setStripePromise(loadStripe(import.meta.env.VITE_STRIPE_API_PUBLISHABLE_KEY))
-  }, [])
+  
+  // Call `loadStripe` outside of the component’s render to avoid
+  // recreating the `Stripe` object on every render
+  const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_API_PUBLISHABLE_KEY);
+
+
+  // useEffect(() => {
+  //   setStripePromise(loadStripe(import.meta.env.VITE_STRIPE_API_PUBLISHABLE_KEY))
+  // }, [])
 
   // TODO: Replace this with a new edge function in supabase instead of creating the payment intent on page load
   useEffect(() => {
