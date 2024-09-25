@@ -429,6 +429,8 @@ input#user-handle {
 /*  Start Styles for My Account Page */
 .account-container{
   margin: 2rem;
+  height: 90vh;
+  overflow-y: auto;
 }
 
 .account{
@@ -461,6 +463,32 @@ button.danger{
   p, .big-btn, #user-handle {
     width: 100%
   }
+}
+
+.bottom-btn-container {
+  position: relative;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-top: 20px;
+  padding: 20px;
+  bottom: 40px;
+}
+
+.big-btn {
+  background-color: #231F20;
+  text-decoration: none;
+  text-align: center;
+  font-size: x-large;
+  font-weight: 600;
+  color: white;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 20px;
+  width: 300px;
 }
 
 /*  End of styles for My Account Page */
