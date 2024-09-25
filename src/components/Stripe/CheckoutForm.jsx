@@ -1,8 +1,9 @@
 import { useState, useContext } from "react";
-import { PaymentElement } from "@stripe/react-stripe-js";
-// import { useStripe, useElements } from "@stripe/react-stripe-js";
-import supabase from "../App/supabaseConfig";
 import { AuthContext } from "../AuthContext";
+import { PaymentElement } from "@stripe/react-stripe-js";
+import { useStripe, useElements } from "@stripe/react-stripe-js";
+import supabase from "../App/supabaseConfig";
+import { FunctionsHttpError, FunctionsRelayError, FunctionsFetchError } from "@supabase/supabase-js";
 
 
 // eslint-disable-next-line react/prop-types
@@ -15,43 +16,76 @@ export default function CheckoutForm({
     currency,
     // paymentIntentId
   }) {
-  // const stripe = useStripe();
-  // const elements = useElements();
+  const stripe = useStripe();
+  const elements = useElements();
   const { userInTable } = useContext(AuthContext);
   const [message, setMessage] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  const handleError = (error) => {
+    setIsProcessing(false);
+    setMessage(error.message);
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // if (!stripe || !elements) {
-    //   // Stripe.js has not yet loaded.
-    //   // Make sure to disable form submission until Stripe.js has loaded.
-    //   return;
-    // }
+    if (!stripe) {
+      return;
+    }
 
     setIsProcessing(true);
 
-    const { error } = await stripe.confirmPayment({
-      // elements,
+    // Trigger form validation and wallet collection
+    // TODO: wrap in try-catch
+    const {error: submitError} = await elements.submit();
+    if (submitError) {
+      handleError(submitError);
+      return;
+    }
+
+    // TODO: wrap in try-catch
+    const { data: createPaymentIntentData, error: createPaymentIntentError } = await supabase.functions.invoke('stripe-create-payment-intent', {
+      body: {
+        userId: userInTable?.user_id,
+        email: userInTable?.email,
+        numberOfCoins: Math.floor(coinAmount)
+      }
+    });
+
+    // TODO: Handle error messaging for user
+    if (createPaymentIntentError instanceof FunctionsHttpError) {
+      const errorMessage = await createPaymentIntentError.context.json();
+      console.error('Function returned an error: ', errorMessage);
+    } else if (createPaymentIntentError instanceof FunctionsRelayError) {
+      console.error('Relay error: ', createPaymentIntentError.message);
+    } else if (createPaymentIntentError instanceof FunctionsFetchError) {
+      console.error('Fetch error: ', createPaymentIntentError.message);
+    }
+
+    const clientSecret = createPaymentIntentData.clientSecret;
+    const paymentIntentId = createPaymentIntentData.paymentIntentId;
+
+    // TODO: wrap in try-catch
+    const { error: confirmPaymentError } = await stripe.confirmPayment({
+      elements,
+      clientSecret,
       confirmParams: {
-        // return_url: `${window.location.origin}/Stripe/Success/${paymentIntentId}`,
-        return_url: `${window.location.origin}/Stripe/Success/foobarfoobarfoobar`,
+        return_url: `${window.location.origin}/Stripe/Success/${paymentIntentId}`
       },
     });
 
-    if (error.type === "card_error" || error.type === "validation_error") {
-      setMessage(error.message);
-    } else {
-      setMessage("An unexpected error occured.");
+    if (confirmPaymentError) {
+      handleError(confirmPaymentError);
     }
 
     setIsProcessing(false);
   };
 
-  const handleCancelPaymentIntent = async () => {
+  const handleCancel = async () => {
+    setIsProcessing(false);
     setShowCheckoutForm(false);
-    
+
     // try {
     //   const { data, error } = await supabase.functions.invoke('stripe-cancel-payment-intent', {
     //     body: {
@@ -78,20 +112,18 @@ export default function CheckoutForm({
 
       <form id="payment-form" onSubmit={handleSubmit}>
         <PaymentElement id="payment-element" />
-        {/* <button  className="big-btn" disabled={isProcessing || !stripe || !elements} id="submit"> */}
         <button
           id="submit"
           className="big-btn"
-          disabled={isProcessing}
+          disabled={!stripe || isProcessing}
         >
           <span id="button-text">
-            {isProcessing ? "Processing ... " : "Buy Sirch Coins"}
+            {isProcessing ? "Processing... " : "Buy Sirch Coins"}
           </span>
         </button>
-        {/* TODO: add onClick handleCancelPaymentIntent */}
         <button
           className="big-btn"
-          onClick={handleCancelPaymentIntent}
+          onClick={handleCancel}
         >
           Cancel
         </button>

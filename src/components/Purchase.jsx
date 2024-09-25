@@ -9,8 +9,6 @@ import CheckoutForm from "./Stripe/CheckoutForm";
 
 
 export default function Purchase() {
-  // const [stripePromise, setStripePromise] = useState(null);
-  const [clientSecret, setClientSecret] = useState("");
   const [localCoinAmount, setLocalCoinAmount] = useState(5);
   const [coinAmount, setCoinAmount] = useState(5);
   const [coinAmountError, setCoinAmountError] = useState(false);
@@ -18,17 +16,12 @@ export default function Purchase() {
   const [localTotalPrice, setLocalTotalPrice] = useState(0);
   const [totalPrice, setTotalPrice] = useState("Loading...");
   const [currency, setCurrency] = useState("Loading...");
-  const [paymentIntentId, setPaymentIntentId] = useState(null)
   const [showCheckoutForm, setShowCheckoutForm] = useState(false);
   const { userInTable } = useContext(AuthContext);
-
-  // const options = useMemo(() => ({clientSecret}), [clientSecret]);
-
 
   // Call `loadStripe` outside of the component’s render to avoid
   // recreating the `Stripe` object on every render
   const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_API_PUBLISHABLE_KEY);
-
 
   // useEffect(() => {
   //   setStripePromise(loadStripe(import.meta.env.VITE_STRIPE_API_PUBLISHABLE_KEY))
@@ -72,30 +65,6 @@ export default function Purchase() {
       setCurrency(currency);
       setShowCheckoutForm(true);
       // setPaymentIntentId(data.paymentIntentId)
-
-    // const { data, error } = await supabase.functions.invoke('stripe-create-payment-intent', {
-    //   body: {
-    //     userId: userInTable?.user_id,
-    //     email: userInTable?.email,
-    //     numberOfCoins: Math.floor(localCoinAmount)
-    //   }
-    // });
-
-    // // TODO: Handle error messaging for user
-    // if (error instanceof FunctionsHttpError) {
-    //   const errorMessage = await error.context.json();
-    //   console.error('Function returned an error: ', errorMessage);
-    // } else if (error instanceof FunctionsRelayError) {
-    //   console.error('Relay error: ', error.message);
-    // } else if (error instanceof FunctionsFetchError) {
-    //   console.error('Fetch error: ', error.message);
-    // } else {
-      // setClientSecret(data.clientSecret);
-      // setCoinAmount(data.numberOfCoins);
-      // setTotalPrice(data.totalAmount);
-      // setCurrency(data.currency);
-      // setPaymentIntentId(data.paymentIntentId)
-    // }
   }
 
   // TODO: Update this logic once Sirch Coins discount period expires (e.g. users can purchase 1 Sirch Coin for $1)
