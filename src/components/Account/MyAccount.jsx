@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
 import supabase from '../App/supabaseConfig';
 import { ToastContainer, toast } from 'react-toastify';
+import { Link } from "react-router-dom";
 import Logout from "../Account/Logout";
 
 
@@ -85,7 +86,7 @@ export default function MyAccount(){
         </button>
         <button className="big-btn danger" onClick={showDeleteConfirmation}>Delete Account...</button>
       </div>
-
+     
       {deleteDialogBox && 
         <dialog open className="delete-dialog">
           <h2>Confirm Account Deletion</h2>
@@ -133,6 +134,11 @@ export default function MyAccount(){
           </div>
         </dialog> 
       }
+      <div className="bottom-btn-container">
+        <Link to="/" className="big-btn">
+          Back
+        </Link>
+      </div>
     </div>
   )
 }
