@@ -13,7 +13,7 @@ export default function StripeSuccess() {
   useEffect(() => {
     const validatePayment = async () => {
       try {
-        const { data, error } = await supabase.functions.invoke('validate-payment', {
+        const { data, error } = await supabase.functions.invoke('stripe-validate-payment', {
           body: {
             userId: userInTable?.user_id,
             paymentIntentId: paymentIntentId,

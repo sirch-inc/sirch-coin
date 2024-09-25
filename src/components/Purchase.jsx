@@ -12,18 +12,19 @@ export default function Purchase() {
   // const [stripePromise, setStripePromise] = useState(null);
   const [clientSecret, setClientSecret] = useState("");
   const [localCoinAmount, setLocalCoinAmount] = useState(5);
-  const [localTotalPrice, setLocalTotalPrice] = useState(0);
   const [coinAmount, setCoinAmount] = useState(5);
   const [coinAmountError, setCoinAmountError] = useState(false);
   const [pricePerCoin, setPricePerCoin] = useState("Loading...");
+  const [localTotalPrice, setLocalTotalPrice] = useState(0);
   const [totalPrice, setTotalPrice] = useState("Loading...");
   const [currency, setCurrency] = useState("Loading...");
   const [paymentIntentId, setPaymentIntentId] = useState(null)
   const [showCheckoutForm, setShowCheckoutForm] = useState(false);
   const { userInTable } = useContext(AuthContext);
-  const options = useMemo(() => ({clientSecret}), [clientSecret]);
 
-  
+  // const options = useMemo(() => ({clientSecret}), [clientSecret]);
+
+
   // Call `loadStripe` outside of the component’s render to avoid
   // recreating the `Stripe` object on every render
   const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_API_PUBLISHABLE_KEY);
@@ -33,11 +34,12 @@ export default function Purchase() {
   //   setStripePromise(loadStripe(import.meta.env.VITE_STRIPE_API_PUBLISHABLE_KEY))
   // }, [])
 
-  // TODO: Replace this with a new edge function in supabase instead of creating the payment intent on page load
+  // load the user's initial data (balance, etc)
   useEffect(() => {
     const loadInitialData = async () => {
       if (!userInTable) return;
   
+      // TODO: fetch the minimum number of coins to satisfy Stripe's $0.50 minimum
       const { data, error } = await supabase.functions.invoke('price-per-coin', {
         body: {
           numberOfCoins: 5  
@@ -47,11 +49,11 @@ export default function Purchase() {
       // TODO: Handle error messaging for user
       if (error instanceof FunctionsHttpError) {
         const errorMessage = await error.context.json();
-        console.log('Function returned an error: ', errorMessage);
+        console.error('Function returned an error: ', errorMessage);
       } else if (error instanceof FunctionsRelayError) {
-        console.log('Relay error: ', error.message);
+        console.error('Relay error: ', error.message);
       } else if (error instanceof FunctionsFetchError) {
-        console.log('Fetch error: ', error.message);
+        console.error('Fetch error: ', error.message);
       } else {
         setPricePerCoin(data.pricePerCoin);
         setLocalTotalPrice(data.totalAmount);
@@ -62,47 +64,52 @@ export default function Purchase() {
     loadInitialData();
   }, [userInTable]);
 
-  const createPaymentIntent = async () => {
+  const handleCheckout = async () => {
     if (!userInTable || localCoinAmount === '') return;
 
-    const { data, error } = await supabase.functions.invoke('stripe-create-payment-intent', {
-      body: {
-        userId: userInTable?.user_id,
-        email: userInTable?.email,
-        numberOfCoins: Math.floor(localCoinAmount)
-      }
-    });
-
-    // TODO: Handle error messaging for user
-    if (error instanceof FunctionsHttpError) {
-      const errorMessage = await error.context.json();
-      console.log('Function returned an error: ', errorMessage);
-    } else if (error instanceof FunctionsRelayError) {
-      console.log('Relay error: ', error.message);
-    } else if (error instanceof FunctionsFetchError) {
-      console.log('Fetch error: ', error.message);
-    } else {      
-      setClientSecret(data.clientSecret);
-      setCoinAmount(data.numberOfCoins);
-      setTotalPrice(data.totalAmount);
-      setCurrency(data.currency);
-      setPaymentIntentId(data.paymentIntentId)
+      setCoinAmount(localCoinAmount);
+      setTotalPrice(localTotalPrice);
+      setCurrency(currency);
       setShowCheckoutForm(true);
-    }
+      // setPaymentIntentId(data.paymentIntentId)
+
+    // const { data, error } = await supabase.functions.invoke('stripe-create-payment-intent', {
+    //   body: {
+    //     userId: userInTable?.user_id,
+    //     email: userInTable?.email,
+    //     numberOfCoins: Math.floor(localCoinAmount)
+    //   }
+    // });
+
+    // // TODO: Handle error messaging for user
+    // if (error instanceof FunctionsHttpError) {
+    //   const errorMessage = await error.context.json();
+    //   console.error('Function returned an error: ', errorMessage);
+    // } else if (error instanceof FunctionsRelayError) {
+    //   console.error('Relay error: ', error.message);
+    // } else if (error instanceof FunctionsFetchError) {
+    //   console.error('Fetch error: ', error.message);
+    // } else {
+      // setClientSecret(data.clientSecret);
+      // setCoinAmount(data.numberOfCoins);
+      // setTotalPrice(data.totalAmount);
+      // setCurrency(data.currency);
+      // setPaymentIntentId(data.paymentIntentId)
+    // }
   }
 
   // TODO: Update this logic once Sirch Coins discount period expires (e.g. users can purchase 1 Sirch Coin for $1)
   const handleAmountChange = (e) => {
-    const value = e.target.value;
+    const newValue = e.target.value;
     
-    if (value === '') {
+    if (newValue === '') {
       setLocalCoinAmount('');
       setCoinAmountError(false);
       setLocalTotalPrice(0);
       return;
     }
   
-    const numValue = parseInt(value, 10);
+    const numValue = parseInt(newValue, 10);
     if (!isNaN(numValue)) {
       setLocalCoinAmount(numValue);
       setLocalTotalPrice(numValue * parseFloat(pricePerCoin));
@@ -127,6 +134,14 @@ export default function Purchase() {
   const formatCurrency = (currency) => {
     return currency.toUpperCase();
   }
+  
+  const options = {
+    mode: 'payment',
+    amount: 1099,
+    currency: 'usd',
+    // Fully customizable with appearance API.
+    appearance: {/*...*/},
+  };
 
   return (
     <div>
@@ -134,10 +149,10 @@ export default function Purchase() {
         <h2>Purchase Sirch Coins</h2>
         <h3>How many Sirch Coins would you like to purchase?</h3>
         {/* TODO: Format for other currencies if we decide to accept them in the future */}
-        { pricePerCoin === "Loading..." ? 
-          <p>Current price per coin: {pricePerCoin} </p> : 
-          <p>Current price per coin: ${formatPrice(pricePerCoin)} </p>
-          }
+        { pricePerCoin === "Loading..."
+          ? <p>Current price per coin: {pricePerCoin}</p>
+          : <p>Current price per coin: ${formatPrice(pricePerCoin)}</p>
+        }
         <div className="purchase-form">
           <span className="sirch-symbol-large">ⓢ</span>
           <input
@@ -148,23 +163,25 @@ export default function Purchase() {
             value={localCoinAmount}
             onChange={handleAmountChange}
             onBlur={handleBlur}
+            // TODO: min needs to be the fetched value
             min="5"
             step="1"
             required
           />
         </div>
+        {/* TODO: use the fetched min value here... */}
         <p><strong>Note: At the current time, a minimum purchase of 5 Sirch Coins is required.</strong></p>
         {/* TODO: Add "See more" link with info on Stripe/purchasing */}
         <p>Sirch Coins uses the payment provider Stripe for secure transactions. See more...</p>
-        { localTotalPrice === 0 ? 
-          <h4>Your total price: {totalPrice} {formatCurrency(currency)}</h4> :
-          <h4>Your total price: ${formatPrice(localTotalPrice)} {formatCurrency(currency)}</h4>
+        { localTotalPrice === 0
+          ? <h4>Your total price: {totalPrice} {formatCurrency(currency)}</h4>
+          : <h4>Your total price: ${formatPrice(localTotalPrice)} {formatCurrency(currency)}</h4>
         }
         <div className="button-group">
         <button 
-          onClick={createPaymentIntent} 
-          disabled={coinAmountError || localCoinAmount < 5}
           className="big-btn"
+          onClick={handleCheckout}
+          disabled={coinAmountError || localCoinAmount < 5}
         >
           Buy with Stripe
         </button>
@@ -172,28 +189,30 @@ export default function Purchase() {
       </div>
       <div>
         <div>
-          {stripePromise && clientSecret && showCheckoutForm && (
+          {stripePromise && showCheckoutForm &&
+            (
             <>
               <div className="overlay"></div>
               <dialog open className="checkout-form-popup">
                 <Elements 
-                  key={clientSecret}
+                  // key={clientSecret}
                   stripe={stripePromise} 
                   options={options}
                 >
                   <CheckoutForm
                     coinAmount={coinAmount}
                     totalPrice={totalPrice}
-                    setShowCheckoutForm={setShowCheckoutForm}
+                    currency={currency}
                     formatPrice={formatPrice}
                     formatCurrency={formatCurrency}
-                    currency={currency}
-                    paymentIntentId={paymentIntentId}
+                    // paymentIntentId={paymentIntentId}
+                    setShowCheckoutForm={setShowCheckoutForm}
                   />
                 </Elements>
               </dialog>
             </>
-          )}
+            )
+          }
         </div>
       </div>
       <div className="bottom-btn-container">
