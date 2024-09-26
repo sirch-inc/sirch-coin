@@ -30,7 +30,7 @@ export default function Purchase() {
     const loadInitialData = async () => {
       if (!userInTable) return;
   
-      // TODO: fetch the minimum number of coins to satisfy Stripe's $0.50 minimum
+      // TODO: fetch the minimum number of coins to satisfy Stripe's $0.50 minimum purchase
       const { data, error } = await supabase.functions.invoke('price-per-coin', {
         body: {
           numberOfCoins: 5  
@@ -62,7 +62,6 @@ export default function Purchase() {
       setTotalPrice(localTotalPrice);
       setCurrency(currency);
       setShowCheckoutForm(true);
-      // setPaymentIntentId(data.paymentIntentId)
   }
 
   // TODO: Update this logic once Sirch Coins discount period expires (e.g. users can purchase 1 Sirch Coin for $1)
@@ -117,8 +116,8 @@ export default function Purchase() {
         <h2>Purchase Sirch Coins ⓢ</h2>
         <h3>How many Sirch Coins ⓢ would you like to purchase?</h3>
         { pricePerCoin === "Loading..."
-          ? <p>Current valuation: ⓢ 1 = {pricePerCoin} {currency}</p>
-          : <p>Current valuation: ⓢ 1 = ${formatPrice(pricePerCoin)} {currency.toUpperCase()}</p>
+          ? <p>Current quote: ⓢ 1 = {pricePerCoin} {currency}</p>
+          : <p>Current quote: ⓢ 1 = ${formatPrice(pricePerCoin)} {currency.toUpperCase()}</p>
         }
         <div className="purchase-form">
           <span className="sirch-symbol-large">ⓢ</span>
@@ -172,7 +171,6 @@ export default function Purchase() {
                     currency={currency}
                     formatPrice={formatPrice}
                     formatCurrency={formatCurrency}
-                    // paymentIntentId={paymentIntentId}
                     setShowCheckoutForm={setShowCheckoutForm}
                   />
                 </Elements>

@@ -13,8 +13,7 @@ export default function CheckoutForm({
     setShowCheckoutForm,
     formatPrice,
     formatCurrency,
-    currency,
-    // paymentIntentId
+    currency
   }) {
   const stripe = useStripe();
   const elements = useElements();
