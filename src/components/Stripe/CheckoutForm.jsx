@@ -30,15 +30,14 @@ export default function CheckoutForm({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!stripe) {
-      return;
-    }
+    if (!stripe) return;
 
     setIsProcessing(true);
 
     // Trigger form validation and wallet collection
     // TODO: wrap in try-catch
     const {error: submitError} = await elements.submit();
+    
     if (submitError) {
       handleError(submitError);
       return;
@@ -72,7 +71,7 @@ export default function CheckoutForm({
       elements,
       clientSecret,
       confirmParams: {
-        return_url: `${window.location.origin}/Stripe/Success/${paymentIntentId}`
+        return_url: `${window.location.origin}/stripe/success/${paymentIntentId}`
       },
     });
 
@@ -87,26 +86,21 @@ export default function CheckoutForm({
     setIsProcessing(false);
     setShowCheckoutForm(false);
 
-    if (paymentIntentId === '') {
-      return;
-    }
+    if (paymentIntentId === '') return;
 
     try {
-      const { data, error } = await supabase.functions.invoke('stripe-cancel-payment-intent', {
+      const { error: cancelPaymentIntentError } = await supabase.functions.invoke('stripe-cancel-payment-intent', {
         body: {
           userId: userInTable?.user_id,
           paymentIntentId
         }
       });
 
-      if (error) {
+      if (cancelPaymentIntentError) {
         // TODO: surface this error?
-        throw error;        
+        throw cancelPaymentIntentError;        
       }
 
-      if (data) {
-        console.log(data)
-      }
     } catch (exception) {
         console.error("exception", exception)
     }

@@ -21,6 +21,7 @@ export default function StripeSuccess() {
         });
 
         if (error) throw error;
+        
         if (data) {
           setPaymentDetails(data);
         }

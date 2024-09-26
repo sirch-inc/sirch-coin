@@ -22,6 +22,7 @@ export default function Purchase() {
   const [totalPrice, setTotalPrice] = useState("Loading...");
   const [currency, setCurrency] = useState("Loading...");
   const [showCheckoutForm, setShowCheckoutForm] = useState(false);
+  const [options, setOptions] = useState(null);
   const { userInTable } = useContext(AuthContext);
 
 
@@ -36,7 +37,7 @@ export default function Purchase() {
           numberOfCoins: 5  
         }
       });
-  
+
       // TODO: Handle error messaging for user
       if (error instanceof FunctionsHttpError) {
         const errorMessage = await error.context.json();
@@ -58,10 +59,18 @@ export default function Purchase() {
   const handleCheckout = async () => {
     if (!userInTable || localCoinAmount === '') return;
 
-      setCoinAmount(localCoinAmount);
-      setTotalPrice(localTotalPrice);
-      setCurrency(currency);
-      setShowCheckoutForm(true);
+    setCoinAmount(localCoinAmount);
+    setTotalPrice(localTotalPrice);
+    setCurrency(currency);
+    setShowCheckoutForm(true);
+
+    const totalAmountInCents = +(localTotalPrice * 100).toFixed(0);
+
+    setOptions({
+      mode: 'payment',
+      amount: totalAmountInCents,
+      currency
+    });
   }
 
   // TODO: Update this logic once Sirch Coins discount period expires (e.g. users can purchase 1 Sirch Coin for $1)
@@ -100,15 +109,6 @@ export default function Purchase() {
   const formatCurrency = (currency) => {
     return currency.toUpperCase();
   }
-  
-  // TODO; hydrate this correctly...
-  const options = {
-    mode: 'payment',
-    amount: 1099,
-    currency: 'usd',
-    // Fully customizable with appearance API.
-    appearance: {/*...*/},
-  };
 
   return (
     <div>
@@ -140,18 +140,18 @@ export default function Purchase() {
         {/* TODO: Add "See more" link with info on Stripe/purchasing */}
         <p>Sirch Coins uses the payment provider Stripe for secure transactions. See more...</p>
         { localTotalPrice === 0
-          ? <h4>Your total price: {totalPrice} {formatCurrency(currency)}</h4>
-          : <h4>Your total price: ${formatPrice(localTotalPrice)} {formatCurrency(currency)}</h4>
+            ? <h4>Your total price: {totalPrice} {formatCurrency(currency)}</h4>
+            : <h4>Your total price: ${formatPrice(localTotalPrice)} {formatCurrency(currency)}</h4>
         }
         <div className="button-group">
-        <button 
-          className="big-btn"
-          onClick={handleCheckout}
-          disabled={coinAmountError || localCoinAmount < 5}
-        >
-          Buy with Stripe
-        </button>
-      </div>
+          <button 
+            className="big-btn"
+            onClick={handleCheckout}
+            disabled={coinAmountError || localCoinAmount < 5}
+          >
+            Buy with Stripe
+          </button>
+        </div>
       </div>
       <div>
         <div>
@@ -161,7 +161,6 @@ export default function Purchase() {
               <div className="overlay"></div>
               <dialog open className="checkout-form-popup">
                 <Elements 
-                  // key={clientSecret}
                   stripe={stripePromise} 
                   options={options}
                 >
