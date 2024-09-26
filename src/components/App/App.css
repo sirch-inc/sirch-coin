@@ -220,6 +220,7 @@ input#user-handle {
   width: 100%;
   flex-wrap: wrap;
   align-content: space-around;
+  overflow-y: auto;
 }
 
 .right-button-container {
