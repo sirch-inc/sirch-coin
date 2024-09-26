@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext, useMemo } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { Link } from "react-router-dom";
@@ -6,6 +6,11 @@ import { AuthContext } from "./AuthContext";
 import supabase from "./App/supabaseConfig";
 import { FunctionsHttpError, FunctionsRelayError, FunctionsFetchError } from "@supabase/supabase-js";
 import CheckoutForm from "./Stripe/CheckoutForm";
+
+
+// Call `loadStripe` outside of the component’s render to avoid
+// recreating the `Stripe` object on every render
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_API_PUBLISHABLE_KEY);
 
 
 export default function Purchase() {
@@ -19,13 +24,6 @@ export default function Purchase() {
   const [showCheckoutForm, setShowCheckoutForm] = useState(false);
   const { userInTable } = useContext(AuthContext);
 
-  // Call `loadStripe` outside of the component’s render to avoid
-  // recreating the `Stripe` object on every render
-  const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_API_PUBLISHABLE_KEY);
-
-  // useEffect(() => {
-  //   setStripePromise(loadStripe(import.meta.env.VITE_STRIPE_API_PUBLISHABLE_KEY))
-  // }, [])
 
   // load the user's initial data (balance, etc)
   useEffect(() => {
@@ -104,6 +102,7 @@ export default function Purchase() {
     return currency.toUpperCase();
   }
   
+  // TODO; hydrate this correctly...
   const options = {
     mode: 'payment',
     amount: 1099,
@@ -115,12 +114,11 @@ export default function Purchase() {
   return (
     <div>
       <div className="purchase-container">
-        <h2>Purchase Sirch Coins</h2>
-        <h3>How many Sirch Coins would you like to purchase?</h3>
-        {/* TODO: Format for other currencies if we decide to accept them in the future */}
+        <h2>Purchase Sirch Coins ⓢ</h2>
+        <h3>How many Sirch Coins ⓢ would you like to purchase?</h3>
         { pricePerCoin === "Loading..."
-          ? <p>Current price per coin: {pricePerCoin}</p>
-          : <p>Current price per coin: ${formatPrice(pricePerCoin)}</p>
+          ? <p>Current valuation: ⓢ 1 = {pricePerCoin} {currency}</p>
+          : <p>Current valuation: ⓢ 1 = ${formatPrice(pricePerCoin)} {currency.toUpperCase()}</p>
         }
         <div className="purchase-form">
           <span className="sirch-symbol-large">ⓢ</span>
@@ -139,7 +137,7 @@ export default function Purchase() {
           />
         </div>
         {/* TODO: use the fetched min value here... */}
-        <p><strong>Note: At the current time, a minimum purchase of 5 Sirch Coins is required.</strong></p>
+        <p><strong>Note: At the current time, a minimum purchase of ⓢ 5 is required.</strong></p>
         {/* TODO: Add "See more" link with info on Stripe/purchasing */}
         <p>Sirch Coins uses the payment provider Stripe for secure transactions. See more...</p>
         { localTotalPrice === 0

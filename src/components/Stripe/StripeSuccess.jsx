@@ -16,7 +16,7 @@ export default function StripeSuccess() {
         const { data, error } = await supabase.functions.invoke('stripe-validate-payment', {
           body: {
             userId: userInTable?.user_id,
-            paymentIntentId: paymentIntentId,
+            paymentIntentId
           }
         });
 
@@ -42,32 +42,39 @@ export default function StripeSuccess() {
 
   return (
     <>      
-    {paymentDetails ? (
-        <div style={{ textAlign: "center", padding: "50px" }}>
-          <h1 style={{ color: "green" }}>Payment Successful!</h1>
-          <p style={{ color: "black" }}>Thank you for your purchase.</p>
-          <h3>ⓢ {paymentDetails.numberOfCoins} Sirch Coins have been added to your account.</h3>
-          <p>You paid: $ {formatPrice(paymentDetails.totalAmount)} {paymentDetails.currency.toUpperCase()} for this transaction.</p>
-          {/* TODO: Probably should think about including some kind of receipt ID for customer service inquiries in the future. REPLACE THIS! */}
-          {paymentDetails.receipt_link ? (
-            <a target="_blank" href={paymentDetails.receipt_link}>
-              View your Stripe Receipt (opens in new tab)
-            </a>
-          ) : (
-            <p>A Stripe Receipt will be sent to your email address.</p>
-          )
-          }
+      {paymentDetails
+      ? (
           <div style={{ textAlign: "center", padding: "50px" }}>
-          <Link to="/" className="big-btn-blue">
-            Back to Home
-          </Link>
+            <h1 style={{ color: "green" }}>Payment Successful!</h1>
+            <p style={{ color: "black" }}>Thank you for your purchase.</p>
+            <h3>ⓢ {paymentDetails.numberOfCoins} Sirch Coins have been added to your account.</h3>
+            <p>You paid: $ {formatPrice(paymentDetails.totalAmount)} {paymentDetails.currency.toUpperCase()} for this transaction.</p>
+            {/* TODO: Probably should think about including some kind of receipt ID for customer service inquiries in the future. REPLACE THIS! */}
+            {paymentDetails.receipt_link
+            ?
+              (
+                <a target="_blank" href={paymentDetails.receipt_link}>
+                  View your Stripe Receipt (opens in a new window)
+                </a>
+              )
+            :
+              (
+                <p>A Stripe Receipt will be sent to your email address.</p>
+              )
+            }
+            <div style={{ textAlign: "center", padding: "50px" }}>
+              <Link to="/" className="big-btn-blue">
+                Back to Home
+              </Link>
+            </div>
           </div>
-        </div>
-      ) : (
+        )
+      : (
         <div style={{ textAlign: "center", padding: "50px" }}>
-        <h1>Please wait, validating payment...</h1>
+          <h1>Please wait, validating payment...</h1>
         </div>
-      )}
+        )
+      }
     </>
   );
 }
