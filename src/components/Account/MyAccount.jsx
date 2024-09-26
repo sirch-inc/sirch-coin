@@ -134,7 +134,7 @@ export default function MyAccount(){
           </div>
         </dialog> 
       }
-       <div className="bottom-btn-container">
+      <div className="bottom-btn-container">
         <Link to="/" className="big-btn">
           Back
         </Link>
