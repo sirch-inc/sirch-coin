@@ -20,6 +20,7 @@ export default function CheckoutForm({
   const { userInTable } = useContext(AuthContext);
   const [message, setMessage] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentIntentId, setPaymentIntentId] = useState('');
 
   const handleError = (error) => {
     setIsProcessing(false);
@@ -64,6 +65,7 @@ export default function CheckoutForm({
 
     const clientSecret = createPaymentIntentData.clientSecret;
     const paymentIntentId = createPaymentIntentData.paymentIntentId;
+    setPaymentIntentId(createPaymentIntentData.paymentIntentId);
 
     // TODO: wrap in try-catch
     const { error: confirmPaymentError } = await stripe.confirmPayment({
@@ -85,27 +87,34 @@ export default function CheckoutForm({
     setIsProcessing(false);
     setShowCheckoutForm(false);
 
-    // try {
-    //   const { data, error } = await supabase.functions.invoke('stripe-cancel-payment-intent', {
-    //     body: {
-    //       userId: userInTable?.user_id,
-    //       paymentIntentId: paymentIntentId
-    //     }
-    //   });
+    if (paymentIntentId === '') {
+      return;
+    }
 
-    //   if (error) throw error;
-    //   // TODO: remove console logs
-    //   if (data) {
-    //     console.log(data)
-    //   }
-    // } catch (exception) {
-    //     console.log(exception)
-    // }
+    try {
+      const { data, error } = await supabase.functions.invoke('stripe-cancel-payment-intent', {
+        body: {
+          userId: userInTable?.user_id,
+          paymentIntentId
+        }
+      });
+
+      if (error) {
+        // TODO: surface this error?
+        throw error;        
+      }
+
+      if (data) {
+        console.log(data)
+      }
+    } catch (exception) {
+        console.error("exception", exception)
+    }
   }
 
   return (
     <>
-      <h3>You&apos;re purchasing: <br></br>ⓢ {coinAmount} Sirch Coins for a total of ${formatPrice(totalPrice)} {formatCurrency(currency)}</h3>
+      <h3>You&apos;re purchasing: <br></br>ⓢ {coinAmount} for a total of ${formatPrice(totalPrice)} {formatCurrency(currency)}</h3>
       {/* TODO: Update this line with final timeout decision for price and update Purchase.jsx accordingly */}
       <p><em>This price is locked in for the next 15 minutes. After that time, you may need to refresh and try again.</em></p>
 
