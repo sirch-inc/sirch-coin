@@ -21,7 +21,7 @@ export default function StripeSuccess() {
         });
 
         if (error) throw error;
-        
+
         if (data) {
           setPaymentDetails(data);
         }
@@ -46,9 +46,9 @@ export default function StripeSuccess() {
       {paymentDetails
       ? (
           <div style={{ textAlign: "center", padding: "50px" }}>
-            <h1 style={{ color: "green" }}>Payment Successful!</h1>
+            <h1 style={{ color: "green" }}>Purchase Successful!</h1>
             <p style={{ color: "black" }}>Thank you for your purchase.</p>
-            <h3>ⓢ {paymentDetails.numberOfCoins} Sirch Coins have been added to your account.</h3>
+            <h3>ⓢ {paymentDetails.numberOfCoins} have been added to your account.</h3>
             <p>You paid: $ {formatPrice(paymentDetails.totalAmount)} {paymentDetails.currency.toUpperCase()} for this transaction.</p>
             {/* TODO: Probably should think about including some kind of receipt ID for customer service inquiries in the future. REPLACE THIS! */}
             {paymentDetails.receipt_link
