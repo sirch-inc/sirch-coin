@@ -20,7 +20,8 @@ export default function CheckoutForm({
   const { userInTable } = useContext(AuthContext);
   const [message, setMessage] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [paymentIntentId, setPaymentIntentId] = useState('');
+  const [paymentIntentId, setPaymentIntentId] = useState(null);
+  const [clientSecret, setClientSecret] = useState(null);
 
   const handleError = (error) => {
     setIsProcessing(false);
@@ -34,8 +35,7 @@ export default function CheckoutForm({
 
     setIsProcessing(true);
 
-    // Trigger form validation and wallet collection
-    // TODO: wrap in try-catch
+    // validate form submission
     const {error: submitError} = await elements.submit();
     
     if (submitError) {
@@ -43,35 +43,35 @@ export default function CheckoutForm({
       return;
     }
 
-    // TODO: wrap in try-catch
-    const { data: createPaymentIntentData, error: createPaymentIntentError } = await supabase.functions.invoke('stripe-create-payment-intent', {
-      body: {
-        userId: userInTable?.user_id,
-        email: userInTable?.email,
-        numberOfCoins: Math.floor(coinAmount)
-      }
-    });
+    // create a new payment intent if we don't already have one
+    let currentClientSecret = clientSecret;
+    let currentPaymentIntentId = paymentIntentId;
+    if (paymentIntentId === null) {
+      const { data: createPaymentIntentData, error: createPaymentIntentError } = await supabase.functions.invoke('stripe-create-payment-intent', {
+        body: {
+          userId: userInTable?.user_id,
+          email: userInTable?.email,
+          numberOfCoins: Math.floor(coinAmount)
+        }
+      });
 
-    // TODO: Handle error messaging for user
-    if (createPaymentIntentError instanceof FunctionsHttpError) {
-      const errorMessage = await createPaymentIntentError.context.json();
-      console.error('Function returned an error: ', errorMessage);
-    } else if (createPaymentIntentError instanceof FunctionsRelayError) {
-      console.error('Relay error: ', createPaymentIntentError.message);
-    } else if (createPaymentIntentError instanceof FunctionsFetchError) {
-      console.error('Fetch error: ', createPaymentIntentError.message);
+      if (createPaymentIntentError) {
+        handleError(createPaymentIntentError);
+      }
+
+      currentClientSecret = createPaymentIntentData.clientSecret;
+      currentPaymentIntentId = createPaymentIntentData.paymentIntentId;
     }
 
-    const clientSecret = createPaymentIntentData.clientSecret;
-    const paymentIntentId = createPaymentIntentData.paymentIntentId;
-    setPaymentIntentId(createPaymentIntentData.paymentIntentId);
+    setClientSecret(currentClientSecret);
+    setPaymentIntentId(currentPaymentIntentId);
 
-    // TODO: wrap in try-catch
+    // confirm the payment with the values in the elements
     const { error: confirmPaymentError } = await stripe.confirmPayment({
       elements,
-      clientSecret,
+      clientSecret: currentClientSecret,
       confirmParams: {
-        return_url: `${window.location.origin}/stripe/success/${paymentIntentId}`
+        return_url: `${window.location.origin}/stripe/success/${currentPaymentIntentId}`
       },
     });
 
@@ -86,23 +86,18 @@ export default function CheckoutForm({
     setIsProcessing(false);
     setShowCheckoutForm(false);
 
-    if (paymentIntentId === '') return;
+    if (paymentIntentId === null) return;
 
-    try {
-      const { error: cancelPaymentIntentError } = await supabase.functions.invoke('stripe-cancel-payment-intent', {
-        body: {
-          userId: userInTable?.user_id,
-          paymentIntentId
-        }
-      });
-
-      if (cancelPaymentIntentError) {
-        // TODO: surface this error?
-        throw cancelPaymentIntentError;        
+    const { error: cancelPaymentIntentError } = await supabase.functions.invoke('stripe-cancel-payment-intent', {
+      body: {
+        userId: userInTable?.user_id,
+        paymentIntentId
       }
+    });
 
-    } catch (exception) {
-        console.error("exception", exception)
+    if (cancelPaymentIntentError) {
+      // TODO: surface this error?
+      throw cancelPaymentIntentError;        
     }
   }
 
