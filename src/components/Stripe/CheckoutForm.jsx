@@ -102,31 +102,40 @@ export default function CheckoutForm({
   }
 
   return (
-    <>
-      <h3>You&apos;re purchasing: <br></br>ⓢ {coinAmount} for a total of ${formatPrice(totalPrice)} {formatCurrency(currency)}</h3>
-      {/* TODO: Update this line with final timeout decision for price and update Purchase.jsx accordingly */}
-      <p><em>This price is locked in for the next 15 minutes. After that time, you may need to refresh and try again.</em></p>
+    <div className='payment-dialog'>
+      <div className='payment-header'>
+        <h3>You&apos;re purchasing: <br></br>ⓢ {coinAmount} for a total of ${formatPrice(totalPrice)} {formatCurrency(currency)}</h3>
+        {/* TODO: Update this line with final timeout decision for price and update Purchase.jsx accordingly */}
+        <p><em>This price is locked in for the next 15 minutes. After that time, you may need to refresh and try again.</em></p>
+      </div>
 
-      <form id="payment-form" onSubmit={handleSubmit}>
-        <PaymentElement id="payment-element" />
+      <div className='payment-form'>
+        <PaymentElement id='payment-element' />
+      </div>
+
+      <div className='payment-footer'>
+        {message &&
+          <div style={{ color: 'red' }}>There was an issue with your purchase. Please review your order details.<br></br>{message}</div>
+        }
+
         <button
-          id="submit"
-          className="big-btn"
+          id='submit'
+          className='big-btn'
+          onClick={handleSubmit}
           disabled={!stripe || isProcessing}
         >
-          <span id="button-text">
-            {isProcessing ? "Processing... " : "Buy Sirch Coins"}
+          <span id='button-text'>
+            {isProcessing ? "Processing... " : "Confirm Purchase"}
           </span>
         </button>
+
         <button
-          className="big-btn"
+          className='big-btn'
           onClick={handleCancel}
         >
           Cancel
         </button>
-        {/* Show any error or success messages */}
-        {message && <div id="payment-message">{message}</div>}
-      </form>
-    </>
+      </div>
+    </div>
   );
 }

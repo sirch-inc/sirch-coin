@@ -47,7 +47,7 @@ export default function Transactions() {
     <>
       <h2>Transaction History</h2>
       <div className="transactions-container">
-        <div className="transactions-headers">
+        <div className="transactions-header">
           <p>Date</p>
           <p>Type</p>
           <p>Sirch Coins</p>

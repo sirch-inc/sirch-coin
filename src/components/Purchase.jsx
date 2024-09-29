@@ -159,9 +159,9 @@ export default function Purchase() {
             (
             <>
               <div className="overlay"></div>
-              <dialog open className="checkout-form-popup">
-                <Elements 
-                  stripe={stripePromise} 
+              <dialog open className="checkout-form-dialog">
+                <Elements
+                  stripe={stripePromise}
                   options={options}
                 >
                   <CheckoutForm
