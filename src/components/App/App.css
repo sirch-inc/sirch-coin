@@ -1,9 +1,3 @@
-#root, body {
-  background: #F7F7F7;
-  height: 100vh;
-  overflow-y: auto;
-}
-
 @font-face {
   font-family: Haskoy;
   src: url(/Haskoy-Regular.woff2);
@@ -14,25 +8,49 @@
   src: url(/Haskoy-Bold.woff2);
 }
 
+#root, body {
+  background: #F7F7F7;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+
+/* Start styles for primal HTML elements */
 h1, h2, h3, h4, h5, h6, li, p, a, button, input, label {
   font-family: Haskoy;
 }
 
 h2 {
   font-size: 60px;
+}
+
+h1, h2, h3, h4, h5, h6, p {
   text-align: center;
 }
 
-h3 {
-  text-align: center;
+label {
+  font-weight: bold;
+  display: block; /* Ensure labels are on separate lines */
+  margin-bottom: 5px; /* Add some space below labels */
 }
 
-h4 {
-  text-align: center;
+input {
+  padding: 5px;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  width: 100%; /* Make inputs fill their container */
+  box-sizing: border-box; /* Include padding in width calculation */
 }
 
-p {
-  text-align: center;
+button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  width: 300px;
 }
 
 header {
@@ -76,6 +94,7 @@ footer {
   height: 50px;
 }
 
+
 /* Styles for Navbar */
 .navbar {
   list-style-type: none;
@@ -107,6 +126,7 @@ footer {
   padding: 4px;
 }
 
+
 /* Page Header */
 .page-header {
   margin-bottom: 2em;
@@ -115,7 +135,7 @@ footer {
   color: white;
   background-color: #df4343;
 }
-/* End styles for nav bar/header */
+
 
 /* Start styles for Login Page */
 .account-privacy-statement {
@@ -123,7 +143,7 @@ footer {
 }
 
 .account-input {
-  background-color:#231F20;
+  background-color: #231F20;
   color: white;
   font-size: 30px;
   padding: 10px;
@@ -174,7 +194,6 @@ label#is-email-private-label {
   margin: 0px;
 }
 
-
 div#is-name-private {
   display: contents;
 }
@@ -211,8 +230,8 @@ input#user-handle {
   padding-left: unset;
 }
 
-/* Start Styles for Main page & buttons */
 
+/* Start Styles for Main page */
 .mainpage {
   display: flex;
   justify-content: space-between;
@@ -237,14 +256,12 @@ input#user-handle {
   justify-content: flex-end;
 }
 
-.right-button-container > a,
-.left-button-container > a {
+.right-button-container > a, .left-button-container > a {
   text-decoration: none;
   color: white;
 }
 
-.right-button-container > a:hover,
-.left-button-container > a:hover {
+.right-button-container > a:hover, .left-button-container > a:hover {
   background-color: #3AD820;
   color: black;
 }
@@ -270,11 +287,9 @@ input#user-handle {
 .left-button-container {
   margin-left: 50px;
 }
-/* End Styles for Main page buttons */
 
 
 /* Start Styles for Coming Soon Page */
-
 .coming-soon-container {
   position: fixed;
   background-color: #231F20;
@@ -295,15 +310,14 @@ input#user-handle {
 }
 
 .coming-soon-container h1 {
-  color:white;
+  color: white;
 }
 
 .coming-soon-container p {
-  color:white;
+  color: white;
   font-size: 24px;
   text-align: left;
 }
-/* End Styles for Coming Soon Page */
 
 
 /* Start Styles for Offline Page */
@@ -335,10 +349,9 @@ input#user-handle {
   font-size: 24px;
   text-align: left;
 }
-/* End Styles for Offline Page */
 
-/* Help page */
 
+/* Start Styles for Help Page */
 .help-container {
   display: flex;
   flex-direction: column;
@@ -349,7 +362,7 @@ input#user-handle {
 
 
 /* Start Styles for About Page */
-.about-container{
+.about-container {
   position: fixed;
   background-color: #231F20;
   height: 100vh;
@@ -360,11 +373,11 @@ input#user-handle {
   grid-row-gap: 0px;
 }
 
-.about-img{
+.about-img {
   padding: 50px;
 }
 
-.about-text{
+.about-text {
   padding: 40px;
 }
 
@@ -373,7 +386,6 @@ input#user-handle {
   font-size: 24px;
   text-align: left;
 }
-/* End Styles for About Page */
 
 
 /* Start Styles for Send Coins */
@@ -386,7 +398,7 @@ input#user-handle {
   color: black;
 }
 
-.price-container{
+.price-container {
   margin-top: 60px;
   position: relative;
   display: inline-block;
@@ -403,7 +415,7 @@ input#user-handle {
   margin:10px;
 }
 
-.coin-input::before{
+.coin-input::before {
   content: '';
   position: absolute;
   left: 10px;
@@ -420,32 +432,31 @@ input#user-handle {
   font-weight: 500;
 }
 
-.bold-coin{
+.bold-coin {
   font-family: Haskoy-bold;
   font-size: 21px;
 }
-/* End styles for Send Coins */
 
 
 /*  Start Styles for My Account Page */
-.account-container{
+.account-container {
   margin: 2rem;
   height: 90vh;
   overflow-y: auto;
 }
 
-.account{
+.account {
   padding-bottom: 1.2rem;
   padding-top: 1.2rem;
 }
 
-.account-actions{
+.account-actions {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-button.danger{
+button.danger {
   background-color: red;
 }
 
@@ -492,19 +503,11 @@ button.danger{
   width: 300px;
 }
 
-/*  End of styles for My Account Page */
-
 
 /*  Start Styles for Purchase Page */
-
-.purchase-container{
-    /* display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: 1fr;
-    grid-column-gap: 20px;
-    grid-row-gap: 0px; */
-    margin:2rem;
-    display:flex;
+.purchase-container {
+    margin: 2rem;
+    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -512,7 +515,7 @@ button.danger{
     overflow-y: auto;
 }
 
-.purchase-form{
+.purchase-form {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -530,32 +533,49 @@ button.danger{
   z-index: 99; 
 }
 
-.checkout-form-popup{
+
+/*  Start Styles for Checkout Dialog */
+.checkout-form-dialog {
   z-index: 100;
-  max-width: 90%;
-  max-height: 90vh;
+  max-width: 90vw;
+  max-height: 80vh;
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: white;
-  padding: 20px;
+  padding: 10px;
   border-radius: 5px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
 }
 
-.coin-amount-input{
+.payment-dialog {
+}
+
+.payment-header {
+}
+
+.payment-form {
+  height: auto;
+}
+
+.payment-footer {
+
+}
+
+.coin-amount-input {
   max-width: 40%;
   border: 2px solid black;
-  font-size:xx-large;
+  font-size: xx-large;
   margin-bottom: 10px;
 }
 
-.sirch-symbol-large{
+.sirch-symbol-large {
   font-size: xx-large;
   padding-right: 10px;
 }
+
 
 /* Styles for the success message */
 .success {
@@ -565,33 +585,6 @@ button.danger{
   margin-top: 20px;
 }
 
-/* Styles for labels */
-label {
-  font-weight: bold;
-  display: block; /* Ensure labels are on separate lines */
-  margin-bottom: 5px; /* Add some space below labels */
-}
-
-/* Styles for inputs */
-input {
-  padding: 5px;
-  border-radius: 3px;
-  border: 1px solid #ccc;
-  width: 100%; /* Make inputs fill their container */
-  box-sizing: border-box; /* Include padding in width calculation */
-}
-
-/* Styles for the submit button */
-button {
-  background-color: #007bff; /* Blue color */
-  color: white; /* Text color */
-  padding: 10px 20px; /* Adjust padding as needed */
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 10px; /* Add some space on top */
-  width: 300px;
-}
 
 /* Additional styles as needed */
 .button-group {
@@ -624,7 +617,7 @@ button {
   width: 300px;
 }
 
-.big-btn:hover{
+.big-btn:hover {
   background-color: #3AD820;
   color: black;
 }
@@ -653,10 +646,11 @@ button {
   width: 300px;
 }
 
-.big-btn-light:hover{
+.big-btn-light:hover {
   background-color: #3AD820;
   color: black;
 }
+
 
 /* General container adjustments for mobile screens */
 @media (max-width: 768px) {
@@ -697,15 +691,6 @@ button {
     font-size: 1rem;
   }
 }
-.checkout-form-popup {
-  max-width: 95%; 
-  max-height: 80vh; 
-  padding: 10px;
-  overflow-y: auto;
-}
-
-/* End of styles for buy coin (Deposit) page
-
 
 
 /* Start styles for Balance Inquiry */
@@ -729,7 +714,7 @@ button {
 
 .green-coin{
   font-size: 26px;
-  color:#3AD820;
+  color: #3AD820;
 }
 
 form {
@@ -797,8 +782,6 @@ form {
 .bottom-btn-container a {
   margin: 5px;
 }
-/* End styles for Balance Inquiry */
-
 
 
 /* Start styles for Transaction History */
@@ -813,17 +796,18 @@ form {
   margin: 20px;
 }
 
-.transactions, .transactions-headers {
+.transactions, .transactions-header {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-column-gap: 4px;
   grid-row-gap: 4px;
   }
 
-  .transactions-headers p {
+  .transactions-header p {
     font-family: Haskoy-bold;
     font-size: 20px;
   }
+
   .bottom-btn-container-light {
     position: relative;
     bottom: 0;
@@ -849,12 +833,9 @@ form {
     margin-bottom: 20px;
     width: 300px;
   }
-  
-/* End styles for Transaction History */
 
 
 /* Mobile styles */
-
 @media only screen and (min-width: 768px) {
   .email-balance,
   .balance-btn {
@@ -888,6 +869,7 @@ form {
   }
 }
 
+
 /* Start Styles for buy money Mobile */
 @media screen and (max-width: 768px) {
   .page-text {
@@ -901,23 +883,6 @@ form {
     flex-wrap: wrap;
 
     margin-bottom: 5px;
-  }
-
-  .cash-btn {
-    width: calc(31.33% - 10px);
-    margin-bottom: 5px;
-    font-size: 14px;
-    padding: 5px;
-  }
-
-  .cash-input {
-    width: 50%;
-    margin: 4px 0;
-    padding: 15px;
-    background-color: #5590e2;
-    color: white;
-    border: none;
-    font-size: 18px;
   }
 
   .total-input {
@@ -934,21 +899,11 @@ form {
     max-width: 350px;
   }
 }
-/* End Styles for buy money Mobile */
+
 
 /* Start Styles for send money Mobile */
 @media (max-width: 767px) {
   .send-coin-container {
-  }
-
-  .cash-btn {
-    width: calc(33% - 10px);
-    margin-bottom: 10px;
-    box-sizing: border-box;
-  }
-
-  .cash-input {
-    width: 100%;
   }
 
   .bottom-btn-container {
@@ -963,9 +918,9 @@ form {
     margin-bottom: 10px;
   }
 }
-/* End Styles for send money Mobile */
 
-/* Start Styles for Prefrences Mobile */
+
+/* Start Styles for Preferences Mobile */
 @media screen and (max-width: 600px) {
   .balance-container {
     text-align: center;
@@ -973,7 +928,7 @@ form {
     overflow-y: auto;
   }
 
-  .balance-box{
+  .balance-box {
     width: 100%;
   }
 
@@ -988,4 +943,3 @@ form {
     margin-bottom: 10px;
   }
 }
-/* End Styles for Preferences Mobile */
