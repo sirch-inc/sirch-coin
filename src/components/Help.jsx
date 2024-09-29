@@ -5,7 +5,7 @@ export default function Help() {
   return (
     <>
       <h2>Help</h2>
-      <div className="balance-container">
+      <div className="help-container">
         <p className="page-text">
           Sorry, this page isn&apos;t available yet
         </p>
