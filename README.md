@@ -4,11 +4,11 @@
 This is the frontend dashboard for SirchCoin, written in React/JSX and uses the `Vite.js` command-line toolchain. The SirchCoin dashboard allows users to login to their accounts, send coins, purchase coins, etc. The interface is meant to be extremely simple and mimic the actions & functionality of an ATM machine
 
 ### Services
-Ask a developer for invites to access any of these services.
+Ask a developer for invites to access any of these services, if you are working in those areas:
 * Auth:  Currently using SupaBase built-in auth/access.
 * Backend:  SupaBase is our backend-as-a-service which runs a Postgres DB and has a number of edge functions to handle frontend and webhook requests.
 * Email:  SendGrid manages our email (some of which is emitted from SupaBase).  Basic plan currently owned by Jeff.
-* Payments:  Stripe is our payment provider.  Josh can provied access.
+* Payments:  Stripe is our payment provider.  Josh can provide access.
 * Webhost:  Netlify is our web host.  Basic plan currently owned by Jeff.
 * Domain/DNS:  Godaddy (for now).  Josh can provide access if necessary.
 
