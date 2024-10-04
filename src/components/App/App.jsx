@@ -61,8 +61,8 @@ export default function App() {
           <Route path="/purchase" Component={Purchase}/>
           <Route path="/transactions" Component={Transactions}/>
           <Route path="/help" Component={Help}/>
-          <Route path="/Stripe/Success/:paymentIntentId?" Component={StripeSuccess}/>
-          <Route path="/Stripe/Failure" Component={StripeFailure}/>
+          <Route path="/stripe/success/:paymentIntentId?" Component={StripeSuccess}/>
+          <Route path="/stripe/failure" Component={StripeFailure}/>
         </Routes>
         <Footer/>
       </BrowserRouter>
