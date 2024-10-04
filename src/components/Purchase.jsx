@@ -4,7 +4,6 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Link } from "react-router-dom";
 import { AuthContext } from "./AuthContext";
 import supabase from "./App/supabaseConfig";
-import { FunctionsHttpError, FunctionsRelayError, FunctionsFetchError } from "@supabase/supabase-js";
 import CheckoutForm from "./Stripe/CheckoutForm";
 import { useNavigate } from "react-router-dom";
 
@@ -107,26 +106,26 @@ export default function Purchase() {
 
   return (
     <div>
-      <div className="purchase-container">
+      <div className='purchase-container'>
         <h2>Purchase Sirch Coins ⓢ</h2>
         <h3>How many Sirch Coins ⓢ would you like to purchase?</h3>
         { pricePerCoin === "Loading..."
           ? <p>Current value: ⓢ 1 = {pricePerCoin} {currency}</p>
           : <p>Current value: ⓢ 1 = ${formatPrice(pricePerCoin)} {currency.toUpperCase()}</p>
         }
-        <div className="purchase-form">
-          <span className="sirch-symbol-large">ⓢ</span>
+        <div className='purchase-form'>
+          <span className='sirch-symbol-large'>ⓢ</span>
           <input
-            className="coin-input"
-            type="number"
-            name="coins"
+            className='coin-input'
+            type='number'
+            name='coins'
             placeholder="Enter the number of coins you want to purchase"
             value={localCoinAmount}
             onChange={handleAmountChange}
             onBlur={handleBlur}
             // TODO: min needs to be the fetched value
-            min="5"
-            step="1"
+            min='5'
+            step='1'
             required
           />
         </div>
@@ -138,9 +137,9 @@ export default function Purchase() {
             ? <h4>Your total price: {totalPrice} {formatCurrency(currency)}</h4>
             : <h4>Your total price: ${formatPrice(localTotalPrice)} {formatCurrency(currency)}</h4>
         }
-        <div className="button-group">
+        <div className='button-group'>
           <button 
-            className="big-btn"
+            className='big-btn'
             onClick={handleCheckout}
             disabled={coinAmountError || localCoinAmount < 5}
           >
@@ -153,8 +152,8 @@ export default function Purchase() {
           {stripePromise && showCheckoutForm &&
             (
             <>
-              <div className="overlay"></div>
-              <dialog open className="checkout-form-dialog">
+              <div className='overlay'></div>
+              <dialog open className='checkout-form-dialog'>
                 <Elements
                   stripe={stripePromise}
                   options={options}
