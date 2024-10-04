@@ -55,7 +55,7 @@ export default function CreateAccount() {
         // TODO: do something with user
       }
 
-      navigate("/verify-account");
+      navigate('/verify-account');
     } catch (exception) {
       // TODO: surface this error
       alert("Error signing up:\n" + exception);

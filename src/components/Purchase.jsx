@@ -6,12 +6,12 @@ import { AuthContext } from "./AuthContext";
 import supabase from "./App/supabaseConfig";
 import { FunctionsHttpError, FunctionsRelayError, FunctionsFetchError } from "@supabase/supabase-js";
 import CheckoutForm from "./Stripe/CheckoutForm";
+import { useNavigate } from "react-router-dom";
 
 
 // Call `loadStripe` outside of the component’s render to avoid
 // recreating the `Stripe` object on every render
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_API_PUBLISHABLE_KEY);
-
 
 export default function Purchase() {
   const [localCoinAmount, setLocalCoinAmount] = useState(5);
@@ -24,6 +24,7 @@ export default function Purchase() {
   const [showCheckoutForm, setShowCheckoutForm] = useState(false);
   const [options, setOptions] = useState(null);
   const { userInTable } = useContext(AuthContext);
+  const navigate = useNavigate();
 
 
   // load the user's initial data (balance, etc)
@@ -34,7 +35,7 @@ export default function Purchase() {
       // TODO: fetch the minimum number of coins to satisfy Stripe's $0.50 minimum purchase
       const { data, error } = await supabase.functions.invoke('price-per-coin', {
         body: {
-          numberOfCoins: 5  
+          numberOfCoins: 5
         }
       });
 
@@ -42,10 +43,13 @@ export default function Purchase() {
       if (error instanceof FunctionsHttpError) {
         const errorMessage = await error.context.json();
         console.error('Function returned an error: ', errorMessage);
+        navigate('/error', { replace: true });
       } else if (error instanceof FunctionsRelayError) {
         console.error('Relay error: ', error.message);
+        navigate('/error', { replace: true });
       } else if (error instanceof FunctionsFetchError) {
         console.error('Fetch error: ', error.message);
+        navigate('/error', { replace: true });
       } else {
         setPricePerCoin(data.pricePerCoin);
         setLocalTotalPrice(data.totalAmount);
@@ -179,8 +183,8 @@ export default function Purchase() {
           }
         </div>
       </div>
-      <div className="bottom-btn-container">
-        <Link to="/" className="big-btn">
+      <div className='bottom-btn-container'>
+        <Link to='/' className='big-btn'>
           Back
         </Link>
       </div>
