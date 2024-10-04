@@ -26,7 +26,6 @@ export default function Purchase() {
   const { userInTable } = useContext(AuthContext);
   const navigate = useNavigate();
 
-
   // load the user's initial data (balance, etc)
   useEffect(() => {
     const loadInitialData = async () => {
@@ -39,16 +38,8 @@ export default function Purchase() {
         }
       });
 
-      // TODO: Handle error messaging for user
-      if (error instanceof FunctionsHttpError) {
-        const errorMessage = await error.context.json();
-        console.error('Function returned an error: ', errorMessage);
-        navigate('/error', { replace: true });
-      } else if (error instanceof FunctionsRelayError) {
-        console.error('Relay error: ', error.message);
-        navigate('/error', { replace: true });
-      } else if (error instanceof FunctionsFetchError) {
-        console.error('Fetch error: ', error.message);
+      if (error) {
+        console.error('Error:', error);
         navigate('/error', { replace: true });
       } else {
         setPricePerCoin(data.pricePerCoin);
@@ -56,7 +47,7 @@ export default function Purchase() {
         setCurrency(data.currency);
       }
     };
-  
+ 
     loadInitialData();
   }, [userInTable]);
 
@@ -120,8 +111,8 @@ export default function Purchase() {
         <h2>Purchase Sirch Coins ⓢ</h2>
         <h3>How many Sirch Coins ⓢ would you like to purchase?</h3>
         { pricePerCoin === "Loading..."
-          ? <p>Current quote: ⓢ 1 = {pricePerCoin} {currency}</p>
-          : <p>Current quote: ⓢ 1 = ${formatPrice(pricePerCoin)} {currency.toUpperCase()}</p>
+          ? <p>Current value: ⓢ 1 = {pricePerCoin} {currency}</p>
+          : <p>Current value: ⓢ 1 = ${formatPrice(pricePerCoin)} {currency.toUpperCase()}</p>
         }
         <div className="purchase-form">
           <span className="sirch-symbol-large">ⓢ</span>
@@ -153,7 +144,7 @@ export default function Purchase() {
             onClick={handleCheckout}
             disabled={coinAmountError || localCoinAmount < 5}
           >
-            Buy with Stripe
+            Complete purchase...
           </button>
         </div>
       </div>
