@@ -1,19 +1,19 @@
 import { useState, useEffect, useContext } from 'react';
-import { Link } from "react-router-dom";
-import { AuthContext } from "./AuthContext";
+import { Link } from 'react-router-dom';
+import { AuthContext } from './AuthContext';
 import supabase from './App/supabaseConfig';
 
 
 export default function Balance() {
   const { userBalance, userInTable } = useContext(AuthContext);
   const [currentBalance, setCurrentBalance] = useState(null);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   const fetchUserBalance = async (userInTable) => {
     if (userInTable) {
       const { data, error } = await supabase
         .from('balances')
-        .select("*")
+        .select('*')
         .eq('user_id', userInTable.user_id)
         .single();
 
@@ -34,30 +34,30 @@ export default function Balance() {
 
   const onRefreshBalance = async (event) => {
     event.preventDefault();
-    setError("");
+    setError('');
     setCurrentBalance(null);
     fetchUserBalance(userInTable);
   };
 
   return (
     <>
-      <div className="balance-container">
+      <div className='balance-container'>
         <div>
           <h2>Balance</h2>
           {/* TODO: Fix USD conversion dynamically based on sirch to dollar conv. */}
-          <h4 className="balance-box">You&apos;ve got <span className="bold-coin green-coin">ⓢ {currentBalance}</span> / ${(currentBalance*0.10).toFixed(2)}</h4>
+          <h4 className='balance-box'>You&apos;ve got <span className='bold-coin green-coin'>ⓢ {currentBalance}</span> / ${(currentBalance*0.10).toFixed(2)}</h4>
         </div>
         <div>
-          <div className="button-group">
-            <button className="balance-btn" onClick={onRefreshBalance}>Refresh Balance</button>
+          <div className='button-group'>
+            <button className='balance-btn' onClick={onRefreshBalance}>Refresh Balance</button>
           </div>
         </div>
-        {error && <p className="text-danger">{error}</p>}
-        <div className="bottom-btn-container">
-          <Link to="/" className="big-btn">
+        {error && <p className='text-danger'>{error}</p>}
+        <div className='bottom-btn-container'>
+          <Link to='/' className='big-btn'>
             Back
           </Link>
-          <Link to="/purchase" className="big-btn">
+          <Link to='/purchase' className='big-btn'>
             Buy More
           </Link>
         </div>

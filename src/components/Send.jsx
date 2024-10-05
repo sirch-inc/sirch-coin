@@ -1,17 +1,17 @@
 import { useState, useEffect, useContext } from 'react';
-import { AuthContext } from "./AuthContext";
-import supabase from "./App/supabaseConfig";
-import { Link } from "react-router-dom";
+import { AuthContext } from './AuthContext';
+import supabase from './App/supabaseConfig';
+import { Link } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import useDebounce from "../helpers/debounce.js"
+import useDebounce from '../helpers/debounce.js'
 
 
 // TODO: move this into its own component file with proper react props validations
 export function UserCard({user, handleUserCardSelected}) {
   return (
     <div
-      className="user-card"
+      className='user-card'
       onClick={(e) => handleUserCardSelected(user)}
       >
       <p>
@@ -91,7 +91,7 @@ export default function Send() {
   const handleAmountChange = (event) => {
     const amount = event.target.value;
 
-    setSendAmount(amount < 0 ? "" : amount);
+    setSendAmount(amount < 0 ? '' : amount);
   };
 
   const handleSearchTextChange = (event) => {
@@ -124,7 +124,7 @@ export default function Send() {
 
     // verify the sender has sufficient balance
     if (sendAmount > currentBalance) {
-      toast.error('Insufficient balance.');
+      toast.error("Insufficient balance.");
       return;
     }
   

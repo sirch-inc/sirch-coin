@@ -1,12 +1,12 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../AuthContext";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../AuthContext';
 import supabase from '../App/supabaseConfig';
 
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [signInError, setSignInError] = useState(false);
   const navigate = useNavigate();
   
@@ -14,7 +14,7 @@ export default function Login() {
     event.preventDefault();
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password
       });
@@ -22,13 +22,10 @@ export default function Login() {
       if (error) {
         setSignInError(true);
 
-        // TODO: hack to get around lint
-        console.log("Data", data);
-
         throw error;
       }
 
-      navigate("/");
+      navigate('/');
     } catch (exception) {
       // TODO: Add login failure notification to user
 
@@ -43,28 +40,28 @@ export default function Login() {
           !signInError ? (
           <>
           <h2>Log In</h2>
-          <p> New users should <a href="/create-account">create an account</a> first.</p>
+          <p> New users should <a href='/create-account'>create an account</a> first.</p>
           <form onSubmit={handleLogin}>
             <input
-              className="account-input"
-              type="email"
+              className='account-input'
+              type='email'
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              autoComplete="username"
+              autoComplete='username'
             />
             <input
-              className="account-input"
-              type="password"
+              className='account-input'
+              type='password'
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              autoComplete="current-password"
+              autoComplete='current-password'
             />
-            <button className="account-button" type="submit">Log In →</button>
-            <a href="/forgot-password">Forgot Password?</a>
+            <button className='account-button' type='submit'>Log In →</button>
+            <a href='/forgot-password'>Forgot Password?</a>
           </form>
           </>
         ) : (
@@ -79,22 +76,22 @@ export default function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              autoComplete="email"
+              autoComplete='email'
             />
             <input
-              className="account-input"
-              type="password"
+              className='account-input'
+              type='password'
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              autoComplete="off"
+              autoComplete='off'
             />
-            <button className="account-button" type="submit">Log In →</button>
-            <a href="/forgot-password">Forgot Password?</a>
+            <button className='account-button' type='submit'>Log In →</button>
+            <a href='/forgot-password'>Forgot Password?</a>
           </form>
           <div>
-            <p style={{ color: "red" }}>There was an issue with your credentials. Please try logging in again.</p>
+            <p style={{ color: 'red' }}>There was an issue with your credentials. Please try logging in again.</p>
           </div>
           </div>
         )

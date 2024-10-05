@@ -26,7 +26,7 @@ export default function Transactions() {
 
       if (error) {
         // TODO: surface this error appropriately...
-        alert('Error fetching users transactions:\n' + error);
+        alert("Error fetching users transactions:\n" + error);
       } else {
         setUserTransactions(data);
       }
@@ -55,20 +55,24 @@ export default function Transactions() {
           <p>Details</p>
         </div>
         <div className='transactions'>
-          { userTransactions ? (
-            userTransactions.map((userTransaction) => (
-              <TransactionCard 
-                key={userTransaction.id}
-                id={userTransaction.id}
-                date={userTransaction.created_at}
-                type={userTransaction.type}
-                amount={userTransaction.amount}
-                status={userTransaction.status}
-              />
-          ))) :
-          <p>Loading...</p>
+          { userTransactions
+            ? (
+                userTransactions.map((userTransaction) => (
+                  <TransactionCard 
+                    key={userTransaction.id}
+                    id={userTransaction.id}
+                    date={userTransaction.created_at}
+                    type={userTransaction.type}
+                    amount={userTransaction.amount}
+                    status={userTransaction.status}
+                  />
+                ))
+              )
+            :
+              <p>Loading...</p>
           } 
-        </div>        
+        </div>
+              
         <div className='bottom-btn-container-light'>
           <Link to='/' className='big-btn'>
             Back

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../AuthContext";
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../AuthContext';
 import supabase from '../App/supabaseConfig';
 
 
@@ -36,7 +36,7 @@ export default function CreateAccount() {
         options: {
           emailRedirectTo: `${window.location.origin}/welcome`,
           data: {
-            full_name: firstName + " " + lastName,
+            full_name: firstName + ' ' + lastName,
             first_name: firstName,
             last_name: lastName,
             is_name_private: isNamePrivate,
@@ -98,11 +98,11 @@ export default function CreateAccount() {
         !session ? (
           <>
             <h2>Create an Account</h2>
-            <p>Already have an account? <a href="/login">Log in</a> instead.</p>
+            <p>Already have an account? <a href='/login'>Log in</a> instead.</p>
             <br></br>
 
-            <form onSubmit={handleSignUp} autoComplete="off">
-              <div className="account-privacy-statement">
+            <form onSubmit={handleSignUp} autoComplete='off'>
+              <div className='account-privacy-statement'>
                 <h3>Your Account & Privacy</h3>
                 <p>
                   Sirch and the Sirch Coins product and services take your privacy very seriously.
@@ -120,100 +120,100 @@ export default function CreateAccount() {
 
               <br></br>
 
-              <div className="account-row">
+              <div className='account-row'>
                 <input 
-                  className="account-input"
-                  type="email" 
-                  id="email" 
-                  name="email" 
-                  placeholder="Email" 
+                  className='account-input'
+                  type='email' 
+                  id='email' 
+                  name='email' 
+                  placeholder="Email"
                   value={email} 
                   onChange={(e) => setEmail(e.target.value)} 
-                  autoComplete="email"
+                  autoComplete='email'
                   required
                 />
 
-                <div id="is-email-private">
+                <div id='is-email-private'>
                   <input
-                    className="account-input"
-                    type="checkbox"
-                    id="is-email-private-checkbox"
-                    name="is-email-private"
+                    className='account-input'
+                    type='checkbox'
+                    id='is-email-private-checkbox'
+                    name='is-email-private'
                     value={isEmailPrivate}
                     onChange={(e) => setIsEmailPrivate(e.target.checked)}
                   />
                   <label
-                    htmlFor="is-email-private"
-                    id="is-email-private-label"
+                    htmlFor='is-email-private'
+                    id='is-email-private-label'
                   >
                     Keep my email PRIVATE<br />among other users in Sirch services
                   </label>
                 </div>
               </div>
 
-              <div className="account-row">
+              <div className='account-row'>
                 <input
-                  className="account-input"
-                  type="password"
-                  id="password"
-                  name="password"
+                  className='account-input'
+                  type='password'
+                  id='password'
+                  name='password'
                   placeholder="Password"
                   value = {password}
                   onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="off"
+                  autoComplete='off'
                   required
                 />
                 <input
-                  className="account-input"
-                  type="password"
-                  name="confirm-password"
-                  id="confirm-password"
+                  className='account-input'
+                  type='password'
+                  name='confirm-password'
+                  id='confirm-password'
                   placeholder="Confirm Your Password"
                   value={confirmPassword}
                   onChange={handlePasswordConfirmation}
-                  autoComplete="off"
+                  autoComplete='off'
                   required
                 />
               </div>
               {confirmPassword && (
-                <p style={{ color: passwordsMatch ? "green" : "red" }}>
+                <p style={{ color: passwordsMatch ? 'green' : 'red' }}>
                   {passwordsMatch ? "Passwords match!" : "Passwords do not match"}
                 </p>
               )}
 
-              <div className="account-row">
+              <div className='account-row'>
                 <input 
-                  className="account-input"
-                  type="text"
-                  id="first-name"
-                  name="first-name"
+                  className='account-input'
+                  type='text'
+                  id='first-name'
+                  name='first-name'
                   placeholder="First Name"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   required
                 />
                 <input
-                  className="account-input"
-                  type="text"
-                  id="last-name"
-                  name="last-name"
+                  className='account-input'
+                  type='text'
+                  id='last-name'
+                  name='last-name'
                   placeholder="Last Name"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   required
                 />
-                <div id="is-name-private">
+                <div id='is-name-private'>
                   <input
-                    className="account-input"
-                    type="checkbox"
-                    id="is-name-private-checkbox"
-                    name="is-name-private"
+                    className='account-input'
+                    type='checkbox'
+                    id='is-name-private-checkbox'
+                    name='is-name-private'
                     value={isNamePrivate}
                     onChange={(e) => setIsNamePrivate(e.target.checked)}
                   />
                   <label
-                    htmlFor="is-name-private"
-                    id="is-name-private-label"
+                    htmlFor='is-name-private'
+                    id='is-name-private-label'
                   >
                     Keep my name PRIVATE<br />among other users in Sirch services
                   </label>
@@ -221,7 +221,7 @@ export default function CreateAccount() {
               </div>
 
               <div id='account-user-handle-row'>
-                <div width="30%">
+                <div width='30%'>
                   <p>
                   Your Sirch account includes a unique, random, two-word phrase to help other users find you
                   easily and to help keep your Name and Email private if you choose not to share them.
@@ -231,23 +231,23 @@ export default function CreateAccount() {
                   </p>
                 </div>
                 <input
-                  className="account-input"
-                  type="text"
-                  id="user-handle"
-                  name="user-handle"
+                  className='account-input'
+                  type='text'
+                  id='user-handle'
+                  name='user-handle'
                   placeholder="Loading..."
                   value={userHandle}
                   readOnly
                   required
                 />
                 <button
-                  className="account-button"
-                  type="button"
+                  className='account-button'
+                  type='button'
                   onClick={handleSuggestNewHandle}
                 > Pick Another ↺ </button>
               </div>
               <br></br>
-              <button className="account-button" type="submit"> Sign Up → </button>
+              <button className='account-button' type='submit'> Sign Up → </button>
             </form>
           </>
         ) : (

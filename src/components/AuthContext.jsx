@@ -80,7 +80,7 @@ export const AuthProvider = ({ children }) => {
 
         if (error) {
           // TODO: surface this error
-          alert('Error finding user in table:\n' + error);
+          alert("Error finding user in table:\n" + error);
         } else {
           setUserInTable(data);
         }
