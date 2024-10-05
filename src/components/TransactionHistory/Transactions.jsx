@@ -1,7 +1,7 @@
-import { useContext, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import TransactionCard from "./TransactionCard";
-import { AuthContext } from "../AuthContext";
+import { useContext, useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import TransactionCard from './TransactionCard';
+import { AuthContext } from '../AuthContext';
 import supabase from '../App/supabaseConfig';
 
 
@@ -46,15 +46,15 @@ export default function Transactions() {
   return (
     <>
       <h2>Transaction History</h2>
-      <div className="transactions-container">
-        <div className="transactions-header">
+      <div className='transactions-container'>
+        <div className='transactions-header'>
           <p>Date</p>
           <p>Type</p>
           <p>Sirch Coins</p>
           <p>Status</p>
           <p>Details</p>
         </div>
-        <div className="transactions">
+        <div className='transactions'>
           { userTransactions ? (
             userTransactions.map((userTransaction) => (
               <TransactionCard 
@@ -69,8 +69,8 @@ export default function Transactions() {
           <p>Loading...</p>
           } 
         </div>        
-        <div className="bottom-btn-container-light">
-          <Link to="/" className="big-btn">
+        <div className='bottom-btn-container-light'>
+          <Link to='/' className='big-btn'>
             Back
           </Link>
         </div>

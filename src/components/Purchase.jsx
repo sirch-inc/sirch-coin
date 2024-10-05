@@ -1,11 +1,11 @@
-import { useState, useEffect, useContext } from "react";
-import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
-import { Link } from "react-router-dom";
-import { AuthContext } from "./AuthContext";
-import supabase from "./App/supabaseConfig";
-import CheckoutForm from "./Stripe/CheckoutForm";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useContext } from 'react';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+import { Link } from 'react-router-dom';
+import { AuthContext } from './AuthContext';
+import supabase from './App/supabaseConfig';
+import CheckoutForm from './Stripe/CheckoutForm';
+import { useNavigate } from 'react-router-dom';
 
 
 // Call `loadStripe` outside of the component’s render to avoid

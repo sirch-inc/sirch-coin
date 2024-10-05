@@ -1,9 +1,8 @@
-import { useState, useContext } from "react";
-import { AuthContext } from "../AuthContext";
-import { PaymentElement } from "@stripe/react-stripe-js";
-import { useStripe, useElements } from "@stripe/react-stripe-js";
-import supabase from "../App/supabaseConfig";
-import { FunctionsHttpError, FunctionsRelayError, FunctionsFetchError } from "@supabase/supabase-js";
+import { useState, useContext } from 'react';
+import { AuthContext } from '../AuthContext';
+import { PaymentElement } from '@stripe/react-stripe-js';
+import { useStripe, useElements } from '@stripe/react-stripe-js';
+import supabase from '../App/supabaseConfig';
 
 
 // eslint-disable-next-line react/prop-types
