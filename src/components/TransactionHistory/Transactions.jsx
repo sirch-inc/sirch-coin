@@ -1,7 +1,7 @@
-import { useContext, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import TransactionCard from "./TransactionCard";
-import { AuthContext } from "../AuthContext";
+import { useContext, useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import TransactionCard from './TransactionCard';
+import { AuthContext } from '../AuthContext';
 import supabase from '../App/supabaseConfig';
 
 
@@ -26,7 +26,7 @@ export default function Transactions() {
 
       if (error) {
         // TODO: surface this error appropriately...
-        alert('Error fetching users transactions:\n' + error);
+        alert("Error fetching users transactions:\n" + error);
       } else {
         setUserTransactions(data);
       }
@@ -46,31 +46,35 @@ export default function Transactions() {
   return (
     <>
       <h2>Transaction History</h2>
-      <div className="transactions-container">
-        <div className="transactions-header">
+      <div className='transactions-container'>
+        <div className='transactions-header'>
           <p>Date</p>
           <p>Type</p>
           <p>Sirch Coins</p>
           <p>Status</p>
           <p>Details</p>
         </div>
-        <div className="transactions">
-          { userTransactions ? (
-            userTransactions.map((userTransaction) => (
-              <TransactionCard 
-                key={userTransaction.id}
-                id={userTransaction.id}
-                date={userTransaction.created_at}
-                type={userTransaction.type}
-                amount={userTransaction.amount}
-                status={userTransaction.status}
-              />
-          ))) :
-          <p>Loading...</p>
+        <div className='transactions'>
+          { userTransactions
+            ? (
+                userTransactions.map((userTransaction) => (
+                  <TransactionCard 
+                    key={userTransaction.id}
+                    id={userTransaction.id}
+                    date={userTransaction.created_at}
+                    type={userTransaction.type}
+                    amount={userTransaction.amount}
+                    status={userTransaction.status}
+                  />
+                ))
+              )
+            :
+              <p>Loading...</p>
           } 
-        </div>        
-        <div className="bottom-btn-container-light">
-          <Link to="/" className="big-btn">
+        </div>
+              
+        <div className='bottom-btn-container-light'>
+          <Link to='/' className='big-btn'>
             Back
           </Link>
         </div>

@@ -1,8 +1,8 @@
-import "bootstrap/dist/css/bootstrap.min.css";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Header from "../Header.jsx";
-import Footer from "../Footer.jsx";
-import ComingSoon from "./ComingSoon.jsx";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Header from '../Header.jsx';
+import Footer from '../Footer.jsx';
+import ComingSoon from './ComingSoon.jsx';
 
 
 export default function ComingSoonApp() {
@@ -10,7 +10,7 @@ export default function ComingSoonApp() {
     <BrowserRouter>
       <Header/>
       <Routes>
-        <Route path="/" Component={ComingSoon}/>
+        <Route path='/' Component={ComingSoon}/>
       </Routes>
       <Footer/>
     </BrowserRouter>

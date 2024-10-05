@@ -1,5 +1,5 @@
-import { useState, useEffect, useContext } from 'react'
-import { AuthContext } from "../AuthContext";
+import { useState, useContext } from 'react'
+import { AuthContext } from '../AuthContext';
 import supabase from '../App/supabaseConfig';
 import { isAuthApiError } from '@supabase/supabase-js';
 import { ToastContainer, toast } from 'react-toastify';
@@ -33,7 +33,7 @@ export default function UpdateAccount() {
         email,
         password: password !== '' ? password : null,
         data: {
-          full_name: firstName + " " + lastName,
+          full_name: firstName + ' ' + lastName,
           first_name: firstName,
           last_name: lastName,
           is_name_private: isNamePrivate,
@@ -64,7 +64,7 @@ export default function UpdateAccount() {
       }
     } catch (exception) {
       toast.error(exception.message, {
-        position: "top-right",
+        position: 'top-right',
       });
     }
   };

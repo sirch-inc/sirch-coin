@@ -1,7 +1,7 @@
-import { Link, useNavigate } from "react-router-dom";
-import { AuthContext } from "../AuthContext";
-import { useContext } from "react";
-import LogoutSupabase from "../Account/Logout";
+import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../AuthContext';
+import { useContext } from 'react';
+import LogoutSupabase from '../Account/Logout';
 
 
 // eslint-disable-next-line react/prop-types
@@ -15,55 +15,51 @@ export default function MainPage({ supabase }) {
   }
 
   return (
-    <div className="mainpage">
+    <div className='mainpage'>
       {session ? (
         <>
-          <div className="left-button-container">
-            <Link to="account" className="action-btn">
+          <div className='left-button-container'>
+            <Link to='account' className='action-btn'>
               My Account
             </Link>
 
-            <Link to="#" className="action-btn" onClick={handleLogout}>
+            <Link to='#' className='action-btn' onClick={handleLogout}>
               Log Out
             </Link>
           </div>
 
-          <div className="right-button-container">
-            <Link to="coin/send" className="action-btn">
-              Send ⓢ
-            </Link>
-
-            <Link to="coin/balance" className="action-btn">
-              Balance
-            </Link>
-
-            <Link to="/transactions" className="action-btn">
-              History
-            </Link>
-            
-            <Link to="purchase" className="action-btn">
+          <div className='right-button-container'>
+          <Link to='purchase' className='action-btn'>
               Buy ⓢ
             </Link>
 
-            <Link to="help" className="action-btn">
-              Help
+            <Link to='coin/send' className='action-btn'>
+              Send ⓢ
+            </Link>
+
+            <Link to='/transactions' className='action-btn'>
+              Transactions
+            </Link>
+
+            <Link to='coin/balance' className='action-btn'>
+              Balance
             </Link>
           </div>
         </>
         ) : (
         <>
-          <div className="left-button-container">
-            <Link to="about" className="action-btn">
+          <div className='left-button-container'>
+            <Link to='about' className='action-btn'>
               About
             </Link>
           </div>
 
-          <div className="right-button-container">
-            <Link to="login" className="action-btn">
+          <div className='right-button-container'>
+            <Link to='login' className='action-btn'>
               Log in
             </Link>
 
-            <Link to="create-account" className="action-btn">
+            <Link to='create-account' className='action-btn'>
               Sign up
             </Link>
           </div>

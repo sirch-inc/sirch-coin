@@ -1,7 +1,7 @@
-import { Link, useLocation } from "react-router-dom";
-import { AuthContext } from "../AuthContext";
-import { useState, useContext } from "react";
-import supabase from "../App/supabaseConfig"
+import { Link, useLocation } from 'react-router-dom';
+import { AuthContext } from '../AuthContext';
+import { useState, useContext } from 'react';
+import supabase from '../App/supabaseConfig'
 
 
 // TODO: handle errors here (esp 400-class, like "expired link", etc...)
@@ -39,7 +39,7 @@ export default function Welcome() {
     return (
       <div>
         <h1>There was a problem verifying your account.</h1>
-        <p>Your invite link is either invalid, or has expired. If you&apos;ve already verified your account, please try <a href="/login">logging in</a>. Alternatively, you can request a new verification link below:</p>
+        <p>Your invite link is either invalid, or has expired. If you&apos;ve already verified your account, please try <a href='/login'>logging in</a>. Alternatively, you can request a new verification link below:</p>
         <input
           placeholder="Enter the email you used to create your account"
           value={resendEmail}
@@ -57,8 +57,8 @@ export default function Welcome() {
           <div>
             <h1>Welcome {userInTable?.first_name}!</h1>
             <h4>Your Sirch Coins account has been created and you may now use all of the Sirch Coin services!</h4>
-            <div className="button-container">
-              <Link to="/" className="action-btn">
+            <div className='button-container'>
+              <Link to='/' className='action-btn'>
                 Get Started!
               </Link>
             </div>

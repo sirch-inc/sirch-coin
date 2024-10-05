@@ -1,17 +1,16 @@
-import { useState, useEffect, useContext } from "react";
-import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
-import { Link } from "react-router-dom";
-import { AuthContext } from "./AuthContext";
-import supabase from "./App/supabaseConfig";
-import { FunctionsHttpError, FunctionsRelayError, FunctionsFetchError } from "@supabase/supabase-js";
-import CheckoutForm from "./Stripe/CheckoutForm";
+import { useState, useEffect, useContext } from 'react';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+import { Link } from 'react-router-dom';
+import { AuthContext } from './AuthContext';
+import supabase from './App/supabaseConfig';
+import CheckoutForm from './Stripe/CheckoutForm';
+import { useNavigate } from 'react-router-dom';
 
 
 // Call `loadStripe` outside of the component’s render to avoid
 // recreating the `Stripe` object on every render
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_API_PUBLISHABLE_KEY);
-
 
 export default function Purchase() {
   const [localCoinAmount, setLocalCoinAmount] = useState(5);
@@ -24,7 +23,7 @@ export default function Purchase() {
   const [showCheckoutForm, setShowCheckoutForm] = useState(false);
   const [options, setOptions] = useState(null);
   const { userInTable } = useContext(AuthContext);
-
+  const navigate = useNavigate();
 
   // load the user's initial data (balance, etc)
   useEffect(() => {
@@ -34,25 +33,20 @@ export default function Purchase() {
       // TODO: fetch the minimum number of coins to satisfy Stripe's $0.50 minimum purchase
       const { data, error } = await supabase.functions.invoke('price-per-coin', {
         body: {
-          numberOfCoins: 5  
+          numberOfCoins: 5
         }
       });
 
-      // TODO: Handle error messaging for user
-      if (error instanceof FunctionsHttpError) {
-        const errorMessage = await error.context.json();
-        console.error('Function returned an error: ', errorMessage);
-      } else if (error instanceof FunctionsRelayError) {
-        console.error('Relay error: ', error.message);
-      } else if (error instanceof FunctionsFetchError) {
-        console.error('Fetch error: ', error.message);
+      if (error) {
+        console.error('Error:', error);
+        navigate('/error', { replace: true });
       } else {
         setPricePerCoin(data.pricePerCoin);
         setLocalTotalPrice(data.totalAmount);
         setCurrency(data.currency);
       }
     };
-  
+ 
     loadInitialData();
   }, [userInTable]);
 
@@ -112,26 +106,26 @@ export default function Purchase() {
 
   return (
     <div>
-      <div className="purchase-container">
+      <div className='purchase-container'>
         <h2>Purchase Sirch Coins ⓢ</h2>
         <h3>How many Sirch Coins ⓢ would you like to purchase?</h3>
         { pricePerCoin === "Loading..."
-          ? <p>Current quote: ⓢ 1 = {pricePerCoin} {currency}</p>
-          : <p>Current quote: ⓢ 1 = ${formatPrice(pricePerCoin)} {currency.toUpperCase()}</p>
+          ? <p>Current value: ⓢ 1 = {pricePerCoin} {currency}</p>
+          : <p>Current value: ⓢ 1 = ${formatPrice(pricePerCoin)} {currency.toUpperCase()}</p>
         }
-        <div className="purchase-form">
-          <span className="sirch-symbol-large">ⓢ</span>
+        <div className='purchase-form'>
+          <span className='sirch-symbol-large'>ⓢ</span>
           <input
-            className="coin-input"
-            type="number"
-            name="coins"
+            className='coin-input'
+            type='number'
+            name='coins'
             placeholder="Enter the number of coins you want to purchase"
             value={localCoinAmount}
             onChange={handleAmountChange}
             onBlur={handleBlur}
             // TODO: min needs to be the fetched value
-            min="5"
-            step="1"
+            min='5'
+            step='1'
             required
           />
         </div>
@@ -143,13 +137,13 @@ export default function Purchase() {
             ? <h4>Your total price: {totalPrice} {formatCurrency(currency)}</h4>
             : <h4>Your total price: ${formatPrice(localTotalPrice)} {formatCurrency(currency)}</h4>
         }
-        <div className="button-group">
+        <div className='button-group'>
           <button 
-            className="big-btn"
+            className='big-btn'
             onClick={handleCheckout}
             disabled={coinAmountError || localCoinAmount < 5}
           >
-            Buy with Stripe
+            Complete purchase...
           </button>
         </div>
       </div>
@@ -158,8 +152,8 @@ export default function Purchase() {
           {stripePromise && showCheckoutForm &&
             (
             <>
-              <div className="overlay"></div>
-              <dialog open className="checkout-form-dialog">
+              <div className='overlay'></div>
+              <dialog open className='checkout-form-dialog'>
                 <Elements
                   stripe={stripePromise}
                   options={options}
@@ -179,8 +173,8 @@ export default function Purchase() {
           }
         </div>
       </div>
-      <div className="bottom-btn-container">
-        <Link to="/" className="big-btn">
+      <div className='bottom-btn-container'>
+        <Link to='/' className='big-btn'>
           Back
         </Link>
       </div>
