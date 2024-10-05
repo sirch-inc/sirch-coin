@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
 import supabase from '../App/supabaseConfig';
 import { ToastContainer, toast } from 'react-toastify';
-import { Link } from "react-router-dom";
-import Logout from "../Account/Logout";
+import { Link } from 'react-router-dom';
+import Logout from '../Account/Logout';
 
 
 export default function MyAccount(){
@@ -56,39 +56,39 @@ export default function MyAccount(){
   }
 
   return(
-    <div className="account-container">
+    <div className='account-container'>
       <ToastContainer
-        position="top-right"
+        position='top-right'
         autoClose={false}
         newestOnTop={false}
         closeOnClick
         draggable
-        theme="colored"
+        theme='colored'
       />
 
       <h2>My Account</h2>
 
-      <div className="account personal-info">
+      <div className='account personal-info'>
         <p>Email: {userInTable?.email}</p>
         <p>Name: {userInTable?.full_name + " (" + (userInTable?.is_name_private ? "PRIVATE" : "PUBLIC") + ")"}</p>
         <p>User Phrase: {userInTable?.user_handle}</p>
         <p>Balance: ⓢ {userBalance?.balance}</p>
       </div>
 
-      <div className="account-actions">
+      <div className='account-actions'>
         <h3>Account Actions</h3>
         <button
-          className="big-btn"
-          type="button"
+          className='big-btn'
+          type='button'
           onClick={handleClickUpdateAccount}
         >
         Update Account
         </button>
-        <button className="big-btn danger" onClick={showDeleteConfirmation}>Delete Account...</button>
+        <button className='big-btn danger' onClick={showDeleteConfirmation}>Delete Account...</button>
       </div>
      
       {deleteDialogBox && 
-        <dialog open className="delete-dialog">
+        <dialog open className='delete-dialog'>
           <h2>Confirm Account Deletion</h2>
           <h4>Are you sure you want to <br></br><i>permanently delete</i> your account?</h4>
           <ul>
@@ -98,12 +98,12 @@ export default function MyAccount(){
           </ul>
           <div>
             <h4>Please enter your two-word Account Handle to confirm this action:</h4>
-            <form onSubmit={handleDeleteUser} autoComplete="off">
+            <form onSubmit={handleDeleteUser} autoComplete='off'>
               <input
-                className="account-input"
-                type="text"
-                id="user-handle"
-                name="user-handle"
+                className='account-input'
+                type='text'
+                id='user-handle'
+                name='user-handle'
                 placeholder="Your User Handle"
                 value={userHandle}
                 onChange={handleVerifyUserHandle}
@@ -118,15 +118,15 @@ export default function MyAccount(){
               <br></br>
 
               <button
-                className="big-btn danger"
-                type="submit"
+                className='big-btn danger'
+                type='submit'
                 // onClick={handleDeleteUser}
                 disabled={!isUserHandleVerified}
               >
                 Yes, permanently delete
               </button>
               <button
-                className="big-btn"
+                className='big-btn'
                 onClick={() => setDeleteDialogBox(false)}>
                 Cancel
               </button>
@@ -134,8 +134,8 @@ export default function MyAccount(){
           </div>
         </dialog> 
       }
-      <div className="bottom-btn-container">
-        <Link to="/" className="big-btn">
+      <div className='bottom-btn-container'>
+        <Link to='/' className='big-btn'>
           Back
         </Link>
       </div>
