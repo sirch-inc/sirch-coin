@@ -86,7 +86,7 @@ footer {
   right: 0;
   text-align: right;
   padding: 0px 4px 0px 4px;
-  background-color:darkslategray;
+  background-color: darkslategray;
   color: lightgray;
   display: flex;
   justify-content: center;
@@ -663,17 +663,17 @@ button.danger {
   overflow-y: auto;
 }
 
-.balance-box{
+.balance-box {
   background-color: #231F20;
   border-radius: 5px;
-  color:white;
+  color: white;
   height:65px;
   width: 400px;
   text-align: center;
-  padding:15px;
+  padding: 15px;
 }
 
-.green-coin{
+.green-coin {
   font-size: 26px;
   color: #3AD820;
 }
