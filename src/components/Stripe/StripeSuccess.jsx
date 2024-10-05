@@ -1,7 +1,7 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams } from 'react-router-dom';
 import { useContext, useEffect, useState } from 'react';
-import { AuthContext } from "../AuthContext";
-import supabase from "../App/supabaseConfig";
+import { AuthContext } from '../AuthContext';
+import supabase from '../App/supabaseConfig';
 
 
 export default function StripeSuccess() {
@@ -45,33 +45,31 @@ export default function StripeSuccess() {
     <>      
       {paymentDetails
       ? (
-          <div style={{ textAlign: "center", padding: "50px" }}>
-            <h1 style={{ color: "green" }}>Purchase Successful!</h1>
-            <p style={{ color: "black" }}>Thank you for your purchase.</p>
-            <h3>ⓢ {paymentDetails.numberOfCoins} have been added to your account.</h3>
-            <p>You paid: $ {formatPrice(paymentDetails.totalAmount)} {paymentDetails.currency.toUpperCase()} for this transaction.</p>
+          <div style={{ textAlign: 'center', padding: '50px' }}>
+            <h1 style={{ color: 'green' }}>Purchase Successful!</h1>
+            <h3>ⓢ {paymentDetails.numberOfCoins} have been added to your account</h3>
             {/* TODO: Probably should think about including some kind of receipt ID for customer service inquiries in the future. REPLACE THIS! */}
             {paymentDetails.receipt_link
-            ?
-              (
-                <a target="_blank" href={paymentDetails.receipt_link}>
-                  View your Stripe Receipt (opens in a new window)
-                </a>
-              )
-            :
-              (
-                <p>A Stripe Receipt will be sent to your email address.</p>
-              )
+              ?
+                (
+                  <a target='_blank' href={paymentDetails.receipt_link}>
+                    View your Stripe Receipt (opens in a new window).
+                  </a>
+                )
+              :
+                (
+                  <p>A receipt will be sent to your email address.</p>
+                )
             }
-            <div style={{ textAlign: "center", padding: "50px" }}>
-              <Link to="/" className="big-btn-blue">
+            <div style={{ textAlign: 'center', padding: '50px' }}>
+              <Link to='/' className='big-btn'>
                 Back to Home
               </Link>
             </div>
           </div>
         )
       : (
-        <div style={{ textAlign: "center", padding: "50px" }}>
+        <div style={{ textAlign: 'center', padding: '50px' }}>
           <h1>Please wait, validating payment...</h1>
         </div>
         )
