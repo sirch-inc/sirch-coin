@@ -235,10 +235,11 @@ input#user-handle {
 .mainpage {
   display: flex;
   justify-content: space-between;
-  height: 80vh;
+  height: 90vh;
   width: 100%;
   flex-wrap: wrap;
   align-content: space-around;
+  overflow-y: auto;
 }
 
 .right-button-container {
@@ -355,7 +356,7 @@ input#user-handle {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 70vh;
+  height: 90vh;
   overflow-y: auto;  
 }
 
@@ -460,6 +461,8 @@ button.danger {
 }
 
 .delete-dialog {
+  height: 80vh;
+  overflow-y: auto;
   z-index: 100;
   max-width: 80%;
   position: fixed;
