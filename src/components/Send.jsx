@@ -303,12 +303,12 @@ export default function Send() {
           </div>
           
           <div className = 'bottom-btn-container'>
-            <Link to = '/' className = 'big-btn'>
-              Back
-            </Link>
             <button type = 'submit' className = 'send-btn big-btn'>
               Send
             </button>
+            <Link to = '/' className = 'big-btn'>
+              Back
+            </Link>
           </div>
         </form>
       </div>

@@ -29,22 +29,22 @@ export default function MainPage({ supabase }) {
           </div>
 
           <div className='right-button-container'>
+          <Link to='purchase' className='action-btn'>
+              Buy ⓢ
+            </Link>
+
             <Link to='coin/send' className='action-btn'>
               Send ⓢ
+            </Link>
+
+            <Link to='/transactions' className='action-btn'>
+              Transactions
             </Link>
 
             <Link to='coin/balance' className='action-btn'>
               Balance
             </Link>
-
-            <Link to='/transactions' className='action-btn'>
-              History
-            </Link>
             
-            <Link to='purchase' className='action-btn'>
-              Buy ⓢ
-            </Link>
-
             <Link to='help' className='action-btn'>
               Help
             </Link>

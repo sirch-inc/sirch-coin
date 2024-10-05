@@ -54,11 +54,11 @@ export default function Balance() {
         </div>
         {error && <p className='text-danger'>{error}</p>}
         <div className='bottom-btn-container'>
-          <Link to='/' className='big-btn'>
-            Back
-          </Link>
           <Link to='/purchase' className='big-btn'>
             Buy More
+          </Link>
+          <Link to='/' className='big-btn'>
+            Back
           </Link>
         </div>
       </div>
