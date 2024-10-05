@@ -148,7 +148,7 @@ export default function UpdateAccount() {
                     htmlFor="is-email-private"
                     id="is-email-private-label"
                   >
-                    Keep my name PRIVATE<br />among other users in Sirch services
+                    Keep my email PRIVATE<br />among other users in Sirch services
                   </label>
                 </div>
               </div>
