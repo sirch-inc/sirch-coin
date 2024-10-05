@@ -351,16 +351,6 @@ input#user-handle {
 }
 
 
-/* Styles for Help Page */
-.help-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 90vh;
-  overflow-y: auto;  
-}
-
-
 /* Styles for About Page */
 .about-container {
   position: fixed;

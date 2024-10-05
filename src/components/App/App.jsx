@@ -21,7 +21,6 @@ import Send from '../Send';
 import Balance from '../Balance';
 import Purchase from '../Purchase';
 import Transactions from '../TransactionHistory/Transactions';
-import Help from '../Help';
 import GeneralError from './ErrorPages/GeneralError';
 import StripeSuccess from '../Stripe/StripeSuccess';
 import StripeFailure from '../Stripe/StripeFailure';
@@ -61,7 +60,6 @@ export default function App() {
           <Route path='coin/balance' Component={Balance}/>
           <Route path='/purchase' Component={Purchase}/>
           <Route path='/transactions' Component={Transactions}/>
-          <Route path='/help' Component={Help}/>
           <Route path='/error' Component={GeneralError}/>
           <Route path='/stripe/success/:paymentIntentId?' Component={StripeSuccess}/>
           <Route path='/stripe/failure' Component={StripeFailure}/>
