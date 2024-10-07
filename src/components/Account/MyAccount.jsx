@@ -87,53 +87,56 @@ export default function MyAccount(){
         <button className='big-btn danger' onClick={showDeleteConfirmation}>Delete Account...</button>
       </div>
      
-      {deleteDialogBox && 
-        <dialog open className='delete-dialog'>
-          <h2>Confirm Account Deletion</h2>
-          <h4>Are you sure you want to <br></br><i>permanently delete</i> your account?</h4>
-          <ul>
-            <li>You will forfeit all of your ⓢ {userBalance?.balance} Sirch Coins and will not be able to get them back. Those coins will be returned to the Sirch Coins total supply.</li>
-            <li>Your prior transactions affecting other users and the Sirch Coins total supply not be deleted.</li>
-            <li>This action cannot be undone. Once you delete your account, it is gone forever.</li>
-          </ul>
-          <div>
-            <h4>Please enter your two-word Account Handle to confirm this action:</h4>
-            <form onSubmit={handleDeleteUser} autoComplete='off'>
-              <input
-                className='account-input'
-                type='text'
-                id='user-handle'
-                name='user-handle'
-                placeholder="Your User Handle"
-                value={userHandle}
-                onChange={handleVerifyUserHandle}
-                required
-              />
-              {userHandle && (
-                <p style={{ color: isUserHandleVerified ? "green" : "red" }}>
-                  {isUserHandleVerified ? "Verified!" : "Not Verified"}
-                </p>
-              )}
+      {deleteDialogBox &&
+        <>
+          <div className='overlay'></div>
+          <dialog open className='delete-dialog'>
+            <h2>Confirm Account Deletion</h2>
+            <h4>Are you sure you want to <br></br><i>permanently delete</i> your account?</h4>
+            <ul>
+              <li>You will forfeit all of your ⓢ {userBalance?.balance} Sirch Coins and will not be able to get them back. Those coins will be returned to the Sirch Coins total supply.</li>
+              <li>Your prior transactions affecting other users and the Sirch Coins total supply not be deleted.</li>
+              <li>This action cannot be undone. Once you delete your account, it is gone forever.</li>
+            </ul>
+            <div>
+              <h4>Please enter your two-word Account Handle to confirm this action:</h4>
+              <form onSubmit={handleDeleteUser} autoComplete='off'>
+                <input
+                  className='account-input'
+                  type='text'
+                  id='user-handle'
+                  name='user-handle'
+                  placeholder="Your User Handle"
+                  value={userHandle}
+                  onChange={handleVerifyUserHandle}
+                  required
+                />
+                {userHandle && (
+                  <p style={{ color: isUserHandleVerified ? "green" : "red" }}>
+                    {isUserHandleVerified ? "Verified!" : "Not Verified"}
+                  </p>
+                )}
 
-              <br></br>
+                <br></br>
 
-              <button
-                className='big-btn danger'
-                type='submit'
-                // onClick={handleDeleteUser}
-                disabled={!isUserHandleVerified}
-              >
-                Yes, permanently delete
-              </button>
-              <button
-                className='big-btn'
-                onClick={() => setDeleteDialogBox(false)}>
-                Cancel
-              </button>
-            </form>
-          </div>
-        </dialog> 
-      }
+                <button
+                  className='big-btn danger'
+                  type='submit'
+                  // onClick={handleDeleteUser}
+                  disabled={!isUserHandleVerified}
+                >
+                  Yes, permanently delete
+                </button>
+                <button
+                  className='big-btn'
+                  onClick={() => setDeleteDialogBox(false)}>
+                  Cancel
+                </button>
+              </form>
+            </div>
+          </dialog> 
+        </>
+     }
       <div className='bottom-btn-container'>
         <Link to='/' className='big-btn'>
           Back
