@@ -63,7 +63,14 @@ export default function Purchase() {
     setOptions({
       mode: 'payment',
       amount: totalAmountInCents,
-      currency
+      currency,
+      // TODO: finalize Stripe Elements styles after app has been fully designed
+      appearance: {
+        theme: 'night',
+        labels: 'floating',
+        // TODO: use same font as app, see Stripe docs
+        // fontFamily: 'Haskoy-bold',
+      }
     });
   }
 
