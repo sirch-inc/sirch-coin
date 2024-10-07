@@ -4,9 +4,9 @@ import LogoutSupabase from '../Account/Logout';
 import { AuthContext } from '../AuthContext';
 
 
-// eslint-disable-next-line react/prop-types
 export default function NavBar({ supabase }) {
   const { session } = useContext(AuthContext);
+  const { userInTable, userBalance } = useContext(AuthContext);
   const navigate = useNavigate();
 
   function handleLogout(){
@@ -20,7 +20,7 @@ export default function NavBar({ supabase }) {
         <li className='navbar-item'>
           <a href='/'>
             <img
-              src='/sirch_logo.png'
+              src='/sirch-coin-favicon.ico'
               alt="Sirch Logo"
               // TODO: move this style into our CSS
               style={{ width: '60px', height: 'auto' }}
@@ -28,7 +28,7 @@ export default function NavBar({ supabase }) {
           </a>
         </li>
         <li className='navbar-item'>
-          <a href='/'>Sirch Coin</a>
+          <a href='/'>{userInTable?.user_handle}</a>
         </li>
       </ul>
     </>

@@ -53,6 +53,15 @@ button {
   width: 300px;
 }
 
+/* Page Header */
+/* .page-header {
+  margin-bottom: 2em;
+  width: 100%;
+  padding: 10px;
+  color: white;
+  background-color: #df4343;
+} */
+
 header {
   z-index: 100;
   position: fixed;
@@ -122,18 +131,9 @@ footer {
   list-style: none;
   padding: 8px;
 }
+
 .navbar-links li {
   padding: 4px;
-}
-
-
-/* Page Header */
-.page-header {
-  margin-bottom: 2em;
-  width: 100%;
-  padding: 10px;
-  color: white;
-  background-color: #df4343;
 }
 
 
