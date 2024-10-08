@@ -4,7 +4,7 @@ import { AuthProvider } from '../AuthContext';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
-import NavBar from './Nav';
+import NavBar from './NavBar';
 import MainPage from './MainPage';
 import About from '../About'
 import Login from '../Account/Login';
