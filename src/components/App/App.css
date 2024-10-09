@@ -28,6 +28,14 @@ h1, h2, h3, h4, h5, h6, p {
   text-align: center;
 }
 
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 90vh;
+  overflow-y: auto;
+}
+
 label {
   font-weight: bold;
   display: block; /* Ensure labels are on separate lines */
@@ -653,74 +661,6 @@ button.danger {
   color: black;
 }
 
-
-/* Styles for Balance Inquiry */
-.balance-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 90vh;
-  overflow-y: auto;
-}
-
-.balance-box {
-  background-color: #231F20;
-  border-radius: 5px;
-  color: white;
-  height:65px;
-  width: 400px;
-  text-align: center;
-  padding: 15px;
-}
-
-.green-coin {
-  font-size: 26px;
-  color: #3AD820;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 90vh;
-  overflow-y: auto;
-}
-
-.email-balance {
-  margin: 80px auto;
-  padding: 20px;
-  width: 350px;
-  max-width: 350px;
-  background-color: #5590e2;
-  color: white;
-  border: none;
-  font-size: 16px;
-  text-align: center;
-  position: relative;
-  z-index: 1;
-}
-
-.balance-btn {
-  margin-top: 30px;
-  padding: 10px;
-  font-size: 20px;
-  font-weight: 700;
-  text-decoration: none;
-  background-color: #5d5d5d;
-  color: white;
-  border: none;
-  width: 90%;
-  max-width: 300px;
-  text-align: center;
-}
-
-.balance-btn:hover {
-  color: black;
-}
-
-.balance {
-  margin-top: 15px;
-}
 
 .button-group {
   margin-bottom: 20px;

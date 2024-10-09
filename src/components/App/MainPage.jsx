@@ -40,10 +40,6 @@ export default function MainPage({ supabase }) {
             <Link to='/transactions' className='action-btn'>
               Transactions
             </Link>
-
-            <Link to='coin/balance' className='action-btn'>
-              Balance
-            </Link>
           </div>
         </>
         ) : (
