@@ -141,6 +141,8 @@ footer {
 .nav-bar-current-balance {
   margin: 10px;
   font-size: 24px;
+  margin: 0px;
+  padding: 8px;
   background-color: lightgray;
 }
 
