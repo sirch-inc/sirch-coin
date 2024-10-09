@@ -18,7 +18,6 @@ import ResetPassword from '../Account/ResetPassword';
 import Welcome from '../Account/Welcome';
 import AccountDeleted from '../Account/AccountDeleted';
 import Send from '../Send';
-import Balance from '../Balance';
 import Purchase from '../Purchase';
 import Transactions from '../TransactionHistory/Transactions';
 import GeneralError from './ErrorPages/GeneralError';
@@ -57,7 +56,6 @@ export default function App() {
           <Route path='/forgot-password' Component={ForgotPassword}/>
           <Route path='/reset-password' Component={ResetPassword}/>
           <Route path='coin/send' Component={Send}/>
-          <Route path='coin/balance' Component={Balance}/>
           <Route path='/purchase' Component={Purchase}/>
           <Route path='/transactions' Component={Transactions}/>
           <Route path='/error' Component={GeneralError}/>
