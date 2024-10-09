@@ -15,22 +15,23 @@ export default function NavBar({ supabase }) {
   }
     
   return (
-    <>
+    <nav>
       <ul className='navbar'>
         <li className='navbar-item'>
           <a href='/'>
             <img
               src='/sirch-coin-favicon.ico'
               alt="Sirch Logo"
-              // TODO: move this style into our CSS
+              // TODO: move this style into CSS
               style={{ width: '60px', height: 'auto' }}
             />
           </a>
         </li>
         <li className='navbar-item'>
-          <a href='/'>{userInTable?.user_handle}</a>
+          {userInTable?.full_name + " / @" + userInTable?.user_handle}
         </li>
       </ul>
-    </>
+      <p> Current Balance: {" ⓢ " + userBalance?.balance}</p>
+    </nav>
   );
 }
