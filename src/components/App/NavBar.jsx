@@ -31,7 +31,7 @@ export default function NavBar({ supabase }) {
           {userInTable?.full_name + " / @" + userInTable?.user_handle}
         </li>
       </ul>
-      <p> Current Balance: {" ⓢ " + userBalance?.balance}</p>
+      <p className='nav-bar-current-balance'>Current Balance: {" ⓢ " + userBalance?.balance}</p>
     </nav>
   );
 }

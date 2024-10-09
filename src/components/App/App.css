@@ -138,6 +138,12 @@ footer {
   padding: 4px;
 }
 
+.nav-bar-current-balance {
+  margin: 10px;
+  font-size: 24px;
+  background-color: lightgray;
+}
+
 
 /* Styles for Login Page */
 .account-privacy-statement {
