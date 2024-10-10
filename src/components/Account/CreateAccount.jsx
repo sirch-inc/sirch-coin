@@ -97,7 +97,7 @@ export default function CreateAccount() {
       {({ session }) =>
         !session ? (
           <>
-            <h2>Create an Account</h2>
+            <h2>Create Account</h2>
             <p>Already have an account? <a href='/login'>Log in</a> instead.</p>
             <br></br>
 
