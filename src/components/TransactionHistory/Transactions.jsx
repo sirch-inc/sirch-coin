@@ -43,6 +43,21 @@ export default function Transactions() {
     }
   }, [userInTable]);
 
+
+  const getTransactionDetails = (transaction) => {
+    switch (transaction.type) {
+      case 'SENT':
+      case 'RECEIVED':
+        return `Memo: ${transaction.details.email || ''}`;
+      case 'PURCHASE':
+        return `Payment Intent ID: ${transaction.details.paymentIntentId || ''}`;
+      case 'INITIAL BALANCE':
+        return 'Welcome!';
+      default:
+        return ``;
+    }
+  };
+  
   return (
     <>
       <h2>Transaction History</h2>
@@ -60,12 +75,13 @@ export default function Transactions() {
                 userTransactions.map((userTransaction) => (
                   <TransactionCard 
                     key={userTransaction.id}
-                    id={userTransaction.id}
                     date={userTransaction.created_at}
                     type={userTransaction.type}
                     amount={userTransaction.amount}
                     status={userTransaction.status}
+                    details={getTransactionDetails(userTransaction)} 
                   />
+                  
                 ))
               )
             :
