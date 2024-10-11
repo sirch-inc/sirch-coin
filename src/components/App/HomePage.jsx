@@ -5,7 +5,7 @@ import LogoutSupabase from '../Account/Logout';
 
 
 // eslint-disable-next-line react/prop-types
-export default function MainPage({ supabase }) {
+export default function HomePage({ supabase }) {
   const { session } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -15,7 +15,7 @@ export default function MainPage({ supabase }) {
   }
 
   return (
-    <div className='mainpage'>
+    <div className='home-page'>
       {session ? (
         <>
           <div className='left-button-container'>

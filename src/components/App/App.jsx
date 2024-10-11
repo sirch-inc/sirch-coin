@@ -3,9 +3,9 @@ import supabase from './supabaseConfig';
 import { AuthProvider } from '../AuthContext';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Header from './Header';
-import Footer from './Footer';
 import NavBar from './NavBar';
-import MainPage from './MainPage';
+import Footer from './Footer';
+import HomePage from './HomePage';
 import About from '../About'
 import Login from '../Account/Login';
 import Logout from '../Account/Logout'
@@ -42,26 +42,28 @@ export default function App() {
       <BrowserRouter>
         <Header/>
         <NavBar supabase={supabase}/>
-        <Routes>
-          <Route path='/' Component={MainPage} supabase={supabase}/>
-          <Route path='/user-deleted' Component={AccountDeleted}/>
-          <Route path='/login' Component={Login}/>
-          <Route path='/logout' Component={Logout}/>
-          <Route path='/account' Component={MyAccount}/>
-          <Route path='/create-account' Component={CreateAccount}/>
-          <Route path='/verify-account' Component={VerifyAccount}/>
-          <Route path='/update-account' Component={UpdateAccount}/>
-          <Route path='/welcome' Component={Welcome}/>
-          <Route path='/about' Component={About}/>
-          <Route path='/forgot-password' Component={ForgotPassword}/>
-          <Route path='/reset-password' Component={ResetPassword}/>
-          <Route path='coin/send' Component={Send}/>
-          <Route path='/purchase' Component={Purchase}/>
-          <Route path='/transactions' Component={Transactions}/>
-          <Route path='/error' Component={GeneralError}/>
-          <Route path='/stripe/success/:paymentIntentId?' Component={StripeSuccess}/>
-          <Route path='/stripe/failure' Component={StripeFailure}/>
-        </Routes>
+        <main>
+          <Routes>
+            <Route path='/' Component={HomePage} supabase={supabase}/>
+            <Route path='/user-deleted' Component={AccountDeleted}/>
+            <Route path='/login' Component={Login}/>
+            <Route path='/logout' Component={Logout}/>
+            <Route path='/account' Component={MyAccount}/>
+            <Route path='/create-account' Component={CreateAccount}/>
+            <Route path='/verify-account' Component={VerifyAccount}/>
+            <Route path='/update-account' Component={UpdateAccount}/>
+            <Route path='/welcome' Component={Welcome}/>
+            <Route path='/about' Component={About}/>
+            <Route path='/forgot-password' Component={ForgotPassword}/>
+            <Route path='/reset-password' Component={ResetPassword}/>
+            <Route path='coin/send' Component={Send}/>
+            <Route path='/purchase' Component={Purchase}/>
+            <Route path='/transactions' Component={Transactions}/>
+            <Route path='/error' Component={GeneralError}/>
+            <Route path='/stripe/success/:paymentIntentId?' Component={StripeSuccess}/>
+            <Route path='/stripe/failure' Component={StripeFailure}/>
+          </Routes>
+        </main>
         <Footer/>
       </BrowserRouter>
     </AuthProvider>

@@ -146,7 +146,7 @@ footer {
   padding: 4px;
 }
 
-.nav-bar-current-balance {
+.navbar-current-balance {
   margin: 10px;
   font-size: 24px;
   margin: 0px;
@@ -249,8 +249,9 @@ input#user-handle {
 }
 
 
-/* Styles for Main page */
-.mainpage {
+/* Styles for Home page */
+.home-page
+ {
   display: flex;
   justify-content: space-between;
   height: 90vh;

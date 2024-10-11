@@ -28,10 +28,12 @@ export default function NavBar({ supabase }) {
           </a>
         </li>
         <li className='navbar-item'>
-          {userInTable?.full_name + " / @" + userInTable?.user_handle}
+          {userInTable && userInTable.full_name + " / @" + userInTable.user_handle}
         </li>
       </ul>
-      <p className='nav-bar-current-balance'>Current Balance: {" ⓢ " + userBalance?.balance}</p>
+      {userInTable &&
+        <p className='navbar-current-balance'>Current Balance: {" ⓢ " + userBalance?.balance}</p>
+      }
     </nav>
   );
 }
