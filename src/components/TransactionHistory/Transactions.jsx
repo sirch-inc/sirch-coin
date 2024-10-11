@@ -48,7 +48,7 @@ export default function Transactions() {
     switch (transaction.type) {
       case 'SENT':
       case 'RECEIVED':
-        return `Memo: ${transaction.details.email || ''}`;
+        return `Memo: ${transaction.details.memo || ''}`;
       case 'PURCHASE':
         return `Payment Intent ID: ${transaction.details.paymentIntentId || ''}`;
       case 'INITIAL BALANCE':
