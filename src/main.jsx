@@ -14,28 +14,15 @@ document.title = import.meta.env.VITE_PAGE_TITLE;
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
+root.render(
+  <React.StrictMode>
 // #v-ifdef VITE_IS_COMING_SOON
-
-root.render(
-  <React.StrictMode>
-    <ComingSoonApp/>
-  </React.StrictMode>
-);
-
+  <ComingSoonApp/>
 // #v-elif VITE_IS_OFFLINE
-
-root.render(
-  <React.StrictMode>
-    <OfflineApp/>
-  </React.StrictMode>
-);
-
+  <OfflineApp/>
 // #v-else
-
-root.render(
-  <React.StrictMode>
-    <App/>
+  <App/>
+// #v-endif
   </React.StrictMode>
 );
 
-// #v-endif
