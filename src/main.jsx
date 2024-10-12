@@ -25,4 +25,3 @@ root.render(
 // #v-endif
   </React.StrictMode>
 );
-
