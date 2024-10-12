@@ -19,9 +19,9 @@ root.render(
 // #v-ifdef VITE_IS_COMING_SOON
     <ComingSoonApp/>
 // #v-elif VITE_IS_OFFLINE
-  < OfflineApp/>
+    < OfflineApp/>
 // #v-else
-  < App/>
+    < App/>
 // #v-endif
   </React.StrictMode>
 );
