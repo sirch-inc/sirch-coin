@@ -17,11 +17,11 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
 // #v-ifdef VITE_IS_COMING_SOON
-  <ComingSoonApp/>
+    <ComingSoonApp/>
 // #v-elif VITE_IS_OFFLINE
-  <OfflineApp/>
+  < OfflineApp/>
 // #v-else
-  <App/>
+  < App/>
 // #v-endif
   </React.StrictMode>
 );
