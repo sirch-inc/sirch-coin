@@ -61,15 +61,6 @@ button {
   width: 300px;
 }
 
-/* Page Header */
-/* .page-header {
-  margin-bottom: 2em;
-  width: 100%;
-  padding: 10px;
-  color: white;
-  background-color: #df4343;
-} */
-
 header {
   z-index: 100;
   position: fixed;
@@ -77,22 +68,6 @@ header {
   left: 0px;
   right: 0px;
   text-align: right;
-  color: green;
-  margin: 4px;
-  animation-name: slide-in;
-  animation-duration: 1s;
-}
-
-@keyframes slide-in {
-  from {
-    translate: 150vw 0;
-    scale: 200% 1;
-  }
-
-  to {
-    translate: 0 0;
-    scale: 100% 1;
-  }
 }
 
 footer {
@@ -157,106 +132,12 @@ footer {
 }
 
 
-/* Styles for Login Page */
-.account-privacy-statement {
-  width: 75%;
-}
-
-.account-input {
-  background-color: #231F20;
-  color: white;
-  font-size: 30px;
-  padding: 10px;
-  padding-left: 15px;
-  margin: 10px 0px 10px 0px;
-  width: 75%;
-  border-radius: 5px;
-}
-
-.account-button {
-  background-color: #231F20;
-  font-size: 30px;
-  margin-bottom: 25px;
-}
-
-.account-button:hover {
-  background-color: #3AD820;
-  color: black;
-}
-
-.account-row {
-  width: 75%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-}
-
-input#email {
-  width: 65%;
-}
-
-input#first-name, input#last-name {
-  width: 30%;
-}
-
-div#is-email-private {
-  display: contents;
-}
-
-input#is-email-private-checkbox {
-  width: min-content;
-  margin: 0px;
-}
-
-label#is-email-private-label {
-  vertical-align: middle;
-  margin: 0px;
-}
-
-div#is-name-private {
-  display: contents;
-}
-
-input#is-name-private-checkbox {
-  width: min-content;
-  margin: 0px;
-}
-
-label#is-name-private-label {
-  vertical-align: middle;
-  margin: 0px;
-}
-
-div#account-user-handle-row {
-  width: 75%;
-  display: flex;
-  align-items: center;
-  justify-content: start;
-  gap: 20px;
-
-  button {
-    margin: 10px 0px;
-  }
-
-  div {
-    width: 30%;
-  }
-}
-
-input#user-handle {
-  width: 30%;
-  text-align: center;
-  padding-left: unset;
-}
-
-
 /* Styles for Home page */
 .home-page
  {
   display: flex;
   justify-content: space-between;
-  height: 90vh;
+  height: 100vh;
   width: 100%;
   flex-wrap: wrap;
   align-content: space-around;
@@ -369,6 +250,100 @@ input#user-handle {
   color:white;
   font-size: 24px;
   text-align: left;
+}
+
+
+/* Styles for Login Page */
+.account-privacy-statement {
+  width: 75%;
+}
+
+.account-input {
+  background-color: #231F20;
+  color: white;
+  font-size: 30px;
+  padding: 10px;
+  padding-left: 15px;
+  margin: 10px 0px 10px 0px;
+  width: 75%;
+  border-radius: 5px;
+}
+
+.account-button {
+  background-color: #231F20;
+  font-size: 30px;
+  margin-bottom: 25px;
+}
+
+.account-button:hover {
+  background-color: #3AD820;
+  color: black;
+}
+
+.account-row {
+  width: 75%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+input#email {
+  width: 65%;
+}
+
+input#first-name, input#last-name {
+  width: 30%;
+}
+
+div#is-email-private {
+  display: contents;
+}
+
+input#is-email-private-checkbox {
+  width: min-content;
+  margin: 0px;
+}
+
+label#is-email-private-label {
+  vertical-align: middle;
+  margin: 0px;
+}
+
+div#is-name-private {
+  display: contents;
+}
+
+input#is-name-private-checkbox {
+  width: min-content;
+  margin: 0px;
+}
+
+label#is-name-private-label {
+  vertical-align: middle;
+  margin: 0px;
+}
+
+div#account-user-handle-row {
+  width: 75%;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 20px;
+
+  button {
+    margin: 10px 0px;
+  }
+
+  div {
+    width: 30%;
+  }
+}
+
+input#user-handle {
+  width: 30%;
+  text-align: center;
+  padding-left: unset;
 }
 
 
