@@ -20,9 +20,11 @@ if (import.meta.env.MODE === 'production') {
 export default function App() {
   return (
     <AuthProvider supabase={supabase}>
-      <Header supabase={supabase}/>
-      <MainContent supabase={supabase}/>
-      <Footer/>
+      <div className='app-layout'>
+        <Header supabase={supabase}/>
+        <MainContent supabase={supabase}/>
+        <Footer/>
+      </div>
     </AuthProvider>
   );
 }

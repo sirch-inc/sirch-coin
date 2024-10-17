@@ -85,6 +85,15 @@ footer {
 }
 
 
+/* Styles for App-Layout */
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+
 /* Styles for Navbar */
 .navbar {
   list-style-type: none;
