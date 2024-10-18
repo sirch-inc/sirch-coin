@@ -101,6 +101,72 @@ button {
 }
 
 
+.button-group {
+  margin-bottom: 20px;
+}
+
+.bottom-btn-container {
+  position: relative;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-top: 20px;
+  padding: 20px;
+  bottom: 40px;
+}
+
+/* TODO: fix this duplicate */
+.bottom-btn-container-light {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: start;
+  margin-top: 20px;
+  padding: 20px;
+}
+
+/* TODO: fix this duplicate */
+.bottom-btn-container-light {
+  position: relative;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-top: 20px;
+  padding: 20px;
+  bottom: 20px;
+}
+
+.button-group {
+  margin-bottom: 20px;
+}
+
+.bottom-btn-container {
+  position: relative;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  margin-top: 20px;
+  padding: 20px;
+  bottom: 40px;
+}
+
+.bottom-btn-container a {
+  margin: 5px;
+}
+
+
 /* Styles for App-Layout */
 .app-layout {
   height: 100vh;
@@ -421,6 +487,7 @@ input#user-handle {
 .user-card:hover {
   background-color: #3AD820;
   color: black;
+  cursor: pointer;
 }
 
 .price-container {
@@ -466,7 +533,7 @@ input#user-handle {
 /* Styles for My Account Page */
 .account-container {
   margin: 2rem;
-  height: 90vh;
+  height: 100%;
 }
 
 .account {
@@ -500,19 +567,6 @@ button.danger {
   p, .big-btn, #user-handle {
     width: 100%
   }
-}
-
-.bottom-btn-container {
-  position: relative;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  margin-top: 20px;
-  padding: 20px;
-  bottom: 40px;
 }
 
 
@@ -598,58 +652,6 @@ button.danger {
 }
 
 
-/* Additional styles as needed */
-.button-group {
-  margin-bottom: 20px;
-}
-
-.bottom-btn-container {
-  position: relative;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  margin-top: 20px;
-  padding: 20px;
-  bottom: 40px;
-}
-
-.bottom-btn-container-light {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  align-items: start;
-  margin-top: 20px;
-  padding: 20px;
-}
-
-.button-group {
-  margin-bottom: 20px;
-}
-
-.bottom-btn-container {
-  position: relative;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-around;
-  margin-top: 20px;
-  padding: 20px;
-  bottom: 40px;
-}
-
-.bottom-btn-container a {
-  margin: 5px;
-}
-
-
 /* Styles for Transaction History */
 .transactions-container {
   margin: 20px;
@@ -672,19 +674,6 @@ button.danger {
 .transactions-header p {
   font-family: Haskoy-bold;
   font-size: 20px;
-}
-
-.bottom-btn-container-light {
-  position: relative;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  margin-top: 20px;
-  padding: 20px;
-  bottom: 20px;
 }
 
 
