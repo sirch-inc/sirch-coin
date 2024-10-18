@@ -19,10 +19,9 @@ import StripeSuccess from '../Stripe/StripeSuccess';
 import StripeFailure from '../Stripe/StripeFailure';
 
 
-// TODO: remove this?
 export default function MainContent({ supabase }) {
   return (
-    <main>
+    <main className='main-content'>
       <BrowserRouter>
         <Routes>
           <Route path='/' Component={HomePage} supabase={supabase}/>

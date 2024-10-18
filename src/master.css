@@ -1,3 +1,4 @@
+/* Fonts */
 @font-face {
   font-family: Haskoy;
   src: url(/Haskoy-Regular.woff2);
@@ -8,10 +9,10 @@
   src: url(/Haskoy-Bold.woff2);
 }
 
+
 #root, body {
   background: #F7F7F7;
   height: 100vh;
-  /* overflow-y: auto; */
 }
 
 
@@ -38,16 +39,16 @@ form {
 
 label {
   font-weight: bold;
-  display: block; /* Ensure labels are on separate lines */
-  margin-bottom: 5px; /* Add some space below labels */
+  display: block;
+  margin-bottom: 5px;
 }
 
 input {
   padding: 5px;
   border-radius: 3px;
   border: 1px solid #ccc;
-  width: 100%; /* Make inputs fill their container */
-  box-sizing: border-box; /* Include padding in width calculation */
+  width: 100%;
+  box-sizing: border-box;
 }
 
 button {
@@ -61,21 +62,24 @@ button {
   width: 300px;
 }
 
+
+/* Styles for App-Layout */
+.app-layout {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+}
+
 header {
-  z-index: 100;
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  right: 0px;
-  text-align: right;
+}
+
+.main-content {
+  flex: 1 1 auto;
+  overflow-y: auto;
 }
 
 footer {
-  z-index: 100;
-  position: fixed;
-  bottom: 0px;
-  left: 0px;
-  right: 0px;
   background-color: darkslategray;
   color: lightgray;
   display: flex;
@@ -85,16 +89,11 @@ footer {
 }
 
 
-/* Styles for App-Layout */
-.app-layout {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: flex-end;
+/* Styles for Navbar */
+.sirchcoins-logo {
+  width: 60px;
 }
 
-
-/* Styles for Navbar */
 .navbar {
   list-style-type: none;
   margin: 0px;
@@ -110,10 +109,6 @@ footer {
   margin: 10px;
   font-size: 24px;
   color: white;
-}
-
-.sirchcoins-logo {
-  width: 60px;
 }
 
 .navbar-item > a {
@@ -146,11 +141,10 @@ footer {
  {
   display: flex;
   justify-content: space-between;
-  height: 100vh;
+  height: 100%;
   width: 100%;
   flex-wrap: wrap;
   align-content: space-around;
-  overflow-y: auto;
 }
 
 .right-button-container {
