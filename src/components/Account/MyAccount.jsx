@@ -72,7 +72,6 @@ export default function MyAccount(){
         <p>Email: {userInTable?.email}</p>
         <p>Name: {userInTable?.full_name + " (" + (userInTable?.is_name_private ? "PRIVATE" : "PUBLIC") + ")"}</p>
         <p>User Phrase: {userInTable?.user_handle}</p>
-        <p>Balance: ⓢ {userBalance?.balance}</p>
       </div>
 
       <div className='account-actions'>
