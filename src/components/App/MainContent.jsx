@@ -12,7 +12,7 @@ import ResetPassword from '../Account/ResetPassword';
 import Welcome from '../Account/Welcome';
 import AccountDeleted from '../Account/AccountDeleted';
 import Send from '../Send';
-import Purchase from '../Purchase';
+import Purchase from '../PurchaseCoins';
 import Transactions from '../TransactionHistory/Transactions';
 import GeneralError from './ErrorPages/GeneralError';
 import StripeSuccess from '../Stripe/StripeSuccess';

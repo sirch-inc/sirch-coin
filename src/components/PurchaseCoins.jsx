@@ -12,7 +12,7 @@ import { useNavigate } from 'react-router-dom';
 // recreating the `Stripe` object on every render
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_API_PUBLISHABLE_KEY);
 
-export default function Purchase() {
+export default function PurchaseCoins() {
   const [localCoinAmount, setLocalCoinAmount] = useState(5);
   const [coinAmount, setCoinAmount] = useState(5);
   const [coinAmountError, setCoinAmountError] = useState(false);
@@ -25,6 +25,7 @@ export default function Purchase() {
   const { userInTable } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  
   // load the user's initial data (balance, etc)
   useEffect(() => {
     const loadInitialData = async () => {
@@ -114,7 +115,7 @@ export default function Purchase() {
   return (
     <div>
       <div className='purchase-container'>
-        <h2>Purchase Sirch Coins ⓢ</h2>
+        <h2>Buy Sirch Coins ⓢ</h2>
         <h3>How many Sirch Coins ⓢ would you like to purchase?</h3>
         { pricePerCoin === "Loading..."
           ? <p>Current value: ⓢ 1 = {pricePerCoin} {currency}</p>
