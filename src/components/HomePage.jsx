@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../AuthContext';
+import { AuthContext } from './AuthContext';
 import { useContext } from 'react';
-import LogoutSupabase from '../Account/Logout';
+import LogoutSupabase from './Account/Logout';
 
 
 // eslint-disable-next-line react/prop-types
