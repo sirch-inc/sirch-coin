@@ -85,7 +85,7 @@ footer {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 36px;
+  height: 46px;
 }
 
 
@@ -141,8 +141,6 @@ footer {
  {
   display: flex;
   justify-content: space-between;
-  height: 100%;
-  width: 100%;
   flex-wrap: wrap;
   align-content: space-around;
 }
@@ -150,8 +148,6 @@ footer {
 .right-button-container {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  justify-content: flex-end;
 }
 
 .left-button-container {
@@ -172,25 +168,24 @@ footer {
 }
 
 .action-btn {
-  margin-top: 30px;
-  width: 260px;
+  margin-top: 32px;
+  width: 280px;
   height: 80px;
-  border-radius: 5px;
-  font-size: 30px;
+  border-radius: 8px;
+  font-size: 32px;
   background-color: #231F20;
   cursor: pointer;
   text-align: center;
-  font-weight: 500;
   font-family: Haskoy;
-  padding: 18px;
+  padding: 16px;
 }
 
 .right-button-container {
-  margin-right: 50px;
+  margin-right: 64px;
 }
 
 .left-button-container {
-  margin-left: 50px;
+  margin-left: 64px;
 }
 
 
