@@ -13,7 +13,7 @@ export default function ResetPassword() {
   // verify the PASSWORD_RECOVERY event is present and set session
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "PASSWORD_RECOVERY") {
+      if (event === 'PASSWORD_RECOVERY') {
         setPasswordRecoverySession(session);
       }
     });
@@ -66,7 +66,7 @@ export default function ResetPassword() {
 
       <form onSubmit={submitPassword}>
         <input 
-          type="password"
+          type='password'
           placeholder="New Password"
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
@@ -74,15 +74,15 @@ export default function ResetPassword() {
           autoComplete="current-password"
         />
         <input 
-          type="password" 
-          name="confirm-password" 
+          type='password' 
+          name='confirm-password' 
           placeholder="Confirm New Password" 
-          autoComplete="current-password" 
+          autoComplete='current-password' 
           required value={confirmPassword}
           onChange={handlePasswordConfirmation}
         />
         {confirmPassword && (
-          <p style={{ color: passwordsMatch ? "green" : "red" }}>
+          <p style={{ color: passwordsMatch ? 'green' : 'red' }}>
             {passwordsMatch ? "Passwords match!" : "Passwords do not match"}
           </p>
         )}
