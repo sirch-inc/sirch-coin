@@ -1,19 +1,21 @@
 import { useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import LogoutSupabase from '../Account/Logout';
+// import { useNavigate } from 'react-router-dom';
+// import LogoutSupabase from '../Account/Logout';
 import { AuthContext } from '../AuthContext';
 
 
 export default function NavBar({ supabase }) {
-  const { session } = useContext(AuthContext);
+  // const { session } = useContext(AuthContext);
   const { userInTable, userBalance } = useContext(AuthContext);
-  const navigate = useNavigate();
 
-  function handleLogout(){
-    LogoutSupabase({ supabase })
-    navigate('/')
-  }
-    
+  // TODO: remove this?
+  // const navigate = useNavigate();
+
+  // function handleLogout(){
+  //   LogoutSupabase({ supabase })
+  //   navigate('/')
+  // }
+
   return (
     <nav>
       <ul className='navbar'>
@@ -21,9 +23,8 @@ export default function NavBar({ supabase }) {
           <a href='/'>
             <img
               src='/sirch-coin-favicon.ico'
-              alt="Sirch Logo"
-              // TODO: move this style into CSS
-              style={{ width: '60px', height: 'auto' }}
+              alt="Sirch Coins Logo"
+              className='sirchcoins-logo'
             />
           </a>
         </li>

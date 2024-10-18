@@ -1,3 +1,4 @@
+/* Fonts */
 @font-face {
   font-family: Haskoy;
   src: url(/Haskoy-Regular.woff2);
@@ -8,10 +9,10 @@
   src: url(/Haskoy-Bold.woff2);
 }
 
+
 #root, body {
   background: #F7F7F7;
   height: 100vh;
-  overflow-y: auto;
 }
 
 
@@ -38,16 +39,16 @@ form {
 
 label {
   font-weight: bold;
-  display: block; /* Ensure labels are on separate lines */
-  margin-bottom: 5px; /* Add some space below labels */
+  display: block;
+  margin-bottom: 5px;
 }
 
 input {
   padding: 5px;
   border-radius: 3px;
   border: 1px solid #ccc;
-  width: 100%; /* Make inputs fill their container */
-  box-sizing: border-box; /* Include padding in width calculation */
+  width: 100%;
+  box-sizing: border-box;
 }
 
 button {
@@ -61,62 +62,42 @@ button {
   width: 300px;
 }
 
-/* Page Header */
-/* .page-header {
-  margin-bottom: 2em;
-  width: 100%;
-  padding: 10px;
-  color: white;
-  background-color: #df4343;
-} */
 
-header {
-  z-index: 100;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  text-align: right;
-  color: green;
-  margin: 4px;
-  animation-name: slide-in;
-  animation-duration: 1s;
+/* Styles for App-Layout */
+.app-layout {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
 }
 
-@keyframes slide-in {
-  from {
-    translate: 150vw 0;
-    scale: 200% 1;
-  }
+header {
+}
 
-  to {
-    translate: 0 0;
-    scale: 100% 1;
-  }
+.main-content {
+  flex: 1 1 auto;
+  overflow-y: auto;
 }
 
 footer {
-  z-index: 100;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  text-align: right;
-  padding: 0px 4px 0px 4px;
   background-color: darkslategray;
   color: lightgray;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 50px;
+  height: 46px;
 }
 
 
 /* Styles for Navbar */
+.sirchcoins-logo {
+  width: 60px;
+}
+
 .navbar {
   list-style-type: none;
-  margin: 0;
-  padding: 0;
+  margin: 0px;
+  padding: 0px;
   display: flex;
   justify-content: flex-start;
   align-items: baseline;
@@ -152,6 +133,121 @@ footer {
   margin: 0px;
   padding: 8px;
   background-color: lightgray;
+}
+
+
+/* Styles for Home page */
+.home-page
+ {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  align-content: space-around;
+}
+
+.right-button-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.left-button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+
+.right-button-container > a, .left-button-container > a {
+  text-decoration: none;
+  color: white;
+}
+
+.right-button-container > a:hover, .left-button-container > a:hover {
+  background-color: #3AD820;
+  color: black;
+}
+
+.action-btn {
+  margin-top: 32px;
+  width: 280px;
+  height: 80px;
+  border-radius: 8px;
+  font-size: 32px;
+  background-color: #231F20;
+  cursor: pointer;
+  text-align: center;
+  font-family: Haskoy;
+  padding: 16px;
+}
+
+.right-button-container {
+  margin-right: 64px;
+}
+
+.left-button-container {
+  margin-left: 64px;
+}
+
+
+/* Styles for Coming Soon Page */
+.coming-soon-container {
+  position: fixed;
+  background-color: #231F20;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 0;
+  grid-column-gap: 10px;
+  grid-row-gap: 0px;
+}
+
+.coming-soon-img {
+  padding: 50px;
+}
+
+.coming-soon-text {
+  padding: 40px;
+}
+
+.coming-soon-container h1 {
+  color: white;
+}
+
+.coming-soon-container p {
+  color: white;
+  font-size: 24px;
+  text-align: left;
+}
+
+
+/* Styles for Offline Page */
+.offline-container {
+  position: fixed;
+  background-color: #231F20;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 0;
+  grid-column-gap: 10px;
+  grid-row-gap: 0px;
+}
+
+.offline-img {
+  padding: 50px;
+}
+
+.offline-text {
+  padding: 40px;
+}
+
+.offline-container h1 {
+  color:white;
+}
+
+.offline-container p {
+  color:white;
+  font-size: 24px;
+  text-align: left;
 }
 
 
@@ -249,127 +345,6 @@ input#user-handle {
 }
 
 
-/* Styles for Home page */
-.home-page
- {
-  display: flex;
-  justify-content: space-between;
-  height: 90vh;
-  width: 100%;
-  flex-wrap: wrap;
-  align-content: space-around;
-  overflow-y: auto;
-}
-
-.right-button-container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: flex-end;
-}
-
-.left-button-container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-end;
-}
-
-.right-button-container > a, .left-button-container > a {
-  text-decoration: none;
-  color: white;
-}
-
-.right-button-container > a:hover, .left-button-container > a:hover {
-  background-color: #3AD820;
-  color: black;
-}
-
-.action-btn {
-  margin-top: 30px;
-  width: 260px;
-  height: 80px;
-  border-radius: 5px;
-  font-size: 30px;
-  background-color: #231F20;
-  cursor: pointer;
-  text-align: center;
-  font-weight: 500;
-  font-family: Haskoy;
-  padding: 18px;
-}
-
-.right-button-container {
-  margin-right: 50px;
-}
-
-.left-button-container {
-  margin-left: 50px;
-}
-
-
-/* Styles for Coming Soon Page */
-.coming-soon-container {
-  position: fixed;
-  background-color: #231F20;
-  height: 100vh;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: 0;
-  grid-column-gap: 10px;
-  grid-row-gap: 0px;
-}
-
-.coming-soon-img {
-  padding: 50px;
-}
-
-.coming-soon-text {
-  padding: 40px;
-}
-
-.coming-soon-container h1 {
-  color: white;
-}
-
-.coming-soon-container p {
-  color: white;
-  font-size: 24px;
-  text-align: left;
-}
-
-
-/* Styles for Offline Page */
-.offline-container {
-  position: fixed;
-  background-color: #231F20;
-  height: 100vh;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: 0;
-  grid-column-gap: 10px;
-  grid-row-gap: 0px;
-}
-
-.offline-img {
-  padding: 50px;
-}
-
-.offline-text {
-  padding: 40px;
-}
-
-.offline-container h1 {
-  color:white;
-}
-
-.offline-container p {
-  color:white;
-  font-size: 24px;
-  text-align: left;
-}
-
-
 /* Styles for About Page */
 .about-container {
   position: fixed;
@@ -451,7 +426,6 @@ input#user-handle {
 .account-container {
   margin: 2rem;
   height: 90vh;
-  overflow-y: auto;
 }
 
 .account {
@@ -471,7 +445,6 @@ button.danger {
 
 .delete-dialog {
   height: 80vh;
-  overflow-y: auto;
   z-index: 100;
   max-width: 80%;
   position: fixed;
