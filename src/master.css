@@ -426,7 +426,6 @@ input#user-handle {
 .account-container {
   margin: 2rem;
   height: 90vh;
-  overflow-y: auto;
 }
 
 .account {
@@ -446,7 +445,6 @@ button.danger {
 
 .delete-dialog {
   height: 80vh;
-  overflow-y: auto;
   z-index: 100;
   max-width: 80%;
   position: fixed;
