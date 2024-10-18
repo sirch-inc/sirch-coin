@@ -30,10 +30,10 @@ h1, h2, h3, h4, h5, h6, p {
 }
 
 form {
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 90vh;
   overflow-y: auto;
 }
 
@@ -63,6 +63,44 @@ button {
 }
 
 
+/* Styles for common elements */
+.big-btn {
+  background-color: #231F20;
+  text-decoration: none;
+  text-align: center;
+  font-size: x-large;
+  font-weight: 600;
+  color: white;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 20px;
+  width: 300px;
+}
+
+.big-btn:hover {
+  background-color: #3AD820;
+  color: black;
+}
+
+.big-btn-light {
+  background-color: #F7F7F7;
+  text-decoration: none;
+  text-align: center;
+  font-size: x-large;
+  font-weight: 600;
+  color: #231F20;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 20px;
+  width: 300px;
+}
+
+.big-btn-light:hover {
+  background-color: #3AD820;
+  color: black;
+}
+
+
 /* Styles for App-Layout */
 .app-layout {
   height: 100vh;
@@ -72,6 +110,7 @@ button {
 }
 
 header {
+  flex: 0 0 auto;
 }
 
 .main-content {
@@ -80,6 +119,7 @@ header {
 }
 
 footer {
+  flex: 0 0 auto;
   background-color: darkslategray;
   color: lightgray;
   display: flex;
@@ -139,6 +179,7 @@ footer {
 /* Styles for Home page */
 .home-page
  {
+  height: 100%;
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
@@ -474,19 +515,6 @@ button.danger {
   bottom: 40px;
 }
 
-.big-btn {
-  background-color: #231F20;
-  text-decoration: none;
-  text-align: center;
-  font-size: x-large;
-  font-weight: 600;
-  color: white;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 20px;
-  width: 300px;
-}
-
 
 /* Styles for Purchase Page */
 .purchase-container {
@@ -495,7 +523,7 @@ button.danger {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    min-height: 90vh;
+    min-height: 100%;
     overflow-y: auto;
 }
 
@@ -588,24 +616,6 @@ button.danger {
   bottom: 40px;
 }
 
-.big-btn {
-  background-color: #231F20;
-  text-decoration: none;
-  text-align: center;
-  font-size: x-large;
-  font-weight: 600;
-  color: white;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 20px;
-  width: 300px;
-}
-
-.big-btn:hover {
-  background-color: #3AD820;
-  color: black;
-}
-
 .bottom-btn-container-light {
   position: fixed;
   bottom: 0;
@@ -616,25 +626,6 @@ button.danger {
   margin-top: 20px;
   padding: 20px;
 }
-
-.big-btn-light {
-  background-color: #F7F7F7;
-  text-decoration: none;
-  text-align: center;
-  font-size: x-large;
-  font-weight: 600;
-  color: #231F20;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 20px;
-  width: 300px;
-}
-
-.big-btn-light:hover {
-  background-color: #3AD820;
-  color: black;
-}
-
 
 .button-group {
   margin-bottom: 20px;
@@ -662,7 +653,7 @@ button.danger {
 /* Styles for Transaction History */
 .transactions-container {
   margin: 20px;
-  height: 90vh;
+  height: 100%;
   overflow-y: auto;
 }
 
@@ -676,39 +667,25 @@ button.danger {
   grid-template-columns: repeat(5, 1fr);
   grid-column-gap: 4px;
   grid-row-gap: 4px;
-  }
-
-  .transactions-header p {
-    font-family: Haskoy-bold;
-    font-size: 20px;
-  }
-
-  .bottom-btn-container-light {
-    position: relative;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    margin-top: 20px;
-    padding: 20px;
-    bottom: 20px;
-  }
+}
   
-  .big-btn {
-    background-color: #231F20;
-    text-decoration: none;
-    text-align: center;
-    font-size: x-large;
-    font-weight: 600;
-    color: white;
-    border-radius: 5px;
-    padding: 10px;
-    margin-bottom: 20px;
-    width: 300px;
-  }
+.transactions-header p {
+  font-family: Haskoy-bold;
+  font-size: 20px;
+}
 
+.bottom-btn-container-light {
+  position: relative;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-top: 20px;
+  padding: 20px;
+  bottom: 20px;
+}
 
 
 
