@@ -40,40 +40,39 @@ form {
 label {
   font-weight: bold;
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
 }
 
 input {
-  padding: 5px;
-  border-radius: 3px;
-  border: 1px solid #ccc;
+  padding: 4px;
+  border-radius: 2px;
+  border: 2px solid #ccc;
   width: 100%;
   box-sizing: border-box;
 }
 
 button {
-  background-color: #007bff;
+  background-color: black;
   color: white;
-  padding: 10px 20px;
+  padding: 12px 24px;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
-  margin-top: 10px;
-  width: 300px;
+  margin-top: 12px;
 }
 
 
 /* Styles for common elements */
 .big-btn {
-  background-color: #231F20;
+  background-color: black;
+  color: white;
   text-decoration: none;
   text-align: center;
   font-size: x-large;
   font-weight: 600;
-  color: white;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 20px;
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 24px;
   width: 300px;
 }
 
@@ -84,14 +83,14 @@ button {
 
 .big-btn-light {
   background-color: #F7F7F7;
+  color: #231F20;
   text-decoration: none;
   text-align: center;
   font-size: x-large;
   font-weight: 600;
-  color: #231F20;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 20px;
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 24px;
   width: 300px;
 }
 
@@ -102,7 +101,7 @@ button {
 
 
 .button-group {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .bottom-btn-container {
@@ -113,9 +112,9 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  margin-top: 20px;
-  padding: 20px;
-  bottom: 40px;
+  margin-top: 24px;
+  padding: 24px;
+  bottom: 36px;
 }
 
 /* TODO: fix this duplicate */
@@ -126,8 +125,8 @@ button {
   right: 0;
   display: flex;
   align-items: start;
-  margin-top: 20px;
-  padding: 20px;
+  margin-top: 24px;
+  padding: 24px;
 }
 
 /* TODO: fix this duplicate */
@@ -139,13 +138,13 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  margin-top: 20px;
-  padding: 20px;
-  bottom: 20px;
+  margin-top: 24px;
+  padding: 24px;
+  bottom: 24px;
 }
 
 .button-group {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .bottom-btn-container {
@@ -157,13 +156,13 @@ button {
   flex-direction: column;
   align-items: center;
   justify-content: space-around;
-  margin-top: 20px;
-  padding: 20px;
-  bottom: 40px;
+  margin-top: 24px;
+  padding: 24px;
+  bottom: 36px;
 }
 
 .bottom-btn-container a {
-  margin: 5px;
+  margin: 4px;
 }
 
 
@@ -191,7 +190,7 @@ footer {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 46px;
+  height: 48px;
 }
 
 
@@ -212,7 +211,7 @@ footer {
 }
 
 .navbar-item {
-  margin: 10px;
+  margin: 8px;
   font-size: 24px;
   color: white;
 }
@@ -234,7 +233,7 @@ footer {
 }
 
 .navbar-current-balance {
-  margin: 10px;
+  margin: 12px;
   font-size: 24px;
   margin: 0px;
   padding: 8px;
@@ -304,16 +303,16 @@ footer {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: 0;
-  grid-column-gap: 10px;
+  grid-column-gap: 12px;
   grid-row-gap: 0px;
 }
 
 .coming-soon-img {
-  padding: 50px;
+  padding: 48px;
 }
 
 .coming-soon-text {
-  padding: 40px;
+  padding: 36px;
 }
 
 .coming-soon-container h1 {
@@ -340,11 +339,11 @@ footer {
 }
 
 .offline-img {
-  padding: 50px;
+  padding: 48px;
 }
 
 .offline-text {
-  padding: 40px;
+  padding: 36px;
 }
 
 .offline-container h1 {
@@ -366,18 +365,18 @@ footer {
 .account-input {
   background-color: #231F20;
   color: white;
-  font-size: 30px;
-  padding: 10px;
-  padding-left: 15px;
-  margin: 10px 0px 10px 0px;
+  font-size: 36px;
+  padding: 12px;
+  padding-left: 16px;
+  margin: 12px 0px 12px 0px;
   width: 75%;
-  border-radius: 5px;
+  border-radius: 4px;
 }
 
 .account-button {
   background-color: #231F20;
-  font-size: 30px;
-  margin-bottom: 25px;
+  font-size: 36px;
+  margin-bottom: 24px;
 }
 
 .account-button:hover {
@@ -390,7 +389,7 @@ footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 24px;
 }
 
 input#email {
@@ -434,10 +433,10 @@ div#account-user-handle-row {
   display: flex;
   align-items: center;
   justify-content: start;
-  gap: 20px;
+  gap: 24px;
 
   button {
-    margin: 10px 0px;
+    margin: 8px 0px;
   }
 
   div {
@@ -460,16 +459,16 @@ input#user-handle {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: 0;
-  grid-column-gap: 10px;
+  grid-column-gap: 12px;
   grid-row-gap: 0px;
 }
 
 .about-img {
-  padding: 50px;
+  padding: 48px;
 }
 
 .about-text {
-  padding: 40px;
+  padding: 36px;
 }
 
 .about-container p {
@@ -498,19 +497,19 @@ input#user-handle {
 
 .coin-input {
   margin: 0 auto;
-  padding: 20px;
+  padding: 24px;
   width: 350px;
   background-color: #231F20;
   color: white;
   border: none;
   font-size: 24px;
-  margin:10px;
+  margin: 12px;
 }
 
 .coin-input::before {
   content: '';
   position: absolute;
-  left: 10px;
+  left: 12px;
   top: 50%;
   transform: translateY(-50%);
   height: 70%; 
@@ -526,7 +525,7 @@ input#user-handle {
 
 .bold-coin {
   font-family: Haskoy-bold;
-  font-size: 21px;
+  font-size: 24px;
 }
 
 
@@ -560,9 +559,9 @@ button.danger {
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: white;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
   p, .big-btn, #user-handle {
     width: 100%
@@ -596,7 +595,7 @@ button.danger {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5); 
   backdrop-filter: blur(8px); 
-  z-index: 99; 
+  z-index: 100; 
 }
 
 
@@ -610,9 +609,9 @@ button.danger {
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: white;
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 12px;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
 }
 
@@ -639,29 +638,29 @@ button.danger {
 
 .sirch-symbol-large {
   font-size: xx-large;
-  padding-right: 10px;
+  padding-right: 12px;
 }
 
 
 /* Styles for the success message */
 .success {
   background-color: lightgreen;
-  padding: 10px;
-  border-radius: 5px;
-  margin-top: 20px;
+  padding: 12px;
+  border-radius: 4px;
+  margin-top: 24px;
 }
 
 
 /* Styles for Transaction History */
 .transactions-container {
-  margin: 20px;
+  margin: 24px;
   height: 100%;
   overflow-y: auto;
 }
 
 .transactions-header {
-  padding-bottom: 20px;
-  margin: 20px;
+  padding-bottom: 24px;
+  margin: 24px;
 }
 
 .transactions, .transactions-header {
@@ -673,7 +672,7 @@ button.danger {
   
 .transactions-header p {
   font-family: Haskoy-bold;
-  font-size: 20px;
+  font-size: 24px;
 }
 
 
@@ -706,29 +705,29 @@ button.danger {
   button {
     padding: 12px;
     font-size: 1rem;
-    margin-top: 10px;
+    margin-top: 12px;
   }
 
   .bottom-btn-container {
     position: fixed; 
     left: 0;
     right: 0;
-    bottom: 40px; 
+    bottom: 36px; 
     display: flex;
     justify-content: center;
-    padding: 15px 0;
-    margin-top: 20px;
+    padding: 16px 0;
+    margin-top: 24px;
   }
 
   .big-btn {
     font-size: large; 
     padding: 12px;
-    margin-bottom: 20px;
-    bottom: 40px;
+    margin-bottom: 24px;
+    bottom: 36px;
   }
 
   .coin-input {
-    padding: 10px;
+    padding: 12px;
     font-size: 1rem;
   }
 }
@@ -753,7 +752,7 @@ button.danger {
   }
 
   .page-header {
-    padding: 10px;
+    padding: 12px;
     font-size: 1.2em;
   }
 
@@ -773,7 +772,7 @@ button.danger {
 /* Styles for Purchase Coins Mobile */
 @media screen and (max-width: 768px) {
   .page-text {
-    margin-top: 15px;
+    margin-top: 16px;
     font-size: large;
   }
 
@@ -781,17 +780,16 @@ button.danger {
   .second-row {
     flex-direction: row;
     flex-wrap: wrap;
-
-    margin-bottom: 5px;
+    margin-bottom: 4px;
   }
 
   .total-input {
     width: 100%;
-    margin: 10px 0;
-    padding: 15px;
+    margin: 12px 0;
+    padding: 16px;
     background-color: #5d5d5d;
     color: white;
-    font-size: 18px;
+    font-size: 16px;
   }
 
   .big-btn {
@@ -810,12 +808,12 @@ button.danger {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 10px;
+    padding: 12px;
   }
 
   .big-btn {
     width: 100%;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
   }
 }
 
@@ -836,10 +834,10 @@ button.danger {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
   }
 
   .page-text {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
   }
 }
