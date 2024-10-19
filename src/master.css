@@ -181,6 +181,7 @@ header {
 .main-content {
   flex: 1 1 auto;
   overflow-y: auto;
+  padding: 24px;
 }
 
 footer {
@@ -190,7 +191,7 @@ footer {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 48px;
+  height: 36px;
 }
 
 
@@ -202,48 +203,29 @@ footer {
 .navbar {
   list-style-type: none;
   margin: 0px;
-  padding: 0px;
-  display: flex;
-  justify-content: flex-start;
-  align-items: baseline;
-  flex-wrap: nowrap;
+  padding: 8px !important;
   background-color: black;
 }
 
 .navbar-item {
-  margin: 8px;
   font-size: 24px;
   color: white;
 }
 
 .navbar-item > a {
   text-decoration: none;
-  color: black;
-  font-weight: 600;
 }
 
-.navbar-links {
-  display: flex;
-  list-style: none;
-  padding: 8px;
-}
-
-.navbar-links li {
-  padding: 4px;
-}
-
-.navbar-current-balance {
-  margin: 12px;
-  font-size: 24px;
-  margin: 0px;
-  padding: 8px;
-  background-color: lightgray;
+.navbar-item > a > div > * {
+  text-decoration: none;
+  font-size: 36px;
+  vertical-align: middle;
+  color: #3AD820;
 }
 
 
 /* Styles for Home page */
-.home-page
- {
+.home-page {
   height: 100%;
   display: flex;
   justify-content: space-between;
