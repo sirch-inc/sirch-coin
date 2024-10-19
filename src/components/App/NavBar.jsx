@@ -21,20 +21,20 @@ export default function NavBar({ supabase }) {
       <ul className='navbar'>
         <li className='navbar-item'>
           <a href='/'>
-            <img
-              src='/sirch-coin-favicon.ico'
-              alt="Sirch Coins Logo"
-              className='sirchcoins-logo'
-            />
+            <div>
+              <img
+                src='/sirch-coin-favicon.ico'
+                alt="Sirch Coins Logo"
+                className='sirchcoins-logo'
+              />
+              <span>{userInTable && userBalance && (" " + userBalance?.balance)}</span>
+            </div>
           </a>
         </li>
         <li className='navbar-item'>
           {userInTable && userInTable.full_name + " / @" + userInTable.user_handle}
         </li>
       </ul>
-      {userInTable &&
-        <p className='navbar-current-balance'>Current Balance: {" ⓢ " + userBalance?.balance}</p>
-      }
     </nav>
   );
 }
