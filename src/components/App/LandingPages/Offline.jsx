@@ -5,7 +5,7 @@ export default function Offline() {
   return (
     <div className='offline-container'>
       <div className='offline-img'>
-        <img src={coinSymbol}></img>
+        <img src={coinSymbol}/>
       </div>
       <div className='offline-text'>
         <h1>Gone Fishing!</h1>
