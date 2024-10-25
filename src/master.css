@@ -641,43 +641,45 @@ button.danger {
 }
 
 .transactions-header {
-  display: flex; 
-  justify-content: space-between; 
-  padding-bottom: 24px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  grid-column-gap: 4px; 
+  padding: 0px 8px 12px 8px;
 }
 
 .transactions-header p {
   font-family: Haskoy-bold;
   font-size: 24px;
   text-align: left;
-  flex: 1; 
   margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .transaction-row {
-  display: grid; 
-  grid-template-columns: repeat(5, 1fr); 
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
   grid-column-gap: 4px; 
-  padding-top: 10px;
-  padding-bottom: 10px;
-  justify-content: flex-start; 
-  min-height: 50px; 
+  padding: 12px 8px 12px 8px;
 }
 
 .transaction-row p {
-  flex: 1; 
   text-align: left;
   margin: 0; 
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .transaction-row:nth-child(odd) {
   background-color: white; 
-  align-items: left; 
 }
 
 .transaction-row:nth-child(even) {
   background-color: lightgrey; 
-  align-items: left; 
 }
 
 

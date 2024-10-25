@@ -12,21 +12,11 @@ export default function TransactionCard({ date, type, amount, status, details })
 
   return (
     <div className='transaction-row'>
-      <div>
-        <p>{formatDate(date)}</p>
-      </div>
-      <div>
-        <p>{type}</p>
-      </div>
-      <div>
-        <p>ⓢ {amount}</p>
-      </div>
-      <div>
-        <p>{status}</p>
-      </div>
-      <div>
-        <p>{details}</p>
-      </div>
+      <p>{formatDate(date)}</p>
+      <p>{type}</p>
+      <p>ⓢ {amount}</p>
+      <p>{status}</p>
+      <p className='transaction-details'>{details}</p>
     </div>
   );
 }
