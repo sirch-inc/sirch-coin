@@ -65,7 +65,7 @@ export default function Transactions() {
         <div className='transactions-header'>
           <p>Date</p>
           <p>Type</p>
-          <p>Sirch Coins</p>
+          <p>Amount</p>
           <p>Status</p>
           <p>Details</p>
         </div>
