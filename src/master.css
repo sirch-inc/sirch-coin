@@ -643,7 +643,7 @@ button.danger {
 .transactions-header {
   display: flex; 
   justify-content: space-between; 
-  padding: 0 24px 24px 24px; 
+  padding-bottom: 24px;
 }
 
 .transactions-header p {
@@ -658,7 +658,8 @@ button.danger {
   display: grid; 
   grid-template-columns: repeat(5, 1fr); 
   grid-column-gap: 4px; 
-  padding: 10px; 
+  padding-top: 10px;
+  padding-bottom: 10px;
   justify-content: flex-start; 
   min-height: 50px; 
 }
