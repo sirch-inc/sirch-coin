@@ -31,7 +31,7 @@ export default function Transactions() {
         setUserTransactions(data);
       }
     }
-    else{
+    else {
       // TODO: surface this error appropriately... 
       alert('User not found');
     }
@@ -81,7 +81,6 @@ export default function Transactions() {
                     status={userTransaction.status}
                     details={getTransactionDetails(userTransaction)} 
                   />
-                  
                 ))
               )
             :
