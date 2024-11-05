@@ -66,25 +66,24 @@ export default function Transactions() {
         <div className='transactions-header'>
           <p>Date</p>
           <p>Type</p>
-          <p>Sirch Coins</p>
+          <p>Amount</p>
           <p>Status</p>
           <p>Details</p>
         </div>
         <div className='transactions'>
           {userTransactions
             ? (
-              userTransactions.map((userTransaction) => (
-                <TransactionCard
-                  key={userTransaction.id}
-                  date={userTransaction.created_at}
-                  type={userTransaction.type}
-                  amount={userTransaction.amount}
-                  status={userTransaction.status}
-                  details={getTransactionDetails(userTransaction)}
-                />
-
-              ))
-            )
+                userTransactions.map((userTransaction) => (
+                  <TransactionCard 
+                    key={userTransaction.id}
+                    date={userTransaction.created_at}
+                    type={userTransaction.type}
+                    amount={userTransaction.amount}
+                    status={userTransaction.status}
+                    details={getTransactionDetails(userTransaction)} 
+                  />
+                ))
+              )
             :
             <p>Loading...</p>
           }

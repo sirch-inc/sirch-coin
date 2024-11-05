@@ -26,6 +26,7 @@ export default function TransactionCard({ date, type, amount, status, details })
   );
   return (
     <>
+     <div className='transaction-row'>
       <div>
         <Tooltip
           id="date-tooltip"
@@ -48,8 +49,9 @@ export default function TransactionCard({ date, type, amount, status, details })
       </div>
       <div>
         <OverlayTrigger trigger="click" placement="top" overlay={detailsPopover} rootClose>
-          <p className="details-text-primary" style={{ cursor: 'pointer' }}>Details...</p>
+          <p className="transaction-details" style={{ cursor: 'pointer' }}>Details...</p>
         </OverlayTrigger>
+      </div>
       </div>
     </>
   );
