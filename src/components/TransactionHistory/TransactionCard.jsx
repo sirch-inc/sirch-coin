@@ -51,7 +51,7 @@ export default function TransactionCard({ date, type, amount, status, details })
       </div>
       <div>
         <OverlayTrigger trigger="click" placement="top" overlay={detailsPopover} rootClose>
-          <p className="transaction-details" style={{ cursor: 'pointer' }}>Click for Details</p>
+          <p className="transaction-details" style={{ cursor: 'pointer' }}>Show Details</p>
         </OverlayTrigger>
       </div>
     </div>
