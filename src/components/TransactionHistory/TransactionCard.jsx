@@ -1,4 +1,4 @@
-import { parseISO, formatDistanceToNow} from 'date-fns';
+import { parseISO, formatDistanceToNow } from 'date-fns';
 import { format } from 'date-fns-tz';
 import { Tooltip } from 'react-tooltip'
 import { OverlayTrigger, Popover } from 'react-bootstrap';
@@ -12,10 +12,13 @@ export default function TransactionCard({ date, type, amount, status, details })
       { addSuffix: true }
     );
   };
+
   const formatTooltipDate = (unformattedDate) => {
     const parsedDate = parseISO(unformattedDate);
-    return format(parsedDate, "MM/dd/yyyy hh:mm a 'MST'", { timeZone: 'America/Denver' });
+    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    return format(parsedDate, "MM/dd/yyyy hh:mm a zzz", { timeZone: userTimezone });
   };
+
   const detailsPopover = (
     <Popover id="details-popover">
       <Popover.Header as="h3">Transaction Details</Popover.Header>
@@ -25,8 +28,7 @@ export default function TransactionCard({ date, type, amount, status, details })
     </Popover>
   );
   return (
-    <>
-     <div className='transaction-row'>
+    <div className='transaction-row'>
       <div>
         <Tooltip
           id="date-tooltip"
@@ -49,10 +51,9 @@ export default function TransactionCard({ date, type, amount, status, details })
       </div>
       <div>
         <OverlayTrigger trigger="click" placement="top" overlay={detailsPopover} rootClose>
-          <p className="transaction-details" style={{ cursor: 'pointer' }}>Details...</p>
+          <p className="transaction-details" style={{ cursor: 'pointer' }}>Click for Details</p>
         </OverlayTrigger>
       </div>
-      </div>
-    </>
+    </div>
   );
 }
