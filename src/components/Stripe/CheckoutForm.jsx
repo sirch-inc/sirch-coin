@@ -89,7 +89,6 @@ export default function CheckoutForm({
 
     const { error: cancelPaymentIntentError } = await supabase.functions.invoke('stripe-cancel-payment-intent', {
       body: {
-        userId: userInTable?.user_id,
         paymentIntentId
       }
     });
