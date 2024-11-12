@@ -5,18 +5,20 @@ import { OverlayTrigger, Popover } from 'react-bootstrap';
 
 // eslint-disable-next-line react/prop-types
 export default function TransactionCard({ date, type, amount, status, details }) {
-  const formatDate = (unformattedDate) => {
-    const parsedDate = parseISO(unformattedDate);
+  const formatDate = (isoDate) => {
+    const parsedDate = parseISO(isoDate);
     return formatDistanceToNow(
       parsedDate,
       { addSuffix: true }
     );
   };
 
-  const formatTooltipDate = (unformattedDate) => {
-    const parsedDate = parseISO(unformattedDate);
-    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    return format(parsedDate, "MM/dd/yyyy hh:mm a zzz", { timeZone: userTimezone });
+  const formatTooltipDate = (isoDate) => {
+    const parsedDate = parseISO(isoDate);
+    return format(
+      parsedDate,
+      "MM/dd/yyyy hh:mm a zzz"
+    );
   };
 
   const detailsPopover = (
@@ -27,16 +29,17 @@ export default function TransactionCard({ date, type, amount, status, details })
       </Popover.Body>
     </Popover>
   );
+
   return (
     <div className='transaction-row'>
       <div>
         <Tooltip
-          id="date-tooltip"
+          id='date-tooltip'
           content={formatTooltipDate(date)}
-          place="top"
+          place='top'
           delayShow={200}
         />
-        <p data-tooltip-id="date-tooltip">
+        <p data-tooltip-id='date-tooltip'>
           {formatDate(date)}
         </p>
       </div>
