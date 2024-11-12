@@ -53,8 +53,15 @@ export default function TransactionCard({ date, type, amount, status, details })
         <p>{status}</p>
       </div>
       <div>
-        <OverlayTrigger trigger="click" placement="top" overlay={detailsPopover} rootClose>
-          <p className="transaction-details" style={{ cursor: 'pointer' }}>Show Details</p>
+        <OverlayTrigger
+          trigger="click"
+          placement="top"
+          overlay={detailsPopover}
+          rootClose
+        >
+          <p className='transaction-details'>
+            Show Details
+          </p>
         </OverlayTrigger>
       </div>
     </div>
