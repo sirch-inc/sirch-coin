@@ -47,9 +47,9 @@ export default function Transactions() {
   const getTransactionDetails = (transaction) => {
     switch (transaction.type) {
       case 'SENT':
-        return `Receiver: ${transaction.details.to_user_fullname || ''} (${transaction.details.to_user_handle || ''})\nMemo: ${transaction.details.memo || 'No memo'}`;
+        return `Receiver: ${transaction.details.to_user_fullname || ''} (${transaction.details.to_user_handle || ''})${transaction.details.memo ? `\nMemo: ${transaction.details.memo}` : ''}`;
       case 'RECEIVED':
-        return `Sender: ${transaction.details.from_user_fullname || ''} (${transaction.details.from_user_handle || ''})\nMemo: ${transaction.details.memo || 'No memo'}`;
+        return `Sender: ${transaction.details.from_user_fullname || ''} (${transaction.details.from_user_handle || ''})${transaction.details.memo ? `\nMemo: ${transaction.details.memo}` : ''}`;
       case 'PURCHASE':
         return `Stripe Payment Intent ID: ${transaction.details.paymentIntentId || ''}`;
       case 'INITIAL BALANCE':
