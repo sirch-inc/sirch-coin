@@ -649,7 +649,6 @@ button.danger {
   position: sticky;
   top: 0; 
   background-color: #f4f4f4;
-  z-index: 10;
   border-bottom: 1px solid #ccc;
 }
 
