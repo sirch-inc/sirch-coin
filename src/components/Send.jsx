@@ -155,7 +155,7 @@ export default function Send() {
         //   return;
         // }
 
-      const { error: transferError } = await supabase.functions.invoke('transfer_coins', {
+      const { error: transferError } = await supabase.functions.invoke('transfer-coins', {
         body: {
           sender_id: userInTable.user_id,
           recipient_id: selectedRecipient.user_id,
