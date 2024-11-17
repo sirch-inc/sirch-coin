@@ -8,21 +8,21 @@ import supabase from '../App/supabaseConfig';
 export default function Transactions() {
   const { userInTable } = useContext(AuthContext);
   const [userTransactions, setUserTransactions] = useState(null);
-  
+
   const fetchUserTransactions = async (userInTable) => {
-    if (userInTable){
+    if (userInTable) {
       const { data, error } = await supabase
-      .from('transactions')
-      .select('*')
-      // FIXME: handle fetching other named columns via our foreign-keys
-      // .select(`
-      //   *,
-      //   user:balances!user_id (
-      //     user:users!user_id (email)
-      //   )
-      // `)
-      .eq('user_id', userInTable.user_id)
-      .order('created_at', {ascending: false});
+        .from('transactions')
+        .select('*')
+        // FIXME: handle fetching other named columns via our foreign-keys
+        // .select(`
+        //   *,
+        //   user:balances!user_id (
+        //     user:users!user_id (email)
+        //   )
+        // `)
+        .eq('user_id', userInTable.user_id)
+        .order('created_at', { ascending: false });
 
       if (error) {
         // TODO: surface this error appropriately...
@@ -47,17 +47,18 @@ export default function Transactions() {
   const getTransactionDetails = (transaction) => {
     switch (transaction.type) {
       case 'SENT':
+        return `Receiver: ${transaction.details.to_user_fullname || ''} (${transaction.details.to_user_handle || ''})${transaction.details.memo ? `\nMemo: ${transaction.details.memo}` : ''}`;
       case 'RECEIVED':
-        return `Memo: ${transaction.details.memo || ''}`;
+        return `Sender: ${transaction.details.from_user_fullname || ''} (${transaction.details.from_user_handle || ''})${transaction.details.memo ? `\nMemo: ${transaction.details.memo}` : ''}`;
       case 'PURCHASE':
-        return `Payment Intent ID: ${transaction.details.paymentIntentId || ''}`;
+        return `Stripe Payment Intent ID: ${transaction.details.paymentIntentId || ''}`;
       case 'INITIAL BALANCE':
-        return 'Welcome!';
+        return `Welcome!`;
       default:
         return ``;
     }
   };
-  
+
   return (
     <>
       <h2>Transaction History</h2>
@@ -70,7 +71,7 @@ export default function Transactions() {
           <p>Details</p>
         </div>
         <div className='transactions'>
-          { userTransactions
+          {userTransactions
             ? (
                 userTransactions.map((userTransaction) => (
                   <TransactionCard 
@@ -84,10 +85,10 @@ export default function Transactions() {
                 ))
               )
             :
-              <p>Loading...</p>
-          } 
+            <p>Loading...</p>
+          }
         </div>
-              
+
         <div className='bottom-btn-container-light'>
           <Link to='/' className='big-btn'>
             Back

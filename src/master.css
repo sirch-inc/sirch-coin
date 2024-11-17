@@ -646,6 +646,10 @@ button.danger {
   grid-auto-columns: 1fr;
   grid-column-gap: 4px;
   padding: 0px 8px 12px 8px;
+  position: sticky;
+  top: 0; 
+  background-color: #f4f4f4;
+  border-bottom: 1px solid #ccc;
 }
 
 .transactions-header p {
@@ -664,6 +668,10 @@ button.danger {
   grid-auto-columns: 1fr;
   grid-column-gap: 4px;
   padding: 12px 8px 12px 8px;
+}
+
+.transaction-details {
+  cursor: pointer;
 }
 
 .transaction-row p {
