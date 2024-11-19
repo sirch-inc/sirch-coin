@@ -14,13 +14,6 @@ export default function Transactions() {
       const { data, error } = await supabase
         .from('transactions')
         .select('*')
-        // FIXME: handle fetching other named columns via our foreign-keys
-        // .select(`
-        //   *,
-        //   user:balances!user_id (
-        //     user:users!user_id (email)
-        //   )
-        // `)
         .eq('user_id', userInTable.user_id)
         .order('created_at', { ascending: false });
 
@@ -42,22 +35,6 @@ export default function Transactions() {
       fetchUserTransactions(userInTable);
     }
   }, [userInTable]);
-
-
-  const getTransactionDetails = (transaction) => {
-    switch (transaction.type) {
-      case 'SENT':
-        return `Receiver: ${transaction.details.to_user_fullname || ''} (${transaction.details.to_user_handle || ''})${transaction.details.memo ? `\nMemo: ${transaction.details.memo}` : ''}`;
-      case 'RECEIVED':
-        return `Sender: ${transaction.details.from_user_fullname || ''} (${transaction.details.from_user_handle || ''})${transaction.details.memo ? `\nMemo: ${transaction.details.memo}` : ''}`;
-      case 'PURCHASE':
-        return `Stripe Payment Intent ID: ${transaction.details.paymentIntentId || ''}`;
-      case 'INITIAL BALANCE':
-        return `Welcome!`;
-      default:
-        return ``;
-    }
-  };
 
   return (
     <>
