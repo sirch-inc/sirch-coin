@@ -3,6 +3,7 @@ import { format } from 'date-fns-tz';
 import { Tooltip } from 'react-tooltip';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 
+
 // eslint-disable-next-line react/prop-types
 export default function TransactionCard({ transaction }) {
   const { created_at, type, amount, status, details } = transaction;
@@ -14,7 +15,7 @@ export default function TransactionCard({ transaction }) {
 
   const formatTooltipDate = (isoDate) => {
     const parsedDate = parseISO(isoDate);
-    return format(parsedDate, "MM/dd/yyyy hh:mm a zzz");
+    return format(parsedDate, "eee MM/dd/yyyy hh:mm:ss a zzz");
   };
 
   const getTransactionDetails = () => {
