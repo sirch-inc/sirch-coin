@@ -74,13 +74,9 @@ export default function Transactions() {
           {userTransactions
             ? (
                 userTransactions.map((userTransaction) => (
-                  <TransactionCard 
+                  <TransactionCard
                     key={userTransaction.id}
-                    date={userTransaction.created_at}
-                    type={userTransaction.type}
-                    amount={userTransaction.amount}
-                    status={userTransaction.status}
-                    details={getTransactionDetails(userTransaction)} 
+                    transaction={userTransaction}
                   />
                 ))
               )
