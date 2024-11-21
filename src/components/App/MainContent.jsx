@@ -42,6 +42,7 @@ export default function MainContent({ supabase }) {
           <Route path='/error' Component={GeneralError}/>
           <Route path='/stripe/success/:paymentIntentId?' Component={StripeSuccess}/>
           <Route path='/stripe/failure' Component={StripeFailure}/>
+          <Route path='/*' Component={HomePage} supabase={supabase}/>
         </Routes>
       </BrowserRouter>
     </main>

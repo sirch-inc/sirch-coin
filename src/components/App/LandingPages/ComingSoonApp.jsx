@@ -7,7 +7,7 @@ export default function ComingSoonApp() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path='/' Component={ComingSoon}/>
+        <Route path='/*' Component={ComingSoon}/>
       </Routes>
     </BrowserRouter>
   );
