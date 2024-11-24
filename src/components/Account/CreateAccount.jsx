@@ -58,7 +58,7 @@ export default function CreateAccount() {
       navigate('/verify-account');
     } catch (exception) {
       // TODO: surface this error
-      alert("Error signing up:\n" + exception);
+      alert("Error signing up:\n" + exception.message);
     }
   };
 
@@ -88,7 +88,7 @@ export default function CreateAccount() {
       setUserHandle(data.handles[0]);
     } catch (exception) {
       // TODO: surface this error
-      alert("Error generating new handle(s):\n" + exception);
+      alert("Error generating new handle(s):\n" + exception.message);
     }
   };
   

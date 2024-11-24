@@ -102,7 +102,7 @@ export default function UpdateAccount() {
       setUserHandle(data.handles[0]);
     } catch (exception) {
       // TODO: surface this error
-      alert("Error generating new handle(s):\n" + exception);
+      alert("Error generating new handle(s):\n" + exception.message);
     }
   };
   

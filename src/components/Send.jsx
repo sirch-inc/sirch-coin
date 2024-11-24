@@ -82,7 +82,7 @@ export default function Send() {
         setSelectedRecipient(null);
       }
     } catch (exception) {
-      console.error("An exception occurred:", exception);
+      console.error("An exception occurred:", exception.message);
 
       toast.error("Unable to look up users at this time. Please try again later.");
     }
@@ -185,7 +185,7 @@ export default function Send() {
         fetchUserBalance(userInTable);
       }
     } catch (exception) {
-      console.error("An exception occurred", exception);
+      console.error("An exception occurred", exception.message);
 
       toast.error("An error occurred sending Sirch Coins to your recipient. Please try again later.");
     }
