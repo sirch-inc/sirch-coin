@@ -1,7 +1,7 @@
 import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
-import supabase from '../App/supabaseConfig';
+import supabase from '../App/supabaseProvider';
 import { ToastContainer, toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 import Logout from '../Account/Logout';

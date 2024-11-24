@@ -2,7 +2,7 @@ import { useState, useContext } from 'react';
 import { AuthContext } from '../AuthContext';
 import { PaymentElement } from '@stripe/react-stripe-js';
 import { useStripe, useElements } from '@stripe/react-stripe-js';
-import supabase from '../App/supabaseConfig';
+import supabase from '../App/supabaseProvider';
 
 
 // eslint-disable-next-line react/prop-types

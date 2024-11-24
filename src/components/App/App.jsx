@@ -1,5 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import supabase from './supabaseConfig';
+import supabase from './supabaseProvider';
 import { AuthProvider } from '../AuthContext';
 import Header from './Header';
 import MainContent from './MainContent';
