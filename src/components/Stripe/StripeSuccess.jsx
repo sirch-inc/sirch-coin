@@ -6,7 +6,7 @@ import supabase from '../App/supabaseProvider';
 
 export default function StripeSuccess() {
   const { paymentIntentId } = useParams();
-  const { userInTable } = useContext(AuthContext);
+  const { userInTable, refreshUserBalance } = useContext(AuthContext);
   const [paymentDetails, setPaymentDetails] = useState(null);
   const [paymentError, setPaymentError] = useState(null);
 
@@ -24,6 +24,7 @@ export default function StripeSuccess() {
 
         if (data) {
           setPaymentDetails(data);
+          refreshUserBalance();
         }
       } catch (error) {
         setPaymentError(error.message || "An error occurred");
@@ -35,11 +36,7 @@ export default function StripeSuccess() {
     if (userInTable?.user_id && paymentIntentId) {
       validatePayment();
     }
-  }, [userInTable, paymentIntentId, paymentError]);
-
-  const formatPrice = (price) => {
-    return Number(price).toFixed(2);
-  }
+  }, [userInTable, paymentIntentId, paymentError, refreshUserBalance]);
 
   return (
     <>      
@@ -47,7 +44,7 @@ export default function StripeSuccess() {
       ? (
           <div style={{ textAlign: 'center', padding: '50px' }}>
             <h1 style={{ color: 'green' }}>Purchase Successful!</h1>
-            <h3>ⓢ {paymentDetails.numberOfCoins} have been added to your account</h3>
+            <h3>ⓢ {paymentDetails.amount} have been added to your account</h3>
             {/* TODO: Probably should think about including some kind of receipt ID for customer service inquiries in the future. REPLACE THIS! */}
             {paymentDetails.receipt_link
               ?
@@ -69,9 +66,9 @@ export default function StripeSuccess() {
           </div>
         )
       : (
-        <div style={{ textAlign: 'center', padding: '50px' }}>
-          <h1>Please wait, validating payment...</h1>
-        </div>
+          <div style={{ textAlign: 'center', padding: '50px' }}>
+            <h1>Please wait, validating payment...</h1>
+          </div>
         )
       }
     </>
