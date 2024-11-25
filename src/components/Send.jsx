@@ -8,11 +8,12 @@ import useDebounce from '../helpers/debounce.js'
 
 
 // TODO: move this into its own component file with proper react props validations
+// eslint-disable-next-line react/prop-types
 export function UserCard({user, handleUserCardSelected}) {
   return (
     <div
       className='user-card'
-      onClick={(e) => handleUserCardSelected(user)}
+      onClick={() => handleUserCardSelected(user)}
       >
       <p>
         Handle: {user.user_handle}
@@ -25,28 +26,15 @@ export function UserCard({user, handleUserCardSelected}) {
 }
 
 export default function Send() {
-  const { userInTable, userBalance } = useContext(AuthContext);
+  const { userInTable, userBalance, refreshUserBalance } = useContext(AuthContext);
   const [sendAmount, setSendAmount] = useState('');
   const [searchText, setSearchText] = useState('');
   const [memo, setMemo] = useState('');
-  const [currentBalance, setCurrentBalance] = useState(null);
   const [foundUsers, setFoundUsers] = useState(null);
   const [selectedRecipient, setSelectedRecipient] = useState(null);
 
-  const fetchUserBalance = async (userInTable) => {
-    if (userInTable) {
-      const { data, error } = await supabase
-        .from('balances')
-        .select('*')
-        .eq('user_id', userInTable.user_id)
-        .single();
-
-        if (error) {
-          toast.error("Unable to load user balance");
-        } else {
-        setCurrentBalance(data.balance);
-      }
-    }
+  const fetchUserBalance = async () => {
+    await refreshUserBalance();
   };
 
   const debouncedLookupUsers = useDebounce(async () => {
@@ -120,10 +108,10 @@ export default function Send() {
   const handleSubmit = async (event) => {
     event.preventDefault();
   
-    fetchUserBalance(userInTable);
+    fetchUserBalance();
 
     // verify the sender has sufficient balance
-    if (sendAmount > currentBalance) {
+    if (sendAmount > userBalance) {
       toast.error("Insufficient balance.");
       return;
     }
@@ -181,8 +169,7 @@ export default function Send() {
         setFoundUsers(null);
         setMemo('');
 
-        // TODO: consider refactoring this and other similar calls into a provider or the context
-        fetchUserBalance(userInTable);
+        fetchUserBalance();
       }
     } catch (exception) {
       console.error("An exception occurred", exception.message);
@@ -193,7 +180,7 @@ export default function Send() {
 
   // (re)fetch the user's balance when the component renders
   useEffect(() => {
-    fetchUserBalance(userInTable);
+    fetchUserBalance();
   }, [userBalance]);
 
   // cancel any pending lookup when unmounting component
@@ -276,7 +263,7 @@ export default function Send() {
               required
               type = 'number'
               min = '1'
-              max = {currentBalance || '0'}
+              max = {userBalance || '0'}
               step = '1'
               value = {sendAmount}
               onChange = {handleAmountChange}
@@ -294,11 +281,6 @@ export default function Send() {
                 onChange = {handleMemoChange}
                 autoComplete = 'memo'
               />
-            </div>
-
-            {/* TODO: Dynamically update dollar amount based on coin-to-dollar valuation */}
-            <div>
-              <p>You currently have <span className = 'bold-coin'> {currentBalance !== null ? "ⓢ " + currentBalance : "Loading..."}</span> / $ {(currentBalance*0.10).toFixed(2)}</p>
             </div>
           </div>
           
