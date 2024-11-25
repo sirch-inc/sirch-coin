@@ -1,4 +1,4 @@
-import {createContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect } from 'react';
 import supabase from './App/supabaseProvider';
 
 
@@ -11,6 +11,24 @@ export const AuthProvider = ({ children }) => {
   const [userEmail, setUserEmail] = useState(null);
   const [userInTable, setUserInTable] = useState(null);
   const [userBalance, setUserBalance] = useState(null);
+  const [authError, setAuthError] = useState(null);
+
+  const refreshUserBalance = async () => {
+    if (userInTable) {
+      const { data, error } = await supabase
+        .from('balances')
+        .select('*')
+        .eq('user_id', userInTable.user_id)
+        .single();
+  
+      if (error) {
+        console.error('Error checking this user\'s balance:', error);
+        setAuthError(error);
+      } else {
+        setUserBalance(data.balance);
+      }
+    }
+  };
 
   // Authenticate users
   useEffect(() => {
@@ -41,6 +59,8 @@ export const AuthProvider = ({ children }) => {
           setUserId(null);
           setUserEmail(null);
           setUserInTable(null);
+          setUserBalance(null);
+          setAuthError(null);
 
           // clear local and session storage
           [
@@ -61,6 +81,7 @@ export const AuthProvider = ({ children }) => {
           break;
         default:
           console.error("Auth - Unknown Event", event);
+          setAuthError("Auth - Unknown Event");
           break;
       }
     });
@@ -79,8 +100,8 @@ export const AuthProvider = ({ children }) => {
           .single();
 
         if (error) {
-          // TODO: surface this error
-          alert("Error finding user in table:\n" + error);
+          console.error("Error finding user in table:\n" + error);
+          setAuthError(error);
         } else {
           setUserInTable(data);
         }
@@ -89,31 +110,14 @@ export const AuthProvider = ({ children }) => {
 
     checkUserInTable();
   }, [userId]);
-    
+
   // Get user's current balance
   useEffect(() => {
-    const getUserBalance = async () => {
-      if (userInTable) {
-        const { data, error } = await supabase
-          .from('balances')
-          .select('*')
-          .eq('user_id', userInTable.user_id)
-          .single();
-
-        if (error) {
-          // TODO: surface this error...
-          alert("Error checking this user's balance:\n" + error);
-        } else {
-          setUserBalance(data);
-        }
-      }
-    };
-
-    getUserBalance();
-  }, [userInTable]);
+    refreshUserBalance();
+  }, [userInTable, refreshUserBalance]);
   
   return (
-    <AuthContext.Provider value={{ session, userId, userEmail, userInTable, userBalance }} supabase={ supabase }>
+    <AuthContext.Provider value={{ session, userId, userEmail, userInTable, userBalance, refreshUserBalance, authError }} supabase={ supabase }>
       {children}
     </AuthContext.Provider>
   )
