@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { AuthContext } from '../AuthContext';
 
 
-export default function NavBar({ supabase }) {
+export default function NavBar() {
   const { userInTable, userBalance } = useContext(AuthContext);
 
   return (
@@ -16,7 +16,7 @@ export default function NavBar({ supabase }) {
                 alt="Sirch Coins Logo"
                 className='sirchcoins-logo'
               />
-              <span>{userInTable && userBalance && (" " + userBalance + " / $ " + (userBalance*0.10).toFixed(2))}</span>
+              <span>{userInTable && userBalance && (" " + userBalance + " / $ " + (userBalance*0.10).toFixed(2) + " USD")}</span>
             </div>
           </a>
         </li>
