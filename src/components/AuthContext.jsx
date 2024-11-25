@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect, useCallback } from 'react';
 import supabase from './App/supabaseProvider';
 
 
@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
   const [userBalance, setUserBalance] = useState(null);
   const [authError, setAuthError] = useState(null);
 
-  const refreshUserBalance = async () => {
+  const refreshUserBalance = useCallback(async () => {
     if (userInTable) {
       const { data, error } = await supabase
         .from('balances')
@@ -28,19 +28,10 @@ export const AuthProvider = ({ children }) => {
         setUserBalance(data.balance);
       }
     }
-  };
+  }, [userInTable]);
 
-  // Authenticate users
+  // Manage the user authentication session
   useEffect(() => {
-    // TODO: commented this out for now in favor of using supabase Auth events below...do we need this??
-    // supabase.auth.getSession().then(({ data: { session }}) => {
-    //   setSession(session);
-
-    //   if (session && session.user) {
-    //     setUserId(session.user.id);
-    //   }
-    // });
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       // TODO: handle the events appropriately
       switch (event) {
@@ -89,10 +80,10 @@ export const AuthProvider = ({ children }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Match authenticated user with associated users table
+  // Fetch the user's profile
   useEffect(() => {
-    const checkUserInTable = async () => {
-      if (userId) {
+    const fetchUser = async () => {
+      if (session && userId) {
         const { data, error } = await supabase
           .from('users')
           .select('*')
@@ -105,11 +96,13 @@ export const AuthProvider = ({ children }) => {
         } else {
           setUserInTable(data);
         }
+      } else {
+        setUserInTable(null);
       }
     };
 
-    checkUserInTable();
-  }, [userId]);
+    fetchUser();
+  }, [session, userId]);
 
   // Get user's current balance
   useEffect(() => {
