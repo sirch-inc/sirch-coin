@@ -1,20 +1,9 @@
 import { useContext } from 'react';
-// import { useNavigate } from 'react-router-dom';
-// import LogoutSupabase from '../Account/Logout';
 import { AuthContext } from '../AuthContext';
 
 
 export default function NavBar({ supabase }) {
-  // const { session } = useContext(AuthContext);
   const { userInTable, userBalance } = useContext(AuthContext);
-
-  // TODO: remove this?
-  // const navigate = useNavigate();
-
-  // function handleLogout(){
-  //   LogoutSupabase({ supabase })
-  //   navigate('/')
-  // }
 
   return (
     <nav>
@@ -27,7 +16,7 @@ export default function NavBar({ supabase }) {
                 alt="Sirch Coins Logo"
                 className='sirchcoins-logo'
               />
-              <span>{userInTable && userBalance && (" " + userBalance?.balance)}</span>
+              <span>{userInTable && userBalance && (" " + userBalance + " / $ " + (userBalance*0.10).toFixed(2))}</span>
             </div>
           </a>
         </li>
