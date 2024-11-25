@@ -24,6 +24,7 @@ export const AuthProvider = ({ children }) => {
       if (error) {
         console.error('Error checking this user\'s balance:', error);
         setAuthError(error);
+        setUserBalance(null);
       } else {
         setUserBalance(data.balance);
       }
