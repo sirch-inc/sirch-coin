@@ -13,12 +13,13 @@ import { useNavigate } from 'react-router-dom';
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_API_PUBLISHABLE_KEY);
 
 export default function PurchaseCoins() {
-  const [localCoinAmount, setLocalCoinAmount] = useState(5);
-  const [coinAmount, setCoinAmount] = useState(5);
+  const [localCoinAmount, setLocalCoinAmount] = useState(0);
+  const [coinAmount, setCoinAmount] = useState(0);
   const [coinAmountError, setCoinAmountError] = useState(false);
   const [pricePerCoin, setPricePerCoin] = useState("Loading...");
   const [localTotalPrice, setLocalTotalPrice] = useState(0);
   const [totalPrice, setTotalPrice] = useState("Loading...");
+  const [minimumPurchase, setMinimumPurchase] = useState(null);
   const [currency, setCurrency] = useState("Loading...");
   const [showCheckoutForm, setShowCheckoutForm] = useState(false);
   const [options, setOptions] = useState(null);
@@ -26,15 +27,14 @@ export default function PurchaseCoins() {
   const navigate = useNavigate();
 
   
-  // load the user's initial data (balance, etc)
+  // fetch current quote
   useEffect(() => {
-    const loadInitialData = async () => {
+    const fetchQuote = async () => {
       if (!userInTable) return;
   
-      // TODO: fetch the minimum number of coins to satisfy Stripe's $0.50 minimum purchase
-      const { data, error } = await supabase.functions.invoke('price-per-coin', {
+      const { data, error } = await supabase.functions.invoke('get-coin-purchase-quote', {
         body: {
-          numberOfCoins: 5
+          purchaseProvider: 'STRIPE'
         }
       });
 
@@ -43,13 +43,15 @@ export default function PurchaseCoins() {
         navigate('/error', { replace: true });
       } else {
         setPricePerCoin(data.pricePerCoin);
-        setLocalTotalPrice(data.totalAmount);
+        setLocalTotalPrice(data.minimumPurchase * data.pricePerCoin);
         setCurrency(data.currency);
+        setLocalCoinAmount(data.minimumPurchase);
+        setMinimumPurchase(data.minimumPurchase);
       }
     };
  
-    loadInitialData();
-  }, [userInTable]);
+    fetchQuote();
+  }, [userInTable, navigate]);
 
   const handleCheckout = async () => {
     if (!userInTable || localCoinAmount === '') return;
@@ -90,17 +92,17 @@ export default function PurchaseCoins() {
     if (!isNaN(numValue)) {
       setLocalCoinAmount(numValue);
       setLocalTotalPrice(numValue * parseFloat(pricePerCoin));
-      setCoinAmountError(numValue < 5);
+      setCoinAmountError(numValue < minimumPurchase);
     } else {
       setCoinAmountError(true);
     }
   };
 
   const handleBlur = () => {
-    if (localCoinAmount === '' || localCoinAmount < 5) {
-      setLocalCoinAmount(5);
+    if (localCoinAmount === '' || localCoinAmount < minimumPurchase) {
+      setLocalCoinAmount(minimumPurchase);
       setCoinAmountError(false);
-      setLocalTotalPrice(5 * parseFloat(pricePerCoin));
+      setLocalTotalPrice(minimumPurchase * parseFloat(pricePerCoin));
     }
   };
 
@@ -118,8 +120,8 @@ export default function PurchaseCoins() {
         <h2>Buy Sirch Coins ⓢ</h2>
         <h3>How many Sirch Coins ⓢ would you like to purchase?</h3>
         { pricePerCoin === "Loading..."
-          ? <p>Current value: ⓢ 1 = {pricePerCoin} {currency}</p>
-          : <p>Current value: ⓢ 1 = ${formatPrice(pricePerCoin)} {currency.toUpperCase()}</p>
+          ? <p>Current quote: ⓢ 1 = {pricePerCoin} {currency}</p>
+          : <p>Current quote: ⓢ 1 = ${formatPrice(pricePerCoin)} {currency.toUpperCase()}</p>
         }
         <div className='purchase-form'>
           <span className='sirch-symbol-large'>ⓢ</span>
@@ -127,18 +129,18 @@ export default function PurchaseCoins() {
             className='coin-input'
             type='number'
             name='coins'
-            placeholder="Enter the number of coins you want to purchase"
+            placeholder="Number of coins to purchase"
             value={localCoinAmount}
             onChange={handleAmountChange}
             onBlur={handleBlur}
             // TODO: min needs to be the fetched value
-            min='5'
+            min={minimumPurchase?.toString()}
             step='1'
             required
           />
         </div>
         {/* TODO: use the fetched min value here... */}
-        <p><strong>Note: At the current time, a minimum purchase of ⓢ 5 is required.</strong></p>
+        <p><strong>Note: At the current time, a minimum purchase of ⓢ {minimumPurchase} is required.</strong></p>
         {/* TODO: Add "See more" link with info on Stripe/purchasing */}
         <p>Sirch Coins uses the payment provider Stripe for secure transactions. See more...</p>
         { localTotalPrice === 0
@@ -149,7 +151,7 @@ export default function PurchaseCoins() {
           <button 
             className='big-btn'
             onClick={handleCheckout}
-            disabled={coinAmountError || localCoinAmount < 5}
+            disabled={coinAmountError || localCoinAmount < minimumPurchase}
           >
             Complete purchase...
           </button>
