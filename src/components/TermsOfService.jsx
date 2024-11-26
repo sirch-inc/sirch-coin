@@ -1,22 +1,8 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from './AuthContext';
-import { useContext } from 'react';
-import LogoutSupabase from './Account/Logout';
+import { Link } from 'react-router-dom';
 
 
 // eslint-disable-next-line react/prop-types
 export default function TermsOfService() {
-  const { session, authError} = useContext(AuthContext);
-  const navigate = useNavigate();
-
-  function handleLogout() {
-    LogoutSupabase({ supabase })
-    navigate('/')
-  }
-
-  if (authError) {
-    navigate('/error', { replace: true });
-  }
 
   return (
     <div className='terms-of-service'>
@@ -73,6 +59,11 @@ export default function TermsOfService() {
         Phone: <a href="tel:+18483293092">+1 (848) 329-3092</a><br/>
         Mail: Josh Rubenstein, 4821 S. Xenia Street, Denver CO, 80237.
       </p>
+      <div className='bottom-btn-container'>
+        <Link to='/' className='big-btn'>
+          Back
+        </Link>
+      </div>
     </div>
   );
 }
