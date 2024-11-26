@@ -605,6 +605,7 @@ button.danger {
 
 .payment-form {
   height: auto;
+  padding-bottom: 24px;
 }
 
 .payment-footer {
