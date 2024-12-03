@@ -10,7 +10,6 @@ import OfflineApp from './components/App/LandingPages/OfflineApp';
 import App from './components/App/App';
 // #v-endif
 
-
 document.title = import.meta.env.VITE_PAGE_TITLE;
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
