@@ -194,6 +194,10 @@ footer {
   height: 36px;
 }
 
+.terms-of-service-link {
+  color: lightgray;
+  font-family: unset;
+}
 
 /* Styles for Navbar */
 .sirchcoins-logo {
