@@ -1,6 +1,7 @@
 import './master.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+
 // #v-ifdef VITE_IS_COMING_SOON
 import ComingSoonApp from './components/App/LandingPages/ComingSoonApp';
 // #v-elif VITE_IS_OFFLINE
