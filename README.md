@@ -17,7 +17,7 @@ Ask a developer for invites to access any of these services, if you are working 
 * [sirchcoin.com](https://sirchcoin.com) is our production environment.  Deployed manually in Netlify.
 
 ### Custom Deployment Environment Flags
-The front-end can be configured to conditionally-compile simple, custom landing pages to inform users of system-wide modes.  We have a `Coming Soon` landing page intended for use until we launch, and a `Systems Maintenace` page intended when we need to take down the website for maintenance, major updates, problems, or abuse by hackers.  They are driven by setting one or the other following environment variables to `true` in the Netlify `Environment Variables` section:
+The front-end can be configured to conditionally-compile simple, custom landing pages to inform users of system-wide modes.  We have a `Coming Soon` landing page intended for use until we launch, and a `Systems Maintenace` page intended when we need to take down the website for maintenance, major updates, problems, or abuse by hackers.  They are driven by setting one or the other following environment variables to `true` in the Netlify `Environment Variables` section (you can test these locally by adding them to your `.env.local` file):
 ```
 VITE_IS_COMING_SOON="false"
 VITE_IS_OFFLINE="false"
