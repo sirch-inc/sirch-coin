@@ -1,7 +1,7 @@
 # Sirch Coins Front-End Dashboard
 
 ## Overview
-This is the front-end dashboard for Sirch Coins, written in React/JSX using the `Vite` (https://vite.dev/) command-line toolchain. The Sirch Coin dashboard allows users to login to their accounts, send coins, purchase coins, etc.. The interface is meant to be extremely simple and mimic the actions & functionality of an ATM machine.
+This is the front-end single-page web app dashboard for Sirch Coins, written in React/JSX using the `Vite` (https://vite.dev/) command-line toolchain. The Sirch Coin dashboard allows users to login to their accounts, send coins, purchase coins, etc.. The interface is meant to be extremely simple and mimic the actions & functionality of an ATM machine.
 
 ### Services
 Ask a developer for invites to access any of these services, if you are working in those areas:
