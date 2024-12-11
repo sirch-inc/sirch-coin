@@ -13,7 +13,7 @@ if (import.meta.env.MODE === 'production') {
   alert("PRE-ALPHA WARNING:\n\nThis is a pre-alpha public production Sirch Coin site.\n\n\
     Transactions are real and recorded.\n\n\
     You must use real credit cards for purchases at this time, which will be processed and debited.\n\n\
-    If you require additional support or adjustments to your balance or transaction history, please contact the dev team."
+    If you require additional support or adjustments to your balance or transaction history, please contact Sirch."
   );
 }
 

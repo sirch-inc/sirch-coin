@@ -8,7 +8,7 @@ export default function StripeSuccess() {
   const { paymentIntentId } = useParams();
   const { userInTable, refreshUserBalance } = useContext(AuthContext);
   const [paymentDetails, setPaymentDetails] = useState(null);
-  const [paymentError, setPaymentError] = useState(null);
+  const [paymentError, setPaymentError] = useState(false);
 
   useEffect(() => {
     const validatePayment = async () => {
@@ -20,16 +20,20 @@ export default function StripeSuccess() {
           }
         });
 
-        if (error) throw error;
-
-        if (data) {
-          setPaymentDetails(data);
-          refreshUserBalance();
+        if (error) {
+          throw new Error(error);
         }
-      } catch (error) {
-        setPaymentError(error.message || "An error occurred");
-        // TODO: Handle alert to user and redirect(?)
-        alert("There was an error processing your payment details:\n" + paymentError)
+
+        if (!data) {
+          throw new Error("No stripe-validate-payment data received.");
+        }
+  
+        setPaymentDetails(data);
+        refreshUserBalance();
+      } catch (exception) {
+        console.error(exception);
+
+        setPaymentError(true);
       }
     };
 
@@ -45,12 +49,11 @@ export default function StripeSuccess() {
           <div style={{ textAlign: 'center', padding: '50px' }}>
             <h1 style={{ color: 'green' }}>Purchase Successful!</h1>
             <h3>ⓢ {paymentDetails.amount} have been added to your account</h3>
-            {/* TODO: Probably should think about including some kind of receipt ID for customer service inquiries in the future. REPLACE THIS! */}
             {paymentDetails.receipt_link
               ?
                 (
                   <a target='_blank' href={paymentDetails.receipt_link}>
-                    View your Stripe Receipt (opens in a new window).
+                    View your Stripe Receipt (opens in a new window/tab).
                   </a>
                 )
               :
@@ -65,7 +68,20 @@ export default function StripeSuccess() {
             </div>
           </div>
         )
-      : (
+      : paymentError
+        ? (
+          <div style={{ textAlign: 'center', padding: '50px' }}>
+            <h1>There was an error processing your payment.</h1>
+            <h3>Please contact Sirch for additional information and check your Sirch Coins Balance and Transactions.</h3>
+
+            <div style={{ textAlign: 'center', padding: '50px' }}>
+              <Link to='/' className='big-btn'>
+                Back to Home
+              </Link>
+            </div>
+          </div>
+        )
+        : (
           <div style={{ textAlign: 'center', padding: '50px' }}>
             <h1>Please wait, validating payment...</h1>
           </div>
