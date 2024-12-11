@@ -123,11 +123,11 @@ export default function CreateAccount() {
                   that <i>you</i> should decide how and when to share them or make them accessible to others.
                 </p>
                 <p>
-                  That said, we also encourage our users to share their profile with others to create a networked community
+                  That said, we also encourage our users to share their profiles with others to create a networked community
                   and to make it easier for people on our platforms to find and connect with you.
                 </p>
                 <p>
-                  The choice is yours; you can adjust your Privacy settings at any time in your Account Profile.
+                  The choice is yours; you can adjust your Privacy settings at any time in your User Account Profile.
                 </p>
               </div>
 
@@ -240,7 +240,7 @@ export default function CreateAccount() {
                   easily and to help keep your Name and Email private if you choose not to share them.
                   </p>
                   <p>
-                  You may change this phrase at any time in your Account Profile.
+                  You may change this phrase at any time in your User Account Profile.
                   </p>
                 </div>
                 <input
