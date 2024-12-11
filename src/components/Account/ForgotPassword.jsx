@@ -1,30 +1,31 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 import supabase from '../App/supabaseProvider'
 
 
 export default function ForgotPassword() {
   const [userEmail, setUserEmail] = useState('');
   const [resetSent, setResetSent] = useState(false);
-  const [error, setError] = useState(null);
-  
+  const navigate = useNavigate();
+
   async function requestReset(e) {
     e.preventDefault();
 
     try {
-      const {error} = await supabase.auth.resetPasswordForEmail(
+      const { error } = await supabase.auth.resetPasswordForEmail(
         userEmail,
         { redirectTo: `${window.location.origin}/reset-password` }
       );
 
       if (error) {
-        throw error;
-      } else {
-        setResetSent(true);
+        throw new Error(error);
       }
+
+      setResetSent(true);
     } catch (exception) {
-      // TODO: surface or handle error...
-      console.error("An exception occurred:", exception.message);
-      setError(exception.message);
+      console.error(exception);
+
+      navigate('/error', { replace: true });
     }
   }
 
@@ -46,7 +47,6 @@ export default function ForgotPassword() {
           />
           <button type='submit'>Send Reset Email</button>
         </form>
-        {error && <p className='error'>{error}</p>}
       </>
       ) : (
       <p>If the email address {userEmail} has a Sirch Coins account, we&apos;ve emailed you a link to reset your password. Please check your email inbox.</p>

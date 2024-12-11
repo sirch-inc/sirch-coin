@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
 import { AuthContext } from '../AuthContext';
 import supabase from '../App/supabaseProvider';
 
@@ -18,15 +19,14 @@ export default function CreateAccount() {
 
   useEffect(() => {
     handleSuggestNewHandle();
-  }, []);
+  });
 
   const handleSignUp = async (event) => {
     event.preventDefault();
     
     try {
       if (!passwordsMatch) {
-        // TODO: surface this error
-        alert("Passwords do not match.");
+        toast.error("Passwords do not match.");
         return;
       }
 
@@ -47,18 +47,18 @@ export default function CreateAccount() {
       });
 
       if (error) {
-        // TODO: surface this error...
-        throw error;
+        throw new Error(error);
       }
 
       if (!user) {
-        // TODO: do something with user
+        throw new Error("No user was created.");
       }
 
       navigate('/verify-account');
     } catch (exception) {
-      // TODO: surface this error
-      alert("Error signing up:\n" + exception.message);
+      console.error(exception);
+
+      navigate('/error', { replace: true });
     }
   };
 
@@ -69,7 +69,7 @@ export default function CreateAccount() {
     setPasswordsMatch(value === password);
   };
 
-  // refresh user handle
+  // roll new user handle
   const handleSuggestNewHandle = async () => {
     setUserHandle('');
 
@@ -81,14 +81,18 @@ export default function CreateAccount() {
       });
     
       if (error) {
-        // TODO: surface this error...
-        throw error;
+        throw new Error(error);
+      }
+
+      if (!data) {
+        throw new Error("No user handles found.");
       }
 
       setUserHandle(data.handles[0]);
     } catch (exception) {
-      // TODO: surface this error
-      alert("Error generating new handle(s):\n" + exception.message);
+      console.error(exception);
+
+      navigate('/error', { replace: true });
     }
   };
   
@@ -97,6 +101,15 @@ export default function CreateAccount() {
       {({ session }) =>
         !session ? (
           <>
+            <ToastContainer
+              position = 'top-right'
+              autoClose = {false}
+              newestOnTop = {false}
+              closeOnClick
+              draggable
+              theme = 'colored'
+            />
+
             <h2>Create Account</h2>
             <p>Already have an account? <a href='/login'>Log in</a> instead.</p>
             <br></br>
