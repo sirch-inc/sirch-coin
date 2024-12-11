@@ -53,7 +53,7 @@ export default function ResetPassword() {
         alert('Password updated successfully!');
       } else {
         // TODO: surface this error appropriately
-        alert("Something's not right...have you arrived at this page by clicking on the link in your email? You may need to request another password reset email via the Login page before being able to successfully update your password.");
+        alert("Something is not right...have you arrived at this page by clicking on the link in your email? You may need to request another password reset email via the Login page before being able to successfully update your password.");
       }
 
       navigate('/');
