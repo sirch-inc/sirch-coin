@@ -1,5 +1,6 @@
 import { useState, useContext } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
 import supabase from '../App/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
@@ -258,6 +259,10 @@ export default function UpdateAccount() {
               <br></br>
 
               <button className="account-button" type="submit"> Update → </button>
+
+              <Link to = '/' className = 'big-btn'>
+                Back
+              </Link>
             </form>
           </>
         ) : (
