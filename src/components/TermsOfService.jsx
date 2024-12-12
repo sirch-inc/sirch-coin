@@ -57,7 +57,7 @@ export default function TermsOfService() {
         If you have any questions, please contact us at:<br/>
         Email: <a href="mailto:josh@sirch.ai">josh@sirch.ai</a><br/>
         Phone: <a href="tel:+18483293092">+1 (848) 329-3092</a><br/>
-        Mail: Josh Rubenstein, 4821 S. Xenia Street, Denver CO, 80237.
+        Mail: Josh R. (Sirch), 4821 S. Xenia Street, Denver CO, 80237.
       </p>
       <div className='bottom-btn-container'>
         <Link to='/' className='big-btn'>
