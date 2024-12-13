@@ -1,9 +1,8 @@
 import { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
 import supabase from '../App/supabaseProvider';
 import { ToastContainer, toast } from 'react-toastify';
-import { Link } from 'react-router-dom';
 import Logout from '../Account/Logout';
 
 
@@ -133,10 +132,10 @@ export default function MyAccount(){
             </div>
           </dialog> 
         </>
-     }
+      }
       <div className='bottom-btn-container'>
         <Link to='/' className='big-btn'>
-          Back
+          Back to Home
         </Link>
       </div>
     </div>
