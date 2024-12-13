@@ -64,7 +64,7 @@ VITE_IS_OFFLINE="false"
 1. In a terminal, change into the `sirch-coin` directory where you pulled/downloaded the source code, then run `code .` to open in VS Code.
 1. Create an `.env.local` text file with the necessary keys (ask a developer for these). NOTE: These may change over time!
 
-### Set up Sirch-Coins-Supabase (Back-End)
+### Set up Sirch-Coins-Supabase (back-End)
 1. Pull down the latest version of the `sirch-inc/sirch-coin-supabase` github repository onto your local machine (https://github.com/sirch-inc/sirch-coin-supabase)
 1. In a terminal, change into the `sirch-coin-supabase` directory where you pulled/downloaded the source code, then run `code .` to open in VS Code.
 1. Follow the README there to set up your LOCAL Supabase instance to which the LOCAL Sirch Coins front-end connects in Development mode.
