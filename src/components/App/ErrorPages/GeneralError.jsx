@@ -26,7 +26,9 @@ export default function GeneralError() {
       </div>
   
       <div className='bottom-btn-container'>
-        <Link to='/' className='big-btn'> Back to Home </Link>
+        <Link to='/' className='big-btn'>
+          Back to Home
+        </Link>
       </div>
     </>
   )
