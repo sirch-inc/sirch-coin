@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react'
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
 import supabase from '../App/supabaseProvider';
 
@@ -262,9 +262,10 @@ export default function CreateAccount() {
       }
 
       <div className='bottom-btn-container'>
-        <Link to='/' className='big-btn'>
-          Back to Home
-        </Link>
+        <button className='big-btn'
+          onClick={() => { navigate(-1); }}>
+          Back
+        </button>
       </div>
     </>
   );

@@ -133,10 +133,12 @@ export default function MyAccount(){
           </dialog> 
         </>
       }
+
       <div className='bottom-btn-container'>
-        <Link to='/' className='big-btn'>
-          Back to Home
-        </Link>
+        <button className='big-btn'
+          onClick={() => { navigate(-1); }}>
+          Back
+        </button>
       </div>
     </div>
   )

@@ -1,4 +1,5 @@
 import { useState, useContext } from 'react'
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
 import supabase from '../App/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
@@ -7,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 export default function UpdateAccount() {
-  const { userInTable, userEmail } = useContext(AuthContext);
+  const { userInTable, userEmail, session } = useContext(AuthContext);
   const [email, setEmail] = useState(userEmail || '');
   const [isEmailPrivate, setIsEmailPrivate] = useState(userInTable?.is_email_private);
   const [hasEmailChanged, setHasEmailChanged] = useState(false);
@@ -18,6 +19,7 @@ export default function UpdateAccount() {
   const [lastName, setLastName] = useState(userInTable?.last_name);
   const [isNamePrivate, setIsNamePrivate] = useState(userInTable?.is_name_private);
   const [userHandle, setUserHandle] = useState(userInTable?.user_handle);
+  const navigate = useNavigate();
 
   const handleUpdate = async (event) => {
     event.preventDefault();
@@ -107,8 +109,8 @@ export default function UpdateAccount() {
   };
   
   return (
-    <AuthContext.Consumer>
-      {({ session }) =>
+    <>
+      {
         session ? (
           <>
             <ToastContainer
@@ -254,9 +256,16 @@ export default function UpdateAccount() {
             </form>
           </>
         ) : (
-          <div>You must be logged in to change your user account settings.</div>
+          <h2>You must be logged in to change your user account settings.</h2>
         )
       }
-    </AuthContext.Consumer>
-  );
+
+      <div className='bottom-btn-container'>
+        <button className='big-btn'
+          onClick={() => { navigate(-1); }}>
+          Back
+        </button>
+      </div>
+    </>
+);
 }

@@ -72,12 +72,6 @@ export default function Login() {
               <button className='account-button' type='submit'>Log In →</button>
               <a href='/forgot-password'>Forgot Password?</a>
               <br/>
-
-              <div className='bottom-btn-container'>
-                <Link to='/' className='big-btn'>
-                  Back to Home
-                </Link>
-              </div>
             </form>
           </>
         ) : (
@@ -91,10 +85,11 @@ export default function Login() {
       }
 
       <div className='bottom-btn-container'>
-        <Link to='/' className='big-btn'>
-          Back to Home
-        </Link>
+        <button className='big-btn'
+          onClick={() => { navigate(-1); }}>
+          Back
+        </button>
       </div>
-    </>
+</>
   );
   }
