@@ -82,9 +82,9 @@ export default function Login() {
           </>
         ) : (
           <>
-            <h2>You are already logged in.</h2>
+            <h2>You are currently logged in.</h2>
             <br/>
-            <h3>Please Log Out first if you want to login with a different account.</h3>
+            <h3>Please Log Out first if you want to Login with a different account.</h3>
             <br/>
           </>
         )
