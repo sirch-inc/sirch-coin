@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
 import supabase from '../App/supabaseProvider';
@@ -8,6 +8,8 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [signInError, setSignInError] = useState(false);
+  const { session } = useContext(AuthContext);
+
   const navigate = useNavigate();
   
   const handleLogin = async (event) => {
@@ -27,52 +29,16 @@ export default function Login() {
 
       navigate('/');
     } catch (exception) {
-      // TODO: Add login failure notification to user
+      // TODO: Send login failure notification to user
 
       console.error("Error logging in:", exception.message);
     }
   };
   
   return (
-    <AuthContext.Consumer>
-      {({ session }) =>
-        !session && !signInError
-        // TODO: simplify this rendering. It seems we are doing almost identical renders...
-        ? (
-          <>
-            <h2>Log In</h2>
-            <p> New users should <a href='/create-account'>create an account</a> first.</p>
-            <form onSubmit={handleLogin}>
-              <input
-                className='account-input'
-                type='email'
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoComplete='username'
-              />
-              <input
-                className='account-input'
-                type='password'
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoComplete='current-password'
-              />
-              <button className='account-button' type='submit'>Log In →</button>
-              <a href='/forgot-password'>Forgot Password?</a>
-              <br/>
-              <div className='bottom-btn-container'>
-                <Link to='/' className='big-btn'>
-                  Back to Home
-                </Link>
-              </div>
-            </form>
-          </>
-        )
-        : (
+    <>
+      {
+        !session ? (
           <>
             <h2>Log In</h2>
             <p>New users should <a href="/create-account">create an account</a> first.</p>
@@ -86,7 +52,7 @@ export default function Login() {
                 required
                 autoComplete='email'
               />
-    
+
               <input
                 className='account-input'
                 type='password'
@@ -96,29 +62,39 @@ export default function Login() {
                 required
                 autoComplete='off'
               />
-    
+
+              {signInError &&
+              <div>
+                <p style={{ color: 'red' }}>There was an issue with your credentials. Please try logging in again.</p>
+              </div>
+              }
+
               <button className='account-button' type='submit'>Log In →</button>
               <a href='/forgot-password'>Forgot Password?</a>
               <br/>
+
               <div className='bottom-btn-container'>
                 <Link to='/' className='big-btn'>
                   Back to Home
                 </Link>
               </div>
             </form>
-
-            <div>
-              <p style={{ color: 'red' }}>There was an issue with your credentials. Please try logging in again.</p>
-            </div>
-
-            <div className='bottom-btn-container'>
-              <Link to='/' className='big-btn'>
-                Back to Home
-              </Link>
-            </div>
+          </>
+        ) : (
+          <>
+            <h2>You are already logged in.</h2>
+            <br/>
+            <h3>Please Log Out first if you want to login with a different account.</h3>
+            <br/>
           </>
         )
       }
-    </AuthContext.Consumer>
-    );
+
+      <div className='bottom-btn-container'>
+        <Link to='/' className='big-btn'>
+          Back to Home
+        </Link>
+      </div>
+    </>
+  );
   }
