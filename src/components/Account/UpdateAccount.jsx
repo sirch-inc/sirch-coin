@@ -256,7 +256,10 @@ export default function UpdateAccount() {
             </form>
           </>
         ) : (
-          <h2>You must be logged in to change your user account settings.</h2>
+          <>
+            <h3>You must be logged in to change your user account settings.</h3>
+            <br/>
+          </>
         )
       }
 
