@@ -26,7 +26,7 @@ export default function UpdateAccount() {
     
     try {
       if (!passwordsMatch) {
-        // TODO: surface this error
+      // TODO: surface this error appropriately
         alert("Passwords do not match.");
         return;
       }

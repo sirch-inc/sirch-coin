@@ -59,8 +59,8 @@ export default function Login() {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
                 autoComplete='off'
+                required
               />
 
               {signInError &&
