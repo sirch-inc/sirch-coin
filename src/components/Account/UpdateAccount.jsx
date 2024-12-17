@@ -1,4 +1,6 @@
 import { useState, useContext } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
 import supabase from '../App/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
@@ -18,17 +20,17 @@ export default function UpdateAccount() {
   const [lastName, setLastName] = useState(userInTable?.last_name);
   const [isNamePrivate, setIsNamePrivate] = useState(userInTable?.is_name_private);
   const [userHandle, setUserHandle] = useState(userInTable?.user_handle);
+  const navigate = useNavigate();
 
   const handleUpdate = async (event) => {
     event.preventDefault();
     
-    try {
-      if (!passwordsMatch) {
-        // TODO: surface this error
-        alert("Passwords do not match.");
-        return;
-      }
+    if (!passwordsMatch) {
+      toast.error("Passwords do not match.");
+      return;
+    }
 
+    try {
       const { error } = await supabase.auth.updateUser({
         email,
         password: password !== '' ? password : null,
@@ -49,6 +51,8 @@ export default function UpdateAccount() {
       if (error) {
         if (isAuthApiError(error)) {
           toast.error("There was an error updating your user account. Please try again later or contact technical support.");
+        } else {
+          throw new Error(error);
         }
         return;
       }
@@ -63,9 +67,9 @@ export default function UpdateAccount() {
         toast.success("A verification email was sent to your new email address.");
       }
     } catch (exception) {
-      toast.error(exception.message, {
-        position: 'top-right',
-      });
+      console.error(exception);
+
+      navigate('/error', { replace: true });
     }
   };
 
@@ -95,14 +99,18 @@ export default function UpdateAccount() {
       });
     
       if (error) {
-        // TODO: surface this error...
-        throw error;
+        throw new Error(error);
+      }
+
+      if (!data) {
+        throw new Error("No user handles returned.");
       }
 
       setUserHandle(data.handles[0]);
     } catch (exception) {
-      // TODO: surface this error
-      alert("Error generating new handle(s):\n" + exception.message);
+      console.error(exception);
+
+      navigate('/error', { replace: true });
     }
   };
   
@@ -251,6 +259,10 @@ export default function UpdateAccount() {
               <br></br>
 
               <button className="account-button" type="submit"> Update → </button>
+
+              <Link to = '/' className = 'big-btn'>
+                Back
+              </Link>
             </form>
           </>
         ) : (
