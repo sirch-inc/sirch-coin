@@ -9,7 +9,6 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [signInError, setSignInError] = useState(false);
   const { session } = useContext(AuthContext);
-
   const navigate = useNavigate();
   
   const handleLogin = async (event) => {
@@ -90,6 +89,6 @@ export default function Login() {
           Back
         </button>
       </div>
-</>
+    </>
   );
   }

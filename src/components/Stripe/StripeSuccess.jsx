@@ -58,6 +58,7 @@ export default function StripeSuccess() {
                   <p>A receipt will be sent to your email address.</p>
                 )
             }
+            
             <div style={{ textAlign: 'center', padding: '50px' }}>
               <Link to='/' className='big-btn'>
                 Back to Home
