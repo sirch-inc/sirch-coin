@@ -1,8 +1,10 @@
 import coinSymbol from '../ⓢ.png'
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 
 export default function About() {
+  const navigate = useNavigate();
+
   return (
     <>
       <div className='about-container'>
@@ -25,8 +27,11 @@ export default function About() {
         </div>
       </div>
   
-      <div className='bottom-btn-container-light'>
-        <Link to='/' className='big-btn'> Back to Home </Link>
+      <div className='bottom-btn-container'>
+        <button className='big-btn'
+          onClick={() => { navigate(-1); }}>
+          Back
+        </button>
       </div>
     </>
   )
