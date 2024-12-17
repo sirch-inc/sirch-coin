@@ -1,12 +1,12 @@
 # Sirch Coins Front-End Dashboard
 
 ## Overview
-This is the front-end dashboard for Sirch Coins, written in React/JSX and using the `Vite.js` command-line toolchain. The Sirch Coin dashboard allows users to login to their accounts, send coins, purchase coins, etc.. The interface is meant to be extremely simple and mimic the actions & functionality of an ATM machine.
+This is the front-end single-page web app dashboard for Sirch Coins, written in React/JSX using the `Vite` (https://vite.dev/) command-line toolchain. The Sirch Coin dashboard allows users to login to their accounts, send coins, purchase coins, etc.. The interface is meant to be extremely simple and mimic the actions & functionality of an ATM machine.
 
 ### Services
 Ask a developer for invites to access any of these services, if you are working in those areas:
 * Auth:  SupaBase built-in authentication/authorization.
-* Backend:  SupaBase is our backend-as-a-service which runs a Postgres DB and has a number of edge functions to handle front-end and webhook API requests.
+* Backend:  SupaBase is our backend-as-a-service which runs a Postgres DB and has a number of edge functions to handle front-end and webhook API requests.  Our backend repo is located here:  https://github.com/sirch-inc/sirch-coin-supabase
 * Email:  SendGrid manages our email (some of which is emitted from SupaBase).  Basic plan currently owned by Jeff.
 * Payments:  Stripe.  Josh can provide access.
 * Webhost:  Netlify.  Basic plan currently owned by Jeff.
@@ -17,7 +17,7 @@ Ask a developer for invites to access any of these services, if you are working 
 * [sirchcoin.com](https://sirchcoin.com) is our production environment.  Deployed manually in Netlify.
 
 ### Custom Deployment Environment Flags
-The front-end can be configured to conditionally-compile simple, custom landing pages to inform users of system-wide modes.  We have a `Coming Soon` landing page intended for use until we launch, and a `Systems Maintenace` page intended when we need to take down the website for maintenance, major updates, problems, or abuse by hackers.  They are driven by setting one or the other following environment variables to `true`:
+The front-end can be configured to conditionally-compile simple, custom landing pages to inform users of system-wide modes.  We have a `Coming Soon` landing page intended for use until we launch, and a `Systems Maintenace` page intended when we need to take down the website for maintenance, major updates, problems, or abuse by hackers.  They are driven by setting one or the other following environment variables to `true` in the Netlify `Environment Variables` section (you can test these locally by adding them to your `.env.local` file):
 ```
 VITE_IS_COMING_SOON="false"
 VITE_IS_OFFLINE="false"
