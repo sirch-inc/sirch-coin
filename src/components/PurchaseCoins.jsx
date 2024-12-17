@@ -183,6 +183,7 @@ export default function PurchaseCoins() {
           }
         </div>
       </div>
+      
       <div className='bottom-btn-container'>
         <Link to='/' className='big-btn'>
           Back
