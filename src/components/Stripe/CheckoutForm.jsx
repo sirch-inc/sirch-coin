@@ -1,4 +1,5 @@
 import { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
 import { PaymentElement } from '@stripe/react-stripe-js';
 import { useStripe, useElements } from '@stripe/react-stripe-js';
@@ -21,6 +22,7 @@ export default function CheckoutForm({
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentIntentId, setPaymentIntentId] = useState(null);
   const [clientSecret, setClientSecret] = useState(null);
+  const navigate = useNavigate();
 
   const handleError = (error) => {
     setIsProcessing(false);
@@ -45,57 +47,80 @@ export default function CheckoutForm({
     // create a new payment intent if we don't already have one
     let currentClientSecret = clientSecret;
     let currentPaymentIntentId = paymentIntentId;
-    if (paymentIntentId === null) {
-      const { data: createPaymentIntentData, error: createPaymentIntentError } = await supabase.functions.invoke('stripe-create-payment-intent', {
-        body: {
-          userId: userInTable?.user_id,
-          email: userInTable?.email,
-          numberOfCoins: Math.floor(coinAmount)
-        }
-      });
+    
+    try {
+      if (paymentIntentId === null) {
+        const { data: createPaymentIntentData, error: createPaymentIntentError } = await supabase.functions.invoke('stripe-create-payment-intent', {
+          body: {
+            userId: userInTable?.user_id,
+            email: userInTable?.email,
+            numberOfCoins: Math.floor(coinAmount)
+          }
+        });
 
-      if (createPaymentIntentError) {
-        handleError(createPaymentIntentError);
+        if (createPaymentIntentError) {
+          throw new Error(createPaymentIntentError);
+        }
+
+        currentClientSecret = createPaymentIntentData.clientSecret;
+        currentPaymentIntentId = createPaymentIntentData.paymentIntentId;
       }
 
-      currentClientSecret = createPaymentIntentData.clientSecret;
-      currentPaymentIntentId = createPaymentIntentData.paymentIntentId;
+      setClientSecret(currentClientSecret);
+      setPaymentIntentId(currentPaymentIntentId);
+
+      // confirm the payment with the values in the elements
+      const { error: confirmPaymentError } = await stripe.confirmPayment({
+        elements,
+        clientSecret: currentClientSecret,
+        confirmParams: {
+          return_url: `${window.location.origin}/stripe/success/${currentPaymentIntentId}`
+        },
+      });
+
+      if (confirmPaymentError) {
+        throw new Error(confirmPaymentError);
+      }
+    } catch (exception) {
+      console.error(exception);
+
+      navigate('/error', { replace: true });
+    } finally {
+      // try to cancel any created paymentIntent
+      if (currentPaymentIntentId) {
+        cancelPaymentIntent(currentPaymentIntentId);
+      }
     }
-
-    setClientSecret(currentClientSecret);
-    setPaymentIntentId(currentPaymentIntentId);
-
-    // confirm the payment with the values in the elements
-    const { error: confirmPaymentError } = await stripe.confirmPayment({
-      elements,
-      clientSecret: currentClientSecret,
-      confirmParams: {
-        return_url: `${window.location.origin}/stripe/success/${currentPaymentIntentId}`
-      },
-    });
-
-    if (confirmPaymentError) {
-      handleError(confirmPaymentError);
-    }
-
-    setIsProcessing(false);
   };
 
-  const handleCancel = async () => {
+  const handleCancel = () => {
     setIsProcessing(false);
     setShowCheckoutForm(false);
 
     if (paymentIntentId === null) return;
 
-    const { error: cancelPaymentIntentError } = await supabase.functions.invoke('stripe-cancel-payment-intent', {
-      body: {
-        paymentIntentId
-      }
-    });
+    cancelPaymentIntent(paymentIntentId);
+  }
 
-    if (cancelPaymentIntentError) {
-      // TODO: surface this error?
-      throw cancelPaymentIntentError;        
+  const cancelPaymentIntent = async (paymentIntentIdToCancel) => {
+    if (paymentIntentIdToCancel === null) return;
+
+    try {
+      const { error } = await supabase.functions.invoke('stripe-cancel-payment-intent', {
+        body: {
+          paymentIntentId: paymentIntentIdToCancel
+        }
+      });
+  
+      if (error) {
+        throw new Error(error);
+      }
+    } catch (exception) {
+      console.error(exception, exception.message);
+
+      navigate('/error', { replace: true });
+    } finally {
+      setIsProcessing(false);
     }
   }
 
