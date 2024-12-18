@@ -71,7 +71,7 @@ export default function Transactions() {
 
         <div className='bottom-btn-container-light'>
           <Link to='/' className='big-btn'>
-            Back
+            Back to Home
           </Link>
         </div>
       </div>

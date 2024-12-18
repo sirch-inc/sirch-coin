@@ -273,7 +273,7 @@ export default function Send() {
               Send
             </button>
             <Link to = '/' className = 'big-btn'>
-              Back
+              Back to Home
             </Link>
           </div>
         </form>

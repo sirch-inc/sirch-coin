@@ -66,22 +66,22 @@ export default function MyAccount(){
         theme='colored'
       />
 
-      <h2>My Account</h2>
+      <h1>My Account</h1>
 
       <div className='account personal-info'>
         <p>Account Login: {userInTable?.email}</p>
       </div>
 
       <div className='account-actions'>
-        <h3>Account Actions</h3>
+        <h2>Account Actions</h2>
         <button
           className='big-btn'
           type='button'
           onClick={handleClickUpdateAccount}
         >
-        Update Account
+          Update Account
         </button>
-        <button className='big-btn danger' onClick={showDeleteConfirmation}>Delete Account...</button>
+        <button className='big-btn danger' onClick={showDeleteConfirmation}> Delete Account... </button>
       </div>
      
       {deleteDialogBox &&
@@ -133,10 +133,10 @@ export default function MyAccount(){
             </div>
           </dialog> 
         </>
-     }
+      }
       <div className='bottom-btn-container'>
         <Link to='/' className='big-btn'>
-          Back
+          Back to Home
         </Link>
       </div>
     </div>
