@@ -15,7 +15,7 @@ export default function VerifyAccount() {
             <p>A verification email was sent to the address provided.</p>
             <p>Please click the link in that email to verify your new account.</p>
             <p>To ensure your account&apos;s security, this process may take a few minutes.</p>
-        </>
+          </>
         ) : (
           <>
             <h2>You are currently logged in.</h2>

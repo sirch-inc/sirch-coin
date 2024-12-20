@@ -65,6 +65,8 @@ export default function UpdateAccount() {
         toast.success("A verification email was sent to your new email address.");
       }
     } catch (exception) {
+      console.error("An exception occurred:", exception.message);
+
       toast.error(exception.message, {
         position: 'top-right',
       });
@@ -104,6 +106,8 @@ export default function UpdateAccount() {
       setUserHandle(data.handles[0]);
     } catch (exception) {
       // TODO: surface this error
+      console.error("An exception occurred:", exception.message);
+
       alert("Error generating new handle(s):\n" + exception.message);
     }
   };

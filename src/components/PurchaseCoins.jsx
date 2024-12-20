@@ -29,6 +29,7 @@ export default function PurchaseCoins() {
   
   // fetch current quote
   useEffect(() => {
+    // TODO: wrap in try-catch
     const fetchQuote = async () => {
       if (!userInTable) return;
   

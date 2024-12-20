@@ -28,9 +28,9 @@ export default function Login() {
 
       navigate('/');
     } catch (exception) {
+      // TODO: surface this error appropropriately
       // TODO: Send login failure notification to user
-
-      console.error("Error logging in:", exception.message);
+      console.error("An exception occurred:", exception.message);
     }
   };
   

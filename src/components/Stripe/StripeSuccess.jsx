@@ -20,14 +20,20 @@ export default function StripeSuccess() {
           }
         });
 
-        if (error) throw error;
+        if (error) {
+          // TODO: surface this error...
+          throw error;
+        }
 
         if (data) {
           setPaymentDetails(data);
           refreshUserBalance();
         }
-      } catch (error) {
-        setPaymentError(error.message || "An error occurred");
+      } catch (exception) {
+        // TODO: surface this error...
+        console.error("An exception occurred:", exception.message);
+
+        setPaymentError(exception.message || "An error occurred");
         // TODO: Handle alert to user and redirect(?)
         alert("There was an error processing your payment details:\n" + paymentError)
       }
