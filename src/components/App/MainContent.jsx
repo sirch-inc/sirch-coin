@@ -11,6 +11,7 @@ import ForgotPassword from '../Account/ForgotPassword';
 import ResetPassword from '../Account/ResetPassword';
 import Welcome from '../Account/Welcome';
 import TermsOfService from '../TermsOfService.jsx';
+import ContactUs from '../ContactUs.jsx';
 import AccountDeleted from '../Account/AccountDeleted';
 import Send from '../Send';
 import Purchase from '../PurchaseCoins';
@@ -27,6 +28,7 @@ export default function MainContent({ supabase }) {
         <Routes>
           <Route path='/' Component={HomePage} supabase={supabase}/>
           <Route path='/terms-of-service' Component={TermsOfService}/>
+          <Route path='/contact-us' Component={ContactUs}/>
           <Route path='/user-deleted' Component={AccountDeleted}/>
           <Route path='/login' Component={Login}/>
           <Route path='/logout' Component={Logout}/>

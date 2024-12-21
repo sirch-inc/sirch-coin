@@ -187,7 +187,7 @@ export default function PurchaseCoins() {
       
       <div className='bottom-btn-container'>
         <Link to='/' className='big-btn'>
-          Back
+          Back to Home
         </Link>
       </div>
     </div>

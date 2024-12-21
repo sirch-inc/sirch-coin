@@ -8,8 +8,6 @@ import supabase from '../App/supabaseProvider'
 export default function Welcome() {
   const location = useLocation();
   const verificationError = location.hash.includes('error=access_denied');
-console.log("loction", location);
-console.log("search", location.search);
   const [resendEmail, setResendEmail] = useState('');
   const [resendEmailStatus, setResendEmailStatus] = useState('');
   const { session, userInTable } = useContext(AuthContext);
@@ -41,7 +39,7 @@ console.log("search", location.search);
 
       setResendEmailStatus('Verification email sent! Please check you inbox for a confirmation link.');
     } catch(exception) {
-      console.error('Error:', exception);
+      console.error("An exception occurred:", exception.message);
 
       navigate('/error', { replace: true });
     }

@@ -5,8 +5,10 @@ export default function Footer() {
   return (
     <footer>
       <small><strong>
-        Copyright © 2024 Sirch Inc. All Rights Reserved.&nbsp;
-        <a className='terms-of-service-link' href='/terms-of-service'>Terms</a>
+        Copyright © 2024 The Sirch Engine, Inc. All Rights Reserved.&nbsp;
+        <a className='footer-link' href='/contact-us'>Contact Us</a>&nbsp;
+        <a className='footer-link' href='/terms-of-service'>Terms</a>
+
         <span className='environment-indicator'>
           {"  " + import.meta.env.VITE_BUILD_VERSION}
         </span>

@@ -1,4 +1,5 @@
 import { useContext, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import TransactionCard from './TransactionCard';
 import { AuthContext } from '../AuthContext';
@@ -8,9 +9,12 @@ import supabase from '../App/supabaseProvider';
 export default function Transactions() {
   const { userInTable } = useContext(AuthContext);
   const [userTransactions, setUserTransactions] = useState(null);
+  const navigate = useNavigate();
 
   const fetchUserTransactions = async (userInTable) => {
-    if (userInTable) {
+    if (!userInTable) return;
+
+    try {
       const { data, error } = await supabase
         .from('transactions')
         .select('*')
@@ -18,15 +22,18 @@ export default function Transactions() {
         .order('created_at', { ascending: false });
 
       if (error) {
-        // TODO: surface this error appropriately...
-        alert("Error fetching users transactions:\n" + error);
-      } else {
-        setUserTransactions(data);
+        throw new Error(error);
       }
-    }
-    else {
-      // TODO: surface this error appropriately... 
-      alert('User not found');
+      
+      if (!data) {
+        throw new Error("Fetching transactions returned no data");
+      }
+
+      setUserTransactions(data);
+    } catch (exception) {
+      console.error(exception);
+
+      navigate('/error', { replace: true });
     }
   }
 
@@ -40,13 +47,13 @@ export default function Transactions() {
     <>
       <h2>Transaction History</h2>
       <div className='transactions-container'>
-        <div className='transactions-header'>
+        <header className='transactions-header'>
           <p>Date</p>
           <p>Type</p>
           <p>Amount</p>
           <p>Status</p>
           <p>Details</p>
-        </div>
+        </header>
         <div className='transactions'>
           {userTransactions
             ? (
@@ -64,7 +71,7 @@ export default function Transactions() {
 
         <div className='bottom-btn-container-light'>
           <Link to='/' className='big-btn'>
-            Back
+            Back to Home
           </Link>
         </div>
       </div>

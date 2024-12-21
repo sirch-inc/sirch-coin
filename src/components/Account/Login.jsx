@@ -15,22 +15,29 @@ export default function Login() {
     event.preventDefault();
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data: user, error } = await supabase.auth.signInWithPassword({
         email,
         password
       });
 
       if (error) {
-        setSignInError(true);
+        if (error.code === 'invalid_credentials') {
+          setSignInError(true);
+          return;
+        } else {
+          throw new Error(error);
+        }
+      }
 
-        throw error;
+      if (!user) {
+        throw new Error("No user was returned.");
       }
 
       navigate('/');
     } catch (exception) {
-      // TODO: surface this error appropropriately
-      // TODO: Send login failure notification to user
       console.error("An exception occurred:", exception.message);
+
+      navigate('/error', { replace: true });
     }
   };
   

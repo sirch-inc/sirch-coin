@@ -7,6 +7,8 @@ export default function VerifyAccount() {
   const { session } = useContext(AuthContext);
 
   return(
+    // TODO: Style component and add customization (ie. "An email confirmation link was sent to [users@somewhere.com]")
+    // TODO: Make page only accessible to a newly-created user
     <>
       {
         !session ? (

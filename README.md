@@ -16,7 +16,16 @@ Ask a developer for invites to access any of these services, if you are working 
 * [testallthethings.sirchcoin.com](https://testallthethings.sirchcoin.com) is for testing in our "dev/test" sandboxes.  Autodeploys via Netlify.
 * [sirchcoin.com](https://sirchcoin.com) is our production environment.  Deployed manually in Netlify.
 
-### Custom Deployment Environment Flags
+### CI/CD and Deployments
+We use Netlify currently to host our site.
+  - The TEST environment is continuously deployed on changes to the `main` branch.
+  - The PROD environment should ONLY be deployed manually after testing has completed. We have marked this project NOT autodeploy on changes to the repo. To MANUALLY deploy to PROD:
+      - In Netlify, go to the PROD `sirch-coin.com` project.
+      - Select `Deploys` in the left-hand nav section.
+      - In the right-hand panel, select `Clear cache and deploy` under the `[Trigger deploy]` dropdown.
+      - After it completes, verify the site is still up and running. Smoke test any new features or changes.
+
+#### Custom Deployment Environment Flags
 The front-end can be configured to conditionally-compile simple, custom landing pages to inform users of system-wide modes.  We have a `Coming Soon` landing page intended for use until we launch, and a `Systems Maintenace` page intended when we need to take down the website for maintenance, major updates, problems, or abuse by hackers.  They are driven by setting one or the other following environment variables to `true` in the Netlify `Environment Variables` section (you can test these locally by adding them to your `.env.local` file):
 ```
 VITE_IS_COMING_SOON="false"
@@ -64,7 +73,7 @@ VITE_IS_OFFLINE="false"
 1. In a terminal, change into the `sirch-coin` directory where you pulled/downloaded the source code, then run `code .` to open in VS Code.
 1. Create an `.env.local` text file with the necessary keys (ask a developer for these). NOTE: These may change over time!
 
-### Set up Sirch-Coins-Supabase (Back-End)
+### Set up Sirch-Coins-Supabase (back-End)
 1. Pull down the latest version of the `sirch-inc/sirch-coin-supabase` github repository onto your local machine (https://github.com/sirch-inc/sirch-coin-supabase)
 1. In a terminal, change into the `sirch-coin-supabase` directory where you pulled/downloaded the source code, then run `code .` to open in VS Code.
 1. Follow the README there to set up your LOCAL Supabase instance to which the LOCAL Sirch Coins front-end connects in Development mode.

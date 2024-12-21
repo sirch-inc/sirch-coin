@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ToastContainer, toast } from 'react-toastify';
 import supabase from '../App/supabaseProvider'
 
 
@@ -33,33 +34,37 @@ export default function ResetPassword() {
     e.preventDefault();
 
     if (!passwordsMatch) {
-      // TODO: surface this error appropriately
-      alert("Passwords must match")
+      toast.error("Passwords do not match.");
+      return;
     }
 
     try {
       // If the user has arrived at this page from their update password link, they should have a passwordRecoverySession
       if (passwordRecoverySession) {
-        const { data, error } = await supabase.auth.updateUser(
+        // TODO: consider using supabase.auth.reauthenticate() and/or supabase.auth.resend() here...
+        const { data: user, error } = await supabase.auth.updateUser(
           { password: newPassword },
           { session: passwordRecoverySession }
         );
         
         if (error) {
-          // TODO: surface this error appropriately
-          alert('There was an error updating your password:\n' + error);
-          console.log("Data", data);
-        } else {
-          // TODO: surface this success message appropriately
-          alert('Password updated successfully!');
-          navigate('/');
+          throw new Error(error);
         }
+
+        if (!user) {
+          throw new Error("No user updated.");
+        }
+  
+        // TODO: surface this success message appropriately
+        alert('Password updated successfully!');
       } else {
         // TODO: surface this error appropriately
-        alert("Something's not right... have you arrived at this page by clicking on the link in your email? You may need to request another password reset via the Login page before being able to successfully update your password.")
+        alert("Something is not right...have you arrived at this page by clicking on the link in your email? You may need to request another password reset email via the Login page before being able to successfully update your password.");
       }
-    } catch(exception) {
-      console.error('Error:', exception);
+
+      navigate('/');
+    } catch (exception) {
+      console.error("An exception occurred:", exception.message);
 
       navigate('/error', { replace: true });
     }
@@ -75,8 +80,17 @@ export default function ResetPassword() {
 
   return(
     <>
-      <h1>Reset Password</h1>
-      <p>Enter a new password for your Sirch Coins account below.</p>
+      <ToastContainer
+        position = 'top-right'
+        autoClose = {false}
+        newestOnTop = {false}
+        closeOnClick
+        draggable
+        theme = 'colored'
+      />
+
+      <h1>Enter a New Password:</h1>
+      <p>Choose a new password for your Sirch Coins account below:</p>
 
       <form onSubmit={submitPassword}>
         <input

@@ -21,15 +21,14 @@ export default function ForgotPassword() {
       );
 
       if (error) {
-        throw error;
-      } else {
-        setResetSent(true);
+        throw new Error(error);
       }
+
+      setResetSent(true);
     } catch (exception) {
-      // TODO: surface or handle error...
       console.error("An exception occurred:", exception.message);
 
-      setError(exception.message);
+      navigate('/error', { replace: true });
     }
   }
 

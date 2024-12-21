@@ -127,22 +127,6 @@ export default function Send() {
     }
 
     try {
-        // TODO: invite user; either rework this use case, or conduct the invitation on the server
-        // const confirmedResponse = confirm("The recipient (" + searchText + ") does not appear to have a Sirch Coins account.  Would you like to send this person an invitation to join Sirch Coins?");
-        // if (confirmedResponse) {
-        //   const { data, error } = await supabase.auth.admin.inviteUserByEmail(searchText);
-        //   if (error) {
-        //     // TODO: surface this error
-        //     console.error("Error inviting recipient:", error);
-        //   } else {
-        //     // TODO: indicate success to the user
-        //     alert("Invitation successful!");
-        //     setSendAmount("");
-        //     setSearchText("");
-        //   }
-        //   return;
-        // }
-
       const { error: transferError } = await supabase.functions.invoke('transfer-coins', {
         body: {
           sender_id: userInTable.user_id,
@@ -289,7 +273,7 @@ export default function Send() {
               Send
             </button>
             <Link to = '/' className = 'big-btn'>
-              Back
+              Back to Home
             </Link>
           </div>
         </form>

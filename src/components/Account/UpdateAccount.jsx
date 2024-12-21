@@ -1,5 +1,5 @@
 import { useState, useContext } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom'
 import { AuthContext } from '../AuthContext';
 import supabase from '../App/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
@@ -24,13 +24,12 @@ export default function UpdateAccount() {
   const handleUpdate = async (event) => {
     event.preventDefault();
     
-    try {
-      if (!passwordsMatch) {
-      // TODO: surface this error appropriately
-        alert("Passwords do not match.");
-        return;
-      }
+    if (!passwordsMatch) {
+      toast.error("Passwords do not match.");
+      return;
+    }
 
+    try {
       const { error } = await supabase.auth.updateUser({
         email,
         password: password !== '' ? password : null,
@@ -51,6 +50,8 @@ export default function UpdateAccount() {
       if (error) {
         if (isAuthApiError(error)) {
           toast.error("There was an error updating your user account. Please try again later or contact technical support.");
+        } else {
+          throw new Error(error);
         }
         return;
       }
@@ -67,9 +68,7 @@ export default function UpdateAccount() {
     } catch (exception) {
       console.error("An exception occurred:", exception.message);
 
-      toast.error(exception.message, {
-        position: 'top-right',
-      });
+      navigate('/error', { replace: true });
     }
   };
 
@@ -99,16 +98,18 @@ export default function UpdateAccount() {
       });
     
       if (error) {
-        // TODO: surface this error...
-        throw error;
+        throw new Error(error);
+      }
+
+      if (!data) {
+        throw new Error("No user handles returned.");
       }
 
       setUserHandle(data.handles[0]);
     } catch (exception) {
-      // TODO: surface this error
       console.error("An exception occurred:", exception.message);
 
-      alert("Error generating new handle(s):\n" + exception.message);
+      navigate('/error', { replace: true });
     }
   };
   
@@ -257,6 +258,10 @@ export default function UpdateAccount() {
               <br></br>
 
               <button className="account-button" type="submit"> Update → </button>
+
+              <Link to = '/' className = 'big-btn'>
+                Back
+              </Link>
             </form>
           </>
         ) : (
