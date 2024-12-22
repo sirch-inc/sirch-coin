@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 import supabase from './App/supabaseProvider.js';
-import { Link } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import useDebounce from '../helpers/debounce.js'
@@ -32,6 +32,7 @@ export default function Send() {
   const [memo, setMemo] = useState('');
   const [foundUsers, setFoundUsers] = useState(null);
   const [selectedRecipient, setSelectedRecipient] = useState(null);
+  const navigate = useNavigate();
 
   const fetchUserBalance = async () => {
     await refreshUserBalance();
@@ -156,7 +157,7 @@ export default function Send() {
         fetchUserBalance();
       }
     } catch (exception) {
-      console.error("An exception occurred", exception.message);
+      console.error("An exception occurred:", exception.message);
 
       toast.error("An error occurred sending Sirch Coins to your recipient. Please try again later.");
     }
@@ -272,9 +273,11 @@ export default function Send() {
             <button type = 'submit' className = 'send-btn big-btn'>
               Send
             </button>
-            <Link to = '/' className = 'big-btn'>
-              Back to Home
-            </Link>
+
+            <button className='big-btn'
+              onClick={() => { navigate(-1); }}>
+              Back
+            </button>
           </div>
         </form>
       </div>

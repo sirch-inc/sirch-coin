@@ -1,7 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import { Link } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 import supabase from './App/supabaseProvider';
 import CheckoutForm from './Stripe/CheckoutForm';
@@ -29,25 +28,33 @@ export default function PurchaseCoins() {
   
   // fetch current quote
   useEffect(() => {
-    // TODO: wrap in try-catch
     const fetchQuote = async () => {
       if (!userInTable) return;
-  
-      const { data, error } = await supabase.functions.invoke('get-coin-purchase-quote', {
-        body: {
-          purchaseProvider: 'STRIPE'
-        }
-      });
+    
+      try {
+        const { data, error } = await supabase.functions.invoke('get-coin-purchase-quote', {
+          body: {
+            purchaseProvider: 'STRIPE'
+          }
+        });
 
-      if (error) {
-        console.error('Error:', error);
-        navigate('/error', { replace: true });
-      } else {
+        if (error) {
+          throw new Error(error);
+        }
+
+        if (!data) {
+          throw new Error("No quote was returned.");
+        }
+
         setPricePerCoin(data.pricePerCoin);
         setLocalTotalPrice(data.minimumPurchase * data.pricePerCoin);
         setCurrency(data.currency);
         setLocalCoinAmount(data.minimumPurchase);
         setMinimumPurchase(data.minimumPurchase);
+      } catch (exception) {
+        console.error("An exception occurred:", exception.message);
+  
+        navigate('/error', { replace: true });
       }
     };
  
@@ -186,9 +193,10 @@ export default function PurchaseCoins() {
       </div>
       
       <div className='bottom-btn-container'>
-        <Link to='/' className='big-btn'>
-          Back to Home
-        </Link>
+        <button className='big-btn'
+          onClick={() => { navigate(-1); }}>
+          Back
+        </button>
       </div>
     </div>
   );

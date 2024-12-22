@@ -1,6 +1,5 @@
 import { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
 import TransactionCard from './TransactionCard';
 import { AuthContext } from '../AuthContext';
 import supabase from '../App/supabaseProvider';
@@ -69,11 +68,12 @@ export default function Transactions() {
           }
         </div>
 
-        <div className='bottom-btn-container-light'>
-          <Link to='/' className='big-btn'>
-            Back to Home
-          </Link>
-        </div>
+        <div className='bottom-btn-container'>
+        <button className='big-btn'
+          onClick={() => { navigate(-1); }}>
+          Back
+        </button>
+      </div>
       </div>
     </>
   );
