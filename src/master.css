@@ -591,19 +591,9 @@ button.danger {
   overflow-y: auto;
 }
 
-.payment-dialog {
-}
-
-.payment-header {
-}
-
 .payment-form {
   height: auto;
   padding-bottom: 24px;
-}
-
-.payment-footer {
-
 }
 
 .coin-amount-input {
@@ -813,9 +803,6 @@ button.danger {
 
 /* Styles for Send Coins Mobile */
 @media (max-width: 767px) {
-  .send-coin-container {
-  }
-
   .bottom-btn-container {
     display: flex;
     flex-direction: column;
