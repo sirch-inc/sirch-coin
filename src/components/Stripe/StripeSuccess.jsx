@@ -43,7 +43,7 @@ export default function StripeSuccess() {
   }, [userInTable, paymentIntentId, paymentError, refreshUserBalance]);
 
   return (
-    <>      
+    <>
       {paymentDetails
       ? (
           <div style={{ textAlign: 'center', padding: '50px' }}>

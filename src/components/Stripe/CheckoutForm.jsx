@@ -82,7 +82,7 @@ export default function CheckoutForm({
         throw new Error(confirmPaymentError);
       }
     } catch (exception) {
-      console.error(exception);
+      console.error("An exception occurred:", exception.message);
 
       navigate('/error', { replace: true });
     } finally {
@@ -116,7 +116,7 @@ export default function CheckoutForm({
         throw new Error(error);
       }
     } catch (exception) {
-      console.error(exception, exception.message);
+      console.error("An exception occurred:", exception.message);
 
       navigate('/error', { replace: true });
     } finally {

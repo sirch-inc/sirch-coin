@@ -15,6 +15,7 @@ async function Logout() {
   } catch (exception) {
     console.error("An exception occurred:", exception.message);
 
+    // TODO: surface/handle the exception
     // navigate('/error', { replace: true });
   }
 }

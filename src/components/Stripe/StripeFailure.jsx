@@ -7,6 +7,7 @@ export default function StripeFailure() {
       <h1 style={{ color: 'red' }}>Payment Failed!</h1>
       <p style={{ color: 'black' }}>Please contact support.</p>
       <p style={{ color: 'black' }}>Your transaction with Stripe has failed</p>
+      
       <Link to='/' style={{ textDecoration: 'none', color: 'blue' }}>
         Back to Home
       </Link>

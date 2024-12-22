@@ -96,6 +96,7 @@ export default function Welcome() {
                 </>
               )
             }
+            
             <div style={{ textAlign: 'center', padding: '50px' }}>
               <Link to='/' className='big-btn'>
                 Back to Home
