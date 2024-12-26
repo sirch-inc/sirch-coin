@@ -59,6 +59,7 @@ export default function CheckoutForm({
         });
 
         if (createPaymentIntentError) {
+          // TODO: depending on the error, perhaps route to /stripe/failure?
           throw new Error(createPaymentIntentError);
         }
 
