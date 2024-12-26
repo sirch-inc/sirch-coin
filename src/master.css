@@ -465,12 +465,6 @@ input#user-handle {
   cursor: pointer;
 }
 
-.price-container {
-  margin-top: 60px;
-  position: relative;
-  display: inline-block;
-}
-
 .coin-input {
   margin: 0 auto;
   padding: 24px;
