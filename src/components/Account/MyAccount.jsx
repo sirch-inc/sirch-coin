@@ -118,6 +118,7 @@ export default function MyAccount(){
                 <button
                   className='big-btn danger'
                   type='submit'
+                  // TODO: disabling this for now until we sort out HOW we want to handle user-deletions completely...
                   // onClick={handleDeleteUser}
                   disabled={!isUserHandleVerified}
                 >
