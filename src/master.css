@@ -596,6 +596,12 @@ button.danger {
   padding-bottom: 24px;
 }
 
+.payment-footer {
+  p, .big-btn {
+    width: 100%
+  }
+}
+
 .coin-amount-input {
   max-width: 40%;
   border: 2px solid black;
