@@ -60,7 +60,7 @@ export default function CreateAccount() {
         return;
       }
 
-      const { user, error } = await supabase.auth.signUp({
+      const { data: user, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -81,7 +81,7 @@ export default function CreateAccount() {
       }
 
       if (!user) {
-        throw new Error("No user was created.");
+        throw new Error("No user was returned.");
       }
 
       navigate('/verify-account');

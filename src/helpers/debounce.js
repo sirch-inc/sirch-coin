@@ -15,7 +15,7 @@ const useDebounce = (callback, debounceTimeMs = 1000) => {
     };
 
     return debounce(func, debounceTimeMs);
-  }, []);
+  }, [debounceTimeMs]);
 
   return debouncedCallback;
 };

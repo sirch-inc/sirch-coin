@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useCallback, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 import supabase from './App/supabaseProvider.js';
@@ -34,9 +34,10 @@ export default function Send() {
   const [selectedRecipient, setSelectedRecipient] = useState(null);
   const navigate = useNavigate();
 
-  const fetchUserBalance = async () => {
-    await refreshUserBalance();
-  };
+  const fetchUserBalance = useCallback(async () => {
+      await refreshUserBalance();
+    }, [refreshUserBalance]
+  );
 
   const debouncedLookupUsers = useDebounce(async () => {
     setSelectedRecipient(null);
@@ -166,7 +167,7 @@ export default function Send() {
   // (re)fetch the user's balance when the component renders
   useEffect(() => {
     fetchUserBalance();
-  }, [userBalance]);
+  }, [fetchUserBalance, userBalance]);
 
   // cancel any pending lookup when unmounting component
   useEffect(() => {
