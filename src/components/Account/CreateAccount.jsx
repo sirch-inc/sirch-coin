@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useCallback, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import { AuthContext } from '../AuthContext';
@@ -17,10 +17,39 @@ export default function CreateAccount() {
   const [userHandle, setUserHandle] = useState('');
   const { session } = useContext(AuthContext);
   const navigate = useNavigate();
+  
+  // roll new user handle
+  const handleSuggestNewHandle = useCallback(async () => {
+      setUserHandle('');
+
+      try {
+        const { data, error } = await supabase.functions.invoke('generate-valid-user-handles', {
+          body: {
+            handleCount: 1
+          }
+        });
+      
+        if (error) {
+          throw new Error(error);
+        }
+
+        if (!data) {
+          throw new Error("No user handles found.");
+        }
+
+        setUserHandle(data.handles[0]);
+      } catch (exception) {
+        console.error(exception);
+
+        navigate('/error', { replace: true });
+      }
+    }, [navigate]
+  );
 
   useEffect(() => {
-    handleSuggestNewHandle();
-  });
+      handleSuggestNewHandle();
+    }, [handleSuggestNewHandle]
+  );
 
   const handleSignUp = async (event) => {
     event.preventDefault();
@@ -68,33 +97,6 @@ export default function CreateAccount() {
     const value = e.target.value;
     setConfirmPassword(value);
     setPasswordsMatch(value === password);
-  };
-
-  // roll new user handle
-  const handleSuggestNewHandle = async () => {
-    setUserHandle('');
-
-    try {
-      const { data, error } = await supabase.functions.invoke('generate-valid-user-handles', {
-        body: {
-          handleCount: 1
-        }
-      });
-    
-      if (error) {
-        throw new Error(error);
-      }
-
-      if (!data) {
-        throw new Error("No user handles found.");
-      }
-
-      setUserHandle(data.handles[0]);
-    } catch (exception) {
-      console.error("An exception occurred:", exception.message);
-
-      navigate('/error', { replace: true });
-    }
   };
   
   return (
