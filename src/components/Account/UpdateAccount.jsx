@@ -1,6 +1,5 @@
 import { useState, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Link } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
 import supabase from '../App/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
@@ -9,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 export default function UpdateAccount() {
-  const { userInTable, userEmail } = useContext(AuthContext);
+  const { userInTable, userEmail, session } = useContext(AuthContext);
   const [email, setEmail] = useState(userEmail || '');
   const [isEmailPrivate, setIsEmailPrivate] = useState(userInTable?.is_email_private);
   const [hasEmailChanged, setHasEmailChanged] = useState(false);
@@ -67,7 +66,7 @@ export default function UpdateAccount() {
         toast.success("A verification email was sent to your new email address.");
       }
     } catch (exception) {
-      console.error(exception);
+      console.error("An exception occurred:", exception.message);
 
       navigate('/error', { replace: true });
     }
@@ -108,15 +107,15 @@ export default function UpdateAccount() {
 
       setUserHandle(data.handles[0]);
     } catch (exception) {
-      console.error(exception);
+      console.error("An exception occurred:", exception.message);
 
       navigate('/error', { replace: true });
     }
   };
   
   return (
-    <AuthContext.Consumer>
-      {({ session }) =>
+    <>
+      {
         session ? (
           <>
             <ToastContainer
@@ -259,16 +258,22 @@ export default function UpdateAccount() {
               <br></br>
 
               <button className="account-button" type="submit"> Update → </button>
-
-              <Link to = '/' className = 'big-btn'>
-                Back
-              </Link>
             </form>
           </>
         ) : (
-          <div>You must be logged in to change your user account settings.</div>
+          <>
+            <h3>You must be logged in to change your user account settings.</h3>
+            <br/>
+          </>
         )
       }
-    </AuthContext.Consumer>
-  );
+
+      <div className='bottom-btn-container'>
+        <button className='big-btn'
+          onClick={() => { navigate(-1); }}>
+          Back
+        </button>
+      </div>
+    </>
+);
 }

@@ -59,6 +59,7 @@ export default function CheckoutForm({
         });
 
         if (createPaymentIntentError) {
+          // TODO: depending on the error, perhaps route to /stripe/failure?
           throw new Error(createPaymentIntentError);
         }
 
@@ -82,7 +83,7 @@ export default function CheckoutForm({
         throw new Error(confirmPaymentError);
       }
     } catch (exception) {
-      console.error(exception);
+      console.error("An exception occurred:", exception.message);
 
       navigate('/error', { replace: true });
     } finally {
@@ -116,7 +117,7 @@ export default function CheckoutForm({
         throw new Error(error);
       }
     } catch (exception) {
-      console.error(exception, exception.message);
+      console.error("An exception occurred:", exception.message);
 
       navigate('/error', { replace: true });
     } finally {

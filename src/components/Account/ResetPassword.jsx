@@ -4,6 +4,12 @@ import { ToastContainer, toast } from 'react-toastify';
 import supabase from '../App/supabaseProvider'
 
 
+// TODO: Can we use this same component for currently logged-in users (maybe with
+// TODO: reauthentication using the "current password") as well as email-triggered password
+// TODO: reset flows?
+// TODO: ...would want a "Back" button (and "current password field") if rendered in-session.
+// TODO: ...and we would then remove the password fields from "UpdateUser".
+// TODO: Send an email informing the user of the password change.
 export default function ResetPassword() {
   const [newPassword, setNewPassword] = useState('');
   const [passwordRecoverySession, setPasswordRecoverySession] = useState(null);
@@ -58,7 +64,7 @@ export default function ResetPassword() {
 
       navigate('/');
     } catch (exception) {
-      console.error(exception);
+      console.error("An exception occurred:", exception.message);
 
       navigate('/error', { replace: true });
     }
@@ -87,28 +93,36 @@ export default function ResetPassword() {
       <p>Choose a new password for your Sirch Coins account below:</p>
 
       <form onSubmit={submitPassword}>
-        <input 
+        <input
+          className='account-input'
           type='password'
           placeholder="New Password"
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
+          autoComplete='off'
           required
-          autoComplete="current-password"
         />
-        <input 
-          type='password' 
-          name='confirm-password' 
-          placeholder="Confirm New Password" 
-          autoComplete='current-password' 
-          required value={confirmPassword}
+
+        <input
+          className='account-input'
+          type='password'
+          placeholder="Confirm New Password"
+          value={confirmPassword}
+          name='confirm-password'
           onChange={handlePasswordConfirmation}
+          autoComplete='off'
+          required
         />
+
         {confirmPassword && (
           <p style={{ color: passwordsMatch ? 'green' : 'red' }}>
             {passwordsMatch ? "Passwords match!" : "Passwords do not match"}
           </p>
         )}
-        <button>Change Password</button>
+
+        <br/>
+
+        <button className='account-button' type='submit'> Change Password → </button>
       </form>
     </>
   )

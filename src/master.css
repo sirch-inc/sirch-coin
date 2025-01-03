@@ -30,11 +30,9 @@ h1, h2, h3, h4, h5, h6, p {
 }
 
 form {
-  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow-y: auto;
 }
 
 label {
@@ -73,7 +71,6 @@ button {
   border-radius: 4px;
   padding: 12px;
   margin-bottom: 24px;
-  width: 300px;
 }
 
 .big-btn:hover {
@@ -456,7 +453,6 @@ input#user-handle {
   text-align: left;
 }
 
-
 /* Styles for Send Coins */
 .user-card {
   border: 2px solid black;
@@ -466,12 +462,6 @@ input#user-handle {
   background-color: #3AD820;
   color: black;
   cursor: pointer;
-}
-
-.price-container {
-  margin-top: 60px;
-  position: relative;
-  display: inline-block;
 }
 
 .coin-input {
@@ -594,19 +584,15 @@ button.danger {
   overflow-y: auto;
 }
 
-.payment-dialog {
-}
-
-.payment-header {
-}
-
 .payment-form {
   height: auto;
   padding-bottom: 24px;
 }
 
 .payment-footer {
-
+  p, .big-btn {
+    width: 100%
+  }
 }
 
 .coin-amount-input {
@@ -816,9 +802,6 @@ button.danger {
 
 /* Styles for Send Coins Mobile */
 @media (max-width: 767px) {
-  .send-coin-container {
-  }
-
   .bottom-btn-container {
     display: flex;
     flex-direction: column;

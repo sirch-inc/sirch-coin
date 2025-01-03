@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import { AuthContext } from '../AuthContext';
@@ -15,6 +15,7 @@ export default function CreateAccount() {
   const [lastName, setLastName] = useState('');
   const [isNamePrivate, setIsNamePrivate] = useState(false);
   const [userHandle, setUserHandle] = useState('');
+  const { session } = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -56,7 +57,7 @@ export default function CreateAccount() {
 
       navigate('/verify-account');
     } catch (exception) {
-      console.error(exception);
+      console.error("An exception occurred:", exception.message);
 
       navigate('/error', { replace: true });
     }
@@ -90,15 +91,15 @@ export default function CreateAccount() {
 
       setUserHandle(data.handles[0]);
     } catch (exception) {
-      console.error(exception);
+      console.error("An exception occurred:", exception.message);
 
       navigate('/error', { replace: true });
     }
   };
   
   return (
-    <AuthContext.Consumer>
-      {({ session }) =>
+    <>
+      {
         !session ? (
           <>
             <ToastContainer
@@ -114,25 +115,25 @@ export default function CreateAccount() {
             <p>Already have an account? <a href='/login'>Log in</a> instead.</p>
             <br></br>
 
+            <div className='account-privacy-statement'>
+              <h3>Your Account & Privacy</h3>
+              <p>
+                Sirch and the Sirch Coins product and services take your privacy very seriously.
+                We believe your data (email address, name, photo, activity, and social connections) belong to <i>you</i>, and
+                that <i>you</i> should decide how and when to share them or make them accessible to others.
+              </p>
+              <p>
+                That said, we also encourage our users to share their profile with others to create a networked community
+                and to make it easier for people on our platforms to find and connect with you.
+              </p>
+              <p>
+                The choice is yours; you can adjust your Privacy settings at any time in your Account Profile.
+              </p>
+            </div>
+
+            <br></br>
+
             <form onSubmit={handleSignUp} autoComplete='off'>
-              <div className='account-privacy-statement'>
-                <h3>Your Account & Privacy</h3>
-                <p>
-                  Sirch and the Sirch Coins product and services take your privacy very seriously.
-                  We believe your data (email address, name, photo, activity, and social connections) belong to <i>you</i>, and
-                  that <i>you</i> should decide how and when to share them or make them accessible to others.
-                </p>
-                <p>
-                  That said, we also encourage our users to share their profiles with others to create a networked community
-                  and to make it easier for people on our platforms to find and connect with you.
-                </p>
-                <p>
-                  The choice is yours; you can adjust your Privacy settings at any time in your User Account Profile.
-                </p>
-              </div>
-
-              <br></br>
-
               <div className='account-row'>
                 <input 
                   className='account-input'
@@ -264,9 +265,21 @@ export default function CreateAccount() {
             </form>
           </>
         ) : (
-          <div>You&apos;ve successfully logged in as {session.user.email}!</div>
+          <>
+            <h2>You are currently logged in.</h2>
+            <br/>
+            <h3>Please Log Out first if you want to create another account.</h3>
+            <br/>
+          </>
         )
       }
-    </AuthContext.Consumer>
+
+      <div className='bottom-btn-container'>
+        <button className='big-btn'
+          onClick={() => { navigate(-1); }}>
+          Back
+        </button>
+      </div>
+    </>
   );
 }

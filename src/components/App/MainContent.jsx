@@ -45,6 +45,7 @@ export default function MainContent({ supabase }) {
           <Route path='/transactions' Component={Transactions}/>
           <Route path='/error' Component={GeneralError}/>
           <Route path='/stripe/success/:paymentIntentId?' Component={StripeSuccess}/>
+          {/* TODO: NOT sure we still need this StripeFailure component or route any more... */}
           <Route path='/stripe/failure' Component={StripeFailure}/>
           <Route path='/*' Component={HomePage} supabase={supabase}/>
         </Routes>

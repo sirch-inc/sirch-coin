@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
 import supabase from '../App/supabaseProvider';
 import { ToastContainer, toast } from 'react-toastify';
-import { Link } from 'react-router-dom';
 import Logout from '../Account/Logout';
 
 
@@ -119,6 +118,7 @@ export default function MyAccount(){
                 <button
                   className='big-btn danger'
                   type='submit'
+                  // TODO: disabling this for now until we sort out HOW we want to handle user-deletions completely...
                   // onClick={handleDeleteUser}
                   disabled={!isUserHandleVerified}
                 >
@@ -134,10 +134,12 @@ export default function MyAccount(){
           </dialog> 
         </>
       }
+
       <div className='bottom-btn-container'>
-        <Link to='/' className='big-btn'>
-          Back to Home
-        </Link>
+        <button className='big-btn'
+          onClick={() => { navigate(-1); }}>
+          Back
+        </button>
       </div>
     </div>
   )

@@ -3,6 +3,7 @@ import supabase from '../App/supabaseProvider'
 
 
 async function Logout() {
+  // TODO: wrap in try-catch
   // const navigate = useNavigate();
 
   try {
@@ -12,8 +13,9 @@ async function Logout() {
       throw new Error(error);
     }
   } catch (exception) {
-    console.error(exception);
+    console.error("An exception occurred:", exception.message);
 
+    // TODO: surface/handle the exception
     // navigate('/error', { replace: true });
   }
 }

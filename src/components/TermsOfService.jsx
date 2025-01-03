@@ -1,8 +1,9 @@
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 
 // eslint-disable-next-line react/prop-types
 export default function TermsOfService() {
+  const navigate = useNavigate();
 
   return (
     <div className='terms-of-service'>
@@ -59,10 +60,12 @@ export default function TermsOfService() {
         Phone: <a href="tel:+18483293092">+1 (848) 329-3092</a><br/>
         Mail: Josh R. (Sirch), 4821 S. Xenia Street, Denver CO, 80237.
       </p>
+
       <div className='bottom-btn-container'>
-        <Link to='/' className='big-btn'>
-          Back to Home
-        </Link>
+        <button className='big-btn'
+          onClick={() => { navigate(-1); }}>
+          Back
+        </button>
       </div>
     </div>
   );

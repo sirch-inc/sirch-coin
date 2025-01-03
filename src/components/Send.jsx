@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 import supabase from './App/supabaseProvider.js';
-import { Link } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import useDebounce from '../helpers/debounce.js'
@@ -32,6 +32,7 @@ export default function Send() {
   const [memo, setMemo] = useState('');
   const [foundUsers, setFoundUsers] = useState(null);
   const [selectedRecipient, setSelectedRecipient] = useState(null);
+  const navigate = useNavigate();
 
   const fetchUserBalance = async () => {
     await refreshUserBalance();
@@ -156,7 +157,7 @@ export default function Send() {
         fetchUserBalance();
       }
     } catch (exception) {
-      console.error("An exception occurred", exception.message);
+      console.error("An exception occurred:", exception.message);
 
       toast.error("An error occurred sending Sirch Coins to your recipient. Please try again later.");
     }
@@ -186,95 +187,94 @@ export default function Send() {
       />
 
       <div className = 'send-coin-container'>
-        <h2>Send</h2>
+        <h2>Send ⓢ</h2>
+
         <form onSubmit = {handleSubmit}>
-          <div className = 'price-container'>
-            <div className = 'search-text'>
-              <h2>To whom:</h2>
-              <input
-                className = 'coin-input'
-                id = 'searchText'
-                name = 'searchText'
-                placeholder = "User name, email, or @handle..."
-                value = {searchText}                
-                type = 'text'
-                onChange = {handleSearchTextChange}
-              />
-            </div>
+          <p>You can send Sirch Coins to your friends or others here.</p>
+          <p>Just enter some details to help us identify the recipient, and the amount. You may add a note.</p>
+        
+          <input
+            className = 'coin-input'
+            type = 'text'
+            name = 'searchText'
+            placeholder = "To whom? Name, email, or @handle..."
+            value = {searchText}
+            onChange = {handleSearchTextChange}
+            required
+          />
 
-            <>
-              {searchText.length !== 0 && foundUsers === null &&
-                <h3 style={{ color: 'black' }}>
-                  Loading...
-                </h3>
-              }
+          <>
+            {searchText.length !== 0 && foundUsers === null &&
+              <h3 style={{ color: 'black' }}>
+                Loading...
+              </h3>
+            }
 
-              {searchText.length !== 0 && foundUsers?.length === 0 &&
-                <h3 style={{ color: 'red' }}>
-                  No users found; please refine your search<br/>
-                  or invite the user for whom you are looking<br/>
-                  to join Sirch Coins.
-                </h3>
-              }
+            {searchText.length !== 0 && foundUsers?.length === 0 &&
+              <h3 style={{ color: 'red' }}>
+                No users found; please refine your search<br/>
+                or invite the person for whom you are looking<br/>
+                to join Sirch Coins.
+              </h3>
+            }
 
-              {selectedRecipient !== null &&
-                <h3 style={{ color: 'green' }}>
-                  {selectedRecipient?.full_name} (@{selectedRecipient?.user_handle})
-                </h3>
-              }
+            {selectedRecipient !== null &&
+              <h3 style={{ color: 'green' }}>
+                {selectedRecipient?.full_name} (@{selectedRecipient?.user_handle})
+              </h3>
+            }
 
-              {foundUsers?.length > 1 && selectedRecipient === null &&
+            {foundUsers?.length > 1 && selectedRecipient === null &&
+              (
+                <h3>Multiple users found. Please select one...</h3> &&
                 (
-                  <h3>Multiple users found. Please select one...</h3> &&
-                  (
-                    foundUsers.map((foundUser) => (
-                      <UserCard 
-                        key={foundUser.user_id}
-                        user={foundUser}
-                        handleUserCardSelected={handleUserCardSelected}
-                      />
-                    ))
-                  )
+                  foundUsers.map((foundUser) => (
+                    <UserCard 
+                      key={foundUser.user_id}
+                      user={foundUser}
+                      handleUserCardSelected={handleUserCardSelected}
+                    />
+                  ))
                 )
-              }
-            </>
+              )
+            }
+          </>
 
+          <input
+            className = 'coin-input'
+            type = 'number'
+            name = 'amountToSend'
+            placeholder = "How many ⓢ coins?"
+            value = {sendAmount}
+            min = '1'
+            max = {userBalance || '0'}
+            step = '1'
+            onChange = {handleAmountChange}
+            required
+          />
+
+          <div className = 'memo-input'>
             <input
               className = 'coin-input'
-              id = 'amountToSend'
-              name = 'amountToSend'
-              placeholder = "how many ⓢ coins?"
-              required
-              type = 'number'
-              min = '1'
-              max = {userBalance || '0'}
-              step = '1'
-              value = {sendAmount}
-              onChange = {handleAmountChange}
+              type = 'text'
+              name = 'memo'
+              placeholder = "Leave a note?"
+              value = {memo}
+              maxLength = '60'
+              onChange = {handleMemoChange}
+              autoComplete = 'memo'
             />
-
-            <div className = 'memo-input'>
-              <input
-                className = 'coin-input'
-                id = 'memo'
-                name = 'memo'
-                placeholder = "leave a note?"
-                type = 'text'
-                value = {memo}
-                maxLength = '60'
-                onChange = {handleMemoChange}
-                autoComplete = 'memo'
-              />
-            </div>
           </div>
           
           <div className = 'bottom-btn-container'>
-            <button type = 'submit' className = 'send-btn big-btn'>
+            <button type = 'submit' className = 'big-btn'>
               Send
             </button>
-            <Link to = '/' className = 'big-btn'>
-              Back to Home
-            </Link>
+
+            <button className='big-btn'
+              onClick={() => { navigate(-1); }}>
+              Back
+            </button>
           </div>
         </form>
       </div>

@@ -25,7 +25,7 @@ export default function GeneralError() {
         </p>
       </div>
   
-      <div className='bottom-btn-container'>
+      <div style={{ textAlign: 'center', padding: '50px' }}>
         <Link to='/' className='big-btn'>
           Back to Home
         </Link>

@@ -31,9 +31,9 @@ export default function StripeSuccess() {
         setPaymentDetails(data);
         refreshUserBalance();
       } catch (exception) {
-        console.error(exception);
+        console.error("An exception occurred:", exception.message);
 
-        setPaymentError(true);
+        setPaymentError(exception.message || "An error occurred");
       }
     };
 
@@ -43,7 +43,7 @@ export default function StripeSuccess() {
   }, [userInTable, paymentIntentId, paymentError, refreshUserBalance]);
 
   return (
-    <>      
+    <>
       {paymentDetails
       ? (
           <div style={{ textAlign: 'center', padding: '50px' }}>
@@ -61,6 +61,7 @@ export default function StripeSuccess() {
                   <p>A receipt will be sent to your email address.</p>
                 )
             }
+            
             <div style={{ textAlign: 'center', padding: '50px' }}>
               <Link to='/' className='big-btn'>
                 Back to Home
