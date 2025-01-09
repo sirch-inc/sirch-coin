@@ -76,7 +76,7 @@ export default function Login() {
               }
 
               <button className='account-button' type='submit'>Log In →</button>
-              <a href='/forgot-password'>Forgot Password?</a>
+              <a href='/reset-password-request'>Forgot Password?</a>
               <br/>
             </form>
           </>
