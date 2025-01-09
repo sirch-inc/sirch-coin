@@ -7,8 +7,9 @@ import MyAccount from '../Account/MyAccount'
 import CreateAccount from '../Account/CreateAccount';
 import VerifyAccount from '../Account/VerifyAccount';
 import UpdateAccount from '../Account/UpdateAccount'
-import ForgotPassword from '../Account/ForgotPassword';
-import ResetPassword from '../Account/ResetPassword';
+import ChangePassword from '../Account/ChangePassword';
+import ResetPassword from '../Account/ResetPassword.jsx';
+import ResetPasswordRequest from '../Account/ResetPasswordRequest.jsx';
 import Welcome from '../Account/Welcome';
 import TermsOfService from '../TermsOfService.jsx';
 import ContactUs from '../ContactUs.jsx';
@@ -38,7 +39,8 @@ export default function MainContent({ supabase }) {
           <Route path='/update-account' Component={UpdateAccount}/>
           <Route path='/welcome' Component={Welcome}/>
           <Route path='/about' Component={About}/>
-          <Route path='/forgot-password' Component={ForgotPassword}/>
+          <Route path='/change-password' Component={ChangePassword}/>
+          <Route path='/reset-password-request' Component={ResetPasswordRequest}/>
           <Route path='/reset-password' Component={ResetPassword}/>
           <Route path='coin/send' Component={Send}/>
           <Route path='/purchase' Component={Purchase}/>
