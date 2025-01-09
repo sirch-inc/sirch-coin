@@ -65,37 +65,36 @@ export default function Welcome() {
           )
         ) : (
           <>
-            {
-              verificationError ? (
-                <>
-                  <h1>There was a problem verifying your account.</h1>
-                  <p>
-                    Your invite link is either invalid or has expired. If you&apos;ve already verified your account,
-                    please try <a href='/login'>logging in</a>. Alternatively, you can request a new verification link below:
-                  </p>
+            {verificationError ?
+            (
+              <>
+                <h1>There was a problem verifying your account.</h1>
+                <p>
+                  Your invite link is either invalid or has expired. If you&apos;ve already verified your account,
+                  please try <a href='/login'>logging in</a>. Alternatively, you can request a new verification link below:
+                </p>
 
-                  <form onSubmit={resendVerificationEmail}>
-                    <input
-                      className="account-input"
-                      type="email"
-                      id="email"
-                      name="email"
-                      placeholder="Enter the email you used to create your account"
-                      value={resendEmail}
-                      onChange={(e) => setResendEmail(e.target.value)}
-                      required
-                    >
-                    </input>
-                    <button className="big-btn" type='submit'> Resend Verification Email → </button>
-                    {resendEmailStatus && <p>{resendEmailStatus}</p>}
-                  </form>
-                </>
-              ) : (
-                <>
-                  <h3>You must be logged in to change your user account settings.</h3>
-                </>
-              )
-            }
+                <form onSubmit={resendVerificationEmail}>
+                  <input
+                    className="account-input"
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Enter the email you used to create your account"
+                    value={resendEmail}
+                    onChange={(e) => setResendEmail(e.target.value)}
+                    required
+                  >
+                  </input>
+                  <button className="big-btn" type='submit'> Resend Verification Email → </button>
+                  {resendEmailStatus && <p>{resendEmailStatus}</p>}
+                </form>
+              </>
+            ) : (
+              <>
+                <h3>You must be logged in to change your user account settings.</h3>
+              </>
+            )}
             
             <div style={{ textAlign: 'center', padding: '50px' }}>
               <Link to='/' className='big-btn'>
