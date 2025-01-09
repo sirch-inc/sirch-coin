@@ -1,129 +1,75 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ToastContainer, toast } from 'react-toastify';
-import supabase from '../App/supabaseProvider'
+import { useState, useEffect, useContext } from 'react';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { AuthContext } from '../AuthContext';
+import ChangePassword from './ChangePassword';
+import ResetPasswordRequest from '../Account/ResetPasswordRequest';
 
 
-// TODO: Can we use this same component for currently logged-in users (maybe with
-// TODO: reauthentication using the "current password") as well as email-triggered password
-// TODO: reset flows?
-// TODO: ...would want a "Back" button (and "current password field") if rendered in-session.
-// TODO: ...and we would then remove the password fields from "UpdateUser".
-// TODO: Send an email informing the user of the password change.
 export default function ResetPassword() {
-  const [newPassword, setNewPassword] = useState('');
-  const [passwordRecoverySession, setPasswordRecoverySession] = useState(null);
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [passwordsMatch, setPasswordsMatch] = useState(false);
+  const location = useLocation();
   const navigate = useNavigate();
+  const { event, session } = useContext(AuthContext);
+  const [isPasswordRecoverySession, setIsPasswordRecoverySession] = useState(false);
+  const isVerificationError = location.hash.includes('error=access_denied');
 
-  // verify the PASSWORD_RECOVERY event is present and set session
+  // check if the PASSWORD_RECOVERY event is present
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'PASSWORD_RECOVERY') {
-        setPasswordRecoverySession(session);
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
+    (event === 'PASSWORD_RECOVERY') && setIsPasswordRecoverySession(true);
+  }, [event]);
   
-  async function submitPassword(e) {
-    e.preventDefault();
-
-    if (!passwordsMatch) {
-      toast.error("Passwords do not match.");
-      return;
-    }
-
-    try {
-      // If the user has arrived at this page from their update password link, they should have a passwordRecoverySession
-      if (passwordRecoverySession) {
-        // TODO: consider using supabase.auth.reauthenticate() and/or supabase.auth.resend() here...
-        const { data: user, error } = await supabase.auth.updateUser(
-          { password: newPassword },
-          { session: passwordRecoverySession }
-        );
-        
-        if (error) {
-          throw new Error(error);
-        }
-
-        if (!user) {
-          throw new Error("No user updated.");
-        }
-  
-        // TODO: surface this success message appropriately
-        alert('Password updated successfully!');
-      } else {
-        // TODO: surface this error appropriately
-        alert("Something is not right...have you arrived at this page by clicking on the link in your email? You may need to request another password reset email via the Login page before being able to successfully update your password.");
-      }
-
-      navigate('/');
-    } catch (exception) {
-      console.error("An exception occurred:", exception.message);
-
-      navigate('/error', { replace: true });
-    }
-  }
-
-  // verify passwords match
-  const handlePasswordConfirmation = (e) =>{
-    const value = e.target.value;
-
-    setConfirmPassword(value);
-    setPasswordsMatch(value === newPassword)
-  }
-
-  return(
+  return (
     <>
-      <ToastContainer
-        position = 'top-right'
-        autoClose = {false}
-        newestOnTop = {false}
-        closeOnClick
-        draggable
-        theme = 'colored'
-      />
+      <h1>Reset Password</h1>
 
-      <h1>Enter a New Password:</h1>
-      <p>Choose a new password for your Sirch Coins account below:</p>
+      {!session || isPasswordRecoverySession ?
+        (
+          <>
+            {!isVerificationError ?
+              (
+                <>
+                  <ChangePassword
+                    isPasswordRecoverySession={isPasswordRecoverySession}
+                  />
+                </>
+              ) : (
+                <>
+                  <h2>There was a problem verifying your reset-password link.</h2>
+                  <p>
+                    Your email reset-password link is invalid, has expired, or has already been used.
+                    <br/>
+                    If you&apos;ve already reset your password, please try <a href='/login'>logging in</a>.
+                    <br/>
+                    Alternatively, you can request a new reset-password link below.
+                  </p>
 
-      <form onSubmit={submitPassword}>
-        <input
-          className='account-input'
-          type='password'
-          placeholder="New Password"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          autoComplete='off'
-          required
-        />
-
-        <input
-          className='account-input'
-          type='password'
-          placeholder="Confirm New Password"
-          value={confirmPassword}
-          name='confirm-password'
-          onChange={handlePasswordConfirmation}
-          autoComplete='off'
-          required
-        />
-
-        {confirmPassword && (
-          <p style={{ color: passwordsMatch ? 'green' : 'red' }}>
-            {passwordsMatch ? "Passwords match!" : "Passwords do not match"}
-          </p>
-        )}
-
-        <br/>
-
-        <button className='account-button' type='submit'> Change Password → </button>
-      </form>
+                  <ResetPasswordRequest
+                    isVerificationError={isVerificationError}
+                  />
+                </>
+              )
+            }
+            
+            <div style={{ textAlign: 'center', padding: '50px' }}>
+              <Link to='/' className='big-btn'>
+                Back to Home
+              </Link>
+            </div>
+          </>
+        ) : (
+          <>
+            <h2>You are currently logged in.</h2>
+            <br/>
+            <h3>You can update your account password under My Account.</h3>
+            <br/>
+            <div className='bottom-btn-container'>
+              <button className='big-btn'
+                onClick={() => { navigate(-1); }}>
+                Back
+              </button>
+            </div>
+          </>
+        )
+      }
     </>
-  )
+  );
 }
