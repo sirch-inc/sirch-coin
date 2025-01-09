@@ -7,6 +7,7 @@ export const AuthContext = createContext();
 // eslint-disable-next-line react/prop-types
 export const AuthProvider = ({ children }) => {
   const [session, setSession] = useState(null);
+  const [event, setEvent] = useState(null);
   const [userId, setUserId] = useState(null);
   const [userEmail, setUserEmail] = useState(null);
   const [userInTable, setUserInTable] = useState(null);
@@ -34,6 +35,8 @@ export const AuthProvider = ({ children }) => {
   // Manage the user authentication session
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setEvent(event);
+      
       // TODO: handle the events appropriately
       switch (event) {
         case 'INITIAL_SESSION':
@@ -111,7 +114,7 @@ export const AuthProvider = ({ children }) => {
   }, [userInTable, refreshUserBalance]);
   
   return (
-    <AuthContext.Provider value={{ session, userId, userEmail, userInTable, userBalance, refreshUserBalance, authError }} supabase={ supabase }>
+    <AuthContext.Provider value={{ event, session, userId, userEmail, userInTable, userBalance, refreshUserBalance, authError }} supabase={ supabase }>
       {children}
     </AuthContext.Provider>
   )
