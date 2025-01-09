@@ -12,9 +12,6 @@ export default function UpdateAccount() {
   const [email, setEmail] = useState(userEmail || '');
   const [isEmailPrivate, setIsEmailPrivate] = useState(userInTable?.is_email_private);
   const [hasEmailChanged, setHasEmailChanged] = useState(false);
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [firstName, setFirstName] = useState(userInTable?.first_name);
   const [lastName, setLastName] = useState(userInTable?.last_name);
   const [isNamePrivate, setIsNamePrivate] = useState(userInTable?.is_name_private);
@@ -24,15 +21,9 @@ export default function UpdateAccount() {
   const handleUpdate = async (event) => {
     event.preventDefault();
     
-    if (!passwordsMatch) {
-      toast.error("Passwords do not match.");
-      return;
-    }
-
     try {
       const { error } = await supabase.auth.updateUser({
         email,
-        password: password !== '' ? password : null,
         data: {
           full_name: firstName + ' ' + lastName,
           first_name: firstName,
@@ -42,26 +33,22 @@ export default function UpdateAccount() {
           is_email_private: isEmailPrivate
         },
         options: {
-          // TODO: change this redirect to something else???
           emailRedirectTo: `${window.location.origin}/welcome`,
         }
       });
 
       if (error) {
         if (isAuthApiError(error)) {
-          toast.error("There was an error updating your user account. Please try again later or contact technical support.");
-        } else {
-          throw new Error(error);
+          toast.error(error.message);
+          return;
         }
-        return;
+
+        throw new Error(error);
       }
 
       toast.success("Account updated!");
 
-      // reset form
-      setPassword('');
-      setConfirmPassword('');
-      
+      // reset form      
       if (hasEmailChanged) {
         toast.success("A verification email was sent to your new email address.");
       }
@@ -78,13 +65,6 @@ export default function UpdateAccount() {
     setEmail(newEmail);
     setHasEmailChanged(newEmail !== userEmail);
   }
-
-  const handlePasswordConfirmation = (e) => {
-    const value = e.target.value;
-
-    setConfirmPassword(value);
-    setPasswordsMatch(value === password);
-  };
 
   // refresh user handle
   const handleSuggestNewHandle = async () => {
@@ -165,35 +145,6 @@ export default function UpdateAccount() {
                   Note: Changes to your email address will require email reverification.
                 </p>
               }
-
-              <div className="account-row">
-                <input
-                  className="account-input"
-                  type="password"
-                  id="password"
-                  name="password"
-                  placeholder="New Password"
-                  value = {password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="off"
-                />
-                <input
-                  className="account-input"
-                  type="password" 
-                  name="confirm-password" 
-                  id="confirm-password" 
-                  placeholder="Confirm New Password" 
-                  value={confirmPassword}
-                  onChange={handlePasswordConfirmation}
-                  autoComplete="off"
-                  required={password !== ''}
-                />
-              </div>
-              {confirmPassword && (
-                <p style={{ color: passwordsMatch ? "green" : "red" }}>
-                  {passwordsMatch ? "Passwords match!" : "Passwords do not match"}
-                </p>
-              )}
 
               <div className="account-row">
                 <input 

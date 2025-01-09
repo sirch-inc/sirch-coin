@@ -22,6 +22,10 @@ export default function MyAccount(){
     navigate('/update-account');
   };
 
+  const handleClickChangeAccountPassword = async () => {
+    navigate('/change-password');
+  };
+
   const handleVerifyUserHandle = (e) => {
     const value = e.target.value;
 
@@ -73,13 +77,23 @@ export default function MyAccount(){
 
       <div className='account-actions'>
         <h2>Account Actions</h2>
+
         <button
           className='big-btn'
           type='button'
           onClick={handleClickUpdateAccount}
         >
-          Update Account
+          Update User Profile
         </button>
+
+        <button
+          className='big-btn'
+          type='button'
+          onClick={handleClickChangeAccountPassword}
+        >
+          Change Account Password
+        </button>
+
         <button className='big-btn danger' onClick={showDeleteConfirmation}> Delete Account... </button>
       </div>
      
