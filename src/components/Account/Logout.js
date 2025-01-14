@@ -1,11 +1,7 @@
-import supabase from '../App/supabaseProvider'
-// import { useNavigate } from 'react-router-dom';
+import supabase from '../App/supabaseProvider';
 
 
 async function Logout() {
-  // TODO: wrap in try-catch
-  // const navigate = useNavigate();
-
   try {
     const { error } = await supabase.auth.signOut();
 
@@ -14,10 +10,7 @@ async function Logout() {
     }
   } catch (exception) {
     console.error("An exception occurred:", exception.message);
-
-    // TODO: surface/handle the exception
-    // navigate('/error', { replace: true });
   }
 }
 
-export default Logout
+export default Logout;

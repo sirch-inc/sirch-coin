@@ -7,7 +7,7 @@ import supabase from '../App/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
 
 
-// TODO: Send an email informing the user of the password change.
+// TODO: Send an email informing the user of the password change
 export default function ChangePassword(props) {
   const { standalone = true } = props;
   const [newPassword, setNewPassword] = useState('');
