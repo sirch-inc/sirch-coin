@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastNotification, toast } from '../App/ToastNotification';
 import { AuthContext } from '../AuthContext';
 import supabase from '../App/supabaseProvider';
+import { isAuthApiError } from '@supabase/supabase-js';
 
 
 export default function CreateAccount() {
@@ -77,6 +78,11 @@ export default function CreateAccount() {
       });
 
       if (error) {
+        if (isAuthApiError(error) || error.code === 'weak_password') {
+          toast.error(error.message);
+          return;
+        }
+
         throw new Error(error);
       }
 
@@ -101,18 +107,11 @@ export default function CreateAccount() {
   
   return (
     <>
-      {
-        !session ? (
-          <>
-            <ToastContainer
-              position = 'top-right'
-              autoClose = {false}
-              newestOnTop = {false}
-              closeOnClick
-              draggable
-              theme = 'colored'
-            />
+      <ToastNotification />
 
+      {!session ?
+        (
+          <>
             <h2>Create Account</h2>
             <p>Already have an account? <a href='/login'>Log in</a> instead.</p>
             <br></br>
@@ -170,21 +169,26 @@ export default function CreateAccount() {
               <div className='account-row'>
                 <input
                   className='account-input'
-                  type='password'
                   id='password'
                   name='password'
+                  type='password'
                   placeholder="Password"
+                  minLength='6'
+                  maxLength='64'
                   value = {password}
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete='off'
                   required
                 />
+
                 <input
                   className='account-input'
-                  type='password'
-                  name='confirm-password'
                   id='confirm-password'
+                  name='confirm-password'
+                  type='password'
                   placeholder="Confirm Your Password"
+                  minLength='6'
+                  maxLength='64'
                   value={confirmPassword}
                   onChange={handlePasswordConfirmation}
                   autoComplete='off'

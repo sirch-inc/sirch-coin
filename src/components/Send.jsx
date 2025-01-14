@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
+import { ToastNotification, toast } from './App/ToastNotification';
 import supabase from './App/supabaseProvider.js';
-import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import useDebounce from '../helpers/debounce.js'
 
@@ -178,14 +178,7 @@ export default function Send() {
 
   return (  
     <>
-      <ToastContainer
-        position = 'top-right'
-        autoClose = {false}
-        newestOnTop = {false}
-        closeOnClick
-        draggable
-        theme = 'colored'
-      />
+      <ToastNotification />
 
       <div className = 'send-coin-container'>
         <h2>Send ⓢ</h2>

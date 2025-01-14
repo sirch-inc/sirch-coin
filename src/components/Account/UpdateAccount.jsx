@@ -1,10 +1,9 @@
 import { useState, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AuthContext } from '../AuthContext';
+import { ToastNotification, toast } from '../App/ToastNotification';
 import supabase from '../App/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 
 export default function UpdateAccount() {
@@ -38,7 +37,7 @@ export default function UpdateAccount() {
       });
 
       if (error) {
-        if (isAuthApiError(error)) {
+        if (isAuthApiError(error) || error.code === 'weak_password') {
           toast.error(error.message);
           return;
         }
@@ -95,18 +94,11 @@ export default function UpdateAccount() {
   
   return (
     <>
+      <ToastNotification />
+
       {
         session ? (
           <>
-            <ToastContainer
-              position="top-right"
-              autoClose={false}
-              newestOnTop={false}
-              closeOnClick
-              draggable
-              theme="colored"
-            />
-
             <h2>Update Account</h2>
 
             <form onSubmit={handleUpdate} autoComplete="off">

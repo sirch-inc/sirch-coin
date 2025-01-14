@@ -5,17 +5,34 @@ import ChangePassword from './ChangePassword';
 import ResetPasswordRequest from '../Account/ResetPasswordRequest';
 
 
+const VerificationError = () => (
+  <>
+    <h2>There was a problem verifying your reset-password link.</h2>
+    <p>
+      Your reset-password link is invalid, has expired, or has already been used.
+      <br/>
+      If you&apos;ve already reset your password, please try <a href='/login'>logging in</a>.
+      <br/>
+      Alternatively, you can request a new reset-password link below.
+    </p>
+
+    <ResetPasswordRequest standalone={false} />
+  </>
+);
+
 export default function ResetPassword() {
-  const location = useLocation();
+  const { hash } = useLocation();
   const navigate = useNavigate();
-  const { event, session } = useContext(AuthContext);
+  const { authEvent, session } = useContext(AuthContext);
   const [isPasswordRecoverySession, setIsPasswordRecoverySession] = useState(false);
-  const isVerificationError = location.hash.includes('error=access_denied');
+  const verificationError = hash.includes('error=access_denied');
 
   // check if the PASSWORD_RECOVERY event is present
   useEffect(() => {
-    (event === 'PASSWORD_RECOVERY') && setIsPasswordRecoverySession(true);
-  }, [event]);
+    if (authEvent === 'PASSWORD_RECOVERY') {
+      setIsPasswordRecoverySession(true);
+    }
+  }, [authEvent]);
   
   return (
     <>
@@ -24,28 +41,11 @@ export default function ResetPassword() {
       {!session || isPasswordRecoverySession ?
         (
           <>
-            {!isVerificationError ?
+            {verificationError ?
               (
-                <>
-                  <ChangePassword
-                    isPasswordRecoverySession={isPasswordRecoverySession}
-                  />
-                </>
+                <VerificationError />
               ) : (
-                <>
-                  <h2>There was a problem verifying your reset-password link.</h2>
-                  <p>
-                    Your email reset-password link is invalid, has expired, or has already been used.
-                    <br/>
-                    If you&apos;ve already reset your password, please try <a href='/login'>logging in</a>.
-                    <br/>
-                    Alternatively, you can request a new reset-password link below.
-                  </p>
-
-                  <ResetPasswordRequest
-                    isVerificationError={isVerificationError}
-                  />
-                </>
+                <ChangePassword standalone={false} />
               )
             }
             

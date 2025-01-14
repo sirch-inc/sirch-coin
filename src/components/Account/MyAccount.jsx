@@ -1,9 +1,9 @@
 import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
-import supabase from '../App/supabaseProvider';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastNotification, toast } from '../App/ToastNotification';
 import Logout from '../Account/Logout';
+import supabase from '../App/supabaseProvider';
 
 
 export default function MyAccount(){
@@ -60,14 +60,7 @@ export default function MyAccount(){
 
   return(
     <div className='account-container'>
-      <ToastContainer
-        position='top-right'
-        autoClose={false}
-        newestOnTop={false}
-        closeOnClick
-        draggable
-        theme='colored'
-      />
+      <ToastNotification />
 
       <h1>My Account</h1>
 

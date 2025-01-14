@@ -7,7 +7,7 @@ export const AuthContext = createContext();
 // eslint-disable-next-line react/prop-types
 export const AuthProvider = ({ children }) => {
   const [session, setSession] = useState(null);
-  const [event, setEvent] = useState(null);
+  const [authEvent, setAuthEvent] = useState(null);
   const [userId, setUserId] = useState(null);
   const [userEmail, setUserEmail] = useState(null);
   const [userInTable, setUserInTable] = useState(null);
@@ -34,11 +34,11 @@ export const AuthProvider = ({ children }) => {
 
   // Manage the user authentication session
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setEvent(event);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((authEvent, session) => {
+      setAuthEvent(authEvent);
       
       // TODO: handle the events appropriately
-      switch (event) {
+      switch (authEvent) {
         case 'INITIAL_SESSION':
         case 'SIGNED_IN':
         case 'USER_UPDATED':
@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }) => {
           setSession(session);
           break;
         default:
-          console.error("Auth - Unknown Event", event);
+          console.error("Auth - Unknown Event", authEvent);
           setAuthError("Auth - Unknown Event");
           break;
       }
@@ -114,7 +114,7 @@ export const AuthProvider = ({ children }) => {
   }, [userInTable, refreshUserBalance]);
   
   return (
-    <AuthContext.Provider value={{ event, session, userId, userEmail, userInTable, userBalance, refreshUserBalance, authError }} supabase={ supabase }>
+    <AuthContext.Provider value={{ authEvent, session, userId, userEmail, userInTable, userBalance, refreshUserBalance, authError }} supabase={ supabase }>
       {children}
     </AuthContext.Provider>
   )

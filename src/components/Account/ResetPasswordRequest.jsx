@@ -2,28 +2,28 @@ import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
 import PropTypes from 'prop-types';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastNotification, toast } from '../App/ToastNotification';
 import supabase from '../App/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
 
 
 export default function ResetPasswordRequest(props) {
-  const { isVerificationError = false } = props;
-
+  const { standalone = true } = props;
   const navigate = useNavigate();
-  const [userEmail, setUserEmail] = useState('');
-  const [requestSent, setRequestSent] = useState(false);
-  const [inputError, setInputError] = useState(null);
   const { session } = useContext(AuthContext);
+  const [userEmail, setUserEmail] = useState('');
+  const [sendStatus, setSendStatus] = useState('');
 
 
-  async function submitRequest(e) {
+  const submitRequest = async (e) => {
     e.preventDefault();
 
     if (userEmail === '') {
-      setInputError('Please enter an email address.');
+      toast.error("Please enter a valid email address.");
       return;
     }
+
+    setSendStatus("Sending...");
 
     try {
       // TODO: consider using supabase.auth.reauthenticate() to require the user to re-enter their password
@@ -33,7 +33,7 @@ export default function ResetPasswordRequest(props) {
       );
 
       if (error) {
-        if (isAuthApiError(error)) {
+        if (isAuthApiError(error) || error.code === 'weak_password') {
           toast.error(error.message);
           return;
         }
@@ -41,7 +41,11 @@ export default function ResetPasswordRequest(props) {
         throw new Error(error);
       }
 
-      setRequestSent(true);
+      // reset form
+      setUserEmail('');
+      setSendStatus('');
+
+      toast.success(`We've emailed ${userEmail} a link to reset your password! Please check your email inbox.`);
     } catch (exception) {
       console.error("An exception occurred:", exception.message);
 
@@ -51,59 +55,40 @@ export default function ResetPasswordRequest(props) {
 
   return (
     <>
-      <ToastContainer
-        position = 'top-right'
-        autoClose = {false}
-        newestOnTop = {false}
-        closeOnClick
-        draggable
-        theme = 'colored'
-      />
+      <ToastNotification />
 
-      {!isVerificationError &&
+      {standalone &&
         <h1>Reset Password Request</h1>
       }
 
       {!session ?
         (
           <>
-            {!requestSent ?
-              (
-                <>
-                  <p>Enter the email address you used to sign up for Sirch Coin.<br/>We will send you a reset-password email containing a link to complete that process.</p>
-                  <form className='reset-password' onSubmit={submitRequest}>
-                    <input
-                      className='account-input'
-                      type='email'
-                      id='email'
-                      name='email'
-                      placeholder="Email"
-                      value={userEmail}
-                      onChange={(e) => setUserEmail(e.target.value)}
-                      autoComplete='email'
-                      required
-                    />
+            <p>
+              Enter the email address you used to sign up for Sirch Coins.
+              <br/>
+              We will send you a reset-password email containing a link to complete that process.
+            </p>
 
-                    {inputError &&
-                      <p
-                        style={{ color: 'red' }}
-                        className='error'>
-                        { inputError }
-                      </p>
-                    }
+            <form className='reset-password' onSubmit={submitRequest}>
+              <input
+                className='account-input'
+                id='email'
+                name='email'
+                type='email'
+                placeholder="Your Sirch Coins account email address"
+                value={userEmail}
+                onChange={(e) => setUserEmail(e.target.value)}
+                autoComplete='email'
+                required
+              />
 
-                    <button className='account-button' type='submit'>
-                      {isVerificationError ? "Resend" : "Send"} Reset Password Email →
-                    </button>
-                  </form>
-                </>
-              ) : (
-                <>
-                  <p>We&apos;ve emailed {userEmail} a link to reset your password. Please check your email inbox.</p>
-                  <br/>
-                </>
-              )
-            }
+              <button className='account-button' type='submit'>
+                {standalone ? "Send" : "Resend"} Reset Password Email →
+              </button>
+
+              {sendStatus && <p>{sendStatus}</p>}
+            </form>
           </>
         ) : (
           <>
@@ -115,7 +100,7 @@ export default function ResetPasswordRequest(props) {
         )
       }
 
-      {!isVerificationError &&
+      {standalone &&
         <div className='bottom-btn-container'>
           <button className='big-btn'
             onClick={() => { navigate(-1); }}>
@@ -128,5 +113,5 @@ export default function ResetPasswordRequest(props) {
 }
 
 ResetPasswordRequest.propTypes = {
-  isVerificationError: PropTypes.boolean
+  standalone: PropTypes.boolean
 };

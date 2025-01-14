@@ -1,43 +1,92 @@
 import { useState, useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
+import { ToastNotification, toast } from '../App/ToastNotification';
 import supabase from '../App/supabaseProvider'
+import { isAuthApiError } from '@supabase/supabase-js';
 
 
-// TODO: handle errors here (esp 400-class, like "expired link", etc...)
+const VerificationError = ({ userEmail, setUserEmail, resendVerificationEmail, emailSendStatus }) => (
+  <>
+    <h1>Verify Account</h1>
+
+    <h2>There was a problem verifying your account.</h2>
+    <p>
+      Your verification link is invalid, has expired, or has already been used.
+      <br/>
+      If you&apos;ve already verified your account, please try <a href='/login'>logging in</a>.
+      <br/>
+      Alternatively, you can request a new verification link below.
+    </p>
+    <p>
+      Enter the email address you used to sign up for Sirch Coin.
+      <br/>
+      We will resend a verification email containing a link to complete that process.
+    </p>
+    <form onSubmit={resendVerificationEmail}>
+      <input
+        className='account-input'
+        id='email'
+        name='email'
+        type='email'
+        placeholder="Your Sirch Coins account email address"
+        value={userEmail}
+        onChange={(e) => setUserEmail(e.target.value)}
+        autoComplete='email'
+        required
+      />
+      <button className='account-button' type='submit'>
+        Resend Verification Email →
+      </button>
+    </form>
+
+    {emailSendStatus && <p>{emailSendStatus}</p>}
+  </>
+);
+
 export default function Welcome() {
   const location = useLocation();
-  const verificationError = location.hash.includes('error=access_denied');
-  const [resendEmail, setResendEmail] = useState('');
-  const [resendEmailStatus, setResendEmailStatus] = useState('');
-  const { session, userInTable } = useContext(AuthContext);
-
   const navigate = useNavigate();
+  const { session, userInTable } = useContext(AuthContext);
+  const verificationError = location.hash.includes('error=access_denied');
+  const [userEmail, setUserEmail] = useState('');
+  const [emailSendStatus, setEmailSendStatus] = useState('');
 
-    // To test this flow: use an expired verification link (expires in 24 hours)
-  const resendVerificationEmail = async () => {
-    if (!resendEmail) {
-      setResendEmailStatus('You must enter a valid email.');
+
+  // To test this flow: use an expired verification link (expires in 24 hours)
+  const resendVerificationEmail = async (e) => {
+    e.preventDefault();
+
+    if (!userEmail) {
+      toast.error("Please enter a valid email address.");
       return;
     }
 
-    setResendEmailStatus('Sending...');
+    setEmailSendStatus("Sending...");
 
     try {
       const { error } = await supabase.auth.resend({
         type: 'signup',
-        email: resendEmail,
+        email: userEmail,
         options: {
           emailRedirectTo: `${window.location.origin}/welcome`
         }
       });
 
       if (error) {
-        setResendEmailStatus('Failed to resend a verification email. Please try again, or if you already verified, please log in.');
-        return;
+        if (isAuthApiError(error)) {
+          toast.error(error.message);
+          return;
+        }
+
+        throw new Error(error);
       }
 
-      setResendEmailStatus('Verification email sent! Please check you inbox for a confirmation link.');
+      // reset form
+      setUserEmail('');
+      setEmailSendStatus('');
+
+      toast.success(`We've emailed ${userEmail} a link to verify your account! Please check your email inbox.`);
     } catch(exception) {
       console.error("An exception occurred:", exception.message);
 
@@ -47,63 +96,30 @@ export default function Welcome() {
 
   return (
     <>
-      {
-        session ? (
-          userInTable ? (
-            <>
-              <h1>Welcome {userInTable?.first_name}!</h1>
-              <p>Your Sirch Coins account has been verified and you may now use all of the Sirch Coin services.</p>
+      <ToastNotification />
 
-              <div style={{ textAlign: 'center', padding: '50px' }}>
-                <Link to='/' className='big-btn'>
-                  Get started!
-                </Link>
-              </div>
-            </>
-          ) : (
-            <h1> Verifying account... </h1>
-          )
-        ) : (
-          <>
-            {verificationError ?
-            (
-              <>
-                <h1>There was a problem verifying your account.</h1>
-                <p>
-                  Your invite link is either invalid or has expired. If you&apos;ve already verified your account,
-                  please try <a href='/login'>logging in</a>. Alternatively, you can request a new verification link below:
-                </p>
+      {session && userInTable &&
+        <>
+          <h1>Welcome {userInTable?.first_name}!</h1>
+          <p>Your Sirch Coins account has been verified and you may now use all of the Sirch Coin services.</p>
+          <div style={{ textAlign: 'center', padding: '50px' }}>
+            <Link to='/' className='big-btn'>
+              Get started!
+            </Link>
+          </div>
+        </>
+      }
 
-                <form onSubmit={resendVerificationEmail}>
-                  <input
-                    className="account-input"
-                    type="email"
-                    id="email"
-                    name="email"
-                    placeholder="Enter the email you used to create your account"
-                    value={resendEmail}
-                    onChange={(e) => setResendEmail(e.target.value)}
-                    required
-                  >
-                  </input>
-                  <button className="big-btn" type='submit'> Resend Verification Email → </button>
-                  {resendEmailStatus && <p>{resendEmailStatus}</p>}
-                </form>
-              </>
-            ) : (
-              <>
-                <h3>You must be logged in to change your user account settings.</h3>
-              </>
-            )}
-            
-            <div style={{ textAlign: 'center', padding: '50px' }}>
-              <Link to='/' className='big-btn'>
-                Back to Home
-              </Link>
-            </div>
-          </>
-        )
+      {verificationError &&
+        <VerificationError
+          userEmail={userEmail}
+          setUserEmail={setUserEmail}
+          resendVerificationEmail={resendVerificationEmail}
+          emailSendStatus={emailSendStatus}
+        />
       }
     </>
   );
 }
+
+// {emailSendStatus && <p>{emailSendStatus}</p>}

@@ -1,13 +1,14 @@
 import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
+import { ToastNotification, toast } from '../App/ToastNotification';
 import supabase from '../App/supabaseProvider';
+import { isAuthApiError } from '@supabase/supabase-js';
 
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [signInError, setSignInError] = useState(false);
   const { session } = useContext(AuthContext);
   const navigate = useNavigate();
   
@@ -21,12 +22,14 @@ export default function Login() {
       });
 
       if (error) {
-        if (error.code === 'invalid_credentials') {
-          setSignInError(true);
+        if (isAuthApiError(error)) {
+          toast.error(error.message);
+          setPassword('');
+
           return;
-        } else {
-          throw new Error(error);
         }
+        
+        throw new Error(error);
       }
 
       if (!user) {
@@ -43,6 +46,8 @@ export default function Login() {
   
   return (
     <>
+      <ToastNotification />
+
       {
         !session ? (
           <>
@@ -61,19 +66,17 @@ export default function Login() {
 
               <input
                 className='account-input'
+                id='password'
+                name='password'
                 type='password'
                 placeholder="Password"
+                minLength='6'
+                maxLength='64'      
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete='off'
                 required
               />
-
-              {signInError &&
-              <div>
-                <p style={{ color: 'red' }}>There was an issue with your credentials. Please try logging in again.</p>
-              </div>
-              }
 
               <button className='account-button' type='submit'>Log In →</button>
               <a href='/reset-password-request'>Forgot Password?</a>
