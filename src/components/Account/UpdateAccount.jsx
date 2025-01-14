@@ -17,6 +17,7 @@ export default function UpdateAccount() {
   const [userHandle, setUserHandle] = useState(userInTable?.user_handle);
   const navigate = useNavigate();
 
+  
   const handleUpdate = async (event) => {
     event.preventDefault();
     
