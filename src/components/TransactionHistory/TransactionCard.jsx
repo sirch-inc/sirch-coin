@@ -1,10 +1,10 @@
+import PropTypes from 'prop-types';
 import { parseISO, formatDistanceToNow } from 'date-fns';
 import { format } from 'date-fns-tz';
 import { Tooltip } from 'react-tooltip';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 
 
-// eslint-disable-next-line react/prop-types
 export default function TransactionCard({ transaction }) {
   const { created_at, type, amount, status, details } = transaction;
 
@@ -79,3 +79,7 @@ export default function TransactionCard({ transaction }) {
     </div>
   );
 }
+
+TransactionCard.propTypes = {
+  transaction: PropTypes.object
+};
