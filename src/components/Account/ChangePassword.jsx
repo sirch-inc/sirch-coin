@@ -8,8 +8,7 @@ import { isAuthApiError } from '@supabase/supabase-js';
 
 
 // TODO: Send an email informing the user of the password change
-export default function ChangePassword(props) {
-  const { standalone = true } = props;
+export default function ChangePassword({ standalone = true }) {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordsMatch, setPasswordsMatch] = useState(false);
@@ -128,5 +127,5 @@ export default function ChangePassword(props) {
 }
 
 ChangePassword.propTypes = {
-  standalone: PropTypes.boolean
+  standalone: PropTypes.bool
 };
