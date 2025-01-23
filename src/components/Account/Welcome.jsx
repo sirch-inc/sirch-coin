@@ -39,6 +39,7 @@ export default function Welcome() {
       if (error) {
         if (isAuthApiError(error)) {
           toast.error(error.message);
+          setEmailSendStatus('');
           return;
         }
 
@@ -53,6 +54,10 @@ export default function Welcome() {
     } catch(exception) {
       console.error("An exception occurred:", exception.message);
 
+      // reset form
+      setUserEmail('');
+      setEmailSendStatus('');
+
       navigate('/error', { replace: true });
     }
   }
@@ -61,16 +66,20 @@ export default function Welcome() {
     <>
       <ToastNotification />
 
-      {session && userInTable &&
-        <>
-          <h1>Welcome {userInTable?.first_name}!</h1>
-          <p>Your Sirch Coins account has been verified and you may now use all of the Sirch Coin services.</p>
-          <div style={{ textAlign: 'center', padding: '50px' }}>
-            <Link to='/' className='big-btn'>
-              Get started!
-            </Link>
-          </div>
-        </>
+      {session && userInTable ?
+        (
+          <>
+            <h1>Welcome {userInTable?.first_name}!</h1>
+            <p>Your Sirch Coins account has been verified and you may now use all of the Sirch Coin services.</p>
+            <div style={{ textAlign: 'center', padding: '50px' }}>
+              <Link to='/' className='big-btn'>
+                Get started!
+              </Link>
+            </div>
+          </>
+        ) : (
+          <h1>Verifying account...</h1>
+        )
       }
 
       {verificationError &&

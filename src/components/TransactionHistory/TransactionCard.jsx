@@ -5,43 +5,43 @@ import { Tooltip } from 'react-tooltip';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 
 
+const formatDate = (isoDate) => {
+  const parsedDate = parseISO(isoDate);
+  return formatDistanceToNow(parsedDate, { addSuffix: true });
+};
+
+const formatTooltipDate = (isoDate) => {
+  const parsedDate = parseISO(isoDate);
+  return format(parsedDate, "eee MM/dd/yyyy hh:mm:ss a zzz");
+};
+
+const getTransactionDetails = (type, details) => {
+  switch (type) {
+    case 'SENT':
+      return `Receiver: ${details.to_user_fullname || ""} (${
+        details.to_user_handle || ""
+      })${details.memo ? `\nMemo: ${details.memo}` : ""}`;
+    case 'RECEIVED':
+      return `Sender: ${details.from_user_fullname || ""} (${
+        details.from_user_handle || ""
+      })${details.memo ? `\nMemo: ${details.memo}` : ""}`;
+    case 'PURCHASE':
+      return `Stripe Payment Intent ID: ${details.paymentIntentId || ""}`;
+    case 'INITIAL BALANCE':
+      return `Welcome!`;
+    default:
+      return "";
+  }
+};
+
 export default function TransactionCard({ transaction }) {
   const { created_at, type, amount, status, details } = transaction;
-
-  const formatDate = (isoDate) => {
-    const parsedDate = parseISO(isoDate);
-    return formatDistanceToNow(parsedDate, { addSuffix: true });
-  };
-
-  const formatTooltipDate = (isoDate) => {
-    const parsedDate = parseISO(isoDate);
-    return format(parsedDate, "eee MM/dd/yyyy hh:mm:ss a zzz");
-  };
-
-  const getTransactionDetails = () => {
-    switch (type) {
-      case "SENT":
-        return `Receiver: ${details.to_user_fullname || ""} (${
-          details.to_user_handle || ""
-        })${details.memo ? `\nMemo: ${details.memo}` : ""}`;
-      case "RECEIVED":
-        return `Sender: ${details.from_user_fullname || ""} (${
-          details.from_user_handle || ""
-        })${details.memo ? `\nMemo: ${details.memo}` : ""}`;
-      case "PURCHASE":
-        return `Stripe Payment Intent ID: ${details.paymentIntentId || ""}`;
-      case "INITIAL BALANCE":
-        return `Welcome!`;
-      default:
-        return "";
-    }
-  };
 
   const detailsPopover = (
     <Popover id="details-popover">
       <Popover.Header as="h3">Transaction Details</Popover.Header>
       <Popover.Body>
-        <pre>{getTransactionDetails()}</pre>
+        <pre>{getTransactionDetails(type, details)}</pre>
       </Popover.Body>
     </Popover>
   );
@@ -73,7 +73,13 @@ export default function TransactionCard({ transaction }) {
           overlay={detailsPopover}
           rootClose
         >
-          <p className="transaction-details">Show Details</p>
+        <button
+          className="transaction-details"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          Show Details
+        </button>
         </OverlayTrigger>
       </div>
     </div>
@@ -81,5 +87,11 @@ export default function TransactionCard({ transaction }) {
 }
 
 TransactionCard.propTypes = {
-  transaction: PropTypes.object
+  transaction: PropTypes.shape({
+    created_at: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+    amount: PropTypes.number.isRequired,
+    status: PropTypes.string.isRequired,
+    details: PropTypes.object.isRequired
+  }).isRequired
 };
