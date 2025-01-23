@@ -8,8 +8,12 @@ async function Logout() {
     if (error) {
       throw new Error(error);
     }
+
+    return { success: true };
   } catch (exception) {
     console.error("An exception occurred:", exception.message);
+
+    return { success: false, message: exception.message }
   }
 }
 
