@@ -9,6 +9,7 @@ export default function AccountVerificationError(props) {
       <h1>Verify Account</h1>
 
       <h2>There was a problem verifying your account.</h2>
+      
       <p>
         Your verification link is invalid, has expired, or has already been used.
         <br/>
@@ -16,11 +17,13 @@ export default function AccountVerificationError(props) {
         <br/>
         Alternatively, you can request a new verification link below.
       </p>
+      
       <p>
         Enter the email address you used to sign up for Sirch Coin.
         <br/>
         We will resend a verification email containing a link to complete that process.
       </p>
+
       <form onSubmit={resendVerificationEmail}>
         <input
           className='account-input'
@@ -44,8 +47,12 @@ export default function AccountVerificationError(props) {
 }
 
 AccountVerificationError.propTypes = {
-  userEmail: PropTypes.string,
-  setUserEmail: PropTypes.func,
-  resendVerificationEmail: PropTypes.func,
+  userEmail: PropTypes.string.isRequired,
+  setUserEmail: PropTypes.func.isRequired,
+  resendVerificationEmail: PropTypes.func.isRequired,
   emailSendStatus: PropTypes.string
+};
+
+AccountVerificationError.defaultProps = {
+  emailSendStatus: ''
 };
