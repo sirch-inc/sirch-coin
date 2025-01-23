@@ -16,12 +16,14 @@ export default function CreateAccount() {
   const [lastName, setLastName] = useState('');
   const [isNamePrivate, setIsNamePrivate] = useState(false);
   const [userHandle, setUserHandle] = useState('');
+  const [loadingUserHandle, setLoadingUserHandle] = useState(false);
   const { session } = useContext(AuthContext);
   const navigate = useNavigate();
   
   // roll new user handle
   const handleSuggestNewHandle = useCallback(async () => {
       setUserHandle('');
+      setLoadingUserHandle(true);
 
       try {
         const { data, error } = await supabase.functions.invoke('generate-valid-user-handles', {
@@ -43,6 +45,8 @@ export default function CreateAccount() {
         console.error(exception);
 
         navigate('/error', { replace: true });
+      } finally {
+        setLoadingUserHandle(false);
       }
     }, [navigate]
   );
@@ -260,6 +264,9 @@ export default function CreateAccount() {
                   readOnly
                   required
                 />
+
+                {loadingUserHandle && <p>Loading...</p>}
+                
                 <button
                   className='account-button'
                   type='button'
