@@ -16,7 +16,7 @@ export default function Welcome() {
   const [emailSendStatus, setEmailSendStatus] = useState('');
 
 
-  // To test this flow: use an expired verification link (expires in 24 hours)
+  // NOTE: To test this flow: use an expired verification link (expires in 24 hours)
   const resendVerificationEmail = async (e) => {
     e.preventDefault();
 
