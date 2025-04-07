@@ -90,13 +90,12 @@ export default function ChangePassword({ standalone = true }) {
         <input
           className='account-input'
           id='password'
-          name='password'
+          name='confirm-password'
           type='password'
           placeholder="Confirm New Password"
           minLength='6'
           maxLength='64'
           value={confirmPassword}
-          name='confirm-password'
           onChange={handlePasswordConfirmation}
           autoComplete='off'
           required

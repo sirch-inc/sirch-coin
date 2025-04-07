@@ -4,18 +4,20 @@ import { AuthContext } from '../AuthContext';
 import { ToastNotification, toast } from '../App/ToastNotification';
 import Logout from '../Account/Logout';
 import supabase from '../App/supabaseProvider';
+import { isAuthApiError } from '@supabase/supabase-js';
+
 
 
 export default function MyAccount(){
-  const [deleteDialogBox, setDeleteDialogBox] = useState(false);
   const { userInTable, userBalance } = useContext(AuthContext);
   const [userHandle, setUserHandle] = useState('');
   const [isUserHandleVerified, setIsUserHandleVerified] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const navigate = useNavigate();
 
   function showDeleteConfirmation() {
-    setDeleteDialogBox(true);
+    setShowDeleteDialog(true);
   }
 
   const handleClickUpdateAccount = async () => {
@@ -33,29 +35,35 @@ export default function MyAccount(){
     setIsUserHandleVerified(value === userInTable.user_handle);
   };
 
-  function handleDeleteUser() {  
+  async function handleDeleteUser(event) {  
     event.preventDefault();
-  
-    const deleteUser = async () => {
-      if (userInTable) {
-        const { error } = await supabase.functions.invoke('delete-auth-user', {
-          body: {
-            user_id: userInTable.user_id
-          }
-        });
 
-        if (error) {
-          toast.error("There was an error deleting your account. Please try again later or contact technical support.");
+    if (!userInTable)
+      return;
+
+    try {
+      console.log(userInTable.user_id);
+      
+      const { error } = await supabase.auth.admin.deleteUser(userInTable.user_id);
+
+      if (error) {
+        if (isAuthApiError(error)) {
+          toast.error(error.message);
           return;
         }
 
-        setDeleteDialogBox(false);
-        Logout();
-        navigate('/user-deleted');
+        throw new Error(error);
       }
-    }
 
-    deleteUser();
+      Logout();
+      navigate('/user-deleted');
+    } catch (exception) {
+      console.error("An exception occurred:", exception.message);
+
+      navigate('/error', { replace: true });
+    } finally {
+      setShowDeleteDialog(false);
+    }
   }
 
   return(
@@ -65,18 +73,16 @@ export default function MyAccount(){
       <h1>My Account</h1>
 
       <div className='account personal-info'>
-        <p>Account Login: {userInTable?.email}</p>
+        <p>Account Login Email Address: {userInTable?.email}</p>
       </div>
 
       <div className='account-actions'>
-        <h2>Account Actions</h2>
-
         <button
           className='big-btn'
           type='button'
           onClick={handleClickUpdateAccount}
         >
-          Update User Profile
+          Update User Profile...
         </button>
 
         <button
@@ -84,23 +90,27 @@ export default function MyAccount(){
           type='button'
           onClick={handleClickChangeAccountPassword}
         >
-          Change Account Password
+          Change Account Password...
         </button>
 
         <button className='big-btn danger' onClick={showDeleteConfirmation}> Delete Account... </button>
       </div>
      
-      {deleteDialogBox &&
+      {showDeleteDialog &&
         <>
           <div className='overlay'></div>
           <dialog open className='delete-dialog'>
             <h2>Confirm Account Deletion</h2>
-            <h4>Are you sure you want to <br></br><i>permanently delete</i> your account?</h4>
+            <h4>Are you sure you want to <i>permanently delete</i> your account?</h4>
             <ul>
-              <li>You will forfeit all of your ⓢ {userBalance?.balance} Sirch Coins and will not be able to get them back. Those coins will be returned to the Sirch Coins total supply.</li>
-              <li>Your prior transactions affecting other users and the Sirch Coins total supply not be deleted.</li>
-              <li>This action cannot be undone. Once you delete your account, it is gone forever.</li>
+              <li>You will forfeit any of your ⓢ {userBalance?.balance} Sirch Coins and will not be able to get them back.
+                Those coins will be returned to the ⓢ Sirch Coins total supply.</li>
+              <li>You may choose, instead, to send your ⓢ Sirch Coins to another user.</li>
+              <li>Your anonymized prior transactions affecting other users and the ⓢ Sirch Coins total supply will not be deleted.</li>
+              <li>This action cannot be undone. Once you delete your account it is gone forever.</li>
+
             </ul>
+
             <div>
               <h4>Please enter your two-word Account Handle to confirm this action:</h4>
               <form onSubmit={handleDeleteUser} autoComplete='off'>
@@ -131,9 +141,10 @@ export default function MyAccount(){
                 >
                   Yes, permanently delete
                 </button>
+                
                 <button
                   className='big-btn'
-                  onClick={() => setDeleteDialogBox(false)}>
+                  onClick={() => setShowDeleteDialog(false)}>
                   Cancel
                 </button>
               </form>
