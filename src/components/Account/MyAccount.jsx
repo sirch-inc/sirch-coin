@@ -101,7 +101,7 @@ export default function MyAccount(){
           <div className='overlay'></div>
           <dialog open className='delete-dialog'>
             <h2>Confirm Account Deletion</h2>
-            <h4>Are you sure you want to <i>permanently delete</i> your account?</h4>
+            <h4>Are you sure you want to <i>permanently</i> delete your account?</h4>
             <ul>
               <li>You will forfeit all of your ⓢ {userBalance?.balance} Sirch Coins and will not be able to get them back. Those coins will be returned to the Sirch Coins total supply.</li>
               <li>Your prior transactions affecting other users and the Sirch Coins total supply not be deleted.</li>
@@ -115,7 +115,7 @@ export default function MyAccount(){
                   type='text'
                   id='user-handle'
                   name='user-handle'
-                  placeholder="Your User Handle"
+                  placeholder="Your Account Handle"
                   value={userHandle}
                   onChange={handleVerifyUserHandle}
                   required
