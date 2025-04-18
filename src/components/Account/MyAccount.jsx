@@ -103,14 +103,10 @@ export default function MyAccount(){
             <h2>Confirm Account Deletion</h2>
             <h4>Are you sure you want to <i>permanently delete</i> your account?</h4>
             <ul>
-              <li>You will forfeit any of your ⓢ {userBalance?.balance} Sirch Coins and will not be able to get them back.
-                Those coins will be returned to the ⓢ Sirch Coins total supply.</li>
-              <li>You may choose, instead, to send your ⓢ Sirch Coins to another user.</li>
-              <li>Your anonymized prior transactions affecting other users and the ⓢ Sirch Coins total supply will not be deleted.</li>
-              <li>This action cannot be undone. Once you delete your account it is gone forever.</li>
-
+              <li>You will forfeit all of your ⓢ {userBalance?.balance} Sirch Coins and will not be able to get them back. Those coins will be returned to the Sirch Coins total supply.</li>
+              <li>Your prior transactions affecting other users and the Sirch Coins total supply not be deleted.</li>
+              <li>This action cannot be undone. Once you delete your account, it is gone forever.</li>
             </ul>
-
             <div>
               <h4>Please enter your two-word Account Handle to confirm this action:</h4>
               <form onSubmit={handleDeleteUser} autoComplete='off'>
