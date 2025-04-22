@@ -35,16 +35,18 @@ export default function MyAccount(){
     setIsUserHandleVerified(value === userInTable.user_handle);
   };
 
-  async function handleDeleteUser(event) {  
+  async function handleDeleteUser(event) {
     event.preventDefault();
 
     if (!userInTable)
       return;
 
     try {
-      console.log(userInTable.user_id);
-      
-      const { error } = await supabase.auth.admin.deleteUser(userInTable.user_id);
+      const { data, error } = await supabase.functions.invoke('delete-user', {
+        body: {
+          user_id: userInTable.user_id
+        }
+      });
 
       if (error) {
         if (isAuthApiError(error)) {
@@ -57,6 +59,8 @@ export default function MyAccount(){
 
       Logout();
       navigate('/user-deleted');
+
+      return data;
     } catch (exception) {
       console.error("An exception occurred:", exception.message);
 
