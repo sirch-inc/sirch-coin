@@ -2,7 +2,6 @@ import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
 import { ToastNotification, toast } from '../App/ToastNotification';
-import Logout from '../Account/Logout';
 import supabase from '../App/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
 
@@ -49,15 +48,10 @@ export default function MyAccount(){
       });
 
       if (error) {
-        if (isAuthApiError(error)) {
-          toast.error(error.message);
-          return;
-        }
-
         throw new Error(error);
       }
 
-      Logout();
+      // NOTE: no need to log out here, because the user will already have been logged out when the account was deleted
       navigate('/user-deleted');
 
       return data;

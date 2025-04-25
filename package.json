@@ -5,8 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": ". ./build-variables.sh && vite --mode development",
-    "test": ". ./build-variables.sh && vite --mode test",
-    "production": ". ./build-variables.sh && vite --mode production",
+    "test-env": ". ./build-variables.sh && vite --mode test",
+    "prod-env": ". ./build-variables.sh && vite --mode production",
+    "test": "vitest",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest run --coverage",
     "build-dev": ". ./build-variables.sh && vite build --mode development",
     "build-test": ". ./build-variables.sh && vite build --mode test",
     "build-production": ". ./build-variables.sh && vite build --mode production",
@@ -35,6 +38,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.25.1",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@vitejs/plugin-react": "^4.2.1",
@@ -44,6 +50,8 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
     "globals": "^16.0.0",
-    "vite": "^5.3.5"
+    "jsdom": "^26.1.0",
+    "vite": "^5.3.5",
+    "vitest": "^3.1.2"
   }
 }
