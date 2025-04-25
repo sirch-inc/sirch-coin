@@ -84,6 +84,40 @@ VITE_IS_OFFLINE="false"
 1. Type `npm run dev` to run the project on localhost. ON FAILURE: consult a developer.
 1. OPTIONAL: you can also run in other environments (test, production) using `npm run <environment>`.  You will need to create appropriate `.env.<environment>.local` files.
 
+## Running Tests
+The project uses Vitest and React Testing Library for unit testing. Here are the available test commands:
+
+1. Run all tests once:
+   ```bash
+   npm test
+   ```
+
+2. Run tests in watch mode (tests will re-run when files change):
+   ```bash
+   npm run test:watch
+   ```
+
+3. Run tests with coverage report:
+   ```bash
+   npm run test:coverage
+   ```
+
+
+### Test Structure
+- Tests are located in `__tests__` directories next to their corresponding components
+- Test files follow the naming convention `*.test.jsx`
+- Each test file should test a single component or related functionality
+- Tests use React Testing Library for component testing
+- Async operations are handled using `act()` and proper waiting mechanisms
+
+### Writing Tests
+When writing new tests:
+1. Create a `__tests__` directory next to your component if it doesn't exist
+2. Create a test file with the same name as your component plus `.test.jsx`
+3. Use the existing test files as examples for structure and patterns
+4. Make sure to handle async operations properly using `act()`
+5. Test both the happy path and edge cases
+
 ## Previewing a Production build locally (as needed)
 1. Create an `.env.production.local` text file with the necessary keys (ask a developer for these). NOTE: These may change over time!
 1. Type `npm run build-production` to build the production version.
