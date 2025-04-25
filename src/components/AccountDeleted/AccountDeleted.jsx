@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
-
+import './AccountDeleted.css';
 
 export default function AccountDeleted() {
   return(
-    <>
+    <div className='account-deleted-container'>
       <h1>Your Sirch Coins account was successfully deleted.</h1>
       <h4>You may create a new account at any time.</h4>
       
@@ -12,6 +12,6 @@ export default function AccountDeleted() {
           Got it!
         </Link>
       </div>
-    </>
+    </div>
   )
 }

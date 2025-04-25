@@ -13,7 +13,7 @@ import ResetPasswordRequest from '../Account/ResetPasswordRequest.jsx';
 import Welcome from '../Account/Welcome';
 import TermsOfService from '../TermsOfService.jsx';
 import ContactUs from '../ContactUs.jsx';
-import AccountDeleted from '../Account/AccountDeleted';
+import AccountDeleted from '../AccountDeleted/AccountDeleted';
 import Send from '../Send';
 import Purchase from '../PurchaseCoins';
 import Transactions from '../TransactionHistory/Transactions';
