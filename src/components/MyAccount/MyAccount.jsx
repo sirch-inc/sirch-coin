@@ -51,7 +51,7 @@ export default function MyAccount(){
       }
 
       // NOTE: no need to log out here, because the user will already have been logged out when the account was deleted
-      navigate('/user-deleted');
+      navigate('/account-deleted');
 
       return data;
     } catch (exception) {
