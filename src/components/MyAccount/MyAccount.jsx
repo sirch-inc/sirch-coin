@@ -70,7 +70,7 @@ export default function MyAccount(){
       <h1>My Account</h1>
 
       <div className='account personal-info'>
-        <p>Account Login Email Address: {userInTable?.email}</p>
+        <p>Login Email Address: {userInTable?.email}</p>
       </div>
 
       <div className='account-actions'>
@@ -87,7 +87,7 @@ export default function MyAccount(){
           type='button'
           onClick={handleClickChangeAccountPassword}
         >
-          Change Account Password...
+          Change Password...
         </button>
 
         <button className='big-btn danger' onClick={showDeleteConfirmation}> Delete Account... </button>

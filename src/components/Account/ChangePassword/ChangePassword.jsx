@@ -1,11 +1,11 @@
 import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../AuthContext';
+import { AuthContext } from '../../AuthContext';
 import PropTypes from 'prop-types';
-import { ToastNotification, toast } from '../App/ToastNotification';
-import supabase from '../App/supabaseProvider';
+import { ToastNotification, toast } from '../../App/ToastNotification';
+import supabase from '../../App/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
-
+import './ChangePassword.css';
 
 // TODO: Send an email informing the user of the password change
 export default function ChangePassword({ standalone = true }) {
@@ -15,7 +15,6 @@ export default function ChangePassword({ standalone = true }) {
   const { session } = useContext(AuthContext);
   const navigate = useNavigate();
   
-
   const submitRequest = async (e) => {
     e.preventDefault();
 
@@ -65,14 +64,14 @@ export default function ChangePassword({ standalone = true }) {
   }
 
   return(
-    <>
+    <div className="change-password-container">
       <ToastNotification />
 
       {standalone && <h1>Change Password</h1>}
 
       <p>Enter a new password for your Sirch Coins account below.</p>
 
-      <form onSubmit={submitRequest}>
+      <form className="change-password-form" onSubmit={submitRequest}>
         <input
           className='account-input'
           id='password'
@@ -89,7 +88,7 @@ export default function ChangePassword({ standalone = true }) {
 
         <input
           className='account-input'
-          id='password'
+          id='confirm-password'
           name='confirm-password'
           type='password'
           placeholder="Confirm New Password"
@@ -102,7 +101,7 @@ export default function ChangePassword({ standalone = true }) {
         />
 
         {confirmPassword && (
-          <p style={{ color: passwordsMatch ? 'green' : 'red' }}>
+          <p className="password-match-indicator" style={{ color: passwordsMatch ? 'green' : 'red' }}>
             {passwordsMatch ? "Passwords match!" : "Passwords do not match"}
           </p>
         )}
@@ -120,8 +119,7 @@ export default function ChangePassword({ standalone = true }) {
           </button>
         </div>
       }
-
-    </>
+    </div>
   )
 }
 

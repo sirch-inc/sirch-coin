@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
-import ChangePassword from './ChangePassword';
+import ChangePassword from './ChangePassword/ChangePassword';
 import ResetPasswordRequest from '../Account/ResetPasswordRequest';
 
 
