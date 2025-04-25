@@ -3,7 +3,7 @@ import HomePage from '../HomePage';
 import About from '../About'
 import Login from '../Account/Login';
 import Logout from '../Account/Logout'
-import MyAccount from '../Account/MyAccount'
+import MyAccount from '../MyAccount/MyAccount'
 import CreateAccount from '../Account/CreateAccount';
 import VerifyAccount from '../Account/VerifyAccount';
 import UpdateAccount from '../Account/UpdateAccount'
