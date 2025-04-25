@@ -4,8 +4,7 @@ import { AuthContext } from '../AuthContext';
 import { ToastNotification, toast } from '../App/ToastNotification';
 import supabase from '../App/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
-
-
+import './MyAccount.css';
 
 export default function MyAccount(){
   const { userInTable, userBalance } = useContext(AuthContext);
