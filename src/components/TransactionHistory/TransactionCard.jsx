@@ -28,7 +28,7 @@ const getTransactionDetails = (type, details) => {
     case 'PURCHASE':
       return `Stripe Payment Intent ID: ${details.paymentIntentId || ""}`;
     case 'INITIAL BALANCE':
-      return `Welcome!`;
+      return "Welcome!";
     default:
       return "";
   }
@@ -92,6 +92,6 @@ TransactionCard.propTypes = {
     type: PropTypes.string.isRequired,
     amount: PropTypes.number.isRequired,
     status: PropTypes.string.isRequired,
-    details: PropTypes.object.isRequired
+    details: PropTypes.object
   }).isRequired
 };
