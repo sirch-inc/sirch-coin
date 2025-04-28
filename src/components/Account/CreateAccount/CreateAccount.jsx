@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback, useContext } from 'react';
+import { useState, useCallback, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ToastNotification, toast } from '../App/ToastNotification';
-import { AuthContext } from '../AuthContext';
-import supabase from '../App/supabaseProvider';
+import { ToastNotification, toast } from '../../App/ToastNotification';
+import { AuthContext } from '../../AuthContext';
+import supabase from '../../App/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
+import './CreateAccount.css';
 
 
 export default function CreateAccount() {
@@ -37,7 +38,7 @@ export default function CreateAccount() {
         }
 
         if (!data) {
-          throw new Error("No user handles found.");
+          throw new Error("No available user handles found.");
         }
 
         setUserHandle(data.handles[0]);

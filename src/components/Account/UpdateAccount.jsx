@@ -82,7 +82,7 @@ export default function UpdateAccount() {
       }
 
       if (!data) {
-        throw new Error("No user handles returned.");
+        throw new Error("No available user handles found.");
       }
 
       setUserHandle(data.handles[0]);

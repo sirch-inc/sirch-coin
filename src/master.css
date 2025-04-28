@@ -340,7 +340,9 @@ footer {
 }
 
 
-/* Styles for Login Page */
+
+
+/* Styles for Create/Update Account Components */
 .account-privacy-statement {
   width: 75%;
 }
@@ -417,14 +419,14 @@ div#account-user-handle-row {
   align-items: center;
   justify-content: start;
   gap: 24px;
+}
 
-  button {
-    margin: 8px 0px;
-  }
+div#account-user-handle-row button {
+  margin: 8px 0px;
+}
 
-  div {
-    width: 30%;
-  }
+div#account-user-handle-row div {
+  width: 30%;
 }
 
 input#user-handle {

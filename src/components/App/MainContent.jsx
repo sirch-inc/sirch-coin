@@ -5,7 +5,7 @@ import HomePage from '../HomePage';
 import Login from '../Account/Login';
 import Logout from '../Account/Logout'
 import MyAccount from '../MyAccount/MyAccount'
-import CreateAccount from '../Account/CreateAccount';
+import CreateAccount from '../Account/CreateAccount/CreateAccount';
 import VerifyAccount from '../Account/VerifyAccount';
 import UpdateAccount from '../Account/UpdateAccount'
 import AccountDeleted from '../AccountDeleted/AccountDeleted';
