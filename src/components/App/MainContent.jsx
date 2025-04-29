@@ -10,7 +10,7 @@ import VerifyAccount from '../Account/VerifyAccount';
 import UpdateAccount from '../Account/UpdateAccount'
 import AccountDeleted from '../AccountDeleted/AccountDeleted';
 import ChangePassword from '../Account/ChangePassword/ChangePassword';
-import ResetPasswordRequest from '../Account/ResetPasswordRequest.jsx';
+import ResetPasswordRequest from '../Account/ResetPasswordRequest/ResetPasswordRequest';
 import ResetPassword from '../Account/ResetPassword.jsx';
 import Welcome from '../Account/Welcome';
 

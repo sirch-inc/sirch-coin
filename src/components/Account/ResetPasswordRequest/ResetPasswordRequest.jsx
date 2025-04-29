@@ -1,11 +1,11 @@
 import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../AuthContext';
+import { AuthContext } from '../../AuthContext';
 import PropTypes from 'prop-types';
-import { ToastNotification, toast } from '../App/ToastNotification';
-import supabase from '../App/supabaseProvider';
+import { ToastNotification, toast } from '../../App/ToastNotification';
+import supabase from '../../App/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
-
+import './ResetPasswordRequest.css';
 
 export default function ResetPasswordRequest(props) {
   const { standalone = true } = props;
@@ -13,7 +13,6 @@ export default function ResetPasswordRequest(props) {
   const { session } = useContext(AuthContext);
   const [userEmail, setUserEmail] = useState('');
   const [sendStatus, setSendStatus] = useState('');
-
 
   const submitRequest = async (e) => {
     e.preventDefault();
@@ -26,7 +25,6 @@ export default function ResetPasswordRequest(props) {
     setSendStatus("Sending...");
 
     try {
-      // TODO: consider using supabase.auth.reauthenticate() to require the user to re-enter their password
       const { error } = await supabase.auth.resetPasswordForEmail(
         userEmail,
         { redirectTo: `${window.location.origin}/reset-password` }
@@ -54,7 +52,7 @@ export default function ResetPasswordRequest(props) {
   }
 
   return (
-    <>
+    <div className="reset-password-container">
       <ToastNotification />
 
       {standalone &&
@@ -70,7 +68,7 @@ export default function ResetPasswordRequest(props) {
               We will send you a reset-password email containing a link to complete that process.
             </p>
 
-            <form className='reset-password' onSubmit={submitRequest}>
+            <form className='reset-password-form' onSubmit={submitRequest}>
               <input
                 className='account-input'
                 id='email'
@@ -108,10 +106,10 @@ export default function ResetPasswordRequest(props) {
           </button>
         </div>
       }
-    </>
+    </div>
   );
 }
 
 ResetPasswordRequest.propTypes = {
-  standalone: PropTypes.boolean
+  standalone: PropTypes.bool
 };
