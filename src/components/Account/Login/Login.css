@@ -1,0 +1,46 @@
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+}
+
+.login-form {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.login-form input {
+  width: 100%;
+}
+
+.login-form a {
+  margin-top: 1rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.login-form a:hover {
+  text-decoration: underline;
+}
+
+/* Preserve global styles as needed */
+.account-input,
+.account-button,
+.bottom-btn-container {
+  /* These styles will be inherited from master.css */
+}
+
+@media (max-width: 768px) {
+  .login-container {
+    padding: 1rem;
+  }
+  
+  .login-form {
+    max-width: 100%;
+  }
+}

@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import HomePage from '../HomePage';
 
-import Login from '../Account/Login';
+import Login from '../Account/Login/Login';
 import Logout from '../Account/Logout'
 import MyAccount from '../MyAccount/MyAccount'
 import CreateAccount from '../Account/CreateAccount/CreateAccount';
