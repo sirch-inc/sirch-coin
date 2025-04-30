@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import './AccountVerificationError.css';
 
 
 export default function AccountVerificationError(props) {
