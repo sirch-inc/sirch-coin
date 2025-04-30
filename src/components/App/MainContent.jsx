@@ -8,11 +8,11 @@ import MyAccount from '../MyAccount/MyAccount'
 import CreateAccount from '../Account/CreateAccount/CreateAccount';
 import VerifyAccount from '../Account/VerifyAccount/VerifyAccount';
 import UpdateAccount from '../Account/UpdateAccount/UpdateAccount'
-import AccountDeleted from '../AccountDeleted/AccountDeleted';
+import AccountDeleted from '../Account/AccountDeleted/AccountDeleted';
 import ChangePassword from '../Account/ChangePassword/ChangePassword';
 import ResetPasswordRequest from '../Account/ResetPasswordRequest/ResetPasswordRequest';
-import ResetPassword from '../Account/ResetPassword/ResetPassword.jsx';
-import Welcome from '../Account/Welcome';
+import ResetPassword from '../Account/ResetPassword/ResetPassword';
+import Welcome from '../Account/Welcome/Welcome';
 
 import Transactions from '../TransactionHistory/Transactions';
 import Send from '../Send';

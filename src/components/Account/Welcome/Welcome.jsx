@@ -1,10 +1,11 @@
 import { useState, useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../AuthContext';
-import { ToastNotification, toast } from '../App/ToastNotification';
-import AccountVerificationError from './AccountVerificationError/AccountVerificationError';
-import supabase from '../App/supabaseProvider'
+import { AuthContext } from '../../AuthContext';
+import { ToastNotification, toast } from '../../App/ToastNotification';
+import AccountVerificationError from '../AccountVerificationError/AccountVerificationError';
+import supabase from '../../App/supabaseProvider'
 import { isAuthApiError } from '@supabase/supabase-js';
+import './Welcome.css';
 
 
 export default function Welcome() {
