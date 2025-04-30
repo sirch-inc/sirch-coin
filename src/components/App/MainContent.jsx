@@ -6,7 +6,7 @@ import Login from '../Account/Login/Login';
 import Logout from '../Account/Logout'
 import MyAccount from '../MyAccount/MyAccount'
 import CreateAccount from '../Account/CreateAccount/CreateAccount';
-import VerifyAccount from '../Account/VerifyAccount';
+import VerifyAccount from '../Account/VerifyAccount/VerifyAccount';
 import UpdateAccount from '../Account/UpdateAccount/UpdateAccount'
 import AccountDeleted from '../AccountDeleted/AccountDeleted';
 import ChangePassword from '../Account/ChangePassword/ChangePassword';
