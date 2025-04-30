@@ -11,7 +11,7 @@ import UpdateAccount from '../Account/UpdateAccount/UpdateAccount'
 import AccountDeleted from '../AccountDeleted/AccountDeleted';
 import ChangePassword from '../Account/ChangePassword/ChangePassword';
 import ResetPasswordRequest from '../Account/ResetPasswordRequest/ResetPasswordRequest';
-import ResetPassword from '../Account/ResetPassword.jsx';
+import ResetPassword from '../Account/ResetPassword/ResetPassword.jsx';
 import Welcome from '../Account/Welcome';
 
 import Transactions from '../TransactionHistory/Transactions';
