@@ -4,11 +4,11 @@ import ReactDOM from 'react-dom/client';
 
 
 // #v-ifdef VITE_IS_COMING_SOON.toLowerCase()
-import ComingSoonApp from './components/App/LandingPages/ComingSoonPage/ComingSoonApp/ComingSoonApp';
+import ComingSoonApp from './components/App/Pages/ComingSoonPage/ComingSoonApp/ComingSoonApp';
 // #v-elif VITE_IS_OFFLINE.toLowerCase()
-import OfflineApp from './components/App/LandingPages/OfflinePage/OfflineApp/OfflineApp';
+import OfflineApp from './components/App/Pages/OfflinePage/OfflineApp/OfflineApp';
 // #v-else
-import App from './components/App/App';
+import App from './components/App/Pages/MainPage/App';
 // #v-endif
 
 document.title = import.meta.env.VITE_PAGE_TITLE;
