@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom/client';
 
 
 // #v-ifdef VITE_IS_COMING_SOON.toLowerCase()
-import ComingSoonApp from './components/App/LandingPages/ComingSoon/ComingSoonApp';
+import ComingSoonApp from './components/App/LandingPages/ComingSoon/ComingSoonApp/ComingSoonApp';
 // #v-elif VITE_IS_OFFLINE.toLowerCase()
 import OfflineApp from './components/App/LandingPages/OfflineApp';
 // #v-else
