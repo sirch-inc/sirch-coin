@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom';
+import './GeneralError.css';
 
 
 export default function GeneralError() {
   return (
     <>
-      <div className='general-error-container'>
+      <div>
         <h3 style={{ color: 'red' }}>We are stuck!</h3>
         <p>
           We apologize but we are unable to process your request at this time.<br/>
