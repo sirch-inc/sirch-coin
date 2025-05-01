@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../AuthContext';
+import { AuthContext } from '../../../pages/Main/AuthContext';
 import { ToastNotification, toast } from '../../../pages/Main/App/ToastNotification';
 import supabase from '../../../pages/Main/App/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';

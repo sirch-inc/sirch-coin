@@ -1,7 +1,7 @@
 import { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TransactionCard from './TransactionCard';
-import { AuthContext } from '../AuthContext';
+import { AuthContext } from '../../pages/Main/AuthContext';
 import supabase from '../../pages/Main/App/supabaseProvider';
 
 

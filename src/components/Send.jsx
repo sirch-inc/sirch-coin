@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from './AuthContext';
+import { AuthContext } from '../pages/Main/AuthContext.jsx';
 import { ToastNotification, toast } from '../pages/Main/App/ToastNotification.jsx';
 import supabase from '../pages/Main/App/supabaseProvider.js';
 import 'react-toastify/dist/ReactToastify.css';

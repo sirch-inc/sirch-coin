@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from './AuthContext';
+import { AuthContext } from '../pages/Main/AuthContext';
 import { useContext } from 'react';
 import LogoutSupabase from './Account/Logout';
 
