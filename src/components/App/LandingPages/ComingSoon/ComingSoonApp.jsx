@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import ComingSoon from './ComingSoon.jsx';
+import ComingSoon from './ComingSoon/ComingSoon.jsx';
 
 
 export default function ComingSoonApp() {

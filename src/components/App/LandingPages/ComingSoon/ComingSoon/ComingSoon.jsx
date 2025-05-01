@@ -1,4 +1,5 @@
-import coinSymbol from '../../../../ⓢ.png'
+import coinSymbol from '../../../../../ⓢ.png'
+import './ComingSoon.css';
 
 
 export default function ComingSoon() {

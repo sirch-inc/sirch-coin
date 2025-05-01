@@ -278,35 +278,6 @@ footer {
 }
 
 
-/* Styles for Coming Soon Page */
-.coming-soon-container {
-  position: fixed;
-  background-color: #231F20;
-  height: 100vh;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: 0;
-  grid-column-gap: 12px;
-  grid-row-gap: 0px;
-}
-
-.coming-soon-img {
-  padding: 48px;
-}
-
-.coming-soon-text {
-  padding: 36px;
-}
-
-.coming-soon-container h1 {
-  color: white;
-}
-
-.coming-soon-container p {
-  color: white;
-  font-size: 24px;
-  text-align: left;
-}
 
 
 /* Styles for Offline Page */
