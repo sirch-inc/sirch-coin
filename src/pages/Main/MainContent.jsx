@@ -4,7 +4,7 @@ import HomePage from '../../components/HomePage.jsx';
 
 import Login from '../../components/Account/Login/Login.jsx';
 import Logout from '../../components/Account/Logout.js'
-import MyAccount from '../../components/MyAccount/MyAccount.jsx'
+import MyAccount from './MyAccount/MyAccount.jsx'
 import CreateAccount from '../../components/Account/CreateAccount/CreateAccount.jsx';
 import VerifyAccount from '../../components/Account/VerifyAccount/VerifyAccount.jsx';
 import UpdateAccount from '../../components/Account/UpdateAccount/UpdateAccount.jsx'
