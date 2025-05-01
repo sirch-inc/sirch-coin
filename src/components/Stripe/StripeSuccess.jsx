@@ -1,7 +1,7 @@
 import { Link, useParams } from 'react-router-dom';
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../AuthContext';
-import supabase from '../App/supabaseProvider';
+import supabase from '../../pages/Main/App/supabaseProvider';
 
 
 export default function StripeSuccess() {
