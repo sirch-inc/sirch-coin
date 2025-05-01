@@ -280,39 +280,6 @@ footer {
 
 
 
-/* Styles for Offline Page */
-.offline-container {
-  position: fixed;
-  background-color: #231F20;
-  height: 100vh;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: 0;
-  grid-column-gap: 10px;
-  grid-row-gap: 0px;
-}
-
-.offline-img {
-  padding: 48px;
-}
-
-.offline-text {
-  padding: 36px;
-}
-
-.offline-container h1 {
-  color:white;
-}
-
-.offline-container p {
-  color:white;
-  font-size: 24px;
-  text-align: left;
-}
-
-
-
-
 /* Styles for Create/Update Account Components */
 .account-privacy-statement {
   width: 75%;

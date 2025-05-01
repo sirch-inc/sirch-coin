@@ -1,4 +1,5 @@
-import coinSymbol from '../../../../ⓢ.png'
+import coinSymbol from '../../../../../ⓢ.png'
+import './Offline.css';
 
 
 export default function Offline() {

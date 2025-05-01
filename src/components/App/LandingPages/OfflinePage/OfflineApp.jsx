@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Offline from './Offline.jsx';
+import Offline from './Offline/Offline.jsx';
 
 
 export default function ComingSoonApp() {
