@@ -1,4 +1,4 @@
-import coinSymbol from '../../../ⓢ.png'
+import coinSymbol from '../../../../ⓢ.png'
 
 
 export default function Offline() {
