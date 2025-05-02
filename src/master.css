@@ -16,7 +16,7 @@
 }
 
 
-/* Styles for primal HTML elements */
+/* Styles for primitive HTML elements */
 h1, h2, h3, h4, h5, h6, li, p, a, button, input, label {
   font-family: Haskoy;
 }
@@ -160,6 +160,17 @@ button {
 
 .bottom-btn-container a {
   margin: 4px;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  z-index: 100;
 }
 
 
@@ -377,69 +388,8 @@ input#user-handle {
   font-weight: 500;
 }
 
-.bold-coin {
-  font-family: Haskoy-bold;
-  font-size: 24px;
-}
 
 
-/* Styles for Purchase Page */
-.purchase-container {
-    margin: 2rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 100%;
-    overflow-y: auto;
-}
-
-.purchase-form {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
-
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(8px);
-  z-index: 100;
-}
-
-
-.checkout-form-dialog {
-  z-index: 100;
-  max-width: 90vw;
-  max-height: 80vh;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: white;
-  padding: 12px;
-  border-radius: 4px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  overflow-y: auto;
-}
-
-
-.coin-amount-input {
-  max-width: 40%;
-  border: 2px solid black;
-  font-size: xx-large;
-  margin-bottom: 10px;
-}
-
-.sirch-symbol-large {
-  font-size: xx-large;
-  padding-right: 12px;
-}
 
 
 /* Styles for the success message */
@@ -520,61 +470,8 @@ input#user-handle {
 
 
 
-
-
-
-
-
-
-
-/* Responsive styles */
-@media (max-width: 768px) {
-  .purchase-container {
-    margin: 1rem;
-    min-height: 90vh;
-    padding: 0 1rem;
-    justify-content: flex-start;
-    align-items: stretch;
-  }
-
-  button {
-    padding: 12px;
-    font-size: 1rem;
-    margin-top: 12px;
-  }
-
-  .bottom-btn-container {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 36px;
-    display: flex;
-    justify-content: center;
-    padding: 16px 0;
-    margin-top: 24px;
-  }
-
-  .big-btn {
-    font-size: large;
-    padding: 12px;
-    margin-bottom: 24px;
-    bottom: 36px;
-  }
-
-  .coin-input {
-    padding: 12px;
-    font-size: 1rem;
-  }
-}
-
-
-
-/* Mobile styles */
+/* Responsive */
 @media only screen and (min-width: 768px) {
-  .email-balance,
-  .balance-btn {
-    width: 70%;
-  }
 }
 
 @media only screen and (min-width: 1200px) {
@@ -591,51 +488,15 @@ input#user-handle {
     font-size: 1.2em;
   }
 
-  .cash-input,
-  .total-input {
-    width: 60%;
-    max-width: 300px;
-  }
-
   .big-btn {
     width: 100%;
-    max-width: 350px;
-  }
-}
-
-
-/* Styles for Purchase Coins Mobile */
-@media screen and (max-width: 768px) {
-  .page-text {
-    margin-top: 16px;
-    font-size: large;
-  }
-
-  .first-row,
-  .second-row {
-    flex-direction: row;
-    flex-wrap: wrap;
-    margin-bottom: 4px;
-  }
-
-  .total-input {
-    width: 100%;
-    margin: 12px 0;
-    padding: 16px;
-    background-color: #5d5d5d;
-    color: white;
-    font-size: 16px;
-  }
-
-  .big-btn {
-    width: 70%;
     max-width: 350px;
   }
 }
 
 
 /* Styles for Send Coins Mobile */
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   .bottom-btn-container {
     display: flex;
     flex-direction: column;
@@ -645,31 +506,6 @@ input#user-handle {
 
   .big-btn {
     width: 100%;
-    margin-bottom: 12px;
-  }
-}
-
-
-/* Styles for Preferences Mobile */
-@media screen and (max-width: 600px) {
-  .balance-container {
-    text-align: center;
-    min-height: 70vh;
-    overflow-y: auto;
-  }
-
-  .balance-box {
-    width: 100%;
-  }
-
-  .bottom-btn-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .page-text {
     margin-bottom: 12px;
   }
 }

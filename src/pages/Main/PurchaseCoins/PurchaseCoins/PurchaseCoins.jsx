@@ -1,10 +1,11 @@
 import { useState, useEffect, useContext } from 'react';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import { AuthContext } from '../AuthContext';
-import supabase from '../App/supabaseProvider';
-import CheckoutForm from './CheckoutForm/CheckoutForm';
+import { AuthContext } from '../../AuthContext';
+import supabase from '../../App/supabaseProvider';
+import CheckoutForm from '../CheckoutForm/CheckoutForm';
 import { useNavigate } from 'react-router-dom';
+import './PurchaseCoins.css';
 
 
 // Call `loadStripe` outside of the component’s render to avoid
