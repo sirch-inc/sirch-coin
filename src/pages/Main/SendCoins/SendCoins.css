@@ -1,0 +1,37 @@
+.user-card {
+  border: 2px solid black;
+}
+
+.user-card:hover {
+  background-color: #3AD820;
+  color: black;
+  cursor: pointer;
+}
+
+.coin-input {
+  margin: 0 auto;
+  padding: 24px;
+  width: 350px;
+  background-color: #231F20;
+  color: white;
+  border: none;
+  font-size: 24px;
+  margin: 12px;
+}
+
+.coin-input::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 70%;
+  width: 2px;
+  background-color: white;
+  z-index: 1;
+}
+
+.coin-input::placeholder {
+  color: white;
+  font-weight: 500;
+}

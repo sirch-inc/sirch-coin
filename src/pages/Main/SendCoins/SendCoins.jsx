@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from './_common/AuthContext.jsx';
-import { ToastNotification, toast } from './_common/ToastNotification.jsx';
-import supabase from './_common/supabaseProvider.js';
+import { AuthContext } from '../_common/AuthContext.jsx';
+import { ToastNotification, toast } from '../_common/ToastNotification.jsx';
+import supabase from '../_common/supabaseProvider.js';
 import 'react-toastify/dist/ReactToastify.css';
-import useDebounce from '../../helpers/debounce.js'
+import useDebounce from '../../../helpers/debounce.js'
+import './SendCoins.css';
 
 
 // TODO: move this into its own component file with proper react props validations
