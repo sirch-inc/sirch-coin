@@ -8,7 +8,7 @@ import ComingSoonApp from './pages/_ComingSoon/ComingSoonApp/ComingSoonApp';
 // #v-elif VITE_IS_OFFLINE.toLowerCase()
 import OfflineApp from './pages/_Offline/OfflineApp/OfflineApp';
 // #v-else
-import App from './pages/Main/App';
+import App from './pages/Main/App/App';
 // #v-endif
 
 document.title = import.meta.env.VITE_PAGE_TITLE;

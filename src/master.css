@@ -174,15 +174,6 @@ button {
 }
 
 
-/* Styles for App-Layout */
-.app-layout {
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  flex-direction: column;
-}
-
-
 
 
 /* Shared Styles for Create/Update/Password Account Components */
