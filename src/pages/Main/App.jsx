@@ -2,7 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import supabase from './_common/supabaseProvider';
 import { AuthProvider } from './_common/AuthContext';
 import Header from './Header/Header';
-import MainContent from './MainContent';
+import MainContent from './MainContent/MainContent';
 import Footer from './Footer/Footer';
 import '@stripe/stripe-js';
 import 'react-tooltip/dist/react-tooltip.css'

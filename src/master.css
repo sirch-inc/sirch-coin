@@ -182,12 +182,6 @@ button {
   flex-direction: column;
 }
 
-.main-content {
-  flex: 1 1 auto;
-  overflow-y: auto;
-  padding: 24px;
-}
-
 /* Styles for Navbar */
 .sirchcoins-logo {
   width: 60px;

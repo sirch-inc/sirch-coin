@@ -1,30 +1,32 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
-import HomePage from './HomePage/HomePage.jsx';
+import HomePage from '../HomePage/HomePage.jsx';
 
-import Login from './Account/Login/Login.jsx';
-import Logout from './Account/Logout.js'
-import MyAccount from './MyAccount/MyAccount.jsx'
-import CreateAccount from './Account/CreateAccount/CreateAccount.jsx';
-import VerifyAccount from './Account/VerifyAccount/VerifyAccount.jsx';
-import UpdateAccount from './Account/UpdateAccount/UpdateAccount.jsx'
-import AccountDeleted from './Account/AccountDeleted/AccountDeleted.jsx';
-import ChangePassword from './Account/ChangePassword/ChangePassword.jsx';
-import ResetPasswordRequest from './Account/ResetPasswordRequest/ResetPasswordRequest.jsx';
-import ResetPassword from './Account/ResetPassword/ResetPassword.jsx';
-import Welcome from './Account/Welcome/Welcome.jsx';
+import Login from '../Account/Login/Login.jsx';
+import Logout from '../Account/Logout.js'
+import MyAccount from '../MyAccount/MyAccount.jsx'
+import CreateAccount from '../Account/CreateAccount/CreateAccount.jsx';
+import VerifyAccount from '../Account/VerifyAccount/VerifyAccount.jsx';
+import UpdateAccount from '../Account/UpdateAccount/UpdateAccount.jsx'
+import AccountDeleted from '../Account/AccountDeleted/AccountDeleted.jsx';
+import ChangePassword from '../Account/ChangePassword/ChangePassword.jsx';
+import ResetPasswordRequest from '../Account/ResetPasswordRequest/ResetPasswordRequest.jsx';
+import ResetPassword from '../Account/ResetPassword/ResetPassword.jsx';
+import Welcome from '../Account/Welcome/Welcome.jsx';
 
-import Transactions from './TransactionHistory/Transactions/Transactions.jsx';
-import Send from './SendCoins.jsx';
-import Purchase from './PurchaseCoins/PurchaseCoins/PurchaseCoins.jsx';
-import StripeSuccess from './PurchaseCoins/StripeSuccess/StripeSuccess.jsx';
-import StripeFailure from './PurchaseCoins/StripeFailure/StripeFailure.jsx';
+import Transactions from '../TransactionHistory/Transactions/Transactions.jsx';
+import Send from '../SendCoins.jsx';
+import Purchase from '../PurchaseCoins/PurchaseCoins/PurchaseCoins.jsx';
+import StripeSuccess from '../PurchaseCoins/StripeSuccess/StripeSuccess.jsx';
+import StripeFailure from '../PurchaseCoins/StripeFailure/StripeFailure.jsx';
 
-import About from './About/About.jsx'
-import TermsOfService from './TermsOfService.jsx';
-import ContactUs from './ContactUs/ContactUs.jsx';
+import About from '../About/About.jsx'
+import TermsOfService from '../TermsOfService.jsx';
+import ContactUs from '../ContactUs/ContactUs.jsx';
 
-import GeneralError from './_common/ErrorPages/GeneralError/GeneralError.jsx';
+import GeneralError from '../_common/ErrorPages/GeneralError/GeneralError.jsx';
+
+import './MainContent.css';
 
 
 export default function MainContent({ supabase }) {
