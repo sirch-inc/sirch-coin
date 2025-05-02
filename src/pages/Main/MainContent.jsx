@@ -21,7 +21,7 @@ import StripeSuccess from '../../components/Stripe/StripeSuccess.jsx';
 import StripeFailure from '../../components/Stripe/StripeFailure.jsx';
 
 import About from './About.jsx'
-import TermsOfService from '../../components/TermsOfService.jsx';
+import TermsOfService from './TermsOfService.jsx';
 import ContactUs from './ContactUs.jsx';
 
 import GeneralError from './App/ErrorPages/GeneralError/GeneralError.jsx';
