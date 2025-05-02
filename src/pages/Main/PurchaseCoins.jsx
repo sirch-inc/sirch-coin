@@ -1,9 +1,9 @@
 import { useState, useEffect, useContext } from 'react';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import { AuthContext } from '../pages/Main/AuthContext';
-import supabase from '../pages/Main/App/supabaseProvider';
-import CheckoutForm from './Stripe/CheckoutForm';
+import { AuthContext } from './AuthContext';
+import supabase from './App/supabaseProvider';
+import CheckoutForm from '../../components/Stripe/CheckoutForm';
 import { useNavigate } from 'react-router-dom';
 
 
