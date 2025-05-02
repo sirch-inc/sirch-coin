@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
 import { useContext, useEffect, useState } from 'react';
-import { AuthContext } from '../../AuthContext';
+import { AuthContext } from '../../_common/AuthContext';
 import supabase from '../../_common/supabaseProvider';
 import './StripeSuccess.css';
 

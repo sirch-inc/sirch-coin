@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { AuthContext } from './AuthContext';
+import { AuthContext } from './_common/AuthContext';
 
 
 export default function NavBar() {

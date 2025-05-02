@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../AuthContext';
+import { AuthContext } from '../../_common/AuthContext';
 import { ToastNotification, toast } from '../../_common/ToastNotification';
 import AccountVerificationError from '../AccountVerificationError/AccountVerificationError';
 import supabase from '../../_common/supabaseProvider';

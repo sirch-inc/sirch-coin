@@ -1,7 +1,7 @@
 import { useState, useCallback, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ToastNotification, toast } from '../../_common/ToastNotification';
-import { AuthContext } from '../../AuthContext';
+import { AuthContext } from '../../_common/AuthContext';
 import supabase from '../../_common/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
 import './CreateAccount.css';
