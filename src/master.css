@@ -225,61 +225,6 @@ footer {
 }
 
 
-/* Styles for Home page */
-.home-page {
-  height: 100%;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  align-content: space-around;
-}
-
-.right-button-container {
-  display: flex;
-  flex-direction: column;
-}
-
-.left-button-container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-end;
-}
-
-.right-button-container > a, .left-button-container > a {
-  text-decoration: none;
-  color: white;
-}
-
-.right-button-container > a:hover, .left-button-container > a:hover {
-  background-color: #3AD820;
-  color: black;
-}
-
-.action-btn {
-  margin-top: 32px;
-  width: 280px;
-  height: 80px;
-  border-radius: 8px;
-  font-size: 32px;
-  background-color: #231F20;
-  cursor: pointer;
-  text-align: center;
-  font-family: Haskoy;
-  padding: 16px;
-}
-
-.right-button-container {
-  margin-right: 64px;
-}
-
-.left-button-container {
-  margin-left: 64px;
-}
-
-
-
-
 /* Styles for Create/Update Account Components */
 .account-privacy-statement {
   width: 75%;
