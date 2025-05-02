@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import './StripeFailure.css';
 
 
 // TODO: not sure we still need this component...
