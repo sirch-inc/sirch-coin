@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../_common/AuthContext.jsx';
-import { ToastNotification, toast } from '../_common/ToastNotification.jsx';
+import { AuthContext } from '../_common/AuthContext';
+import { ToastNotification, toast } from '../_common/ToastNotification';
 import supabase from '../_common/supabaseProvider.js';
-import 'react-toastify/dist/ReactToastify.css';
 import useDebounce from '../../../helpers/debounce.js'
+import 'react-toastify/dist/ReactToastify.css';
 import './SendCoins.css';
 
 

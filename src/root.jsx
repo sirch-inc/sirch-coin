@@ -15,6 +15,7 @@ document.title = import.meta.env.VITE_PAGE_TITLE;
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
+/* eslint-disable react/jsx-no-comment-textnodes */
 root.render(
   <React.StrictMode>
 // #v-ifdef VITE_IS_COMING_SOON.toLowerCase()

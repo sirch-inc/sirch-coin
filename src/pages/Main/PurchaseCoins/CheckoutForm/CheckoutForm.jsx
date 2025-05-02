@@ -130,7 +130,7 @@ export default function CheckoutForm({
     <div className='payment-dialog'>
       <div className='payment-header'>
         <h3>You&apos;re purchasing: <br></br>ⓢ {coinAmount} for a total of ${formatPrice(totalPrice)} {formatCurrency(currency)}</h3>
-        {/* TODO: Update this line with final timeout decision for price and update Purchase.jsx accordingly */}
+        {/* TODO: Update this line with final timeout decision for price and update the page accordingly */}
         <p><em>This price is locked in for the next 15 minutes. After that time, you may need to refresh and try again.</em></p>
       </div>
 
