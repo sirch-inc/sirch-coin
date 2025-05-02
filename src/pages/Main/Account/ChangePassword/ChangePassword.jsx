@@ -1,9 +1,9 @@
 import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../../pages/Main/AuthContext';
+import { AuthContext } from '../../AuthContext';
 import PropTypes from 'prop-types';
-import { ToastNotification, toast } from '../../../pages/Main/App/ToastNotification';
-import supabase from '../../../pages/Main/App/supabaseProvider';
+import { ToastNotification, toast } from '../../App/ToastNotification';
+import supabase from '../../App/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
 import './ChangePassword.css';
 

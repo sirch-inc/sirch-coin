@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { AuthContext } from '../../../pages/Main/AuthContext';
+import { AuthContext } from '../../AuthContext';
 import './VerifyAccount.css';
 
 

@@ -2,17 +2,17 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import HomePage from './HomePage/HomePage.jsx';
 
-import Login from '../../components/Account/Login/Login.jsx';
-import Logout from '../../components/Account/Logout.js'
+import Login from './Account/Login/Login.jsx';
+import Logout from './Account/Logout.js'
 import MyAccount from './MyAccount/MyAccount.jsx'
-import CreateAccount from '../../components/Account/CreateAccount/CreateAccount.jsx';
-import VerifyAccount from '../../components/Account/VerifyAccount/VerifyAccount.jsx';
-import UpdateAccount from '../../components/Account/UpdateAccount/UpdateAccount.jsx'
-import AccountDeleted from '../../components/Account/AccountDeleted/AccountDeleted.jsx';
-import ChangePassword from '../../components/Account/ChangePassword/ChangePassword.jsx';
-import ResetPasswordRequest from '../../components/Account/ResetPasswordRequest/ResetPasswordRequest.jsx';
-import ResetPassword from '../../components/Account/ResetPassword/ResetPassword.jsx';
-import Welcome from '../../components/Account/Welcome/Welcome.jsx';
+import CreateAccount from './Account/CreateAccount/CreateAccount.jsx';
+import VerifyAccount from './Account/VerifyAccount/VerifyAccount.jsx';
+import UpdateAccount from './Account/UpdateAccount/UpdateAccount.jsx'
+import AccountDeleted from './Account/AccountDeleted/AccountDeleted.jsx';
+import ChangePassword from './Account/ChangePassword/ChangePassword.jsx';
+import ResetPasswordRequest from './Account/ResetPasswordRequest/ResetPasswordRequest.jsx';
+import ResetPassword from './Account/ResetPassword/ResetPassword.jsx';
+import Welcome from './Account/Welcome/Welcome.jsx';
 
 import Transactions from '../../pages/Main/TransactionHistory/Transactions.jsx';
 import Send from './SendCoins.jsx';
