@@ -192,21 +192,6 @@ header {
   padding: 24px;
 }
 
-footer {
-  flex: 0 0 auto;
-  background-color: darkslategray;
-  color: lightgray;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 36px;
-}
-
-.footer-link {
-  color: lightgray;
-  font-family: unset;
-}
-
 /* Styles for Navbar */
 .sirchcoins-logo {
   width: 60px;

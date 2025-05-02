@@ -3,7 +3,7 @@ import supabase from './_common/supabaseProvider';
 import { AuthProvider } from './_common/AuthContext';
 import Header from './Header';
 import MainContent from './MainContent';
-import Footer from './Footer';
+import Footer from './Footer/Footer';
 import '@stripe/stripe-js';
 import 'react-tooltip/dist/react-tooltip.css'
 
