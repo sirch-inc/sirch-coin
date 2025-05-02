@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../pages/Main/AuthContext';
+import { AuthContext } from '../AuthContext';
 import { useContext } from 'react';
-import LogoutSupabase from '../Account/Logout';
+import LogoutSupabase from '../../../components/Account/Logout';
 import './HomePage.css';
 
 
