@@ -14,7 +14,7 @@ import ResetPasswordRequest from '../../components/Account/ResetPasswordRequest/
 import ResetPassword from '../../components/Account/ResetPassword/ResetPassword.jsx';
 import Welcome from '../../components/Account/Welcome/Welcome.jsx';
 
-import Transactions from '../../components/TransactionHistory/Transactions.jsx';
+import Transactions from '../../pages/Main/TransactionHistory/Transactions.jsx';
 import Send from '../../components/Send.jsx';
 import Purchase from '../../components/PurchaseCoins.jsx';
 import StripeSuccess from '../../components/Stripe/StripeSuccess.jsx';
