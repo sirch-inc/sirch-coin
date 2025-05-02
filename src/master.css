@@ -182,10 +182,6 @@ button {
   flex-direction: column;
 }
 
-header {
-  flex: 0 0 auto;
-}
-
 .main-content {
   flex: 1 1 auto;
   overflow-y: auto;
@@ -389,11 +385,6 @@ input#user-handle {
 
   .navbar-item {
     font-size: 24px;
-  }
-
-  .page-header {
-    padding: 12px;
-    font-size: 1.2em;
   }
 
   .big-btn {

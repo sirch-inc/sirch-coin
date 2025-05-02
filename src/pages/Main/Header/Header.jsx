@@ -1,4 +1,5 @@
-import NavBar from './NavBar';
+import NavBar from '../NavBar';
+import './Header.css';
 
 
 // TODO: remove this?
