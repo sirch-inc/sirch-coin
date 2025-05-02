@@ -185,7 +185,7 @@ button {
 
 
 
-/* Styles for Create/Update/Password Account Components */
+/* Shared Styles for Create/Update/Password Account Components */
 .account-privacy-statement {
   width: 75%;
 }
@@ -277,9 +277,6 @@ input#user-handle {
   text-align: center;
   padding-left: unset;
 }
-
-
-/* Styles for Send Coins */
 
 
 

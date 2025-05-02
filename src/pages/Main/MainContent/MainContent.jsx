@@ -21,7 +21,7 @@ import StripeSuccess from '../PurchaseCoins/StripeSuccess/StripeSuccess.jsx';
 import StripeFailure from '../PurchaseCoins/StripeFailure/StripeFailure.jsx';
 
 import About from '../About/About.jsx'
-import TermsOfService from '../TermsOfService.jsx';
+import TermsOfService from '../TermsOfService/TermsOfService.jsx';
 import ContactUs from '../ContactUs/ContactUs.jsx';
 
 import GeneralError from '../_common/ErrorPages/GeneralError/GeneralError.jsx';
