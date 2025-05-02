@@ -22,7 +22,7 @@ import StripeFailure from '../../components/Stripe/StripeFailure.jsx';
 
 import About from './About.jsx'
 import TermsOfService from '../../components/TermsOfService.jsx';
-import ContactUs from '../../components/ContactUs.jsx';
+import ContactUs from './ContactUs.jsx';
 
 import GeneralError from './App/ErrorPages/GeneralError/GeneralError.jsx';
 
