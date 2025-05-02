@@ -401,64 +401,6 @@ input#user-handle {
 }
 
 
-/* Styles for Transaction History */
-.transactions-container {
-  margin: 24px;
-  height: 100%;
-  overflow-y: auto;
-}
-
-.transactions-header {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
-  grid-column-gap: 4px;
-  padding: 0px 8px 12px 8px;
-  position: sticky;
-  top: 0; 
-  background-color: #f4f4f4;
-  border-bottom: 1px solid #ccc;
-}
-
-.transactions-header p {
-  font-family: Haskoy-bold;
-  font-size: 24px;
-  text-align: left;
-  margin: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.transaction-row {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
-  grid-column-gap: 4px;
-  padding: 12px 8px 12px 8px;
-}
-
-.transaction-details {
-  cursor: pointer;
-}
-
-.transaction-row p {
-  text-align: left;
-  margin: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.transaction-row:nth-child(odd) {
-  background-color: white;
-}
-
-.transaction-row:nth-child(even) {
-  background-color: lightgrey;
-}
-
-
 
 
 

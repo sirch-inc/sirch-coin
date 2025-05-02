@@ -3,6 +3,7 @@ import { parseISO, formatDistanceToNow } from 'date-fns';
 import { format } from 'date-fns-tz';
 import { Tooltip } from 'react-tooltip';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
+import './TransactionCard.css';
 
 
 const formatDate = (isoDate) => {

@@ -1,8 +1,9 @@
 import { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import TransactionCard from './TransactionCard';
-import { AuthContext } from './../AuthContext.jsx';
-import supabase from '../_common/supabaseProvider';
+import TransactionCard from '../TransactionCard/TransactionCard.jsx';
+import { AuthContext } from '../../AuthContext.jsx';
+import supabase from '../../_common/supabaseProvider.js';
+import './Transactions.css';
 
 
 export default function Transactions() {

@@ -1,0 +1,27 @@
+.transaction-row {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  grid-column-gap: 4px;
+  padding: 12px 8px 12px 8px;
+}
+
+.transaction-details {
+  cursor: pointer;
+}
+
+.transaction-row p {
+  text-align: left;
+  margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.transaction-row:nth-child(odd) {
+  background-color: white;
+}
+
+.transaction-row:nth-child(even) {
+  background-color: lightgrey;
+}
