@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext.jsx';
-import { ToastNotification, toast } from './App/ToastNotification.jsx';
-import supabase from './App/supabaseProvider.js';
+import { ToastNotification, toast } from './_common/ToastNotification.jsx';
+import supabase from './_common/supabaseProvider.js';
 import 'react-toastify/dist/ReactToastify.css';
 import useDebounce from '../../helpers/debounce.js'
 

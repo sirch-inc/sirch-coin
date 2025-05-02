@@ -24,7 +24,7 @@ import About from './About.jsx'
 import TermsOfService from './TermsOfService.jsx';
 import ContactUs from './ContactUs.jsx';
 
-import GeneralError from './App/ErrorPages/GeneralError/GeneralError.jsx';
+import GeneralError from './_common/ErrorPages/GeneralError/GeneralError.jsx';
 
 
 export default function MainContent({ supabase }) {

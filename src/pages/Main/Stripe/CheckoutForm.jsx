@@ -1,10 +1,9 @@
 import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../AuthContext';
+import { AuthContext } from '../AuthContext';
 import { PaymentElement } from '@stripe/react-stripe-js';
 import { useStripe, useElements } from '@stripe/react-stripe-js';
-import supabase from '../../_common/supabaseProvider';
-import './CheckOutForm.css';
+import supabase from '../_common/supabaseProvider';
 
 
 // eslint-disable-next-line react/prop-types
