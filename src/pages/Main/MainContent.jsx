@@ -16,9 +16,9 @@ import Welcome from './Account/Welcome/Welcome.jsx';
 
 import Transactions from '../../pages/Main/TransactionHistory/Transactions.jsx';
 import Send from './SendCoins.jsx';
-import Purchase from './PurchaseCoins.jsx';
-import StripeSuccess from './Stripe/StripeSuccess.jsx';
-import StripeFailure from './Stripe/StripeFailure.jsx';
+import Purchase from './PurchaseCoins/PurchaseCoins.jsx';
+import StripeSuccess from './PurchaseCoins/StripeSuccess.jsx';
+import StripeFailure from './PurchaseCoins/StripeFailure.jsx';
 
 import About from './About.jsx'
 import TermsOfService from './TermsOfService.jsx';

@@ -1,0 +1,10 @@
+.payment-form {
+  height: auto;
+  padding-bottom: 24px;
+}
+
+.payment-footer {
+  p, .big-btn {
+    width: 100%
+  }
+}

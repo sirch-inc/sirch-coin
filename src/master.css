@@ -225,7 +225,7 @@ footer {
 }
 
 
-/* Styles for Create/Update Account Components */
+/* Styles for Create/Update/Password Account Components */
 .account-privacy-statement {
   width: 75%;
 }
@@ -413,7 +413,6 @@ input#user-handle {
 }
 
 
-/*  Styles for Checkout Dialog */
 .checkout-form-dialog {
   z-index: 100;
   max-width: 90vw;
@@ -429,16 +428,6 @@ input#user-handle {
   overflow-y: auto;
 }
 
-.payment-form {
-  height: auto;
-  padding-bottom: 24px;
-}
-
-.payment-footer {
-  p, .big-btn {
-    width: 100%
-  }
-}
 
 .coin-amount-input {
   max-width: 40%;
