@@ -1,0 +1,17 @@
+.about-container {
+  background-color: #231F20;
+}
+
+.about-img {
+  padding: 48px;
+}
+
+.about-text {
+  padding: 36px;
+}
+
+.about-container p {
+  color:white;
+  font-size: 24px;
+  text-align: left;
+}

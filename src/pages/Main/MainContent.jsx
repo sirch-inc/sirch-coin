@@ -20,7 +20,7 @@ import Purchase from './PurchaseCoins/PurchaseCoins/PurchaseCoins.jsx';
 import StripeSuccess from './PurchaseCoins/StripeSuccess/StripeSuccess.jsx';
 import StripeFailure from './PurchaseCoins/StripeFailure/StripeFailure.jsx';
 
-import About from './About.jsx'
+import About from './About/About.jsx'
 import TermsOfService from './TermsOfService.jsx';
 import ContactUs from './ContactUs.jsx';
 
