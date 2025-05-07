@@ -5,7 +5,6 @@ import LogoutSupabase from '../Account/Logout';
 import './HomePage.css';
 
 
-// eslint-disable-next-line react/prop-types
 export default function HomePage({ supabase }) {
   const { session, authError} = useContext(AuthContext);
   const navigate = useNavigate();

@@ -1,10 +1,10 @@
 import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../_common/AuthContext';
-import { ToastNotification, toast } from '../_common/ToastNotification';
+import { ToastNotification } from '../_common/ToastNotification';
 import supabase from '../_common/supabaseProvider';
-import { isAuthApiError } from '@supabase/supabase-js';
 import './MyAccount.css';
+
 
 export default function MyAccount(){
   const { userInTable, userBalance } = useContext(AuthContext);

@@ -9,7 +9,6 @@ import './SendCoins.css';
 
 
 // TODO: move this into its own component file with proper react props validations
-// eslint-disable-next-line react/prop-types
 export function UserCard({user, handleUserCardSelected}) {
   return (
     <div

@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router-dom';
 import './ContactUs.css';
 
 
-// eslint-disable-next-line react/prop-types
 export default function ContactUs() {
   const navigate = useNavigate();
 

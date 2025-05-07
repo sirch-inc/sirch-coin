@@ -7,7 +7,6 @@ import supabase from '../../_common/supabaseProvider';
 import './CheckoutForm.css';
 
 
-// eslint-disable-next-line react/prop-types
 export default function CheckoutForm({
     coinAmount,
     totalPrice,

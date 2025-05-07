@@ -4,7 +4,6 @@ import supabase from './supabaseProvider';
 
 export const AuthContext = createContext();
 
-// eslint-disable-next-line react/prop-types
 export const AuthProvider = ({ children }) => {
   const [session, setSession] = useState(null);
   const [authEvent, setAuthEvent] = useState(null);
