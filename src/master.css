@@ -1,12 +1,12 @@
 /* Fonts */
 @font-face {
   font-family: Haskoy;
-  src: url(/Haskoy-Regular.woff2);
+  src: url(./assets/fonts/Haskoy/Haskoy-Regular.woff2);
 }
 
 @font-face {
   font-family: Haskoy-bold;
-  src: url(/Haskoy-Bold.woff2);
+  src: url(./assets/fonts/Haskoy/Haskoy-Bold.woff2);
 }
 
 
