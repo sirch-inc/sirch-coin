@@ -35,3 +35,19 @@
   color: white;
   font-weight: 500;
 }
+
+
+/* Mobile */
+@media only screen (max-width: 768px) {
+  .bottom-btn-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px;
+  }
+
+  .big-btn {
+    width: 100%;
+    margin-bottom: 12px;
+  }
+}
