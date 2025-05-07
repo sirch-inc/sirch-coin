@@ -1,4 +1,4 @@
-import coinSymbol from '../../../ⓢ.png'
+import coinSymbol from '../../../assets/ⓢ.png'
 import './ComingSoon.css';
 
 

@@ -1,4 +1,4 @@
-import coinSymbol from '../../../ⓢ.png'
+import coinSymbol from '../../../assets/ⓢ.png'
 import { useNavigate } from 'react-router-dom';
 import './About.css';
 
