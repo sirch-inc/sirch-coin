@@ -18,12 +18,6 @@
   width: 100%;
 }
 
-.login-form a {
-  margin-top: 1rem;
-  text-decoration: none;
-  color: inherit;
-}
-
 .login-form a:hover {
   text-decoration: underline;
 }
