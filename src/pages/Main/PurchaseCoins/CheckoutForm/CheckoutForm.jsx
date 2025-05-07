@@ -4,7 +4,7 @@ import { AuthContext } from '../../_common/AuthContext';
 import { PaymentElement } from '@stripe/react-stripe-js';
 import { useStripe, useElements } from '@stripe/react-stripe-js';
 import supabase from '../../_common/supabaseProvider';
-import './CheckOutForm.css';
+import './CheckoutForm.css';
 
 
 // eslint-disable-next-line react/prop-types
