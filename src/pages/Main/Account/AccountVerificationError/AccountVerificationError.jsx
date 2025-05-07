@@ -7,8 +7,6 @@ export default function AccountVerificationError(props) {
 
   return (
     <>
-      <h1>Verify Account</h1>
-
       <h2>There was a problem verifying your account.</h2>
       
       <p>
