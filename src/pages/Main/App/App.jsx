@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import supabase from '../_common/supabaseProvider';
-import { AuthProvider } from '../_common/AuthContext';
+import { AuthProvider } from '../_common/AuthProvider';
 import Header from '../Layout/Header/Header';
 import MainContent from '../Layout/MainContent/MainContent';
 import Footer from '../Layout/Footer/Footer';
