@@ -15,7 +15,9 @@
     "build-production": ". ./build-variables.sh && vite build --mode production",
     "build": ". ./build-variables.sh && vite build --mode production",
     "preview": "vite preview",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
+    "lint3": "eslint . --report-unused-disable-directives --max-warnings 0",
+    "lint2": "eslint . --ext js,jsx,ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^2.8.0",
@@ -37,25 +39,26 @@
     "vite-plugin-conditional-compiler": "^0.3.1"
   },
   "devDependencies": {
-    "@eslint/js": "^9.25.1",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.3.0",
-    "@testing-library/user-event": "^14.6.1",
+    "vite": "^5.3.5",
+    "globals": "^16.0.0",
+    "jsdom": "^26.1.0",
+    "typescript": "^5.8.3",
+    "@vitejs/plugin-react": "^4.2.1",
     "@types/react": "^18.3.21",
     "@types/react-dom": "^18.3.7",
     "@typescript-eslint/eslint-plugin": "^8.32.1",
     "@typescript-eslint/parser": "^8.32.1",
-    "@vitejs/plugin-react": "^4.2.1",
-    "@vitest/coverage-v8": "^3.1.2",
-    "eslint": "^8.57.0",
+    "eslint": "^8.57.1",
+    "@eslint/js": "^9.26.0",
     "eslint-js": "github:eslint/js",
     "eslint-plugin-react": "^7.34.1",
-    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-react-refresh": "^0.4.6",
-    "globals": "^16.0.0",
-    "jsdom": "^26.1.0",
-    "typescript": "^5.8.3",
-    "vite": "^5.3.5",
-    "vitest": "^3.1.2"
+    "typescript-eslint": "^8.32.1",
+    "vitest": "^3.1.2",
+    "@vitest/coverage-v8": "^3.1.2",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1"
   }
 }
