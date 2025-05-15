@@ -23,7 +23,7 @@ export default function About() {
             Currently, Sirch Coins are available at a 90% discount, making it an attractive investment opportunity. The platform aims to make these coins a versatile digital currency that can be used both on and off the Sirch platform, potentially replacing traditional payment methods like cash and Venmo. Additionally, Sirch incentivizes users to get local stores to accept Sirch Coins by offering rewards for successful referrals.
           </p>
           <p>
-            Read more at <a href='https://sirch.ai/' target='_blank'>Sirch - a democratic AI search engine</a>.
+            Read more at <a href='https://sirch.ai/' target='_blank' rel='noopener noreferrer'>Sirch - a democratic AI search engine</a>.
           </p>
         </div>
       </div>
