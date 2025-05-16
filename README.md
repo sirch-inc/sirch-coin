@@ -102,7 +102,6 @@ The project uses Vitest and React Testing Library for unit testing. Here are the
    npm run test:coverage
    ```
 
-
 ### Test Structure
 - Tests are located in `__tests__` directories next to their corresponding components
 - Test files follow the naming convention `*.test.jsx`
@@ -117,6 +116,31 @@ When writing new tests:
 3. Use the existing test files as examples for structure and patterns
 4. Make sure to handle async operations properly using `act()`
 5. Test both the happy path and edge cases
+
+## TypeScript Support
+
+This project is built with TypeScript for enhanced type safety and developer experience. Key TypeScript features in the project:
+
+- Strict type checking enabled in `tsconfig.json`
+- Full React component type definitions
+- Type definitions for all external libraries via `@types` packages
+- TypeScript configuration for both the main app (`tsconfig.json`) and Vite/Node environments (`tsconfig.node.json`)
+
+### TypeScript Guidelines
+
+When working with TypeScript in this project:
+
+1. Always define proper types for component props using interfaces or type aliases
+2. Use strict type checking - avoid using `any` type unless absolutely necessary
+3. Take advantage of TypeScript's built-in utility types (e.g., `Partial<T>`, `Pick<T>`, `Record<K,T>`)
+4. Ensure all async operations are properly typed with `Promise<T>`
+
+You can check for type errors by running:
+```bash
+npm run tsc
+```
+
+Type checking is also automatically run as part of the build process.
 
 ## Previewing a Production build locally (as needed)
 1. Create an `.env.production.local` text file with the necessary keys (ask a developer for these). NOTE: These may change over time!
