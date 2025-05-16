@@ -1,22 +1,41 @@
-import PropTypes from 'prop-types';
 import { parseISO, formatDistanceToNow } from 'date-fns';
 import { format } from 'date-fns-tz';
 import { Tooltip } from 'react-tooltip';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 import './TransactionCard.css';
 
+interface TransactionDetails {
+  to_user_fullname?: string;
+  to_user_handle?: string;
+  from_user_fullname?: string;
+  from_user_handle?: string;
+  memo?: string;
+  paymentIntentId?: string;
+}
 
-const formatDate = (isoDate) => {
+interface Transaction {
+  created_at: string;
+  type: 'SENT' | 'RECEIVED' | 'PURCHASE' | 'INITIAL BALANCE';
+  amount: number;
+  status: string;
+  details: TransactionDetails;
+}
+
+interface TransactionCardProps {
+  transaction: Transaction;
+}
+
+const formatDate = (isoDate: string): string => {
   const parsedDate = parseISO(isoDate);
   return formatDistanceToNow(parsedDate, { addSuffix: true });
 };
 
-const formatTooltipDate = (isoDate) => {
+const formatTooltipDate = (isoDate: string): string => {
   const parsedDate = parseISO(isoDate);
   return format(parsedDate, "eee MM/dd/yyyy hh:mm:ss a zzz");
 };
 
-const getTransactionDetails = (type, details) => {
+const getTransactionDetails = (type: Transaction['type'], details: TransactionDetails): string => {
   switch (type) {
     case 'SENT':
       return `Receiver: ${details.to_user_fullname || ""} (${
@@ -35,7 +54,7 @@ const getTransactionDetails = (type, details) => {
   }
 };
 
-export default function TransactionCard({ transaction }) {
+export default function TransactionCard({ transaction }: TransactionCardProps) {
   const { created_at, type, amount, status, details } = transaction;
 
   const detailsPopover = (
@@ -74,25 +93,15 @@ export default function TransactionCard({ transaction }) {
           overlay={detailsPopover}
           rootClose
         >
-        <button
-          className="transaction-details"
-          aria-haspopup="true"
-          aria-expanded="false"
-        >
-          Show Details
-        </button>
+          <button
+            className="transaction-details"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            Show Details
+          </button>
         </OverlayTrigger>
       </div>
     </div>
   );
 }
-
-TransactionCard.propTypes = {
-  transaction: PropTypes.shape({
-    created_at: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-    amount: PropTypes.number.isRequired,
-    status: PropTypes.string.isRequired,
-    details: PropTypes.object
-  }).isRequired
-};
