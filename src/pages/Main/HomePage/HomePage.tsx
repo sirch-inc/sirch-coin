@@ -3,9 +3,13 @@ import { AuthContext } from '../_common/AuthContext';
 import { useContext } from 'react';
 import LogoutSupabase from '../Account/Logout';
 import './HomePage.css';
+import { SupabaseClient } from '@supabase/supabase-js';
 
+interface HomePageProps {
+  supabase: SupabaseClient;
+}
 
-export default function HomePage({ supabase }) {
+export default function HomePage({ supabase }: HomePageProps) {
   const { session, authError} = useContext(AuthContext);
   const navigate = useNavigate();
 

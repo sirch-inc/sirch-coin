@@ -71,7 +71,8 @@ export default tseslint.config(
       '@typescript-eslint/strict-boolean-expressions': 'off',
       ...reactHooks.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off',
-      'react/jsx-no-target-blank': ['error', { allowReferrer: false }]
+      'react/jsx-no-target-blank': ['error', { allowReferrer: false }],
+      'react/prop-types': 'off'  // Disable prop-types for TypeScript files
     }
   }
 );

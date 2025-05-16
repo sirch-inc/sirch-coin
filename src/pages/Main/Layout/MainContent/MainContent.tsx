@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 import HomePage from '../../HomePage/HomePage.jsx';
 
@@ -28,8 +29,11 @@ import GeneralError from '../../_common/ErrorPages/GeneralError/GeneralError.jsx
 
 import './MainContent.css';
 
+interface MainContentProps {
+  supabase: SupabaseClient;
+}
 
-export default function MainContent({ supabase }) {
+export default function MainContent({ supabase }: MainContentProps) {
   return (
     <main className='main-content'>
       <BrowserRouter>

@@ -48,7 +48,7 @@ export default function TermsOfService() {
         Sirch reserves the right to amend, modify, or discontinue these Terms at any time without prior notice. Continued use of Sirch Coins after any modification constitutes acceptance of the revised Terms.
         </li>
         <li>Governing Law and Dispute Resolution<br/>
-        These Terms shall be governed by and construed in accordance with the laws of the State of Colorado. Any disputes arising under or in connection with these Terms shall be resolved through binding arbitration conducted under the rules of the <a target='_blank' href='https://www.adr.org/'>American Arbitration Association</a> (referred to as the &quot;AAA&quot;).
+        These Terms shall be governed by and construed in accordance with the laws of the State of Colorado. Any disputes arising under or in connection with these Terms shall be resolved through binding arbitration conducted under the rules of the <a target='_blank' href='https://www.adr.org/' rel="noreferrer">American Arbitration Association</a> (referred to as the &quot;AAA&quot;).
         </li>
       </ol>
       <p>

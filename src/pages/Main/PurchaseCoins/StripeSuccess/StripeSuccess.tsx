@@ -53,7 +53,7 @@ export default function StripeSuccess() {
             {paymentDetails.receipt_link
               ?
                 (
-                  <a target='_blank' href={paymentDetails.receipt_link}>
+                  <a target='_blank' href={paymentDetails.receipt_link} rel="noreferrer">
                     View your Stripe Receipt (opens in a new window/tab).
                   </a>
                 )
