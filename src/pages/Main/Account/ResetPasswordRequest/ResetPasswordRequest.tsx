@@ -1,20 +1,23 @@
 import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../_common/AuthContext';
-import PropTypes from 'prop-types';
 import { ToastNotification, toast } from '../../_common/ToastNotification';
-import supabase from '../../_common/supabaseProvider';
-import { isAuthApiError } from '@supabase/supabase-js';
+import supabase from '../../_common/supabaseProvider.ts';
+import { isAuthApiError, AuthError } from '@supabase/supabase-js';
 import './ResetPasswordRequest.css';
 
-export default function ResetPasswordRequest(props) {
-  const { standalone = true } = props;
-  const navigate = useNavigate();
-  const { session } = useContext(AuthContext);
-  const [userEmail, setUserEmail] = useState('');
-  const [sendStatus, setSendStatus] = useState('');
+interface ResetPasswordRequestProps {
+  standalone?: boolean;
+}
 
-  const submitRequest = async (e) => {
+export default function ResetPasswordRequest({ standalone = true }: ResetPasswordRequestProps) {
+  const navigate = useNavigate();
+  const authContext = useContext(AuthContext);
+  const session = authContext?.session;
+  const [userEmail, setUserEmail] = useState<string>('');
+  const [sendStatus, setSendStatus] = useState<string>('');
+
+  const submitRequest = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (userEmail === '') {
@@ -36,7 +39,7 @@ export default function ResetPasswordRequest(props) {
           return;
         }
 
-        throw new Error(error);
+        throw error;
       }
 
       // reset form
@@ -45,7 +48,9 @@ export default function ResetPasswordRequest(props) {
 
       toast.success(`We've emailed ${userEmail} a link to reset your password! Please check your email inbox.`);
     } catch (exception) {
-      console.error("An exception occurred:", exception.message);
+      if (exception instanceof AuthError || exception instanceof Error) {
+        console.error("An exception occurred:", exception.message);
+      }
 
       navigate('/error', { replace: true });
     }
@@ -109,7 +114,3 @@ export default function ResetPasswordRequest(props) {
     </div>
   );
 }
-
-ResetPasswordRequest.propTypes = {
-  standalone: PropTypes.bool
-};
