@@ -1,8 +1,14 @@
 import PropTypes from 'prop-types';
 import './AccountVerificationError.css';
 
+interface AccountVerificationErrorProps {
+  userEmail: string;
+  setUserEmail: (email: string) => void;
+  resendVerificationEmail: (e: React.FormEvent<HTMLFormElement>) => void;
+  emailSendStatus?: string;
+}
 
-export default function AccountVerificationError(props) {
+export default function AccountVerificationError(props: AccountVerificationErrorProps) {
   const { userEmail, setUserEmail, resendVerificationEmail, emailSendStatus } = props;
 
   return (
