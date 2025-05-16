@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { ToastNotification, toast } from '../../_common/ToastNotification';
-import supabase from '../../_common/supabaseProvider.ts';
+import supabase from '../../_common/supabaseProvider';
 import { isAuthApiError, AuthError } from '@supabase/supabase-js';
 import './ChangePassword.css';
 

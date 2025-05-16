@@ -6,7 +6,6 @@ import supabase from '../../_common/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
 import './CreateAccount.css';
 
-
 export default function CreateAccount() {
   const [email, setEmail] = useState('');
   const [isEmailPrivate, setIsEmailPrivate] = useState(false);
@@ -18,7 +17,8 @@ export default function CreateAccount() {
   const [isNamePrivate, setIsNamePrivate] = useState(false);
   const [userHandle, setUserHandle] = useState('');
   const [loadingUserHandle, setLoadingUserHandle] = useState(false);
-  const { session } = useContext(AuthContext);
+  const authContext = useContext(AuthContext);
+  const session = authContext?.session;
   const navigate = useNavigate();
   
   // roll new user handle
@@ -57,7 +57,7 @@ export default function CreateAccount() {
     }, [handleSuggestNewHandle]
   );
 
-  const handleSignUp = async (event) => {
+  const handleSignUp = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     
     try {
@@ -88,7 +88,7 @@ export default function CreateAccount() {
           return;
         }
 
-        throw new Error(error);
+        throw error;
       }
 
       if (!user) {
@@ -97,14 +97,16 @@ export default function CreateAccount() {
 
       navigate('/verify-account');
     } catch (exception) {
-      console.error("An exception occurred:", exception.message);
+      if (exception instanceof Error) {
+        console.error("An exception occurred:", exception.message);
+      }
 
       navigate('/error', { replace: true });
     }
   };
 
   // verify passwords match
-  const handlePasswordConfirmation = (e) => {
+  const handlePasswordConfirmation = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setConfirmPassword(value);
     setPasswordsMatch(value === password);
@@ -159,7 +161,7 @@ export default function CreateAccount() {
                     type='checkbox'
                     id='is-email-private-checkbox'
                     name='is-email-private'
-                    value={isEmailPrivate}
+                    checked={isEmailPrivate}
                     onChange={(e) => setIsEmailPrivate(e.target.checked)}
                   />
                   <label
@@ -178,9 +180,9 @@ export default function CreateAccount() {
                   name='password'
                   type='password'
                   placeholder="Password"
-                  minLength='6'
-                  maxLength='64'
-                  value = {password}
+                  minLength={6}
+                  maxLength={64}
+                  value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete='off'
                   required
@@ -192,8 +194,8 @@ export default function CreateAccount() {
                   name='confirm-password'
                   type='password'
                   placeholder="Confirm Your Password"
-                  minLength='6'
-                  maxLength='64'
+                  minLength={6}
+                  maxLength={64}
                   value={confirmPassword}
                   onChange={handlePasswordConfirmation}
                   autoComplete='off'
@@ -233,7 +235,7 @@ export default function CreateAccount() {
                     type='checkbox'
                     id='is-name-private-checkbox'
                     name='is-name-private'
-                    value={isNamePrivate}
+                    checked={isNamePrivate}
                     onChange={(e) => setIsNamePrivate(e.target.checked)}
                   />
                   <label
@@ -246,7 +248,7 @@ export default function CreateAccount() {
               </div>
 
               <div id='account-user-handle-row'>
-                <div width='30%'>
+                <div style={{ width: '30%' }}>
                   <p>
                   Your Sirch account includes a unique, random, two-word phrase to help other users find you
                   easily and to help keep your Name and Email private if you choose not to share them.

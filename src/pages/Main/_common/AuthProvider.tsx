@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, ReactNode } from 'react';
 import { AuthContext, AuthContextType, UserTableData } from './AuthContext';
-import supabase from './supabaseProvider.ts';
+import supabase from './supabaseProvider';
 import { Session, AuthChangeEvent } from '@supabase/supabase-js';
 
 interface AuthProviderProps {
