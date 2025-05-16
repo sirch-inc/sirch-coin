@@ -21,6 +21,5 @@
     "noImplicitOverride": true,
     "allowUnreachableCode": false
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
 }
