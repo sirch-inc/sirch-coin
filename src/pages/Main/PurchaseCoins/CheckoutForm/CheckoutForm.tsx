@@ -2,10 +2,19 @@ import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../_common/AuthContext';
 import { PaymentElement } from '@stripe/react-stripe-js';
+import { StripeError } from '@stripe/stripe-js';
 import { useStripe, useElements } from '@stripe/react-stripe-js';
 import supabase from '../../_common/supabaseProvider';
 import './CheckoutForm.css';
 
+interface CheckoutFormProps {
+  coinAmount: number;
+  totalPrice: number;
+  setShowCheckoutForm: (show: boolean) => void;
+  formatPrice: (price: number) => string;
+  formatCurrency: (currency: string) => string;
+  currency: string;
+}
 
 export default function CheckoutForm({
     coinAmount,
@@ -14,25 +23,26 @@ export default function CheckoutForm({
     formatPrice,
     formatCurrency,
     currency
-  }) {
+  }: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
-  const { userInTable } = useContext(AuthContext);
-  const [message, setMessage] = useState(null);
+  const auth = useContext(AuthContext);
+  const userInTable = auth?.userInTable;
+  const [message, setMessage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [paymentIntentId, setPaymentIntentId] = useState(null);
-  const [clientSecret, setClientSecret] = useState(null);
+  const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleError = (error) => {
+  const handleError = (error: StripeError) => {
     setIsProcessing(false);
-    setMessage(error.message);
+    setMessage(error.message ?? 'An error occurred');
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!stripe) return;
+    if (!stripe || !elements || !userInTable) return;
 
     setIsProcessing(true);
 
@@ -59,8 +69,7 @@ export default function CheckoutForm({
         });
 
         if (createPaymentIntentError) {
-          // TODO: depending on the error, perhaps route to /stripe/failure?
-          throw new Error(createPaymentIntentError);
+          throw new Error(typeof createPaymentIntentError === 'string' ? createPaymentIntentError : 'Failed to create payment intent');
         }
 
         currentClientSecret = createPaymentIntentData.clientSecret;
@@ -69,6 +78,10 @@ export default function CheckoutForm({
 
       setClientSecret(currentClientSecret);
       setPaymentIntentId(currentPaymentIntentId);
+
+      if (!currentClientSecret) {
+        throw new Error('No client secret available');
+      }
 
       // confirm the payment with the values in the elements
       const { error: confirmPaymentError } = await stripe.confirmPayment({
@@ -80,11 +93,10 @@ export default function CheckoutForm({
       });
 
       if (confirmPaymentError) {
-        throw new Error(confirmPaymentError);
+        throw confirmPaymentError;
       }
     } catch (exception) {
-      console.error("An exception occurred:", exception.message);
-
+      console.error("An exception occurred:", exception instanceof Error ? exception.message : 'Unknown error');
       navigate('/error', { replace: true });
     } finally {
       // try to cancel any created paymentIntent
@@ -103,7 +115,7 @@ export default function CheckoutForm({
     cancelPaymentIntent(paymentIntentId);
   }
 
-  const cancelPaymentIntent = async (paymentIntentIdToCancel) => {
+  const cancelPaymentIntent = async (paymentIntentIdToCancel: string) => {
     if (paymentIntentIdToCancel === null) return;
 
     try {
@@ -114,11 +126,10 @@ export default function CheckoutForm({
       });
   
       if (error) {
-        throw new Error(error);
+        throw new Error(typeof error === 'string' ? error : 'Failed to cancel payment intent');
       }
     } catch (exception) {
-      console.error("An exception occurred:", exception.message);
-
+      console.error("An exception occurred:", exception instanceof Error ? exception.message : 'Unknown error');
       navigate('/error', { replace: true });
     } finally {
       setIsProcessing(false);
