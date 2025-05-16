@@ -15,7 +15,7 @@
     "build-production": ". ./build-variables.sh && vite build --mode production",
     "build": ". ./build-variables.sh && vite build --mode production",
     "preview": "vite preview",
-    "lint": "eslint . --max-warnings 0",
+    "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^2.8.0",
