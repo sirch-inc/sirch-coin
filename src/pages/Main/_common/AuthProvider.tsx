@@ -1,16 +1,20 @@
-import { useState, useEffect, useCallback } from 'react';
-import { AuthContext } from './AuthContext';
-import supabase from './supabaseProvider';
+import { useState, useEffect, useCallback, ReactNode } from 'react';
+import { AuthContext, AuthContextType, UserTableData } from './AuthContext';
+import supabase from './supabaseProvider.ts';
+import { Session, AuthChangeEvent } from '@supabase/supabase-js';
 
+interface AuthProviderProps {
+  children: ReactNode;
+}
 
-export const AuthProvider = ({ children }) => {
-  const [session, setSession] = useState(null);
-  const [authEvent, setAuthEvent] = useState(null);
-  const [userId, setUserId] = useState(null);
-  const [userEmail, setUserEmail] = useState(null);
-  const [userInTable, setUserInTable] = useState(null);
-  const [userBalance, setUserBalance] = useState(null);
-  const [authError, setAuthError] = useState(null);
+export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const [session, setSession] = useState<Session | null>(null);
+  const [authEvent, setAuthEvent] = useState<AuthContextType['authEvent']>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userInTable, setUserInTable] = useState<UserTableData | null>(null);
+  const [userBalance, setUserBalance] = useState<number | null>(null);
+  const [authError, setAuthError] = useState<Error | null>(null);
 
   const refreshUserBalance = useCallback(async () => {
     if (userInTable) {
@@ -32,52 +36,51 @@ export const AuthProvider = ({ children }) => {
 
   // Manage the user authentication session
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((authEvent, session) => {
-      setAuthEvent(authEvent);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event: AuthChangeEvent, session: Session | null) => {
+        setAuthEvent(event);
       
-      // TODO: handle the events appropriately
-      switch (authEvent) {
-        case 'INITIAL_SESSION':
-        case 'SIGNED_IN':
-        case 'USER_UPDATED':
-          setSession(session);
+        switch (event) {
+          case 'INITIAL_SESSION':
+          case 'SIGNED_IN':
+          case 'USER_UPDATED':
+            setSession(session);
 
-          if (session && session.user) {
-            setUserId(session.user.id);
-            setUserEmail(session.user.email);
-          }
-          break;
-        case 'SIGNED_OUT':
-          setSession(null);
-          setUserId(null);
-          setUserEmail(null);
-          setUserInTable(null);
-          setUserBalance(null);
-          setAuthError(null);
+            if (session?.user) {
+              setUserId(session.user.id);
+              setUserEmail(session.user.email ?? null);
+            }
+            break;
+          case 'SIGNED_OUT':
+            setSession(null);
+            setUserId(null);
+            setUserEmail(null);
+            setUserInTable(null);
+            setUserBalance(null);
+            setAuthError(null);
 
-          // clear local and session storage
-          [
-            window.localStorage,
-            window.sessionStorage,
-          ].forEach((storage) => {
-            Object.entries(storage)
-              .forEach(([key]) => {
-                storage.removeItem(key)
-              })
-          });
-          break;
-        case 'PASSWORD_RECOVERY':
-          setSession(session);
-          break;
-        case 'TOKEN_REFRESHED':
-          setSession(session);
-          break;
-        default:
-          console.error("Auth - Unknown Event", authEvent);
-          setAuthError("Auth - Unknown Event");
-          break;
+            // clear local and session storage
+            [
+              window.localStorage,
+              window.sessionStorage,
+            ].forEach((storage) => {
+              Object.entries(storage)
+                .forEach(([key]) => {
+                  storage.removeItem(key)
+                })
+            });
+            break;
+          case 'PASSWORD_RECOVERY':
+          case 'TOKEN_REFRESHED':
+            setSession(session);
+            break;
+          default:
+            console.error("Auth - Unknown Event", event);
+            setAuthError(new Error("Auth - Unknown Event"));
+            break;
+        }
       }
-    });
+    );
 
     return () => subscription.unsubscribe();
   }, []);
@@ -111,9 +114,20 @@ export const AuthProvider = ({ children }) => {
     refreshUserBalance();
   }, [userInTable, refreshUserBalance]);
   
+  const contextValue: AuthContextType = {
+    authEvent,
+    session,
+    userId,
+    userEmail,
+    userInTable,
+    userBalance,
+    refreshUserBalance,
+    authError
+  };
+
   return (
-    <AuthContext.Provider value={{ authEvent, session, userId, userEmail, userInTable, userBalance, refreshUserBalance, authError }} supabase={ supabase }>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
-  )
+  );
 }
