@@ -1,21 +1,23 @@
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../_common/AuthContext';
 import PropTypes from 'prop-types';
 import { ToastNotification, toast } from '../../_common/ToastNotification';
-import supabase from '../../_common/supabaseProvider';
-import { isAuthApiError } from '@supabase/supabase-js';
+import supabase from '../../_common/supabaseProvider.ts';
+import { isAuthApiError, AuthError } from '@supabase/supabase-js';
 import './ChangePassword.css';
 
+interface ChangePasswordProps {
+  standalone?: boolean;
+}
+
 // TODO: Send an email informing the user of the password change
-export default function ChangePassword({ standalone = true }) {
+export default function ChangePassword({ standalone = true }: ChangePasswordProps) {
   const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordsMatch, setPasswordsMatch] = useState(false);
-  const { session } = useContext(AuthContext);
   const navigate = useNavigate();
   
-  const submitRequest = async (e) => {
+  const submitRequest = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!passwordsMatch) {
@@ -27,7 +29,7 @@ export default function ChangePassword({ standalone = true }) {
       // TODO: consider using supabase.auth.reauthenticate() and/or supabase.auth.resend() here...
       const { data: user, error } = await supabase.auth.updateUser(
         { password: newPassword },
-        { session }
+        { emailRedirectTo: `${window.location.origin}/welcome` }
       );
       
       if (error) {
@@ -36,7 +38,7 @@ export default function ChangePassword({ standalone = true }) {
           return;
         }
 
-        throw new Error(error);
+        throw error;
       }
 
       if (!user) {
@@ -49,18 +51,18 @@ export default function ChangePassword({ standalone = true }) {
 
       toast.success('Password updated successfully!');
     } catch (exception) {
-      console.error("An exception occurred:", exception.message);
-
+      if (exception instanceof AuthError || exception instanceof Error) {
+        console.error("An exception occurred:", exception.message);
+      }
       navigate('/error', { replace: true });
     }
   }
 
   // verify passwords match
-  const handlePasswordConfirmation = (e) =>{
+  const handlePasswordConfirmation = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-
     setConfirmPassword(value);
-    setPasswordsMatch(value === newPassword)
+    setPasswordsMatch(value === newPassword);
   }
 
   return(
@@ -78,8 +80,8 @@ export default function ChangePassword({ standalone = true }) {
           name='password'
           type='password'
           placeholder="New Password"
-          minLength='6'
-          maxLength='64'
+          minLength={6}
+          maxLength={64}
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
           autoComplete='off'
@@ -92,8 +94,8 @@ export default function ChangePassword({ standalone = true }) {
           name='confirm-password'
           type='password'
           placeholder="Confirm New Password"
-          minLength='6'
-          maxLength='64'
+          minLength={6}
+          maxLength={64}
           value={confirmPassword}
           onChange={handlePasswordConfirmation}
           autoComplete='off'
