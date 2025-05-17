@@ -1,32 +1,33 @@
 import { useState, useEffect, useContext } from 'react';
 import { Elements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
+import { loadStripe, StripeElementsOptions } from '@stripe/stripe-js';
 import { AuthContext } from '../../_common/AuthContext';
 import supabase from '../../_common/supabaseProvider';
 import CheckoutForm from '../CheckoutForm/CheckoutForm';
 import { useNavigate } from 'react-router-dom';
 import './PurchaseCoins.css';
 
-
-// Call `loadStripe` outside of the component’s render to avoid
+// Call `loadStripe` outside of the component's render to avoid
 // recreating the `Stripe` object on every render
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_API_PUBLISHABLE_KEY);
 
 export default function PurchaseCoins() {
-  const [localCoinAmount, setLocalCoinAmount] = useState(0);
-  const [coinAmount, setCoinAmount] = useState(0);
+  const [localCoinAmount, setLocalCoinAmount] = useState<number | null>(0);
+  const [coinAmount, setCoinAmount] = useState<number>(0);
   const [coinAmountError, setCoinAmountError] = useState(false);
-  const [pricePerCoin, setPricePerCoin] = useState("Loading...");
-  const [localTotalPrice, setLocalTotalPrice] = useState(0);
-  const [totalPrice, setTotalPrice] = useState("Loading...");
-  const [minimumPurchase, setMinimumPurchase] = useState(null);
-  const [currency, setCurrency] = useState("Loading...");
+  const [pricePerCoin, setPricePerCoin] = useState<number>(0);
+  const [localTotalPrice, setLocalTotalPrice] = useState<number>(0);
+  const [totalPrice, setTotalPrice] = useState<number>(0);
+  const [minimumPurchase, setMinimumPurchase] = useState<number | null>(null);
+  const [currency, setCurrency] = useState<string>("Loading...");
   const [showCheckoutForm, setShowCheckoutForm] = useState(false);
-  const [options, setOptions] = useState(null);
-  const { userInTable } = useContext(AuthContext);
+  const [options, setOptions] = useState<StripeElementsOptions | null>(null);
+  const auth = useContext(AuthContext);
   const navigate = useNavigate();
 
-  
+  // Force type assertion since we know context will be available
+  const userInTable = auth?.userInTable;
+
   // fetch current quote
   useEffect(() => {
     const fetchQuote = async () => {
@@ -47,14 +48,13 @@ export default function PurchaseCoins() {
           throw new Error("No quote was returned.");
         }
 
-        setPricePerCoin(data.pricePerCoin);
+        setPricePerCoin(data.pricePerCoin.toString());
         setLocalTotalPrice(data.minimumPurchase * data.pricePerCoin);
         setCurrency(data.currency);
         setLocalCoinAmount(data.minimumPurchase);
         setMinimumPurchase(data.minimumPurchase);
-      } catch (exception) {
-        console.error("An exception occurred:", exception.message);
-  
+      } catch (error) {
+        console.error("An exception occurred:", error instanceof Error ? error.message : String(error));
         navigate('/error', { replace: true });
       }
     };
@@ -63,11 +63,10 @@ export default function PurchaseCoins() {
   }, [userInTable, navigate]);
 
   const handleCheckout = async () => {
-    if (!userInTable || localCoinAmount === '') return;
+    if (!userInTable || !localCoinAmount) return;
 
     setCoinAmount(localCoinAmount);
     setTotalPrice(localTotalPrice);
-    setCurrency(currency);
     setShowCheckoutForm(true);
 
     const totalAmountInCents = +(localTotalPrice * 100).toFixed(0);
@@ -75,23 +74,19 @@ export default function PurchaseCoins() {
     setOptions({
       mode: 'payment',
       amount: totalAmountInCents,
-      currency,
-      // TODO: finalize Stripe Elements styles after app has been fully designed
+      currency: currency.toLowerCase(),
       appearance: {
         theme: 'night',
         labels: 'floating',
-        // TODO: use same font as app, see Stripe docs
-        // fontFamily: 'Haskoy-bold',
       }
-    });
+    } as StripeElementsOptions);
   }
 
-  // TODO: Update this logic once Sirch Coins discount period expires (e.g. users can purchase 1 Sirch Coin for $1)
-  const handleAmountChange = (e) => {
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     
     if (newValue === '') {
-      setLocalCoinAmount('');
+      setLocalCoinAmount(null);
       setCoinAmountError(false);
       setLocalTotalPrice(0);
       return;
@@ -100,27 +95,29 @@ export default function PurchaseCoins() {
     const numValue = parseInt(newValue, 10);
     if (!isNaN(numValue)) {
       setLocalCoinAmount(numValue);
-      setLocalTotalPrice(numValue * parseFloat(pricePerCoin));
-      setCoinAmountError(numValue < minimumPurchase);
+      setLocalTotalPrice(numValue * pricePerCoin);
+      setCoinAmountError(minimumPurchase ? numValue < minimumPurchase : false);
     } else {
       setCoinAmountError(true);
     }
   };
 
   const handleBlur = () => {
-    if (localCoinAmount === '' || localCoinAmount < minimumPurchase) {
+    if (!minimumPurchase) return;
+    
+    if (!localCoinAmount || localCoinAmount < minimumPurchase) {
       setLocalCoinAmount(minimumPurchase);
       setCoinAmountError(false);
-      setLocalTotalPrice(minimumPurchase * parseFloat(pricePerCoin));
+      setLocalTotalPrice(minimumPurchase * pricePerCoin);
     }
   };
 
-  const formatPrice = (price) => {
+  const formatPrice = (price: number): string => {
     return Number(price).toFixed(2);
   }
 
-  const formatCurrency = (currency) => {
-    return currency.toUpperCase();
+  const formatCurrency = (curr: string): string => {
+    return curr.toUpperCase();
   }
 
   return (
@@ -128,8 +125,8 @@ export default function PurchaseCoins() {
       <div className='purchase-container'>
         <h2>Buy Sirch Coins ⓢ</h2>
         <h3>How many Sirch Coins ⓢ would you like to purchase?</h3>
-        { pricePerCoin === "Loading..."
-          ? <p>Current quote: ⓢ 1 = {pricePerCoin} {currency}</p>
+        { pricePerCoin === 0
+          ? <p>Current quote: ⓢ 1 = Loading... {currency}</p>
           : <p>Current quote: ⓢ 1 = ${formatPrice(pricePerCoin)} {currency.toUpperCase()}</p>
         }
         <div className='purchase-form'>
@@ -139,7 +136,7 @@ export default function PurchaseCoins() {
             type='number'
             name='coins'
             placeholder="Number of coins to purchase"
-            value={localCoinAmount}
+            value={localCoinAmount ?? ''}
             onChange={handleAmountChange}
             onBlur={handleBlur}
             // TODO: min needs to be the fetched value
@@ -160,7 +157,7 @@ export default function PurchaseCoins() {
           <button 
             className='big-btn'
             onClick={handleCheckout}
-            disabled={coinAmountError || localCoinAmount < minimumPurchase}
+            disabled={coinAmountError || !localCoinAmount || !minimumPurchase || localCoinAmount < minimumPurchase}
           >
             Complete purchase...
           </button>
@@ -175,7 +172,7 @@ export default function PurchaseCoins() {
               <dialog open className='checkout-form-dialog'>
                 <Elements
                   stripe={stripePromise}
-                  options={options}
+                  options={options || undefined}
                 >
                   <CheckoutForm
                     coinAmount={coinAmount}
