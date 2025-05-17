@@ -5,10 +5,26 @@ import { AuthContext } from '../../_common/AuthContext';
 import supabase from '../../_common/supabaseProvider.js';
 import './Transactions.css';
 
+interface Transaction {
+  id: string;
+  created_at: string;
+  type: 'SENT' | 'RECEIVED' | 'PURCHASE' | 'INITIAL BALANCE';
+  amount: number;
+  status: string;
+  details: {
+    to_user_fullname?: string;
+    to_user_handle?: string;
+    from_user_fullname?: string;
+    from_user_handle?: string;
+    memo?: string;
+    paymentIntentId?: string;
+  };
+}
 
 export default function Transactions() {
-  const { userInTable } = useContext(AuthContext);
-  const [userTransactions, setUserTransactions] = useState(null);
+  const auth = useContext(AuthContext);
+  const userInTable = auth?.userInTable;
+  const [userTransactions, setUserTransactions] = useState<Transaction[] | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,7 +39,7 @@ export default function Transactions() {
           .order('created_at', { ascending: false });
 
         if (error) {
-          throw new Error(error);
+          throw new Error(error.message);
         }
         
         if (!data) {
