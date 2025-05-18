@@ -37,13 +37,6 @@ export function UserCard({ user, handleUserCardSelected }: UserCardProps) {
 export default function Send() {
   const navigate = useNavigate();
   const authContext = useContext(AuthContext);
-  
-  if (!authContext) {
-    navigate('/');
-    return null;
-  }
-
-  const { userInTable, userBalance, refreshUserBalance } = authContext;
   const [sendAmount, setSendAmount] = useState<string>('');
   const [searchText, setSearchText] = useState<string>('');
   const [memo, setMemo] = useState<string>('');
@@ -51,10 +44,10 @@ export default function Send() {
   const [selectedRecipient, setSelectedRecipient] = useState<User | null>(null);
 
   const fetchUserBalance = useCallback(async () => {
-    if (refreshUserBalance) {
-      await refreshUserBalance();
+    if (authContext?.refreshUserBalance) {
+      await authContext.refreshUserBalance();
     }
-  }, [refreshUserBalance]);
+  }, [authContext]);
 
   const debouncedLookupUsers = useDebounce(async () => {
     setSelectedRecipient(null);
@@ -95,6 +88,25 @@ export default function Send() {
       toast.error("Unable to look up users at this time. Please try again later.");
     }
   });
+
+  // (re)fetch the user's balance when the component renders
+  useEffect(() => {
+    fetchUserBalance();
+  }, [fetchUserBalance]);
+
+  // cancel any pending lookup when unmounting component
+  useEffect(() => {
+    return () => {
+      debouncedLookupUsers.cancel();
+    };
+   }, [debouncedLookupUsers]);
+
+  if (!authContext) {
+    navigate('/');
+    return null;
+  }
+
+  const { userInTable, userBalance } = authContext;
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const amount = event.target.value;
@@ -182,18 +194,6 @@ export default function Send() {
       toast.error("An error occurred sending Sirch Coins to your recipient. Please try again later.");
     }
   };
-
-  // (re)fetch the user's balance when the component renders
-  useEffect(() => {
-    fetchUserBalance();
-  }, [fetchUserBalance, userBalance]);
-
-  // cancel any pending lookup when unmounting component
-  useEffect(() => {
-    return () => {
-      debouncedLookupUsers.cancel();
-    };
-   }, [debouncedLookupUsers]);
 
   return (  
     <>

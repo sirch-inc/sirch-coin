@@ -32,7 +32,7 @@ export const AuthProvider = ({ children, supabase }: AuthProviderProps) => {
         setUserBalance(data.balance);
       }
     }
-  }, [userInTable]);
+  }, [userInTable, supabase]);
 
   // Manage the user authentication session
   useEffect(() => {
@@ -83,7 +83,7 @@ export const AuthProvider = ({ children, supabase }: AuthProviderProps) => {
     );
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [supabase.auth]);
 
   // Fetch the user's profile
   useEffect(() => {
@@ -107,7 +107,7 @@ export const AuthProvider = ({ children, supabase }: AuthProviderProps) => {
     };
 
     fetchUser();
-  }, [session, userId]);
+  }, [session, userId, supabase]);
 
   // Get user's current balance
   useEffect(() => {

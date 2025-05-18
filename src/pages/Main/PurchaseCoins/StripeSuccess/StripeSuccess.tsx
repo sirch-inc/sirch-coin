@@ -45,7 +45,7 @@ export default function StripeSuccess() {
     if (auth?.userInTable?.user_id && paymentIntentId) {
       validatePayment();
     }
-  }, [auth?.userInTable, auth?.refreshUserBalance, paymentIntentId]);
+  }, [paymentIntentId, auth]);
 
   return (
     <>

@@ -74,5 +74,21 @@ export default tseslint.config(
       'react/jsx-no-target-blank': ['error', { allowReferrer: false }],
       'react/prop-types': 'off'  // Disable prop-types for TypeScript files
     }
+  },
+  {
+    // .d.ts config
+    files: ['**/*.d.ts'],
+    extends: [
+      ...tseslint.configs.recommended
+    ],
+    languageOptions: {
+      parser: tseslint.parser,
+      parserOptions: {
+        project: null  // Disable project requirement for .d.ts files
+      }
+    },
+    plugins: {
+      '@typescript-eslint': tseslint.plugin
+    }
   }
 );
