@@ -5,7 +5,8 @@ import './VerifyAccount.css';
 
 
 export default function VerifyAccount() {
-  const { session } = useContext(AuthContext);
+  const auth = useContext(AuthContext);
+  const session = auth?.session;
 
   return(
     // TODO: Style component and add customization (ie. "An email confirmation link was sent to [users@somewhere.com]")

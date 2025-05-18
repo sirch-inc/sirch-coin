@@ -11,14 +11,16 @@ import './Welcome.css';
 export default function Welcome() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { session, userInTable } = useContext(AuthContext);
+  const auth = useContext(AuthContext);
+  const session = auth?.session;
+  const userInTable = auth?.userInTable;
   const verificationError = location.hash.includes('error=access_denied');
   const [userEmail, setUserEmail] = useState('');
   const [emailSendStatus, setEmailSendStatus] = useState('');
 
 
   // NOTE: To test this flow: use an expired verification link (expires in 24 hours)
-  const resendVerificationEmail = async (e) => {
+  const resendVerificationEmail = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!userEmail) {
@@ -44,7 +46,7 @@ export default function Welcome() {
           return;
         }
 
-        throw new Error(error);
+        throw new Error(error.message || 'An unknown error occurred');
       }
 
       // reset form
@@ -53,7 +55,7 @@ export default function Welcome() {
 
       toast.success(`We've emailed ${userEmail} a link to verify your account! Please check your email inbox.`);
     } catch(exception) {
-      console.error("An exception occurred:", exception.message);
+      console.error("An exception occurred:", exception);
 
       // reset form
       setUserEmail('');
