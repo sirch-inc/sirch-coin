@@ -24,7 +24,9 @@ const VerificationError = () => (
 export default function ResetPassword() {
   const { hash } = useLocation();
   const navigate = useNavigate();
-  const { authEvent, session } = useContext(AuthContext);
+  const auth = useContext(AuthContext);
+  const authEvent = auth?.authEvent;
+  const session = auth?.session;
   const [isPasswordRecoverySession, setIsPasswordRecoverySession] = useState(false);
   const verificationError = hash.includes('error=access_denied');
 
