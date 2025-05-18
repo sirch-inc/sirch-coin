@@ -1,13 +1,13 @@
 import { useState, useEffect, useCallback, ReactNode } from 'react';
 import { AuthContext, AuthContextType, UserTableData } from './AuthContext';
-import supabase from './supabaseProvider';
-import { Session, AuthChangeEvent } from '@supabase/supabase-js';
+import { Session, AuthChangeEvent, SupabaseClient } from '@supabase/supabase-js';
 
 interface AuthProviderProps {
   children: ReactNode;
+  supabase: SupabaseClient;
 }
 
-export const AuthProvider = ({ children }: AuthProviderProps) => {
+export const AuthProvider = ({ children, supabase }: AuthProviderProps) => {
   const [session, setSession] = useState<Session | null>(null);
   const [authEvent, setAuthEvent] = useState<AuthContextType['authEvent']>(null);
   const [userId, setUserId] = useState<string | null>(null);

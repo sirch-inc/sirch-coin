@@ -7,12 +7,12 @@ import { isAuthApiError } from '@supabase/supabase-js';
 import './Login.css';
 
 export default function Login() {
+  const auth = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { session } = useContext(AuthContext);
   const navigate = useNavigate();
   
-  const handleLogin = async (event) => {
+  const handleLogin = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
 
     try {
@@ -28,7 +28,7 @@ export default function Login() {
           return;
         }
         
-        throw new Error(error);
+        throw error;
       }
 
       if (!user) {
@@ -37,7 +37,7 @@ export default function Login() {
 
       navigate('/');
     } catch (exception) {
-      console.error("An exception occurred:", exception.message);
+      console.error("An exception occurred:", exception instanceof Error ? exception.message : String(exception));
       navigate('/error', { replace: true });
     }
   };
@@ -46,7 +46,7 @@ export default function Login() {
     <div className="login-container">
       <ToastNotification />
 
-      {!session ? (
+      {!auth?.session ? (
         <>
           <h2>Log In</h2>
           <p>New users should <a href="/create-account">create an account</a> first.</p>
@@ -67,8 +67,8 @@ export default function Login() {
               name='password'
               type='password'
               placeholder="Password"
-              minLength='6'
-              maxLength='64'      
+              minLength={6}
+              maxLength={64}      
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoComplete='off'

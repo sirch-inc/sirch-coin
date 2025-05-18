@@ -4,7 +4,7 @@ import { Tooltip } from 'react-tooltip';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 import './TransactionCard.css';
 
-interface TransactionDetails {
+export interface TransactionDetails {
   to_user_fullname?: string;
   to_user_handle?: string;
   from_user_fullname?: string;
@@ -13,7 +13,7 @@ interface TransactionDetails {
   paymentIntentId?: string;
 }
 
-interface Transaction {
+export interface Transaction {
   created_at: string;
   type: 'SENT' | 'RECEIVED' | 'PURCHASE' | 'INITIAL BALANCE';
   amount: number;

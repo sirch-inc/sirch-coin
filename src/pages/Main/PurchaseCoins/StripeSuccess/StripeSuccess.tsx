@@ -4,19 +4,23 @@ import { AuthContext } from '../../_common/AuthContext';
 import supabase from '../../_common/supabaseProvider';
 import './StripeSuccess.css';
 
+interface PaymentDetails {
+  amount: number;
+  receipt_link?: string;
+}
 
 export default function StripeSuccess() {
   const { paymentIntentId } = useParams();
-  const { userInTable, refreshUserBalance } = useContext(AuthContext);
-  const [paymentDetails, setPaymentDetails] = useState(null);
-  const [paymentError, setPaymentError] = useState(false);
+  const auth = useContext(AuthContext);
+  const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | null>(null);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
 
   useEffect(() => {
     const validatePayment = async () => {
       try {
         const { data, error } = await supabase.functions.invoke('stripe-validate-payment', {
           body: {
-            userId: userInTable?.user_id,
+            userId: auth?.userInTable?.user_id,
             paymentIntentId
           }
         });
@@ -30,18 +34,18 @@ export default function StripeSuccess() {
         }
   
         setPaymentDetails(data);
-        refreshUserBalance();
+        auth?.refreshUserBalance?.();
       } catch (exception) {
-        console.error("An exception occurred:", exception.message);
-
-        setPaymentError(exception.message || "An error occurred");
+        const errorMessage = exception instanceof Error ? exception.message : String(exception);
+        console.error("An exception occurred:", errorMessage);
+        setPaymentError(errorMessage || "An error occurred");
       }
     };
 
-    if (userInTable?.user_id && paymentIntentId) {
+    if (auth?.userInTable?.user_id && paymentIntentId) {
       validatePayment();
     }
-  }, [userInTable, paymentIntentId, paymentError, refreshUserBalance]);
+  }, [auth?.userInTable, auth?.refreshUserBalance, paymentIntentId]);
 
   return (
     <>
@@ -72,22 +76,22 @@ export default function StripeSuccess() {
         )
       : paymentError
         ? (
-          <div style={{ textAlign: 'center', padding: '50px' }}>
-            <h1>There was an error processing your payment.</h1>
-            <h3>Please contact Sirch for additional information and check your Sirch Coins Balance and Transactions.</h3>
-
             <div style={{ textAlign: 'center', padding: '50px' }}>
-              <Link to='/' className='big-btn'>
-                Back to Home
-              </Link>
+              <h1 style={{ color: 'red' }}>Payment Error!</h1>
+              <p>An error occurred while validating your payment:</p>
+              <p>{paymentError}</p>
+              <div style={{ textAlign: 'center', padding: '50px' }}>
+                <Link to='/' className='big-btn'>
+                  Back to Home
+                </Link>
+              </div>
             </div>
-          </div>
-        )
+          )
         : (
-          <div style={{ textAlign: 'center', padding: '50px' }}>
-            <h1>Please wait, validating payment...</h1>
-          </div>
-        )
+            <div style={{ textAlign: 'center', padding: '50px' }}>
+              <h1>Validating payment...</h1>
+            </div>
+          )
       }
     </>
   );

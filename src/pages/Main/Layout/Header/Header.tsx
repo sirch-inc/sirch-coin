@@ -1,15 +1,10 @@
 import NavBar from '../NavBar/NavBar';
 import './Header.css';
-import { SupabaseClient } from '@supabase/supabase-js';
 
-interface HeaderProps {
-  supabase: SupabaseClient;
-}
-
-export default function Header({ supabase }: HeaderProps) {
+export default function Header() {
   return (
     <header>
-      <NavBar supabase={supabase}/>
+      <NavBar />
     </header>
   );
 }

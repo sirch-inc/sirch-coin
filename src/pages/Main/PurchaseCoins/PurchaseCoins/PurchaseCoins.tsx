@@ -172,7 +172,15 @@ export default function PurchaseCoins() {
               <dialog open className='checkout-form-dialog'>
                 <Elements
                   stripe={stripePromise}
-                  options={options || undefined}
+                  options={options ?? {
+                    mode: 'payment',
+                    amount: 0,
+                    currency: currency.toLowerCase(),
+                    appearance: {
+                      theme: 'night',
+                      labels: 'floating',
+                    }
+                  }}
                 >
                   <CheckoutForm
                     coinAmount={coinAmount}

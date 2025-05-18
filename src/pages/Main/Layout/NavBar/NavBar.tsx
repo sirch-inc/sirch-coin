@@ -4,7 +4,7 @@ import './NavBar.css';
 
 
 export default function NavBar() {
-  const { userInTable, userBalance } = useContext(AuthContext);
+  const auth = useContext(AuthContext);
 
   return (
     <nav>
@@ -17,12 +17,12 @@ export default function NavBar() {
                 alt="Sirch Coins Logo"
                 className='sirchcoins-logo'
               />
-              <span>{userInTable && userBalance && (" " + userBalance + " / $ " + (userBalance*0.10).toFixed(2) + " USD")}</span>
+              <span>{auth?.userInTable && auth?.userBalance && (" " + auth.userBalance + " / $ " + (auth.userBalance*0.10).toFixed(2) + " USD")}</span>
             </div>
           </a>
         </li>
         <li className='navbar-item'>
-          {userInTable && userInTable.full_name + " / @" + userInTable.user_handle}
+          {auth?.userInTable && auth.userInTable.full_name + " / @" + auth.userInTable.user_handle}
         </li>
       </ul>
     </nav>

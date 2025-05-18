@@ -22,7 +22,7 @@ export default function App() {
   return (
     <AuthProvider supabase={supabase}>
       <div className='app-layout'>
-        <Header supabase={supabase}/>
+        <Header />
         <MainContent supabase={supabase}/>
         <Footer/>
       </div>

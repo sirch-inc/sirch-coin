@@ -1,6 +1,6 @@
 import './master.css';
-import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { StrictMode } from 'react';
+import * as ReactDOM from 'react-dom/client';
 
 
 // #v-ifdef VITE_IS_COMING_SOON.toLowerCase()
@@ -13,11 +13,14 @@ import App from './pages/Main/App/App';
 
 document.title = import.meta.env.VITE_PAGE_TITLE;
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const rootElement = document.getElementById('root');
+if (!rootElement) throw new Error('Failed to find the root element');
+
+const root = ReactDOM.createRoot(rootElement);
 
 /* eslint-disable react/jsx-no-comment-textnodes */
 root.render(
-  <React.StrictMode>
+  <StrictMode>
 // #v-ifdef VITE_IS_COMING_SOON.toLowerCase()
     <ComingSoonApp/>
 // #v-elif VITE_IS_OFFLINE.toLowerCase()
@@ -25,5 +28,5 @@ root.render(
 // #v-else
     < App/>
 // #v-endif
-  </React.StrictMode>
+  </StrictMode>
 );
