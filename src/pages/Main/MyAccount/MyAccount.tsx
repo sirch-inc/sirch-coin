@@ -7,33 +7,35 @@ import './MyAccount.css';
 
 
 export default function MyAccount(){
-  const { userInTable, userBalance } = useContext(AuthContext);
-  const [userHandle, setUserHandle] = useState('');
-  const [isUserHandleVerified, setIsUserHandleVerified] = useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const auth = useContext(AuthContext);
+  const userInTable = auth?.userInTable;
+  const userBalance = auth?.userBalance;
+  const [userHandle, setUserHandle] = useState<string>('');
+  const [isUserHandleVerified, setIsUserHandleVerified] = useState<boolean>(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
-  function showDeleteConfirmation() {
+  function showDeleteConfirmation(): void {
     setShowDeleteDialog(true);
   }
 
-  const handleClickUpdateAccount = async () => {
+  const handleClickUpdateAccount = (): void => {
     navigate('/update-account');
   };
 
-  const handleClickChangeAccountPassword = async () => {
+  const handleClickChangeAccountPassword = (): void => {
     navigate('/change-password');
   };
 
-  const handleVerifyUserHandle = (e) => {
+  const handleVerifyUserHandle = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const value = e.target.value;
 
     setUserHandle(value);
-    setIsUserHandleVerified(value === userInTable.user_handle);
+    setIsUserHandleVerified(value === userInTable?.user_handle);
   };
 
-  async function handleDeleteUser(event) {
+  async function handleDeleteUser(event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
 
     if (!userInTable)
@@ -55,7 +57,7 @@ export default function MyAccount(){
 
       return data;
     } catch (exception) {
-      console.error("An exception occurred:", exception.message);
+      console.error("An exception occurred:", exception instanceof Error ? exception.message : String(exception));
 
       navigate('/error', { replace: true });
     } finally {
@@ -100,7 +102,7 @@ export default function MyAccount(){
             <h2>Confirm Account Deletion</h2>
             <h4>Are you sure you want to <i>permanently</i> delete your account?</h4>
             <ul>
-              <li>You will forfeit all of your ⓢ {userBalance?.balance} Sirch Coins and will not be able to get them back. Those coins will be returned to the Sirch Coins total supply.</li>
+              <li>You will forfeit all of your ⓢ {userBalance} Sirch Coins and will not be able to get them back. Those coins will be returned to the Sirch Coins total supply.</li>
               <li>Your prior transactions affecting other users and the Sirch Coins total supply not be deleted.</li>
               <li>This action cannot be undone. Once you delete your account, it is gone forever.</li>
             </ul>

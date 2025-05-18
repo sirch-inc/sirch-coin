@@ -5,6 +5,8 @@ export interface UserTableData {
   user_id: string;
   email: string;
   full_name?: string;
+  first_name?: string;
+  last_name?: string;
   user_handle?: string;
   is_email_private: boolean;
   is_name_private: boolean;
