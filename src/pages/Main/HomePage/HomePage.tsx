@@ -1,7 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../_common/AuthContext';
 import { useContext } from 'react';
-import LogoutSupabase from '../Account/Logout';
 import './HomePage.css';
 import { SupabaseClient } from '@supabase/supabase-js';
 
@@ -10,21 +9,27 @@ interface HomePageProps {
 }
 
 export default function HomePage({ supabase }: HomePageProps) {
-  const { session, authError} = useContext(AuthContext);
+  const auth = useContext(AuthContext);
   const navigate = useNavigate();
 
-  function handleLogout() {
-    LogoutSupabase({ supabase })
-    navigate('/')
+  async function handleLogout() {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      navigate('/', { replace: true });
+    } catch (error) {
+      console.error("Logout error:", error);
+      navigate('/error', { replace: true });
+    }
   }
 
-  if (authError) {
+  if (auth?.authError) {
     navigate('/error', { replace: true });
   }
 
   return (
     <div className='home-page'>
-      {session ? (
+      {auth?.session ? (
         <>
           <div className='left-button-container'>
             <Link to='account' className='action-btn'>

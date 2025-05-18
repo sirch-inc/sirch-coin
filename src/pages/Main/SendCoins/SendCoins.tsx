@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../_common/AuthContext';
 import { ToastNotification, toast } from '../_common/ToastNotification';
 import supabase from '../_common/supabaseProvider';
-import useDebounce from '../../../helpers/debounce'
+import useDebounce from '../../../helpers/debounce';
 import 'react-toastify/dist/ReactToastify.css';
 import './SendCoins.css';
 
