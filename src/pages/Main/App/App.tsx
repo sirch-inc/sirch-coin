@@ -1,4 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
+import {HeroUIProvider} from "@heroui/react";
 import supabase from '../_common/supabaseProvider';
 import { AuthProvider } from '../_common/AuthProvider';
 import Header from '../Layout/Header/Header';
@@ -21,11 +22,13 @@ if (import.meta.env.MODE === 'production') {
 export default function App() {
   return (
     <AuthProvider supabase={supabase}>
-      <div className='app-layout'>
-        <Header />
-        <MainContent supabase={supabase}/>
-        <Footer/>
-      </div>
+      <HeroUIProvider>
+        <div className='app-layout'>
+          <Header />
+          <MainContent supabase={supabase}/>
+          <Footer/>
+        </div>
+      </HeroUIProvider>
     </AuthProvider>
   );
 }
