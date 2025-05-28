@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import TransactionCard from '../TransactionCard/TransactionCard';
 import { AuthContext } from '../../_common/AuthContext';
 import supabase from '../../_common/supabaseProvider.js';
+import { Button } from '@heroui/react';
 import './Transactions.css';
 
 interface Transaction {
@@ -86,10 +87,11 @@ export default function Transactions() {
         </div>
 
         <div className='bottom-btn-container'>
-        <button className='big-btn'
+        <Button 
+          className='big-btn'
           onClick={() => { navigate(-1); }}>
           Back
-        </button>
+        </Button>
       </div>
       </div>
     </>

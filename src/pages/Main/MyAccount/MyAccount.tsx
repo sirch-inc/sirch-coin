@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../_common/AuthContext';
 import { ToastNotification } from '../_common/ToastNotification';
 import supabase from '../_common/supabaseProvider';
+import { Button } from '@heroui/react';
 import './MyAccount.css';
 
 
@@ -18,6 +19,8 @@ export default function MyAccount(){
 
   function showDeleteConfirmation(): void {
     setShowDeleteDialog(true);
+    setUserHandle('');
+    setIsUserHandleVerified(false);
   }
 
   const handleClickUpdateAccount = (): void => {
@@ -76,23 +79,21 @@ export default function MyAccount(){
       </div>
 
       <div className='account-actions'>
-        <button
+        <Button
           className='big-btn'
-          type='button'
           onClick={handleClickUpdateAccount}
         >
           Update User Profile...
-        </button>
+        </Button>
 
-        <button
+        <Button
           className='big-btn'
-          type='button'
           onClick={handleClickChangeAccountPassword}
         >
           Change Password...
-        </button>
+        </Button>
 
-        <button className='big-btn danger' onClick={showDeleteConfirmation}> Delete Account... </button>
+        <Button className='big-btn danger' onClick={showDeleteConfirmation}> Delete Account... </Button>
       </div>
      
       {showDeleteDialog &&
@@ -102,57 +103,60 @@ export default function MyAccount(){
             <h2>Confirm Account Deletion</h2>
             <h4>Are you sure you want to <i>permanently</i> delete your account?</h4>
             <ul>
-              <li>You will forfeit all of your ⓢ {userBalance} Sirch Coins and will not be able to get them back. Those coins will be returned to the Sirch Coins total supply.</li>
-              <li>Your prior transactions affecting other users and the Sirch Coins total supply not be deleted.</li>
-              <li>This action cannot be undone. Once you delete your account, it is gone forever.</li>
+              <li>Your account balance (ⓢ {userBalance}) will be LOST.</li>
+              <li>All transaction history will be permanently deleted.</li>
+              <li>This action CANNOT be undone.</li>
             </ul>
-            <div>
-              <h4>Please enter your two-word Account Handle to confirm this action:</h4>
-              <form onSubmit={handleDeleteUser} autoComplete='off'>
-                <input
-                  className='account-input'
-                  type='text'
-                  id='user-handle'
-                  name='user-handle'
-                  placeholder="Your Account Handle"
-                  value={userHandle}
-                  onChange={handleVerifyUserHandle}
-                  required
-                />
-                {userHandle && (
-                  <p style={{ color: isUserHandleVerified ? "green" : "red" }}>
-                    {isUserHandleVerified ? "Verified!" : "Not Verified"}
-                  </p>
-                )}
+            <br/>
 
-                <br></br>
+            <form onSubmit={handleDeleteUser}>
+              <p>To confirm deletion, please type your Sirch user phrase exactly as shown:</p>
+              <p>@{userInTable?.user_handle}</p>
+              <input 
+                className='account-input'
+                type='text'
+                id='user-handle'
+                name='user-handle'
+                placeholder="Type your user phrase..."
+                value={userHandle}
+                onChange={handleVerifyUserHandle}
+                required
+              />
 
-                <button
-                  className='big-btn danger'
-                  type='submit'
-                  // TODO: disabling this for now until we sort out HOW we want to handle user-deletions completely...
-                  // onClick={handleDeleteUser}
-                  disabled={!isUserHandleVerified}
-                >
-                  Yes, permanently delete
-                </button>
-                
-                <button
-                  className='big-btn'
-                  onClick={() => setShowDeleteDialog(false)}>
-                  Cancel
-                </button>
-              </form>
-            </div>
+              {!isUserHandleVerified && userHandle && (
+                <p style={{ color: 'red' }}>
+                  User phrase does not match, please try again.
+                </p>
+              )}
+
+              <br></br>
+
+              <Button
+                className='big-btn danger'
+                type='submit'
+                // TODO: disabling this for now until we sort out HOW we want to handle user-deletions completely...
+                // onClick={handleDeleteUser}
+                disabled={!isUserHandleVerified}
+              >
+                Yes, permanently delete
+              </Button>
+              
+              <Button
+                className='big-btn'
+                onClick={() => setShowDeleteDialog(false)}>
+                Cancel
+              </Button>
+            </form>
           </dialog> 
         </>
       }
 
       <div className='bottom-btn-container'>
-        <button className='big-btn'
+        <Button 
+          className='big-btn'
           onClick={() => { navigate(-1); }}>
           Back
-        </button>
+        </Button>
       </div>
     </div>
   )

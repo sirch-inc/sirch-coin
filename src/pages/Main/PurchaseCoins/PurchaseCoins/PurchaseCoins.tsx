@@ -5,6 +5,7 @@ import { AuthContext } from '../../_common/AuthContext';
 import supabase from '../../_common/supabaseProvider';
 import CheckoutForm from '../CheckoutForm/CheckoutForm';
 import { useNavigate } from 'react-router-dom';
+import { Button } from '@heroui/react';
 import './PurchaseCoins.css';
 
 // Call `loadStripe` outside of the component's render to avoid
@@ -154,13 +155,13 @@ export default function PurchaseCoins() {
             : <h4>Your total price: ${formatPrice(localTotalPrice)} {formatCurrency(currency)}</h4>
         }
         <div className='button-group'>
-          <button 
+          <Button 
             className='big-btn'
             onClick={handleCheckout}
             disabled={coinAmountError || !localCoinAmount || !minimumPurchase || localCoinAmount < minimumPurchase}
           >
             Complete purchase...
-          </button>
+          </Button>
         </div>
       </div>
       <div>
@@ -199,10 +200,12 @@ export default function PurchaseCoins() {
       </div>
       
       <div className='bottom-btn-container'>
-        <button className='big-btn'
-          onClick={() => { navigate(-1); }}>
+        <Button 
+          className='big-btn'
+          onClick={() => { navigate(-1); }}
+        >
           Back
-        </button>
+        </Button>
       </div>
     </div>
   );

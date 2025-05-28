@@ -4,6 +4,7 @@ import { AuthContext } from '../../_common/AuthContext';
 import { ToastNotification, toast } from '../../_common/ToastNotification';
 import supabase from '../../_common/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
+import { Button } from '@heroui/react';
 import './Login.css';
 
 export default function Login() {
@@ -75,8 +76,8 @@ export default function Login() {
               required
             />
 
-            <button className='account-button' type='submit'>Log In →</button>
-            <a href='/reset-password-request'>Forgot Password?</a>
+            <Button className='account-button' type='submit'>Log In →</Button>
+            <a className="reset-password-link" href='/reset-password-request'>Forgot your password?</a>
           </form>
         </>
       ) : (
@@ -88,10 +89,11 @@ export default function Login() {
       )}
 
       <div className='bottom-btn-container'>
-        <button className='big-btn'
+        <Button
+          className='big-btn'
           onClick={() => { navigate(-1); }}>
           Back
-        </button>
+        </Button>
       </div>
     </div>
   );

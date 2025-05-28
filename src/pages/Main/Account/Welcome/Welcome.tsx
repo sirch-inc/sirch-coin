@@ -5,6 +5,7 @@ import { ToastNotification, toast } from '../../_common/ToastNotification';
 import AccountVerificationError from '../AccountVerificationError/AccountVerificationError';
 import supabase from '../../_common/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
+import { Button } from '@heroui/react';
 import './Welcome.css';
 
 
@@ -75,23 +76,46 @@ export default function Welcome() {
             <h1>Welcome {userInTable?.first_name}!</h1>
             <p>Your Sirch Coins account has been verified and you may now use all of the Sirch Coin services.</p>
             <div style={{ textAlign: 'center', padding: '50px' }}>
-              <Link to='/' className='big-btn'>
-                Get started!
-              </Link>
+              <Button 
+                as={Link} 
+                to='/' 
+                className='big-btn'
+              >
+                Back to Home
+              </Button>
             </div>
           </>
-        ) : (
-          <h1>Verifying account...</h1>
+        ) : 
+        (
+          verificationError ? 
+          (
+            <AccountVerificationError
+              userEmail={userEmail}
+              setUserEmail={setUserEmail}
+              resendVerificationEmail={resendVerificationEmail}
+              emailSendStatus={emailSendStatus}
+            />
+          ) : 
+          (
+            <>
+              <h1>Welcome!</h1>
+              <p>
+                Thank you for creating your account. 
+                <br/>
+                Please check your email inbox for a verification link. You will need to click that link to verify your account.
+              </p>
+              <div style={{ textAlign: 'center', padding: '50px' }}>
+                <Button 
+                  as={Link} 
+                  to='/' 
+                  className='big-btn'
+                >
+                  Back to Home
+                </Button>
+              </div>
+            </>
+          )
         )
-      }
-
-      {verificationError &&
-        <AccountVerificationError
-          userEmail={userEmail}
-          setUserEmail={setUserEmail}
-          resendVerificationEmail={resendVerificationEmail}
-          emailSendStatus={emailSendStatus}
-        />
       }
     </>
   );

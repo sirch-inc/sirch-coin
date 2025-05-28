@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import './AccountVerificationError.css';
+import { Button } from '@heroui/react';
 
 interface AccountVerificationErrorProps {
   userEmail: string;
@@ -41,9 +42,9 @@ export default function AccountVerificationError(props: AccountVerificationError
           autoComplete='email'
           required
         />
-        <button className='account-button' type='submit'>
+        <Button className='account-button' type='submit'>
           Resend Verification Email →
-        </button>
+        </Button>
       </form>
 
       {emailSendStatus && <p>{emailSendStatus}</p>}

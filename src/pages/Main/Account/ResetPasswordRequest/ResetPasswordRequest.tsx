@@ -4,6 +4,7 @@ import { AuthContext } from '../../_common/AuthContext';
 import { ToastNotification, toast } from '../../_common/ToastNotification';
 import supabase from '../../_common/supabaseProvider';
 import { isAuthApiError, AuthError } from '@supabase/supabase-js';
+import { Button } from '@heroui/react';
 import './ResetPasswordRequest.css';
 
 interface ResetPasswordRequestProps {
@@ -86,9 +87,9 @@ export default function ResetPasswordRequest({ standalone = true }: ResetPasswor
                 required
               />
 
-              <button className='account-button' type='submit'>
+              <Button className='account-button' type='submit'>
                 {standalone ? "Send" : "Resend"} Reset Password Email →
-              </button>
+              </Button>
 
               {sendStatus && <p>{sendStatus}</p>}
             </form>
@@ -105,10 +106,11 @@ export default function ResetPasswordRequest({ standalone = true }: ResetPasswor
 
       {standalone &&
         <div className='bottom-btn-container'>
-          <button className='big-btn'
+          <Button 
+            className='big-btn'
             onClick={() => { navigate(-1); }}>
             Back
-          </button>
+          </Button>
         </div>
       }
     </div>

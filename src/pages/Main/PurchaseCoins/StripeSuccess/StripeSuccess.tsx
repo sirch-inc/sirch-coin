@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../_common/AuthContext';
 import supabase from '../../_common/supabaseProvider';
+import { Button } from '@heroui/react';
 import './StripeSuccess.css';
 
 interface PaymentDetails {
@@ -68,9 +69,13 @@ export default function StripeSuccess() {
             }
             
             <div style={{ textAlign: 'center', padding: '50px' }}>
-              <Link to='/' className='big-btn'>
+              <Button 
+                as={Link} 
+                to='/' 
+                className='big-btn'
+              >
                 Back to Home
-              </Link>
+              </Button>
             </div>
           </div>
         )
@@ -81,9 +86,13 @@ export default function StripeSuccess() {
               <p>An error occurred while validating your payment:</p>
               <p>{paymentError}</p>
               <div style={{ textAlign: 'center', padding: '50px' }}>
-                <Link to='/' className='big-btn'>
+                <Button 
+                  as={Link} 
+                  to='/' 
+                  className='big-btn'
+                >
                   Back to Home
-                </Link>
+                </Button>
               </div>
             </div>
           )

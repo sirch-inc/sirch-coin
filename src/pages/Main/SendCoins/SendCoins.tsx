@@ -4,6 +4,7 @@ import { AuthContext } from '../_common/AuthContext';
 import { ToastNotification, toast } from '../_common/ToastNotification';
 import supabase from '../_common/supabaseProvider';
 import useDebounce from '../../../helpers/debounce';
+import { Button } from '@heroui/react';
 import 'react-toastify/dist/ReactToastify.css';
 import './SendCoins.css';
 
@@ -278,14 +279,16 @@ export default function Send() {
           </div>
           
           <div className='bottom-btn-container'>
-            <button type='submit' className='big-btn'>
+            <Button type='submit' className='big-btn'>
               Send
-            </button>
+            </Button>
 
-            <button className='big-btn' type='button'
-              onClick={() => { navigate(-1); }}>
+            <Button 
+              className='big-btn' 
+              onClick={() => { navigate(-1); }}
+            >
               Back
-            </button>
+            </Button>
           </div>
         </form>
       </div>
