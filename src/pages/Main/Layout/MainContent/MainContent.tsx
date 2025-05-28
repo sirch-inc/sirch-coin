@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { SupabaseClient } from '@supabase/supabase-js';
 
 import HomePage from '../../HomePage/HomePage';
@@ -34,7 +34,6 @@ interface MainContentProps {
 export default function MainContent({ supabase }: MainContentProps) {
   return (
     <main className='main-content'>
-      <BrowserRouter>
         <Routes>
           <Route path='/' element={<HomePage supabase={supabase} />}/>
           <Route path='/*' element={<HomePage supabase={supabase} />}/>
@@ -63,7 +62,6 @@ export default function MainContent({ supabase }: MainContentProps) {
 
           <Route path='/error' Component={GeneralError}/>
         </Routes>
-      </BrowserRouter>
     </main>
   );
 }
