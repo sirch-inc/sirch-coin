@@ -3,7 +3,7 @@ import './Header.css';
 
 export default function Header() {
   return (
-    <header>
+    <header className="bg-black text-white w-full">
       <NavBar />
     </header>
   );

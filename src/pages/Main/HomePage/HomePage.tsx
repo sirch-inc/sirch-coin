@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../_common/AuthContext';
 import { useContext } from 'react';
+import {Button} from "@heroui/react";
 import './HomePage.css';
 import { SupabaseClient } from '@supabase/supabase-js';
 
@@ -32,45 +33,78 @@ export default function HomePage({ supabase }: HomePageProps) {
       {auth?.session ? (
         <>
           <div className='left-button-container'>
-            <Link to='account' className='action-btn'>
+            <Button 
+              as={Link} 
+              to='account' 
+              className='action-btn'
+            >
               My Account
-            </Link>
+            </Button>
 
-            <Link to='#' className='action-btn' onClick={handleLogout}>
+            <Button 
+              as={Link} 
+              to='#' 
+              className='action-btn' 
+              onClick={handleLogout}
+            >
               Log Out
-            </Link>
+            </Button>
           </div>
 
           <div className='right-button-container'>
-          <Link to='purchase' className='action-btn'>
+            <Button 
+              as={Link} 
+              to='purchase' 
+              className='action-btn'
+            >
               Buy ⓢ
-            </Link>
+            </Button>
 
-            <Link to='coin/send' className='action-btn'>
+            <Button 
+              as={Link} 
+              to='coin/send' 
+              className='action-btn'
+            >
               Send ⓢ
-            </Link>
+            </Button>
 
-            <Link to='/transactions' className='action-btn'>
+            <Button 
+              as={Link} 
+              to='/transactions' 
+              className='action-btn'
+            >
               Transactions
-            </Link>
+            </Button>
           </div>
         </>
         ) : (
         <>
           <div className='left-button-container'>
-            <Link to='about' className='action-btn'>
+            <Button 
+              as={Link} 
+              to='about' 
+              className='action-btn'
+            >
               About
-            </Link>
+            </Button>
           </div>
 
           <div className='right-button-container'>
-            <Link to='login' className='action-btn'>
+            <Button 
+              as={Link} 
+              to='login' 
+              className='action-btn'
+            >
               Log in
-            </Link>
+            </Button>
 
-            <Link to='create-account' className='action-btn'>
+            <Button 
+              as={Link} 
+              to='create-account' 
+              className='action-btn'
+            >
               Sign up
-            </Link>
+            </Button>
           </div>
         </>
         )
