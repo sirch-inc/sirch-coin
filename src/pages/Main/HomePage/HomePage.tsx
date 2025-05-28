@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../_common/AuthContext';
 import { useContext } from 'react';
+import {Button} from "@heroui/react";
 import './HomePage.css';
 import { SupabaseClient } from '@supabase/supabase-js';
 
@@ -32,9 +33,13 @@ export default function HomePage({ supabase }: HomePageProps) {
       {auth?.session ? (
         <>
           <div className='left-button-container'>
-            <Link to='account' className='action-btn'>
-              My Account
-            </Link>
+          <Button 
+            as={Link} 
+            to='account' 
+            className='action-btn'
+          >
+            My Account
+          </Button>
 
             <Link to='#' className='action-btn' onClick={handleLogout}>
               Log Out
