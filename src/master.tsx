@@ -2,6 +2,7 @@ import './master.css';
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
 
+// yields one of several pages based on environment variables
 
 // #v-ifdef VITE_IS_COMING_SOON.toLowerCase()
 import ComingSoonApp from './pages/_ComingSoon/ComingSoonApp/ComingSoonApp';
