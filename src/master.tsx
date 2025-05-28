@@ -26,10 +26,7 @@ root.render(
 // #v-elif VITE_IS_OFFLINE.toLowerCase()
     < OfflineApp/>
 // #v-else
-    <>
-      <h1 className="text-4xl font-bold text-blue-600 underscore mt-10">Hello, Tailwind!</h1>
-      <App/>
-    </>
+    <App/>
 // #v-endif
   </StrictMode>
 );
