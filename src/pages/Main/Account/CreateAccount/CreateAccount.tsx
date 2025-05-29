@@ -4,6 +4,7 @@ import { ToastNotification, toast } from '../../_common/ToastNotification';
 import { AuthContext } from '../../_common/AuthContext';
 import supabase from '../../_common/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
+import { Button } from '@heroui/react';
 import './CreateAccount.css';
 
 export default function CreateAccount() {
@@ -270,14 +271,13 @@ export default function CreateAccount() {
 
                 {loadingUserHandle && <p>Loading...</p>}
                 
-                <button
-                  className='account-button'
-                  type='button'
-                  onClick={handleSuggestNewHandle}
-                > Pick Another ↺ </button>
+                <Button
+                  className='big-btn'
+                  onPress={handleSuggestNewHandle}
+                > Pick Another ↺ </Button>
               </div>
               <br></br>
-              <button className='account-button' type='submit'> Sign Up → </button>
+              <Button className='big-btn' type='submit'> Sign Up → </Button>
             </form>
           </>
         ) : (
@@ -291,10 +291,10 @@ export default function CreateAccount() {
       }
 
       <div className='bottom-btn-container'>
-        <button className='big-btn'
-          onClick={() => { navigate(-1); }}>
+        <Button className='big-btn'
+          onPress={() => { navigate(-1); }}>
           Back
-        </button>
+        </Button>
       </div>
     </>
   );

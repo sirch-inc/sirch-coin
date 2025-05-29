@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { ToastNotification, toast } from '../../_common/ToastNotification';
 import supabase from '../../_common/supabaseProvider';
 import { isAuthApiError, AuthError } from '@supabase/supabase-js';
+import { Button } from '@heroui/react';
 import './ChangePassword.css';
 
 interface ChangePasswordProps {
@@ -110,15 +111,16 @@ export default function ChangePassword({ standalone = true }: ChangePasswordProp
 
         <br/>
 
-        <button className='account-button' type='submit'> {standalone ? "Change" : "Reset"} Password → </button>
+        <Button className='big-btn' type='submit'> {standalone ? "Change" : "Reset"} Password → </Button>
       </form>
 
       {standalone &&
         <div className='bottom-btn-container'>
-          <button className='big-btn'
-            onClick={() => { navigate(-1); }}>
+          <Button 
+            className='big-btn'
+            onPress={() => { navigate(-1); }}>
             Back
-          </button>
+          </Button>
         </div>
       }
     </div>

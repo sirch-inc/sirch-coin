@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { Button } from '@heroui/react';
 import './ContactUs.css';
 
 
@@ -16,10 +17,11 @@ export default function ContactUs() {
       </p>
       
       <div className='bottom-btn-container'>
-        <button className='big-btn'
-          onClick={() => { navigate(-1); }}>
+        <Button 
+          className='big-btn'
+          onPress={() => { navigate(-1); }}>
           Back
-        </button>
+        </Button>
       </div>
     </div>
   );

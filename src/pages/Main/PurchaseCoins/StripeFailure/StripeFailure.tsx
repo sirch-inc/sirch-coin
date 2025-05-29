@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { Button } from '@heroui/react';
 import './StripeFailure.css';
 
 
@@ -11,9 +12,13 @@ export default function StripeFailure() {
       <p style={{ color: 'black' }}>Your transaction with Stripe has failed.</p>
       
       <div style={{ textAlign: 'center', padding: '50px' }}>
-        <Link to='/' className='big-btn'>
+        <Button 
+          as={Link} 
+          to='/' 
+          className='big-btn'
+        >
           Back to Home
-        </Link>
+        </Button>
       </div>
     </div>
   );

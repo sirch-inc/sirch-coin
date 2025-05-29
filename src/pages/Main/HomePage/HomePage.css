@@ -31,14 +31,6 @@
 }
 
 .action-btn {
-  margin-top: 32px;
-  width: 280px;
-  height: 80px;
-  border-radius: 8px;
-  font-size: 32px;
-  background-color: #231F20;
-  cursor: pointer;
-  text-align: center;
-  font-family: Haskoy;
-  padding: 16px;
+  @apply h-auto p-6 bg-gray-900 mt-8 w-72 rounded-xl text-3xl text-center;
+  font-family: Haskoy, sans-serif;
 }

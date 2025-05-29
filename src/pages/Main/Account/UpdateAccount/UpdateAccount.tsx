@@ -4,6 +4,7 @@ import { AuthContext } from '../../_common/AuthContext';
 import { ToastNotification, toast } from '../../_common/ToastNotification';
 import supabase from '../../_common/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
+import { Button } from '@heroui/react';
 import './UpdateAccount.css';
 
 
@@ -184,16 +185,15 @@ export default function UpdateAccount() {
                 value={userHandle}
                 readOnly
               />
-              <button
-                className="account-button"
-                type="button"
-                onClick={handleSuggestNewHandle}
-              > Pick Another ↺ </button>
+              <Button
+                className="big-btn"
+                onPress={handleSuggestNewHandle}
+              > Pick Another ↺ </Button>
             </div>
 
             <br />
 
-            <button className="account-button" type="submit"> Update → </button>
+            <Button className="big-btn" type="submit"> Update → </Button>
           </form>
         </>
       ) : (
@@ -204,10 +204,11 @@ export default function UpdateAccount() {
       )}
 
       <div className='bottom-btn-container'>
-        <button className='big-btn'
-          onClick={() => { navigate(-1); }}>
+        <Button 
+          className='big-btn'
+          onPress={() => { navigate(-1); }}>
           Back
-        </button>
+        </Button>
       </div>
     </>
   );

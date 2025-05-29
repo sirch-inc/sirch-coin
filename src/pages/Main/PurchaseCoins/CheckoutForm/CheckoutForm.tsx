@@ -5,6 +5,7 @@ import { PaymentElement } from '@stripe/react-stripe-js';
 import { StripeError } from '@stripe/stripe-js';
 import { useStripe, useElements } from '@stripe/react-stripe-js';
 import supabase from '../../_common/supabaseProvider';
+import { Button } from '@heroui/react';
 import './CheckoutForm.css';
 
 interface CheckoutFormProps {
@@ -153,23 +154,23 @@ export default function CheckoutForm({
           <div style={{ color: 'red' }}>There was an issue with your purchase. Please review your order details.<br></br>{message}</div>
         }
 
-        <button
+        <Button
           id='submit'
           className='big-btn'
-          onClick={handleSubmit}
+          onPress={handleSubmit}
           disabled={!stripe || isProcessing}
         >
           <span id='button-text'>
             {isProcessing ? "Processing... " : "Confirm Purchase"}
           </span>
-        </button>
+        </Button>
 
-        <button
+        <Button
           className='big-btn'
-          onClick={handleCancel}
+          onPress={handleCancel}
         >
           Cancel
-        </button>
+        </Button>
       </div>
     </div>
   );

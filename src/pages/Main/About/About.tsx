@@ -1,5 +1,6 @@
 import coinSymbol from '../../../assets/ⓢ.png'
 import { useNavigate } from 'react-router-dom';
+import { Button } from '@heroui/react';
 import './About.css';
 
 
@@ -29,10 +30,11 @@ export default function About() {
       </div>
   
       <div className='bottom-btn-container'>
-        <button className='big-btn'
-          onClick={() => { navigate(-1); }}>
+        <Button 
+          className='big-btn'
+          onPress={() => { navigate(-1); }}>
           Back
-        </button>
+        </Button>
       </div>
     </>
   )
