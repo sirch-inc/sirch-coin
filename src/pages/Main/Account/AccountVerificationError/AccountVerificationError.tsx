@@ -42,7 +42,7 @@ export default function AccountVerificationError(props: AccountVerificationError
           autoComplete='email'
           required
         />
-        <Button className='account-button' type='submit'>
+        <Button className='big-btn' type='submit'>
           Resend Verification Email →
         </Button>
       </form>

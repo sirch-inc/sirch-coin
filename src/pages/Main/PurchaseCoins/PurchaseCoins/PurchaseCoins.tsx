@@ -157,7 +157,7 @@ export default function PurchaseCoins() {
         <div className='button-group'>
           <Button 
             className='big-btn'
-            onClick={handleCheckout}
+            onPress={handleCheckout}
             disabled={coinAmountError || !localCoinAmount || !minimumPurchase || localCoinAmount < minimumPurchase}
           >
             Complete purchase...
@@ -202,7 +202,7 @@ export default function PurchaseCoins() {
       <div className='bottom-btn-container'>
         <Button 
           className='big-btn'
-          onClick={() => { navigate(-1); }}
+          onPress={() => { navigate(-1); }}
         >
           Back
         </Button>

@@ -89,7 +89,7 @@ export default function Transactions() {
         <div className='bottom-btn-container'>
         <Button 
           className='big-btn'
-          onClick={() => { navigate(-1); }}>
+          onPress={() => { navigate(-1); }}>
           Back
         </Button>
       </div>

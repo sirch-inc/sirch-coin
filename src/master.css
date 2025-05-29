@@ -3,104 +3,86 @@
 @tailwind utilities;
 
 
-/* Fonts */
-@font-face {
-  font-family: Haskoy;
-  src: url(./assets/fonts/Haskoy/Haskoy-Regular.woff2);
+@layer base {
+  html {
+    /* base font size/face for rem metrics */
+    font-family: Haskoy;
+    font-size: 16px;
+  }
+
+  /* Fonts */
+  @font-face {
+    font-family: Haskoy;
+    src: url(./assets/fonts/Haskoy/Haskoy-Regular.woff2);
+  }
+
+  @font-face {
+    font-family: Haskoy-bold;
+    src: url(./assets/fonts/Haskoy/Haskoy-Bold.woff2);
+  }
+
+  #root, body {
+    background: #F7F7F7;
+    height: 100vh;
+  }
+  
+  
+  /* Styles for primitive HTML elements */
+  h1, h2, h3, h4, h5, h6, li, p, a, button, input, label {
+    font-family: Haskoy;
+  }
+  
+  h2 {
+    font-size: 60px;
+  }
+  
+  h1, h2, h3, h4, h5, h6, p {
+    text-align: center;
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 4px;
+  }
+  
+  input {
+    padding: 4px;
+    border-radius: 2px;
+    border: 2px solid #ccc;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  button {
+    background-color: black;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 12px;
+  }
 }
 
-@font-face {
-  font-family: Haskoy-bold;
-  src: url(./assets/fonts/Haskoy/Haskoy-Bold.woff2);
-}
-
-
-#root, body {
-  background: #F7F7F7;
-  height: 100vh;
-}
-
-
-/* Styles for primitive HTML elements */
-h1, h2, h3, h4, h5, h6, li, p, a, button, input, label {
-  font-family: Haskoy;
-}
-
-h2 {
-  font-size: 60px;
-}
-
-h1, h2, h3, h4, h5, h6, p {
-  text-align: center;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-label {
-  font-weight: bold;
-  display: block;
-  margin-bottom: 4px;
-}
-
-input {
-  padding: 4px;
-  border-radius: 2px;
-  border: 2px solid #ccc;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-button {
-  background-color: black;
-  color: white;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-top: 12px;
-}
 
 
 /* Styles for common elements */
 .big-btn {
-  background-color: black;
-  color: white;
-  text-decoration: none;
-  text-align: center;
-  font-size: x-large;
-  font-weight: 600;
-  border-radius: 4px;
-  padding: 12px;
-  margin-bottom: 24px;
+  @apply h-14 p-6 bg-gray-900 mb-6 rounded-lg text-white text-2xl text-center;
+  font-family: Haskoy, sans-serif;
 }
 
 .big-btn:hover {
   background-color: #3AD820;
   color: black;
 }
-
-.big-btn-light {
-  background-color: #F7F7F7;
-  color: #231F20;
-  text-decoration: none;
-  text-align: center;
-  font-size: x-large;
-  font-weight: 600;
-  border-radius: 4px;
-  padding: 12px;
-  margin-bottom: 24px;
-  width: 300px;
-}
-
-.big-btn-light:hover {
-  background-color: #3AD820;
-  color: black;
-}
-
 
 .button-group {
   margin-bottom: 24px;
@@ -195,17 +177,6 @@ button {
   margin: 12px 0px 12px 0px;
   width: 75%;
   border-radius: 4px;
-}
-
-.account-button {
-  background-color: #231F20;
-  font-size: 36px;
-  margin-bottom: 24px;
-}
-
-.account-button:hover {
-  background-color: #3AD820;
-  color: black;
 }
 
 .account-row {
@@ -312,6 +283,7 @@ input#user-handle {
   }
 
   .big-btn {
+    height: h-14;
     width: 100%;
     max-width: 350px;
   }

@@ -76,7 +76,7 @@ export default function Login() {
               required
             />
 
-            <Button className='account-button' type='submit'>Log In →</Button>
+            <Button className='big-btn' type='submit'>Log In →</Button>
             <a className="reset-password-link" href='/reset-password-request'>Forgot your password?</a>
           </form>
         </>
@@ -91,7 +91,7 @@ export default function Login() {
       <div className='bottom-btn-container'>
         <Button
           className='big-btn'
-          onClick={() => { navigate(-1); }}>
+          onPress={() => { navigate(-1); }}>
           Back
         </Button>
       </div>

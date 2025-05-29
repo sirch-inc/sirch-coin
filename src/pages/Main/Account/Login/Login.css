@@ -24,7 +24,6 @@
 
 /* Preserve global styles as needed */
 .account-input,
-.account-button,
 .bottom-btn-container {
   /* These styles will be inherited from master.css */
 }

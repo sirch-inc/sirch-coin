@@ -45,7 +45,7 @@ export default function HomePage({ supabase }: HomePageProps) {
               as={Link} 
               to='#' 
               className='action-btn' 
-              onClick={handleLogout}
+              onPress={handleLogout}
             >
               Log Out
             </Button>

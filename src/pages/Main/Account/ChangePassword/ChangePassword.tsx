@@ -111,14 +111,14 @@ export default function ChangePassword({ standalone = true }: ChangePasswordProp
 
         <br/>
 
-        <Button className='account-button' type='submit'> {standalone ? "Change" : "Reset"} Password → </Button>
+        <Button className='big-btn' type='submit'> {standalone ? "Change" : "Reset"} Password → </Button>
       </form>
 
       {standalone &&
         <div className='bottom-btn-container'>
           <Button 
             className='big-btn'
-            onClick={() => { navigate(-1); }}>
+            onPress={() => { navigate(-1); }}>
             Back
           </Button>
         </div>

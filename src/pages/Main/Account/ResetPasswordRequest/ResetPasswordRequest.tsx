@@ -87,7 +87,7 @@ export default function ResetPasswordRequest({ standalone = true }: ResetPasswor
                 required
               />
 
-              <Button className='account-button' type='submit'>
+              <Button className='big-btn' type='submit'>
                 {standalone ? "Send" : "Resend"} Reset Password Email →
               </Button>
 
@@ -108,7 +108,7 @@ export default function ResetPasswordRequest({ standalone = true }: ResetPasswor
         <div className='bottom-btn-container'>
           <Button 
             className='big-btn'
-            onClick={() => { navigate(-1); }}>
+            onPress={() => { navigate(-1); }}>
             Back
           </Button>
         </div>

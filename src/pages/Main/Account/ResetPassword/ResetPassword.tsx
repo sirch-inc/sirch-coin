@@ -3,6 +3,7 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../../_common/AuthContext';
 import ChangePassword from '../ChangePassword/ChangePassword';
 import ResetPasswordRequest from '../ResetPasswordRequest/ResetPasswordRequest';
+import { Button } from '@heroui/react';
 import './ResetPassword.css';
 
 
@@ -65,10 +66,10 @@ export default function ResetPassword() {
             <h3>You can update your account password under My Account.</h3>
             <br/>
             <div className='bottom-btn-container'>
-              <button className='big-btn'
-                onClick={() => { navigate(-1); }}>
+              <Button className='big-btn'
+                onPress={() => { navigate(-1); }}>
                 Back
-              </button>
+              </Button>
             </div>
           </>
         )

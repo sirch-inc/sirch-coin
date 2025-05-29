@@ -2,6 +2,7 @@ import { parseISO, formatDistanceToNow } from 'date-fns';
 import { format } from 'date-fns-tz';
 import { Tooltip } from 'react-tooltip';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
+import { Button } from '@heroui/react';
 import './TransactionCard.css';
 
 export interface TransactionDetails {
@@ -93,13 +94,13 @@ export default function TransactionCard({ transaction }: TransactionCardProps) {
           overlay={detailsPopover}
           rootClose
         >
-          <button
+          <Button
             className="transaction-details"
             aria-haspopup="true"
             aria-expanded="false"
           >
             Show Details
-          </button>
+          </Button>
         </OverlayTrigger>
       </div>
     </div>

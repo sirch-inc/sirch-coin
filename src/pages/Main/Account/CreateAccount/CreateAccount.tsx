@@ -272,12 +272,12 @@ export default function CreateAccount() {
                 {loadingUserHandle && <p>Loading...</p>}
                 
                 <Button
-                  className='account-button'
-                  onClick={handleSuggestNewHandle}
+                  className='big-btn'
+                  onPress={handleSuggestNewHandle}
                 > Pick Another ↺ </Button>
               </div>
               <br></br>
-              <Button className='account-button' type='submit'> Sign Up → </Button>
+              <Button className='big-btn' type='submit'> Sign Up → </Button>
             </form>
           </>
         ) : (
@@ -291,10 +291,10 @@ export default function CreateAccount() {
       }
 
       <div className='bottom-btn-container'>
-        <button className='big-btn'
-          onClick={() => { navigate(-1); }}>
+        <Button className='big-btn'
+          onPress={() => { navigate(-1); }}>
           Back
-        </button>
+        </Button>
       </div>
     </>
   );

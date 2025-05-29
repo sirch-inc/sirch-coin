@@ -19,6 +19,7 @@ interface UserCardProps {
   handleUserCardSelected: (user: User) => void;
 }
 
+// TODO: convert this to a button element/component
 export function UserCard({ user, handleUserCardSelected }: UserCardProps) {
   return (
     <div
@@ -285,7 +286,7 @@ export default function Send() {
 
             <Button 
               className='big-btn' 
-              onClick={() => { navigate(-1); }}
+              onPress={() => { navigate(-1); }}
             >
               Back
             </Button>

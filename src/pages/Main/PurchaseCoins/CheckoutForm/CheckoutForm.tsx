@@ -157,7 +157,7 @@ export default function CheckoutForm({
         <Button
           id='submit'
           className='big-btn'
-          onClick={handleSubmit}
+          onPress={handleSubmit}
           disabled={!stripe || isProcessing}
         >
           <span id='button-text'>
@@ -167,7 +167,7 @@ export default function CheckoutForm({
 
         <Button
           className='big-btn'
-          onClick={handleCancel}
+          onPress={handleCancel}
         >
           Cancel
         </Button>

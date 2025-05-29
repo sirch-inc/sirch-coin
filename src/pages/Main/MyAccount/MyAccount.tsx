@@ -35,8 +35,8 @@ export default function MyAccount(){
     const value = e.target.value;
 
     setUserHandle(value);
-    setIsUserHandleVerified(value === userInTable?.user_handle);
-  };
+    setIsUserHandleVerified((value === userInTable?.user_handle) || value === `@${userInTable?.user_handle}`);
+  }
 
   async function handleDeleteUser(event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
@@ -81,19 +81,19 @@ export default function MyAccount(){
       <div className='account-actions'>
         <Button
           className='big-btn'
-          onClick={handleClickUpdateAccount}
+          onPress={handleClickUpdateAccount}
         >
           Update User Profile...
         </Button>
 
         <Button
           className='big-btn'
-          onClick={handleClickChangeAccountPassword}
+          onPress={handleClickChangeAccountPassword}
         >
           Change Password...
         </Button>
 
-        <Button className='big-btn danger' onClick={showDeleteConfirmation}> Delete Account... </Button>
+        <Button className='big-btn danger' onPress={showDeleteConfirmation}> Delete Account... </Button>
       </div>
      
       {showDeleteDialog &&
@@ -135,7 +135,7 @@ export default function MyAccount(){
                 className='big-btn danger'
                 type='submit'
                 // TODO: disabling this for now until we sort out HOW we want to handle user-deletions completely...
-                // onClick={handleDeleteUser}
+                // onPress={handleDeleteUser}
                 disabled={!isUserHandleVerified}
               >
                 Yes, permanently delete
@@ -143,7 +143,7 @@ export default function MyAccount(){
               
               <Button
                 className='big-btn'
-                onClick={() => setShowDeleteDialog(false)}>
+                onPress={() => setShowDeleteDialog(false)}>
                 Cancel
               </Button>
             </form>
@@ -154,7 +154,7 @@ export default function MyAccount(){
       <div className='bottom-btn-container'>
         <Button 
           className='big-btn'
-          onClick={() => { navigate(-1); }}>
+          onPress={() => { navigate(-1); }}>
           Back
         </Button>
       </div>

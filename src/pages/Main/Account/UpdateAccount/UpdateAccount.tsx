@@ -186,14 +186,14 @@ export default function UpdateAccount() {
                 readOnly
               />
               <Button
-                className="account-button"
-                onClick={handleSuggestNewHandle}
+                className="big-btn"
+                onPress={handleSuggestNewHandle}
               > Pick Another ↺ </Button>
             </div>
 
             <br />
 
-            <Button className="account-button" type="submit"> Update → </Button>
+            <Button className="big-btn" type="submit"> Update → </Button>
           </form>
         </>
       ) : (
@@ -206,7 +206,7 @@ export default function UpdateAccount() {
       <div className='bottom-btn-container'>
         <Button 
           className='big-btn'
-          onClick={() => { navigate(-1); }}>
+          onPress={() => { navigate(-1); }}>
           Back
         </Button>
       </div>
