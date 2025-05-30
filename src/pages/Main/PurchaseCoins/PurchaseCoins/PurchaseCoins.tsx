@@ -5,7 +5,7 @@ import { AuthContext } from '../../_common/AuthContext';
 import supabase from '../../_common/supabaseProvider';
 import CheckoutForm from '../CheckoutForm/CheckoutForm';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@heroui/react';
+import { Button, Input } from '@heroui/react';
 import './PurchaseCoins.css';
 
 // Call `loadStripe` outside of the component's render to avoid
@@ -124,26 +124,37 @@ export default function PurchaseCoins() {
   return (
     <div>
       <div className='purchase-container'>
-        <h2>Buy Sirch Coins ⓢ</h2>
-        <h3>How many Sirch Coins ⓢ would you like to purchase?</h3>
+        <h2>Buy Sirch Coins</h2>
+        <h3>How many Sirch Coins would you like to purchase?</h3>
         { pricePerCoin === 0
           ? <p>Current quote: ⓢ 1 = Loading... {currency}</p>
           : <p>Current quote: ⓢ 1 = ${formatPrice(pricePerCoin)} {currency.toUpperCase()}</p>
         }
         <div className='purchase-form'>
           <span className='sirch-symbol-large'>ⓢ</span>
-          <input
+          <Input
             className='coin-input'
             type='number'
             name='coins'
-            placeholder="Number of coins to purchase"
-            value={localCoinAmount ?? ''}
-            onChange={handleAmountChange}
+            color='default'
+            label="Amount"
+            placeholder="Enter number of coins to purchase"
+            value={localCoinAmount?.toString() ?? ''}
+            onChange={(e) => handleAmountChange(e)}
             onBlur={handleBlur}
             // TODO: min needs to be the fetched value
             min={minimumPurchase?.toString()}
             step='1'
-            required
+            isRequired
+            variant="flat"
+            radius='none'
+            size="sm"
+            startContent={
+              <div className="pointer-events-none flex items-center">
+                <span className="text-default-400 text-small">ⓢ</span>
+              </div>
+            }
+  
           />
         </div>
         {/* TODO: use the fetched min value here... */}

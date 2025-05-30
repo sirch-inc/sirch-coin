@@ -76,13 +76,6 @@ align-items: center;
     margin-bottom: 24px;
     bottom: 36px;
   }
-
-  .coin-input {
-    width: 100%;
-    padding: 12px;
-    font-size: 1rem;
-    margin: 12px 0;
-  }
 }
 
 /* Mobile */
