@@ -130,6 +130,9 @@ export default function PurchaseCoins() {
           ? <p>Current quote: ⓢ 1 = Loading... {currency}</p>
           : <p>Current quote: ⓢ 1 = ${formatPrice(pricePerCoin)} {currency.toUpperCase()}</p>
         }
+        {/* TODO: use the fetched min value here... */}
+        <p>Note: a minimum purchase of ⓢ {minimumPurchase} is required.</p>
+
         <div className='purchase-form'>
           <Input
             className='coin-input'
@@ -156,8 +159,6 @@ export default function PurchaseCoins() {
   
           />
         </div>
-        {/* TODO: use the fetched min value here... */}
-        <p><strong>Note: At the current time, a minimum purchase of ⓢ {minimumPurchase} is required.</strong></p>
         {/* TODO: Add "See more" link with info on Stripe/purchasing */}
         <p>Sirch Coins uses the payment provider Stripe for secure transactions. See more...</p>
         { localTotalPrice === 0
