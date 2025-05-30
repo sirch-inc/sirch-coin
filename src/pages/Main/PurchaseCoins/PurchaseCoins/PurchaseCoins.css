@@ -30,11 +30,6 @@ align-items: center;
   overflow-y: auto;
 }
 
-.sirch-symbol-large {
-  font-size: xx-large;
-  padding-right: 12px;
-}
-
 
 /* Responsive */
 @media screen and (max-width: 768px) {

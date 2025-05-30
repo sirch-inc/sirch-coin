@@ -131,7 +131,6 @@ export default function PurchaseCoins() {
           : <p>Current quote: ⓢ 1 = ${formatPrice(pricePerCoin)} {currency.toUpperCase()}</p>
         }
         <div className='purchase-form'>
-          <span className='sirch-symbol-large'>ⓢ</span>
           <Input
             className='coin-input'
             type='number'
@@ -148,10 +147,10 @@ export default function PurchaseCoins() {
             isRequired
             variant="flat"
             radius='none'
-            size="sm"
+            size="lg"
             startContent={
               <div className="pointer-events-none flex items-center">
-                <span className="text-default-400 text-small">ⓢ</span>
+                <span className="text-medium">ⓢ</span>
               </div>
             }
   
