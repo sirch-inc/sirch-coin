@@ -126,12 +126,14 @@ export default function PurchaseCoins() {
       <div className='purchase-container'>
         <h2>Buy Sirch Coins</h2>
         <h3>How many Sirch Coins would you like to purchase?</h3>
-        { pricePerCoin === 0
-          ? <p>Current quote: ⓢ 1 = Loading... {currency}</p>
-          : <p>Current quote: ⓢ 1 = ${formatPrice(pricePerCoin)} {currency.toUpperCase()}</p>
-        }
-        {/* TODO: use the fetched min value here... */}
-        <p>Note: At the current time, a minimum purchase of ⓢ {minimumPurchase} is required.</p>
+        <p>
+          { pricePerCoin === 0
+            ? `Quote: ⓢ 1 = Loading...`
+            : `Quote: ⓢ 1 = ${formatPrice(pricePerCoin)} ${currency.toUpperCase()}`
+          }
+          <br></br>
+          Note: A minimum purchase of ⓢ {minimumPurchase} is required.
+        </p>
         
         <div className='purchase-form'>
           <Input
