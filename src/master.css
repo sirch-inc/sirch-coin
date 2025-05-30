@@ -160,43 +160,13 @@
   z-index: 100;
 }
 
-/* this one from general elements above */
-/* input {
-  padding: 4px;
-  border-radius: 2px;
-  border: 2px solid #ccc;
-  width: 100%;
-  box-sizing: border-box;
-} */
+
+
 
 /* this one from PurchaseCoins */
 .coin-input {
-  margin: 0 auto;
   width: 24rem;
-  padding: 0px;
-  /* background-color: #231F20; */
-  /* color: white; */
-  border: none;
-  font-size: 24px;
 }
-
-/* this one from SendCoins */
-/* .coin-input::before {
-  content: '';
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  height: 70%;
-  width: 2px;
-  background-color: white;
-  z-index: 1;
-} */
-
-/* .coin-input::placeholder {
-  color: white;
-  font-weight: 500;
-} */
 
 
 
