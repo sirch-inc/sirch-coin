@@ -4,7 +4,7 @@ import { AuthContext } from '../_common/AuthContext';
 import { ToastNotification, toast } from '../_common/ToastNotification';
 import supabase from '../_common/supabaseProvider';
 import useDebounce from '../../../helpers/debounce';
-import { Button } from '@heroui/react';
+import { Button, Input } from '@heroui/react';
 import 'react-toastify/dist/ReactToastify.css';
 import './SendCoins.css';
 
@@ -206,21 +206,30 @@ export default function Send() {
 
         <form onSubmit={handleSubmit}>
           <p>You can send Sirch Coins to your friends or others here.</p>
-          <p>Just enter some details to help us identify the recipient, and the amount. You may add a note.</p>
+          <p>Just enter some details to help us identify the recipient and the amount. You may add a note.</p>
         
-          <input
+          <Input
             className='coin-input'
             type='text'
             name='searchText'
-            placeholder="To whom? Name, email, or @handle..."
+            label='Search for recipient'
+            placeholder="To whom? Partial name, email, or @handle..."
             value={searchText}
             onChange={handleSearchTextChange}
-            required
+            // HeroUI Input component props
+            isRequired
+            isClearable
+            variant="bordered"
+            size="lg"
+            classNames={{
+              input: "bg-black text-white",
+              inputWrapper: "bg-black border-white"
+            }}
           />
 
           <>
             {searchText.length !== 0 && foundUsers === null &&
-              <h3 style={{ color: 'black' }}>
+              <h3 style={{ color: 'white' }}>
                 Loading...
               </h3>
             }
