@@ -221,6 +221,7 @@ export default function Send() {
             isClearable
             variant="bordered"
             size="lg"
+            radius="none"
             classNames={{
               input: "bg-black text-white",
               inputWrapper: "bg-black border-white"
@@ -273,6 +274,7 @@ export default function Send() {
             isRequired
             variant="bordered"
             size="lg"
+            radius="none"
             classNames={{
               input: "bg-black text-white",
               inputWrapper: "bg-black border-white"
@@ -293,6 +295,7 @@ export default function Send() {
               onChange={handleMemoChange}
               variant="bordered"
               size="lg"
+              radius="none"
               classNames={{
                 input: "bg-black text-white",
                 inputWrapper: "bg-black border-white"
