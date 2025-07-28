@@ -262,29 +262,42 @@ export default function Send() {
             )}
           </>
 
-          <input
+          <Input
             className='coin-input'
             type='number'
             name='amountToSend'
+            label='Amount'
             placeholder="How many ⓢ coins?"
             value={sendAmount}
-            min={1}
-            max={userBalance || 0}
-            step={1}
             onChange={handleAmountChange}
-            required
+            isRequired
+            variant="bordered"
+            size="lg"
+            classNames={{
+              input: "bg-black text-white",
+              inputWrapper: "bg-black border-white"
+            }}
+            min="1"
+            max={userBalance?.toString() || "0"}
+            step="1"
           />
 
           <div className='memo-input'>
-            <input
+            <Input
               className='coin-input'
               type='text'
               name='memo'
+              label='Note (Optional)'
               placeholder="Leave a note?"
               value={memo}
-              maxLength={60}
               onChange={handleMemoChange}
-              autoComplete='memo'
+              variant="bordered"
+              size="lg"
+              classNames={{
+                input: "bg-black text-white",
+                inputWrapper: "bg-black border-white"
+              }}
+              maxLength={60}
             />
           </div>
           
