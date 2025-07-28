@@ -8,8 +8,20 @@
   cursor: pointer;
 }
 
-/* Mobile */
-@media only screen (max-width: 768px) {
+/* Force clear button to be visible on Autocomplete */
+.coin-input [data-slot="clear-button"] {
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  color: white !important;
+}
+
+.coin-input [data-slot="clear-button"]:hover {
+  color: #d1d5db !important;
+}
+
+/* Mobile styles */
+@media only screen and (max-width: 768px) {
   .bottom-btn-container {
     display: flex;
     flex-direction: column;

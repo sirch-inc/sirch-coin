@@ -94,9 +94,13 @@ export default function Send() {
   };
 
   const handleSearchTextChange = (newSearchText: string) => {
+    // Only process search if no recipient is selected (component is not read-only)
+    if (selectedRecipient !== null) {
+      return;
+    }
+
     setSearchText(newSearchText);
     setFoundUsers(null);
-    setSelectedRecipient(null);
 
     if (newSearchText.length === 0) {
       // cancel any pending lookups
@@ -185,12 +189,20 @@ export default function Send() {
             name='searchText'
             label='Recipient'
             placeholder="To whom? Partial name, email, or @handle..."
-            inputValue={searchText}
+            inputValue={selectedRecipient ? `${selectedRecipient.full_name} (@${selectedRecipient.user_handle})` : searchText}
             onInputChange={handleSearchTextChange}
             selectedKey={selectedRecipient?.user_id || null}
             onSelectionChange={(key) => {
               const user = foundUsers?.find(u => u.user_id === key);
               setSelectedRecipient(user || null);
+              if (user) {
+                setSearchText(''); // Clear search text when user is selected
+              }
+            }}
+            onClear={() => {
+              setSelectedRecipient(null);
+              setSearchText('');
+              setFoundUsers(null);
             }}
             items={foundUsers || []}
             isRequired
@@ -198,8 +210,29 @@ export default function Send() {
             variant="bordered"
             size="lg"
             radius="none"
+            endContent={
+              (selectedRecipient || searchText) ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedRecipient(null);
+                    setSearchText('');
+                    setFoundUsers(null);
+                  }}
+                  className="text-white hover:text-gray-300 p-1"
+                  aria-label="Clear"
+                >
+                  ✕
+                </button>
+              ) : null
+            }
             classNames={{
-              base: "bg-black text-white"
+              base: "bg-black text-white",
+              clearButton: "!text-white !opacity-100 !visible hover:!text-gray-300",
+              endContentWrapper: "!text-white"
+            }}
+            clearButtonProps={{
+              className: "!text-white !opacity-100 !visible hover:!text-gray-300"
             }}
             inputProps={{
               classNames: {
@@ -207,7 +240,7 @@ export default function Send() {
                 inputWrapper: "bg-black border-white"
               }
             }}
-            isLoading={searchText.length !== 0 && foundUsers === null}
+            isLoading={searchText.length !== 0 && foundUsers === null && selectedRecipient === null}
             listboxProps={{
               emptyContent: searchText.length !== 0 && foundUsers?.length === 0 ? 
                 "No users found; please refine your search or personally invite the person to join Sirch Coins." : 
