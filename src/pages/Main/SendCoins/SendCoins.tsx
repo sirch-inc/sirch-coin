@@ -4,7 +4,7 @@ import { AuthContext } from '../_common/AuthContext';
 import { ToastNotification, toast } from '../_common/ToastNotification';
 import supabase from '../_common/supabaseProvider';
 import useDebounce from '../../../helpers/debounce';
-import { Button, Input } from '@heroui/react';
+import { Button, Input, Autocomplete, AutocompleteItem } from '@heroui/react';
 import 'react-toastify/dist/ReactToastify.css';
 import './SendCoins.css';
 
@@ -12,28 +12,6 @@ interface User {
   user_id: string;
   user_handle: string;
   full_name: string;
-}
-
-interface UserCardProps {
-  user: User;
-  handleUserCardSelected: (user: User) => void;
-}
-
-// TODO: convert this to a button element/component
-export function UserCard({ user, handleUserCardSelected }: UserCardProps) {
-  return (
-    <div
-      className='user-card'
-      onClick={() => handleUserCardSelected(user)}
-    >
-      <p>
-        Handle: {user.user_handle}
-      </p>
-      <p>
-        Name: {user.full_name}
-      </p>
-    </div>
-  );
 }
 
 export default function Send() {
@@ -115,9 +93,7 @@ export default function Send() {
     setSendAmount(parseFloat(amount) < 0 ? '' : amount);
   };
 
-  const handleSearchTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newSearchText = event.target.value;
-
+  const handleSearchTextChange = (newSearchText: string) => {
     setSearchText(newSearchText);
     setFoundUsers(null);
     setSelectedRecipient(null);
@@ -129,10 +105,6 @@ export default function Send() {
       debouncedLookupUsers();
     }
   }
-
-  const handleUserCardSelected = (user: User) => {
-    setSelectedRecipient(user);
-  };
 
   const handleMemoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMemo(event.target.value);
@@ -208,60 +180,49 @@ export default function Send() {
           <p>You can send Sirch Coins to your friends or others here.</p>
           <p>Please enter some details to help us identify the recipient and the amount. You may add a note.</p>
         
-          <Input
+          <Autocomplete
             className='coin-input'
-            type='text'
             name='searchText'
             label='Recipient'
             placeholder="To whom? Partial name, email, or @handle..."
-            value={searchText}
-            onChange={handleSearchTextChange}
-            // HeroUI Input component props
+            inputValue={searchText}
+            onInputChange={handleSearchTextChange}
+            selectedKey={selectedRecipient?.user_id || null}
+            onSelectionChange={(key) => {
+              const user = foundUsers?.find(u => u.user_id === key);
+              setSelectedRecipient(user || null);
+            }}
+            items={foundUsers || []}
             isRequired
             isClearable
             variant="bordered"
             size="lg"
             radius="none"
             classNames={{
-              input: "bg-black text-white",
-              inputWrapper: "bg-black border-white"
+              base: "bg-black text-white"
             }}
-          />
-
-          <>
-            {searchText.length !== 0 && foundUsers === null &&
-              <h3 style={{ color: 'white' }}>
-                Loading...
-              </h3>
-            }
-
-            {searchText.length !== 0 && foundUsers?.length === 0 &&
-              <h3 style={{ color: 'red' }}>
-                No users found; please refine your search<br/>
-                or invite the person for whom you are looking<br/>
-                to join Sirch Coins.
-              </h3>
-            }
-
-            {selectedRecipient !== null &&
-              <h3 style={{ color: 'green' }}>
-                {selectedRecipient.full_name} (@{selectedRecipient.user_handle})
-              </h3>
-            }
-
-            {foundUsers && foundUsers.length > 1 && selectedRecipient === null && (
-              <>
-                <h3>Multiple users found. Please select one...</h3>
-                {foundUsers.map((foundUser) => (
-                  <UserCard 
-                    key={foundUser.user_id}
-                    user={foundUser}
-                    handleUserCardSelected={handleUserCardSelected}
-                  />
-                ))}
-              </>
+            inputProps={{
+              classNames: {
+                input: "bg-black text-white",
+                inputWrapper: "bg-black border-white"
+              }
+            }}
+            isLoading={searchText.length !== 0 && foundUsers === null}
+            listboxProps={{
+              emptyContent: searchText.length !== 0 && foundUsers?.length === 0 ? 
+                "No users found; please refine your search or personally invite the person to join Sirch Coins." : 
+                "Start typing to search for users..."
+            }}
+          >
+            {(user: User) => (
+              <AutocompleteItem key={user.user_id} textValue={`${user.full_name} (@${user.user_handle})`}>
+                <div>
+                  <div className="font-bold">{user.full_name}</div>
+                  <div className="text-small text-default-400">@{user.user_handle}</div>
+                </div>
+              </AutocompleteItem>
             )}
-          </>
+          </Autocomplete>
 
           <Input
             className='coin-input'
