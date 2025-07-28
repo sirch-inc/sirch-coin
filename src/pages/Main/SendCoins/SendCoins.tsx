@@ -206,13 +206,13 @@ export default function Send() {
 
         <form onSubmit={handleSubmit}>
           <p>You can send Sirch Coins to your friends or others here.</p>
-          <p>Just enter some details to help us identify the recipient and the amount. You may add a note.</p>
+          <p>Please enter some details to help us identify the recipient and the amount. You may add a note.</p>
         
           <Input
             className='coin-input'
             type='text'
             name='searchText'
-            label='Search for recipient'
+            label='Recipient'
             placeholder="To whom? Partial name, email, or @handle..."
             value={searchText}
             onChange={handleSearchTextChange}
