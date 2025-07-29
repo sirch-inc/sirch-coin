@@ -22,6 +22,8 @@ export default function Send() {
   const [memo, setMemo] = useState<string>('');
   const [foundUsers, setFoundUsers] = useState<User[] | null>(null);
   const [selectedRecipient, setSelectedRecipient] = useState<User | null>(null);
+  const [showRecipientError, setShowRecipientError] = useState<boolean>(false);
+  const [showAmountError, setShowAmountError] = useState<boolean>(false);
 
   const fetchUserBalance = useCallback(async () => {
     if (authContext?.refreshUserBalance) {
@@ -91,6 +93,11 @@ export default function Send() {
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const amount = event.target.value;
     setSendAmount(parseFloat(amount) < 0 ? '' : amount);
+    
+    // Clear error when user starts typing
+    if (amount && amount.trim() !== '') {
+      setShowAmountError(false);
+    }
   };
 
   const handleSearchTextChange = (newSearchText: string) => {
@@ -101,6 +108,11 @@ export default function Send() {
 
     setSearchText(newSearchText);
     setFoundUsers(null);
+    
+    // Clear error when user starts typing
+    if (newSearchText.length > 0) {
+      setShowRecipientError(false);
+    }
 
     if (newSearchText.length === 0) {
       // cancel any pending lookups
@@ -116,7 +128,33 @@ export default function Send() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-  
+    
+    let hasErrors = false;
+    
+    // Check if recipient is selected first
+    if (!selectedRecipient) {
+      setShowRecipientError(true);
+      hasErrors = true;
+    } else {
+      setShowRecipientError(false);
+    }
+    
+    // Check if amount is provided
+    if (!sendAmount || sendAmount.trim() === '') {
+      setShowAmountError(true);
+      hasErrors = true;
+    } else {
+      setShowAmountError(false);
+    }
+    
+    // If there are validation errors, don't proceed
+    if (hasErrors) {
+      return;
+    }
+
+    // At this point, we know selectedRecipient is not null due to validation above
+    const recipient = selectedRecipient!;
+
     await fetchUserBalance();
 
     if (!userBalance || !userInTable) {
@@ -129,13 +167,8 @@ export default function Send() {
       toast.error("Insufficient balance.");
       return;
     }
-  
-    if (selectedRecipient === null) {
-      toast.error("Please select a recipient.");
-      return;
-    }
 
-    if (selectedRecipient.user_id === userInTable.user_id) {
+    if (recipient.user_id === userInTable.user_id) {
       toast.error("You cannot send ⓢ Sirch Coins to yourself! Please select a different recipient.")
       return;
     }
@@ -144,7 +177,7 @@ export default function Send() {
       const { error: transferError } = await supabase.functions.invoke('transfer-coins', {
         body: {
           sender_id: userInTable.user_id,
-          recipient_id: selectedRecipient.user_id,
+          recipient_id: recipient.user_id,
           amount: parseFloat(sendAmount),
           memo
         }
@@ -155,7 +188,7 @@ export default function Send() {
         return;
       }
 
-      toast.success(`ⓢ ${sendAmount} successfully sent to ${selectedRecipient.full_name} (@${selectedRecipient.user_handle})`);
+      toast.success(`ⓢ ${sendAmount} successfully sent to ${recipient.full_name} (@${recipient.user_handle})`);
 
       // reset the form
       setSendAmount('');
@@ -163,6 +196,8 @@ export default function Send() {
       setSelectedRecipient(null);
       setFoundUsers(null);
       setMemo('');
+      setShowRecipientError(false);
+      setShowAmountError(false);
 
       await fetchUserBalance();
     } catch (exception) {
@@ -180,7 +215,7 @@ export default function Send() {
       <div className='send-coin-container'>
         <h2>Send ⓢ</h2>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
           <p>You can send Sirch Coins to your friends or others here.</p>
           <p>Please enter some details to help us identify the recipient and the amount. You may add a note.</p>
         
@@ -195,6 +230,7 @@ export default function Send() {
             onSelectionChange={(key) => {
               const user = foundUsers?.find(u => u.user_id === key);
               setSelectedRecipient(user || null);
+              setShowRecipientError(false); // Clear error when user selects a recipient
               if (user) {
                 setSearchText(''); // Clear search text when user is selected
               }
@@ -203,9 +239,9 @@ export default function Send() {
               setSelectedRecipient(null);
               setSearchText('');
               setFoundUsers(null);
+              setShowRecipientError(false); // Clear error when cleared
             }}
             items={foundUsers || []}
-            isRequired
             isClearable
             variant="bordered"
             size="lg"
@@ -218,6 +254,7 @@ export default function Send() {
                     setSelectedRecipient(null);
                     setSearchText('');
                     setFoundUsers(null);
+                    setShowRecipientError(false);
                   }}
                   className="text-white hover:text-gray-300 p-1"
                   aria-label="Clear"
@@ -257,6 +294,18 @@ export default function Send() {
             )}
           </Autocomplete>
 
+          {/* Custom error message to match native HTML5 validation styling */}
+          {showRecipientError && (
+            <div style={{
+              color: '#ef4444',
+              fontSize: '0.875rem',
+              marginTop: '0.25rem',
+              marginLeft: '0.75rem'
+            }}>
+              Please fill out this field
+            </div>
+          )}
+
           <Input
             className='coin-input'
             type='number'
@@ -265,7 +314,6 @@ export default function Send() {
             placeholder="How many ⓢ coins?"
             value={sendAmount}
             onChange={handleAmountChange}
-            isRequired
             variant="bordered"
             size="lg"
             radius="none"
@@ -277,6 +325,18 @@ export default function Send() {
             max={userBalance?.toString() || "0"}
             step="1"
           />
+
+          {/* Custom error message for Amount field */}
+          {showAmountError && (
+            <div style={{
+              color: '#ef4444',
+              fontSize: '0.875rem',
+              marginTop: '0.25rem',
+              marginLeft: '0.75rem'
+            }}>
+              Please fill out this field
+            </div>
+          )}
 
           <div className='memo-input'>
             <Input
