@@ -376,7 +376,7 @@ export default function Send() {
           
           <div className='bottom-btn-container'>
             <Button type='submit' className='big-btn'>
-              Send
+              Send...
             </Button>
 
             <Button 
