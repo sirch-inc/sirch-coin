@@ -40,9 +40,7 @@ export default function CheckoutForm({
     setMessage(error.message ?? 'An error occurred');
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = async () => {
     if (!stripe || !elements || !userInTable) return;
 
     setIsProcessing(true);
