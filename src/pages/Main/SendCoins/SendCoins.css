@@ -20,6 +20,47 @@
   color: #d1d5db !important;
 }
 
+/* Autocomplete dropdown styling */
+.coin-input [data-slot="listbox"] {
+  background-color: black !important;
+  border: 1px solid white !important;
+  margin-top: 2px !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+.coin-input [data-slot="listbox-wrapper"] {
+  background-color: black !important;
+}
+
+/* Loading indicator styling */
+.coin-input [data-slot="spinner"] {
+  color: white !important;
+}
+
+.coin-input [data-slot="spinner"] svg {
+  color: white !important;
+}
+
+/* Empty content styling in dropdown */
+.coin-input [data-slot="empty-content"] {
+  color: #9ca3af !important;
+  background-color: black !important;
+  padding: 1rem !important;
+}
+
+/* Error message styling - make it look attached to the field */
+.field-error-message {
+  background-color: black;
+  border: 1px solid #ef4444;
+  color: #fca5a5;
+  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+  margin-top: -1px;
+  position: relative;
+  z-index: 10;
+  border-top: none;
+}
+
 /* Mobile styles */
 @media only screen and (max-width: 768px) {
   .bottom-btn-container {

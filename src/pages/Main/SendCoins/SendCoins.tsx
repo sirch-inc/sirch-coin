@@ -287,27 +287,42 @@ export default function Send() {
             listboxProps={{
               emptyContent: searchText.length !== 0 && foundUsers?.length === 0 ? 
                 "No users found; please refine your search or personally invite the person to join Sirch Coins." : 
-                "Start typing to search for users..."
+                "Start typing to search for users...",
+              className: "bg-black text-white border border-white max-h-60",
+              itemClasses: {
+                base: "bg-black text-white hover:bg-gray-800 data-[hover=true]:bg-gray-800 data-[selected=true]:bg-gray-700"
+              }
+            }}
+            popoverProps={{
+              classNames: {
+                base: "bg-black border border-white",
+                content: "bg-black p-0 border-none shadow-lg"
+              },
+              placement: "bottom",
+              offset: 2
             }}
           >
             {(user: User) => (
-              <AutocompleteItem key={user.user_id} textValue={`${user.full_name} (@${user.user_handle})`}>
+              <AutocompleteItem 
+                key={user.user_id} 
+                textValue={`${user.full_name} (@${user.user_handle})`}
+                classNames={{
+                  base: "bg-black text-white hover:bg-gray-800 data-[hover=true]:bg-gray-800 data-[selected=true]:bg-gray-700 data-[focus=true]:bg-gray-800",
+                  title: "text-white",
+                  description: "text-gray-400"
+                }}
+              >
                 <div>
-                  <div className="font-bold">{user.full_name}</div>
-                  <div className="text-small text-default-400">@{user.user_handle}</div>
+                  <div className="font-bold text-white">{user.full_name}</div>
+                  <div className="text-small text-gray-400">@{user.user_handle}</div>
                 </div>
               </AutocompleteItem>
             )}
           </Autocomplete>
 
-          {/* Custom error message to match native HTML5 validation styling */}
+          {/* Custom error message positioned closer to the field */}
           {showRecipientError && (
-            <div style={{
-              color: '#ef4444',
-              fontSize: '0.875rem',
-              marginTop: '0.25rem',
-              marginLeft: '0.75rem'
-            }}>
+            <div className="field-error-message">
               Please fill out this field
             </div>
           )}
@@ -332,14 +347,9 @@ export default function Send() {
             step="1"
           />
 
-          {/* Custom error message for Amount field */}
+          {/* Custom error message for Amount field positioned closer to the field */}
           {showAmountError && (
-            <div style={{
-              color: '#ef4444',
-              fontSize: '0.875rem',
-              marginTop: '0.25rem',
-              marginLeft: '0.75rem'
-            }}>
+            <div className="field-error-message">
               Please fill out this field
             </div>
           )}
