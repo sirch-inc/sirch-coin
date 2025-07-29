@@ -4,7 +4,7 @@ import { AuthContext } from '../_common/AuthContext';
 import { ToastNotification, toast } from '../_common/ToastNotification';
 import supabase from '../_common/supabaseProvider';
 import useDebounce from '../../../helpers/debounce';
-import { Button, Input, Autocomplete, AutocompleteItem } from '@heroui/react';
+import { Button, Input, Autocomplete, AutocompleteItem, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from '@heroui/react';
 import 'react-toastify/dist/ReactToastify.css';
 import './SendCoins.css';
 
@@ -17,6 +17,7 @@ interface User {
 export default function Send() {
   const navigate = useNavigate();
   const authContext = useContext(AuthContext);
+  const {isOpen, onOpen, onOpenChange} = useDisclosure();
   const [sendAmount, setSendAmount] = useState<string>('');
   const [searchText, setSearchText] = useState<string>('');
   const [memo, setMemo] = useState<string>('');
@@ -152,6 +153,11 @@ export default function Send() {
       return;
     }
 
+    // Open confirmation modal
+    onOpen();
+  };
+
+  const handleConfirmSend = async () => {
     // At this point, we know selectedRecipient is not null due to validation above
     const recipient = selectedRecipient!;
 
@@ -372,6 +378,82 @@ export default function Send() {
           </div>
         </form>
       </div>
+
+      {/* Confirmation Modal */}
+      <Modal 
+        isOpen={isOpen} 
+        onOpenChange={onOpenChange}
+        classNames={{
+          base: "bg-black border border-white",
+          header: "border-b border-white",
+          body: "py-6",
+          footer: "border-t border-white"
+        }}
+        size="md"
+        backdrop="blur"
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1 text-white">
+                Confirm Transaction
+              </ModalHeader>
+              <ModalBody className="text-white">
+                <div className="space-y-4">
+                  <p>Please confirm the following transaction details:</p>
+                  <div className="bg-gray-900 p-4 rounded-lg space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Recipient:</span>
+                      <span className="font-semibold">
+                        {selectedRecipient?.full_name} (@{selectedRecipient?.user_handle})
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Amount:</span>
+                      <span className="font-semibold text-green-400">ⓢ {sendAmount}</span>
+                    </div>
+                    {memo && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Note:</span>
+                        <span className="font-semibold">{memo}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between border-t border-gray-700 pt-2">
+                      <span className="text-gray-400">Your balance after:</span>
+                      <span className="font-semibold">
+                        ⓢ {userBalance ? (userBalance - parseFloat(sendAmount || '0')).toString() : '0'}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-400">
+                    This action cannot be undone. Please verify all details are correct.
+                  </p>
+                </div>
+              </ModalBody>
+              <ModalFooter>
+                <Button 
+                  color="danger" 
+                  variant="light" 
+                  onPress={onClose}
+                  className="text-white border-white hover:bg-gray-800"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  color="primary" 
+                  onPress={async () => {
+                    await handleConfirmSend();
+                    onClose();
+                  }}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                >
+                  Confirm & Send
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </>
   );
 }
