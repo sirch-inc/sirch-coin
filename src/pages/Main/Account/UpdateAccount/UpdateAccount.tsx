@@ -100,20 +100,22 @@ export default function UpdateAccount() {
 
           <form onSubmit={handleUpdate} autoComplete="off">
             <div className="flex flex-col gap-4 max-w-md mx-auto">
-              <SirchEmailInput
-                label="Email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={handleEmailChange}
-                isRequired
-              />
-              
-              <SirchSwitch
-                isSelected={isEmailPrivate}
-                onValueChange={setIsEmailPrivate}
-              >
-                Private
-              </SirchSwitch>
+              <div className="flex items-center gap-4">
+                <SirchEmailInput
+                  label="Email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={handleEmailChange}
+                  isRequired
+                  className="flex-1"
+                />
+                <SirchSwitch
+                  isSelected={isEmailPrivate}
+                  onValueChange={setIsEmailPrivate}
+                >
+                  Private
+                </SirchSwitch>
+              </div>
 
               {hasEmailChanged && (
                 <Card className="bg-success-50 border-success-200">
@@ -127,27 +129,28 @@ export default function UpdateAccount() {
 
               <Spacer y={2} />
 
-              <div className="flex gap-4">
-                <SirchTextInput
-                  label="First Name"
-                  placeholder="Enter your first name"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                />
-                <SirchTextInput
-                  label="Last Name"
-                  placeholder="Enter your last name"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                />
+              <div className="flex items-center gap-4">
+                <div className="flex gap-4 flex-1">
+                  <SirchTextInput
+                    label="First Name"
+                    placeholder="Enter your first name"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                  />
+                  <SirchTextInput
+                    label="Last Name"
+                    placeholder="Enter your last name"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                  />
+                </div>
+                <SirchSwitch
+                  isSelected={isNamePrivate}
+                  onValueChange={setIsNamePrivate}
+                >
+                  Private
+                </SirchSwitch>
               </div>
-              
-              <SirchSwitch
-                isSelected={isNamePrivate}
-                onValueChange={setIsNamePrivate}
-              >
-                Private
-              </SirchSwitch>
 
               <Spacer y={2} />
 
