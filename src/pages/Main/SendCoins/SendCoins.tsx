@@ -229,7 +229,7 @@ export default function Send() {
             className='coin-input'
             name='searchText'
             label='Recipient'
-            placeholder="To whom? Partial name, email, or @handle..."
+            placeholder="Partial name, email, or @handle..."
             inputValue={selectedRecipient ? `${selectedRecipient.full_name} (@${selectedRecipient.user_handle})` : searchText}
             onInputChange={handleSearchTextChange}
             selectedKey={selectedRecipient?.user_id || null}
