@@ -25,6 +25,7 @@ export default function Send() {
   const [selectedRecipient, setSelectedRecipient] = useState<User | null>(null);
   const [showRecipientError, setShowRecipientError] = useState<boolean>(false);
   const [showAmountError, setShowAmountError] = useState<boolean>(false);
+  const [showBalanceError, setShowBalanceError] = useState<boolean>(false);
 
   const fetchUserBalance = useCallback(async () => {
     if (authContext?.refreshUserBalance) {
@@ -95,9 +96,21 @@ export default function Send() {
     const amount = event.target.value;
     setSendAmount(parseFloat(amount) < 0 ? '' : amount);
     
-    // Clear error when user starts typing
+    // Clear basic amount error when user starts typing
     if (amount && amount.trim() !== '') {
       setShowAmountError(false);
+    }
+    
+    // Check if amount exceeds balance
+    if (amount && amount.trim() !== '' && userBalance) {
+      const parsedAmount = parseFloat(amount);
+      if (parsedAmount > userBalance) {
+        setShowBalanceError(true);
+      } else {
+        setShowBalanceError(false);
+      }
+    } else {
+      setShowBalanceError(false);
     }
   };
 
@@ -146,6 +159,17 @@ export default function Send() {
       hasErrors = true;
     } else {
       setShowAmountError(false);
+    }
+    
+    // Check if amount exceeds balance
+    if (sendAmount && sendAmount.trim() !== '' && userBalance) {
+      const parsedAmount = parseFloat(sendAmount);
+      if (parsedAmount > userBalance) {
+        setShowBalanceError(true);
+        hasErrors = true;
+      } else {
+        setShowBalanceError(false);
+      }
     }
     
     // If there are validation errors, don't proceed
@@ -204,6 +228,7 @@ export default function Send() {
       setMemo('');
       setShowRecipientError(false);
       setShowAmountError(false);
+      setShowBalanceError(false);
 
       await fetchUserBalance();
     } catch (exception) {
@@ -340,8 +365,12 @@ export default function Send() {
             size="lg"
             radius="none"
             isRequired
-            isInvalid={showAmountError}
-            errorMessage={showAmountError ? "Please enter an amount" : ""}
+            isInvalid={showAmountError || showBalanceError}
+            errorMessage={
+              showAmountError ? "Please enter an amount" : 
+              showBalanceError ? `Insufficient balance. You have ⓢ ${userBalance || 0} available.` : 
+              ""
+            }
             classNames={{
               input: "bg-black text-white",
               inputWrapper: "bg-black border-white data-[invalid=true]:border-red-500"
