@@ -252,6 +252,7 @@ export default function Send() {
             variant="bordered"
             size="lg"
             radius="none"
+            isRequired
             endContent={
               (selectedRecipient || searchText) ? (
                 <button
@@ -343,6 +344,7 @@ export default function Send() {
             variant="bordered"
             size="lg"
             radius="none"
+            isRequired
             classNames={{
               input: "bg-black text-white",
               inputWrapper: "bg-black border-white"
