@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Checkbox, InputProps, CheckboxProps } from '@heroui/react';
+import { Input, Checkbox, Switch, InputProps, CheckboxProps, SwitchProps } from '@heroui/react';
 
 // Standard styling for all Sirch inputs
 const SIRCH_INPUT_STYLES = {
@@ -14,6 +14,11 @@ const SIRCH_INPUT_STYLES = {
 
 // Standard styling for all Sirch checkboxes
 const SIRCH_CHECKBOX_STYLES = {
+  size: "lg" as const
+};
+
+// Standard styling for all Sirch switches
+const SIRCH_SWITCH_STYLES = {
   size: "lg" as const
 };
 
@@ -52,6 +57,22 @@ export const SirchCheckbox = React.forwardRef<HTMLInputElement, CheckboxProps>((
 });
 
 SirchCheckbox.displayName = "SirchCheckbox";
+
+/**
+ * Standardized Switch component with Sirch styling
+ * Extends all HeroUI Switch props
+ */
+export const SirchSwitch = React.forwardRef<HTMLInputElement, SwitchProps>((props, ref) => {
+  return (
+    <Switch
+      ref={ref}
+      {...SIRCH_SWITCH_STYLES}
+      {...props}
+    />
+  );
+});
+
+SirchSwitch.displayName = "SirchSwitch";
 
 /**
  * Email input with common email-specific props

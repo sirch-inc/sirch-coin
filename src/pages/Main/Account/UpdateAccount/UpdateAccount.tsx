@@ -5,7 +5,7 @@ import { ToastNotification, toast } from '../../_common/ToastNotification';
 import supabase from '../../_common/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
 import { Button, Spacer, Card, CardBody } from '@heroui/react';
-import { SirchEmailInput, SirchTextInput, SirchCheckbox } from '../../../../components/HeroUIFormComponents';
+import { SirchEmailInput, SirchTextInput, SirchSwitch } from '../../../../components/HeroUIFormComponents';
 import './UpdateAccount.css';
 
 
@@ -108,12 +108,12 @@ export default function UpdateAccount() {
                 isRequired
               />
               
-              <SirchCheckbox
+              <SirchSwitch
                 isSelected={isEmailPrivate}
                 onValueChange={setIsEmailPrivate}
               >
-                Keep my email PRIVATE among other users in Sirch services
-              </SirchCheckbox>
+                Private
+              </SirchSwitch>
 
               {hasEmailChanged && (
                 <Card className="bg-success-50 border-success-200">
@@ -142,12 +142,12 @@ export default function UpdateAccount() {
                 />
               </div>
               
-              <SirchCheckbox
+              <SirchSwitch
                 isSelected={isNamePrivate}
                 onValueChange={setIsNamePrivate}
               >
-                Keep my name PRIVATE among other users in Sirch services
-              </SirchCheckbox>
+                Private
+              </SirchSwitch>
 
               <Spacer y={2} />
 
