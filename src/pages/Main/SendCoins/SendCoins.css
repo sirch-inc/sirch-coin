@@ -24,7 +24,7 @@
 .coin-input [data-slot="listbox"] {
   background-color: black !important;
   border: 1px solid white !important;
-  margin-top: 2px !important;
+  border-top: none !important;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
   border-radius: 0 !important;
 }
@@ -32,48 +32,8 @@
 .coin-input [data-slot="listbox-wrapper"] {
   background-color: black !important;
   border-radius: 0 !important;
-}
-
-/* Remove any border radius from popover */
-.coin-input [data-slot="popover"] {
-  border-radius: 0 !important;
-}
-
-.coin-input [data-slot="popover"] > div {
-  border-radius: 0 !important;
-}
-
-/* Force remove border radius from all dropdown elements */
-.coin-input div[data-slot="popover"],
-.coin-input div[data-slot="listbox"],
-.coin-input div[data-slot="listbox-wrapper"] {
-  border-radius: 0 !important;
-}
-
-/* Remove border radius from the actual dropdown container */
-.coin-input .rounded-medium,
-.coin-input .rounded-lg,
-.coin-input .rounded,
-.coin-input [class*="rounded"] {
-  border-radius: 0 !important;
-}
-
-/* Comprehensive border radius removal for all dropdown related elements */
-.coin-input [role="listbox"],
-.coin-input [role="listbox"] *,
-.coin-input [data-slot*="list"] *,
-.coin-input [aria-expanded="true"] + div,
-.coin-input [aria-expanded="true"] + div * {
-  border-radius: 0 !important;
-}
-
-/* Target the specific dropdown that appears */
-div[data-slot="popover"][data-open="true"] {
-  border-radius: 0 !important;
-}
-
-div[data-slot="popover"][data-open="true"] * {
-  border-radius: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 /* Loading indicator styling */
@@ -83,6 +43,31 @@ div[data-slot="popover"][data-open="true"] * {
 
 .coin-input [data-slot="spinner"] svg {
   color: white !important;
+}
+
+/* Custom spinner animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+.spin-animation {
+  animation: spin 1s linear infinite;
+  -webkit-animation: spin 1s linear infinite;
+}
+
+.loading-spinner {
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: inline-block;
 }
 
 /* Empty content styling in dropdown */

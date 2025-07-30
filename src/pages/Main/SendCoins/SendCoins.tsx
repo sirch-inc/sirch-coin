@@ -286,7 +286,7 @@ export default function Send() {
             isLoading={searchText.length !== 0 && foundUsers === null && selectedRecipient === null}
             listboxProps={{
               emptyContent: searchText.length !== 0 && foundUsers?.length === 0 ? 
-                "No users found; please refine your search or personally invite the person to join Sirch Coins." : 
+                "No users found; please refine your search or personally invite this person to join Sirch Coins." : 
                 "Start typing to search for users...",
               className: "bg-black text-white border border-white max-h-60 rounded-none",
               itemClasses: {
