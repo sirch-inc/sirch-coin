@@ -272,7 +272,8 @@ export default function Send() {
             classNames={{
               base: "bg-black text-white",
               clearButton: "!text-white !opacity-100 !visible hover:!text-gray-300",
-              endContentWrapper: "!text-white"
+              endContentWrapper: "!text-white",
+              selectorButton: "text-white"
             }}
             clearButtonProps={{
               className: "!text-white !opacity-100 !visible hover:!text-gray-300"
@@ -283,9 +284,13 @@ export default function Send() {
                 inputWrapper: "bg-black border-white"
               }
             }}
-            isLoading={searchText.length !== 0 && foundUsers === null && selectedRecipient === null}
             listboxProps={{
-              emptyContent: searchText.length !== 0 && foundUsers?.length === 0 ? 
+              emptyContent: (searchText.length !== 0 && foundUsers === null && selectedRecipient === null) ? 
+                <div className="flex items-center justify-center p-4">
+                  <div className="loading-spinner spin-animation mr-2"></div>
+                  <span>Searching for users...</span>
+                </div> :
+                searchText.length !== 0 && foundUsers?.length === 0 ? 
                 "No users found; please refine your search or personally invite this person to join Sirch Coins." : 
                 "Start typing to search for users...",
               className: "bg-black text-white border border-white max-h-60 rounded-lg",
