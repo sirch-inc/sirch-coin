@@ -223,7 +223,7 @@ export default function Send() {
 
         <form onSubmit={handleSubmit} noValidate>
           <p>You can send Sirch Coins to your friends or others here.</p>
-          <p>Please enter some details to help us identify the recipient and the amount. You may add a note.</p>
+          <p>Please enter some details to help us identify the recipient, the amount, and an optional private note.</p>
         
           <Autocomplete
             className='coin-input'
@@ -356,7 +356,7 @@ export default function Send() {
               className='coin-input'
               type='text'
               name='memo'
-              label='Note (Optional)'
+              label='Note (Optional; private among you)'
               placeholder="Leave a note?"
               value={memo}
               onChange={handleMemoChange}
