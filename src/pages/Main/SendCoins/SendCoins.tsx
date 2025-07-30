@@ -4,7 +4,8 @@ import { AuthContext } from '../_common/AuthContext';
 import { ToastNotification, toast } from '../_common/ToastNotification';
 import supabase from '../_common/supabaseProvider';
 import useDebounce from '../../../helpers/debounce';
-import { Button, Input, Autocomplete, AutocompleteItem, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from '@heroui/react';
+import { Button, Autocomplete, AutocompleteItem, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from '@heroui/react';
+import { SirchNumberInput, SirchTextInput } from '../../../components/HeroUIFormComponents';
 import 'react-toastify/dist/ReactToastify.css';
 import './SendCoins.css';
 
@@ -294,16 +295,12 @@ export default function Send() {
             )}
           </Autocomplete>
 
-          <Input
-            type='number'
+          <SirchNumberInput
             name='amountToSend'
             label='Amount'
             placeholder="How many ⓢ coins?"
             value={sendAmount}
             onChange={handleAmountChange}
-            variant="bordered"
-            size="lg"
-            radius="none"
             isRequired
             isInvalid={errors.amount || errors.balance}
             errorMessage={
@@ -311,29 +308,17 @@ export default function Send() {
               errors.balance ? `Insufficient balance. You have ⓢ ${userBalance || 0} available.` : 
               ""
             }
-            classNames={{
-              input: "bg-black text-white",
-              inputWrapper: "bg-black border-white data-[invalid=true]:border-red-500"
-            }}
             min="1"
             max={userBalance?.toString() || "0"}
             step="1"
           />
 
-          <Input
-            type='text'
+          <SirchTextInput
             name='memo'
             label='Note (Optional; private among you)'
             placeholder="Leave a note?"
             value={memo}
             onChange={handleMemoChange}
-            variant="bordered"
-            size="lg"
-            radius="none"
-            classNames={{
-              input: "bg-black text-white",
-              inputWrapper: "bg-black border-white"
-            }}
             maxLength={60}
           />          <div className='bottom-btn-container'>
             <Button type='submit' className='big-btn'>

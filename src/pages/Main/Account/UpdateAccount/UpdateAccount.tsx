@@ -4,7 +4,8 @@ import { AuthContext } from '../../_common/AuthContext';
 import { ToastNotification, toast } from '../../_common/ToastNotification';
 import supabase from '../../_common/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
-import { Button, Input, Checkbox, Spacer, Card, CardBody } from '@heroui/react';
+import { Button, Spacer, Card, CardBody } from '@heroui/react';
+import { SirchEmailInput, SirchTextInput, SirchCheckbox } from '../../../../components/HeroUIFormComponents';
 import './UpdateAccount.css';
 
 
@@ -99,24 +100,20 @@ export default function UpdateAccount() {
 
           <form onSubmit={handleUpdate} autoComplete="off">
             <div className="flex flex-col gap-4 max-w-md mx-auto">
-              <Input
-                type="email"
+              <SirchEmailInput
                 label="Email"
                 placeholder="Enter your email"
                 value={email}
                 onChange={handleEmailChange}
-                variant="bordered"
-                size="lg"
                 isRequired
               />
               
-              <Checkbox
+              <SirchCheckbox
                 isSelected={isEmailPrivate}
                 onValueChange={setIsEmailPrivate}
-                size="lg"
               >
                 Keep my email PRIVATE among other users in Sirch services
-              </Checkbox>
+              </SirchCheckbox>
 
               {hasEmailChanged && (
                 <Card className="bg-success-50 border-success-200">
@@ -131,33 +128,26 @@ export default function UpdateAccount() {
               <Spacer y={2} />
 
               <div className="flex gap-4">
-                <Input
-                  type="text"
+                <SirchTextInput
                   label="First Name"
                   placeholder="Enter your first name"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  variant="bordered"
-                  size="lg"
                 />
-                <Input
-                  type="text"
+                <SirchTextInput
                   label="Last Name"
                   placeholder="Enter your last name"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  variant="bordered"
-                  size="lg"
                 />
               </div>
               
-              <Checkbox
+              <SirchCheckbox
                 isSelected={isNamePrivate}
                 onValueChange={setIsNamePrivate}
-                size="lg"
               >
                 Keep my name PRIVATE among other users in Sirch services
-              </Checkbox>
+              </SirchCheckbox>
 
               <Spacer y={2} />
 
@@ -165,12 +155,9 @@ export default function UpdateAccount() {
                 <div className="min-w-fit">
                   <p className="text-sm font-medium">Sirch User Phrase:</p>
                 </div>
-                <Input
-                  type="text"
+                <SirchTextInput
                   value={userHandle}
                   placeholder="Loading..."
-                  variant="bordered"
-                  size="lg"
                   isReadOnly
                   className="flex-1"
                 />
