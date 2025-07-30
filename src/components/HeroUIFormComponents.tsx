@@ -19,7 +19,15 @@ const SIRCH_CHECKBOX_STYLES = {
 
 // Standard styling for all Sirch switches
 const SIRCH_SWITCH_STYLES = {
-  size: "lg" as const
+  size: "lg" as const,
+  classNames: {
+    base: "text-black",
+    wrapper: "bg-black border-white",
+    thumb: "bg-white",
+    startContent: "text-white",
+    endContent: "text-white",
+    label: "text-black"
+  }
 };
 
 /**
@@ -68,6 +76,10 @@ export const SirchSwitch = React.forwardRef<HTMLInputElement, SwitchProps>((prop
       ref={ref}
       {...SIRCH_SWITCH_STYLES}
       {...props}
+      classNames={{
+        ...SIRCH_SWITCH_STYLES.classNames,
+        ...props.classNames
+      }}
     />
   );
 });
