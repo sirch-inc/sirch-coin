@@ -4,7 +4,7 @@ import { AuthContext } from '../../_common/AuthContext';
 import { ToastNotification, toast } from '../../_common/ToastNotification';
 import supabase from '../../_common/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
-import { Button } from '@heroui/react';
+import { Button, Input, Checkbox, Spacer, Card, CardBody } from '@heroui/react';
 import './UpdateAccount.css';
 
 
@@ -90,126 +90,126 @@ export default function UpdateAccount() {
   };
   
   return (
-    <>
+    <div className="update-account-container">
       <ToastNotification />
 
       {session ? (
         <>
-          <h2>Update Account</h2>
+          <h2 className="text-2xl font-bold text-center mb-8">Update Account</h2>
 
           <form onSubmit={handleUpdate} autoComplete="off">
-            <div className="account-row">
-              <input 
-                className="account-input"
+            <div className="flex flex-col gap-4 max-w-md mx-auto">
+              <Input
                 type="email"
-                id="email"
-                name="email"
-                placeholder="Email"
-                value={email} 
+                label="Email"
+                placeholder="Enter your email"
+                value={email}
                 onChange={handleEmailChange}
-                autoComplete="email"
+                variant="bordered"
+                size="lg"
+                isRequired
               />
-              <div id="is-email-private">
-                <input
-                  className="account-input"
-                  type="checkbox"
-                  id="is-email-private-checkbox"
-                  name="is-email-private"
-                  checked={isEmailPrivate}
-                  onChange={(e) => setIsEmailPrivate(e.target.checked)}
+              
+              <Checkbox
+                isSelected={isEmailPrivate}
+                onValueChange={setIsEmailPrivate}
+                size="lg"
+              >
+                Keep my email PRIVATE among other users in Sirch services
+              </Checkbox>
+
+              {hasEmailChanged && (
+                <Card className="bg-success-50 border-success-200">
+                  <CardBody>
+                    <p className="text-success-600 text-sm">
+                      Note: Changes to your email address will require email reverification.
+                    </p>
+                  </CardBody>
+                </Card>
+              )}
+
+              <Spacer y={2} />
+
+              <div className="flex gap-4">
+                <Input
+                  type="text"
+                  label="First Name"
+                  placeholder="Enter your first name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  variant="bordered"
+                  size="lg"
                 />
-                <label
-                  htmlFor="is-email-private"
-                  id="is-email-private-label"
-                >
-                  Keep my email PRIVATE<br />among other users in Sirch services
-                </label>
-              </div>
-            </div>
-
-            {hasEmailChanged &&
-              <p style={{color: "green"}}>
-                Note: Changes to your email address will require email reverification.
-              </p>
-            }
-
-            <div className="account-row">
-              <input 
-                className="account-input"
-                type="text"
-                id="first-name"
-                name="first-name"
-                placeholder="First Name"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-              />
-              <input
-                className="account-input"
-                type="text"
-                id="last-name"
-                name="last-name"
-                placeholder="Last Name"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-              />
-              <div id="is-name-private">
-                <input
-                  className="account-input"
-                  type="checkbox"
-                  id="is-name-private-checkbox"
-                  name="is-name-private"
-                  checked={isNamePrivate}
-                  onChange={(e) => setIsNamePrivate(e.target.checked)}
+                <Input
+                  type="text"
+                  label="Last Name"
+                  placeholder="Enter your last name"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  variant="bordered"
+                  size="lg"
                 />
-                <label
-                  htmlFor="is-name-private"
-                  id="is-name-private-label"
-                >
-                  Keep my name PRIVATE<br />among other users in Sirch services
-                </label>
               </div>
-            </div>
+              
+              <Checkbox
+                isSelected={isNamePrivate}
+                onValueChange={setIsNamePrivate}
+                size="lg"
+              >
+                Keep my name PRIVATE among other users in Sirch services
+              </Checkbox>
 
-            <div id='account-user-handle-row'>
-              <div style={{ width: '30%' }}>
-                <p>
-                  Sirch User Phrase:
-                </p>
+              <Spacer y={2} />
+
+              <div className="flex items-center gap-4">
+                <div className="min-w-fit">
+                  <p className="text-sm font-medium">Sirch User Phrase:</p>
+                </div>
+                <Input
+                  type="text"
+                  value={userHandle}
+                  placeholder="Loading..."
+                  variant="bordered"
+                  size="lg"
+                  isReadOnly
+                  className="flex-1"
+                />
+                <Button
+                  onPress={handleSuggestNewHandle}
+                  variant="bordered"
+                  size="lg"
+                >
+                  Pick Another ↺
+                </Button>
               </div>
-              <input
-                className="account-input"
-                type="text"
-                id="user-handle"
-                name="user-handle"
-                placeholder="Loading..."
-                value={userHandle}
-                readOnly
-              />
+
+              <Spacer y={4} />
+
               <Button
-                className="big-btn"
-                onPress={handleSuggestNewHandle}
-              > Pick Another ↺ </Button>
+                type="submit"
+                color="primary"
+                size="lg"
+                className="w-full"
+              >
+                Update →
+              </Button>
             </div>
-
-            <br />
-
-            <Button className="big-btn" type="submit"> Update → </Button>
           </form>
         </>
       ) : (
-        <>
-          <h3>You must be logged in to change your user account settings.</h3>
-          <br/>
-        </>
+        <div className="text-center">
+          <h3 className="text-lg font-semibold mb-4">You must be logged in to change your user account settings.</h3>
+        </div>
       )}
 
-      <div className='bottom-btn-container'>
+      <div className="text-center mt-8">
         <Button 
-          className='big-btn'
+          variant="bordered"
+          size="lg"
           onPress={() => { navigate(-1); }}>
           Back
         </Button>
       </div>
-    </>
+    </div>
   );
 }
