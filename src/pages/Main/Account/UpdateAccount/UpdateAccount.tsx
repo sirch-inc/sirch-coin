@@ -175,14 +175,21 @@ export default function UpdateAccount() {
 
               <Spacer y={4} />
 
-              <Button
-                type="submit"
-                color="primary"
-                size="lg"
-                className="w-full"
-              >
-                Update →
-              </Button>
+              <div className='bottom-btn-container'>
+                <Button
+                  type="submit"
+                  className='big-btn'
+                >
+                  Update →
+                </Button>
+
+                <Button 
+                  className='big-btn' 
+                  onPress={() => { navigate(-1); }}
+                >
+                  Back
+                </Button>
+              </div>
             </div>
           </form>
         </>
@@ -191,15 +198,6 @@ export default function UpdateAccount() {
           <h3 className="text-lg font-semibold mb-4">You must be logged in to change your user account settings.</h3>
         </div>
       )}
-
-      <div className="text-center mt-8">
-        <Button 
-          variant="bordered"
-          size="lg"
-          onPress={() => { navigate(-1); }}>
-          Back
-        </Button>
-      </div>
     </div>
   );
 }
