@@ -195,7 +195,7 @@ export default function Send() {
     <>
       <ToastNotification />
 
-      <div className='send-coin-container'>
+      <div>
         <h2>Send ⓢ</h2>
 
         <form onSubmit={handleSubmit} noValidate>
@@ -203,7 +203,6 @@ export default function Send() {
           <p>Please enter some details to help us identify the recipient, the amount, and an optional private note.</p>
         
           <Autocomplete
-            className='coin-input'
             name='searchText'
             label='Recipient'
             placeholder="Partial name, email, or @handle..."
@@ -296,7 +295,6 @@ export default function Send() {
           </Autocomplete>
 
           <Input
-            className='coin-input'
             type='number'
             name='amountToSend'
             label='Amount'
@@ -322,27 +320,22 @@ export default function Send() {
             step="1"
           />
 
-          <div className='memo-input'>
-            <Input
-              className='coin-input'
-              type='text'
-              name='memo'
-              label='Note (Optional; private among you)'
-              placeholder="Leave a note?"
-              value={memo}
-              onChange={handleMemoChange}
-              variant="bordered"
-              size="lg"
-              radius="none"
-              classNames={{
-                input: "bg-black text-white",
-                inputWrapper: "bg-black border-white"
-              }}
-              maxLength={60}
-            />
-          </div>
-          
-          <div className='bottom-btn-container'>
+          <Input
+            type='text'
+            name='memo'
+            label='Note (Optional; private among you)'
+            placeholder="Leave a note?"
+            value={memo}
+            onChange={handleMemoChange}
+            variant="bordered"
+            size="lg"
+            radius="none"
+            classNames={{
+              input: "bg-black text-white",
+              inputWrapper: "bg-black border-white"
+            }}
+            maxLength={60}
+          />          <div className='bottom-btn-container'>
             <Button type='submit' className='big-btn'>
               Confirm...
             </Button>
