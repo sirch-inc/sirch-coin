@@ -288,15 +288,15 @@ export default function Send() {
               emptyContent: searchText.length !== 0 && foundUsers?.length === 0 ? 
                 "No users found; please refine your search or personally invite this person to join Sirch Coins." : 
                 "Start typing to search for users...",
-              className: "bg-black text-white border border-white max-h-60 rounded-none",
+              className: "bg-black text-white border border-white max-h-60 rounded-lg",
               itemClasses: {
-                base: "bg-black text-white hover:bg-gray-800 data-[hover=true]:bg-gray-800 data-[selected=true]:bg-gray-700 rounded-none"
+                base: "bg-black text-white hover:bg-gray-800 data-[hover=true]:bg-gray-800 data-[selected=true]:bg-gray-700 rounded-md"
               }
             }}
             popoverProps={{
               classNames: {
-                base: "bg-black border border-white rounded-none",
-                content: "bg-black p-0 border-none shadow-lg rounded-none"
+                base: "bg-black border border-white rounded-lg",
+                content: "bg-black p-0 border-none shadow-lg rounded-lg"
               },
               placement: "bottom",
               offset: 2
@@ -307,7 +307,7 @@ export default function Send() {
                 key={user.user_id} 
                 textValue={`${user.full_name} (@${user.user_handle})`}
                 classNames={{
-                  base: "bg-black text-white hover:bg-gray-800 data-[hover=true]:bg-gray-800 data-[selected=true]:bg-gray-700 data-[focus=true]:bg-gray-800 rounded-none",
+                  base: "bg-black text-white hover:bg-gray-800 data-[hover=true]:bg-gray-800 data-[selected=true]:bg-gray-700 data-[focus=true]:bg-gray-800 rounded-md",
                   title: "text-white",
                   description: "text-gray-400"
                 }}
