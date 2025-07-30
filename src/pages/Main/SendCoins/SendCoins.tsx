@@ -253,6 +253,8 @@ export default function Send() {
             size="lg"
             radius="none"
             isRequired
+            isInvalid={showRecipientError}
+            errorMessage={showRecipientError ? "Please select a recipient" : ""}
             endContent={
               (selectedRecipient || searchText) ? (
                 <button
@@ -282,7 +284,7 @@ export default function Send() {
             inputProps={{
               classNames: {
                 input: "bg-black text-white",
-                inputWrapper: "bg-black border-white"
+                inputWrapper: "bg-black border-white data-[invalid=true]:border-red-500"
               }
             }}
             listboxProps={{
@@ -326,13 +328,6 @@ export default function Send() {
             )}
           </Autocomplete>
 
-          {/* Custom error message positioned closer to the field */}
-          {showRecipientError && (
-            <div className="field-error-message">
-              Please fill out this field
-            </div>
-          )}
-
           <Input
             className='coin-input'
             type='number'
@@ -345,21 +340,16 @@ export default function Send() {
             size="lg"
             radius="none"
             isRequired
+            isInvalid={showAmountError}
+            errorMessage={showAmountError ? "Please enter an amount" : ""}
             classNames={{
               input: "bg-black text-white",
-              inputWrapper: "bg-black border-white"
+              inputWrapper: "bg-black border-white data-[invalid=true]:border-red-500"
             }}
             min="1"
             max={userBalance?.toString() || "0"}
             step="1"
           />
-
-          {/* Custom error message for Amount field positioned closer to the field */}
-          {showAmountError && (
-            <div className="field-error-message">
-              Please fill out this field
-            </div>
-          )}
 
           <div className='memo-input'>
             <Input
