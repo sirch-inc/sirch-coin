@@ -23,9 +23,11 @@ export default function Send() {
   const [memo, setMemo] = useState<string>('');
   const [foundUsers, setFoundUsers] = useState<User[] | null>(null);
   const [selectedRecipient, setSelectedRecipient] = useState<User | null>(null);
-  const [showRecipientError, setShowRecipientError] = useState<boolean>(false);
-  const [showAmountError, setShowAmountError] = useState<boolean>(false);
-  const [showBalanceError, setShowBalanceError] = useState<boolean>(false);
+  const [errors, setErrors] = useState({
+    recipient: false,
+    amount: false,
+    balance: false
+  });
 
   const fetchUserBalance = useCallback(async () => {
     if (authContext?.refreshUserBalance) {
@@ -34,13 +36,9 @@ export default function Send() {
   }, [authContext]);
 
   const debouncedLookupUsers = useDebounce(async () => {
-    setSelectedRecipient(null);
-
     try {
       const { data: foundUsersData, error: foundUsersError } = await supabase.functions.invoke('lookup-user', {
-        body: {
-          searchText
-        }
+        body: { searchText }
       });
 
       if (foundUsersError) {
@@ -51,24 +49,10 @@ export default function Send() {
       const newFoundUsers = foundUsersData.found as User[];
       setFoundUsers(newFoundUsers);
 
-      // none found
-      if (newFoundUsers.length === 0) {
-        setSelectedRecipient(null);
-      }
-
-      // one found
-      if (newFoundUsers.length === 1) {
-        setSelectedRecipient(newFoundUsers[0] || null);
-      }
-
-      // many found
-      if (newFoundUsers.length > 1) {
-        setSelectedRecipient(null);
-      }
+      // Auto-select if exactly one user found
+      setSelectedRecipient(newFoundUsers.length === 1 ? newFoundUsers[0] || null : null);
     } catch (exception) {
-      if (exception instanceof Error) {
-        console.error("An exception occurred:", exception.message);
-      }
+      console.error("User lookup failed:", exception);
       toast.error("Unable to look up users at this time. Please try again later.");
     }
   });
@@ -96,43 +80,30 @@ export default function Send() {
     const amount = event.target.value;
     setSendAmount(parseFloat(amount) < 0 ? '' : amount);
     
-    // Clear basic amount error when user starts typing
-    if (amount && amount.trim() !== '') {
-      setShowAmountError(false);
-    }
-    
-    // Check if amount exceeds balance
-    if (amount && amount.trim() !== '' && userBalance) {
+    // Clear errors when user starts typing valid amount
+    const hasAmount = amount && amount.trim() !== '';
+    if (hasAmount) {
+      setErrors(prev => ({ ...prev, amount: false }));
       const parsedAmount = parseFloat(amount);
-      if (parsedAmount > userBalance) {
-        setShowBalanceError(true);
-      } else {
-        setShowBalanceError(false);
-      }
+      setErrors(prev => ({ ...prev, balance: userBalance ? parsedAmount > userBalance : false }));
     } else {
-      setShowBalanceError(false);
+      setErrors(prev => ({ ...prev, balance: false }));
     }
   };
 
   const handleSearchTextChange = (newSearchText: string) => {
-    // Only process search if no recipient is selected (component is not read-only)
-    if (selectedRecipient !== null) {
-      return;
-    }
+    // Only process search if no recipient is selected
+    if (selectedRecipient) return;
 
     setSearchText(newSearchText);
     setFoundUsers(null);
     
     // Clear error when user starts typing
     if (newSearchText.length > 0) {
-      setShowRecipientError(false);
-    }
-
-    if (newSearchText.length === 0) {
-      // cancel any pending lookups
-      debouncedLookupUsers.cancel();
-    } else {
+      setErrors(prev => ({ ...prev, recipient: false }));
       debouncedLookupUsers();
+    } else {
+      debouncedLookupUsers.cancel();
     }
   }
 
@@ -140,66 +111,59 @@ export default function Send() {
     setMemo(event.target.value);
   };
 
+  const resetForm = () => {
+    setSendAmount('');
+    setSearchText('');
+    setSelectedRecipient(null);
+    setFoundUsers(null);
+    setMemo('');
+    setErrors({ recipient: false, amount: false, balance: false });
+  };
+
+  const clearRecipient = () => {
+    setSelectedRecipient(null);
+    setSearchText('');
+    setFoundUsers(null);
+    setErrors(prev => ({ ...prev, recipient: false }));
+  };
+
+  const validateForm = () => {
+    const newErrors = {
+      recipient: !selectedRecipient,
+      amount: !sendAmount?.trim(),
+      balance: sendAmount?.trim() && userBalance ? parseFloat(sendAmount) > userBalance : false
+    };
+
+    setErrors(newErrors);
+    return !Object.values(newErrors).some(Boolean);
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     
-    let hasErrors = false;
-    
-    // Check if recipient is selected first
-    if (!selectedRecipient) {
-      setShowRecipientError(true);
-      hasErrors = true;
-    } else {
-      setShowRecipientError(false);
+    if (validateForm()) {
+      onOpen();
     }
-    
-    // Check if amount is provided
-    if (!sendAmount || sendAmount.trim() === '') {
-      setShowAmountError(true);
-      hasErrors = true;
-    } else {
-      setShowAmountError(false);
-    }
-    
-    // Check if amount exceeds balance
-    if (sendAmount && sendAmount.trim() !== '' && userBalance) {
-      const parsedAmount = parseFloat(sendAmount);
-      if (parsedAmount > userBalance) {
-        setShowBalanceError(true);
-        hasErrors = true;
-      } else {
-        setShowBalanceError(false);
-      }
-    }
-    
-    // If there are validation errors, don't proceed
-    if (hasErrors) {
-      return;
-    }
-
-    // Open confirmation modal
-    onOpen();
   };
 
   const handleConfirmSend = async () => {
-    // At this point, we know selectedRecipient is not null due to validation above
     const recipient = selectedRecipient!;
-
     await fetchUserBalance();
 
+    // Validation checks
     if (!userBalance || !userInTable) {
       toast.error("Unable to verify balance. Please try again.");
       return;
     }
 
-    // verify the sender has sufficient balance
-    if (parseFloat(sendAmount) > userBalance) {
+    const amount = parseFloat(sendAmount);
+    if (amount > userBalance) {
       toast.error("Insufficient balance.");
       return;
     }
 
     if (recipient.user_id === userInTable.user_id) {
-      toast.error("You cannot send ⓢ Sirch Coins to yourself! Please select a different recipient.")
+      toast.error("You cannot send ⓢ Sirch Coins to yourself! Please select a different recipient.");
       return;
     }
 
@@ -208,7 +172,7 @@ export default function Send() {
         body: {
           sender_id: userInTable.user_id,
           recipient_id: recipient.user_id,
-          amount: parseFloat(sendAmount),
+          amount,
           memo
         }
       });
@@ -219,22 +183,10 @@ export default function Send() {
       }
 
       toast.success(`ⓢ ${sendAmount} successfully sent to ${recipient.full_name} (@${recipient.user_handle})`);
-
-      // reset the form
-      setSendAmount('');
-      setSearchText('');
-      setSelectedRecipient(null);
-      setFoundUsers(null);
-      setMemo('');
-      setShowRecipientError(false);
-      setShowAmountError(false);
-      setShowBalanceError(false);
-
+      resetForm();
       await fetchUserBalance();
     } catch (exception) {
-      if (exception instanceof Error) {
-        console.error("An exception occurred:", exception.message);
-      }
+      console.error("Transfer failed:", exception);
       toast.error("An error occurred sending Sirch Coins to your recipient. Please try again later.");
     }
   };
@@ -261,35 +213,25 @@ export default function Send() {
             onSelectionChange={(key) => {
               const user = foundUsers?.find(u => u.user_id === key);
               setSelectedRecipient(user || null);
-              setShowRecipientError(false); // Clear error when user selects a recipient
+              setErrors(prev => ({ ...prev, recipient: false }));
               if (user) {
-                setSearchText(''); // Clear search text when user is selected
+                setSearchText('');
               }
             }}
-            onClear={() => {
-              setSelectedRecipient(null);
-              setSearchText('');
-              setFoundUsers(null);
-              setShowRecipientError(false); // Clear error when cleared
-            }}
+            onClear={clearRecipient}
             items={foundUsers || []}
             isClearable
             variant="bordered"
             size="lg"
             radius="none"
             isRequired
-            isInvalid={showRecipientError}
-            errorMessage={showRecipientError ? "Please select a recipient" : ""}
+            isInvalid={errors.recipient}
+            errorMessage={errors.recipient ? "Please select a recipient" : ""}
             endContent={
               (selectedRecipient || searchText) ? (
                 <button
                   type="button"
-                  onClick={() => {
-                    setSelectedRecipient(null);
-                    setSearchText('');
-                    setFoundUsers(null);
-                    setShowRecipientError(false);
-                  }}
+                  onClick={clearRecipient}
                   className="text-white hover:text-gray-300 p-1"
                   aria-label="Clear"
                 >
@@ -365,10 +307,10 @@ export default function Send() {
             size="lg"
             radius="none"
             isRequired
-            isInvalid={showAmountError || showBalanceError}
+            isInvalid={errors.amount || errors.balance}
             errorMessage={
-              showAmountError ? "Please enter an amount" : 
-              showBalanceError ? `Insufficient balance. You have ⓢ ${userBalance || 0} available.` : 
+              errors.amount ? "Please enter an amount" : 
+              errors.balance ? `Insufficient balance. You have ⓢ ${userBalance || 0} available.` : 
               ""
             }
             classNames={{
