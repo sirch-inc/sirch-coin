@@ -4,7 +4,7 @@ import { AuthContext } from '../../_common/AuthContext';
 import { ToastNotification, toast } from '../../_common/ToastNotification';
 import supabase from '../../_common/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
-import { Button, Spacer, Card, CardBody } from '@heroui/react';
+import { Button, Card, CardBody } from '@heroui/react';
 import { SirchEmailInput, SirchTextInput, SirchPrivacyChip } from '../../../../components/HeroUIFormComponents';
 import './UpdateAccount.css';
 
@@ -109,7 +109,7 @@ export default function UpdateAccount() {
   };
   
   return (
-    <div className="update-account-container">
+    <div>
       <ToastNotification />
 
       {session ? (
@@ -117,93 +117,87 @@ export default function UpdateAccount() {
           <h2 className="text-2xl font-bold text-center mb-8">Update Account</h2>
 
           <form onSubmit={handleUpdate} autoComplete="off">
-            <div className="flex flex-col gap-4 max-w-md mx-auto">
-              <div className="flex items-center gap-4">
-                <SirchEmailInput
-                  label="Email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={handleEmailChange}
-                  isRequired
-                  className="flex-1"
-                />
-                <SirchPrivacyChip
-                  isPrivate={isEmailPrivate}
-                  onPrivacyChange={setIsEmailPrivate}
-                />
-              </div>
+            <p>Update your account information below. Privacy settings control whether others can see your information.</p>
+            
+            <div className="flex items-center gap-4">
+              <SirchEmailInput
+                label="Email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={handleEmailChange}
+                isRequired
+                className="flex-1"
+              />
+              <SirchPrivacyChip
+                isPrivate={isEmailPrivate}
+                onPrivacyChange={setIsEmailPrivate}
+              />
+            </div>
 
-              {hasEmailChanged && (
-                <Card className="bg-success-50 border-success-200">
-                  <CardBody>
-                    <p className="text-success-600 text-sm">
-                      Note: Changes to your email address will require email reverification.
-                    </p>
-                  </CardBody>
-                </Card>
-              )}
+            {hasEmailChanged && (
+              <Card className="bg-success-50 border-success-200">
+                <CardBody>
+                  <p className="text-success-600 text-sm">
+                    Note: Changes to your email address will require email reverification.
+                  </p>
+                </CardBody>
+              </Card>
+            )}
 
-              <Spacer y={2} />
-
-              <div className="flex items-center gap-4">
-                <div className="flex gap-4 flex-1">
-                  <SirchTextInput
-                    label="First Name"
-                    placeholder="Enter your first name"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                  />
-                  <SirchTextInput
-                    label="Last Name"
-                    placeholder="Enter your last name"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                  />
-                </div>
-                <SirchPrivacyChip
-                  isPrivate={isNamePrivate}
-                  onPrivacyChange={setIsNamePrivate}
-                />
-              </div>
-
-              <Spacer y={2} />
-
-              <div className="flex items-center gap-4">
-                <div className="min-w-fit">
-                  <p className="text-sm font-medium">Sirch User Phrase:</p>
-                </div>
+            <div className="flex items-center gap-4">
+              <div className="flex gap-4 flex-1">
                 <SirchTextInput
-                  value={userHandle}
-                  placeholder="Loading..."
-                  isReadOnly
-                  className="flex-1"
+                  label="First Name"
+                  placeholder="Enter your first name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
                 />
-                <Button
-                  onPress={handleSuggestNewHandle}
-                  variant="bordered"
-                  size="lg"
-                >
-                  Pick Another ↺
-                </Button>
+                <SirchTextInput
+                  label="Last Name"
+                  placeholder="Enter your last name"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                />
               </div>
+              <SirchPrivacyChip
+                isPrivate={isNamePrivate}
+                onPrivacyChange={setIsNamePrivate}
+              />
+            </div>
 
-              <Spacer y={4} />
-
-              <div className='bottom-btn-container'>
-                <Button
-                  type="submit"
-                  className='big-btn'
-                >
-                  Update →
-                </Button>
-
-                <Button 
-                  className='big-btn' 
-                  onPress={() => { navigate(-1); }}
-                >
-                  Back
-                </Button>
+            <div className="flex items-center gap-4">
+              <div className="min-w-fit">
+                <p className="text-sm font-medium">Sirch User Phrase:</p>
               </div>
+              <SirchTextInput
+                value={userHandle}
+                placeholder="Loading..."
+                isReadOnly
+                className="flex-1"
+              />
+              <Button
+                onPress={handleSuggestNewHandle}
+                variant="bordered"
+                size="lg"
+              >
+                Pick Another ↺
+              </Button>
+            </div>
+
+            <div className='bottom-btn-container'>
+              <Button
+                type="submit"
+                className='big-btn'
+              >
+                Update →
+              </Button>
+
+              <Button 
+                className='big-btn' 
+                onPress={() => { navigate(-1); }}
+              >
+                Back
+              </Button>
             </div>
           </form>
         </>
