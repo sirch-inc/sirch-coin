@@ -35,8 +35,8 @@ const SIRCH_PRIVACY_CHIP_STYLES = {
   size: "lg" as const,
   variant: "bordered" as const,
   classNames: {
-    base: "border-gray-400 hover:border-gray-600 cursor-pointer transition-colors w-20 min-w-20",
-    content: "text-gray-700 font-medium"
+    base: "border-white hover:border-gray-300 cursor-pointer transition-colors w-20 min-w-20",
+    content: "text-white font-medium"
   }
 };
 
@@ -114,12 +114,12 @@ export const SirchPrivacyChip = React.forwardRef<HTMLDivElement,
       {...SIRCH_PRIVACY_CHIP_STYLES}
       {...chipProps}
       variant={isPrivate ? "solid" : "bordered"}
-      color={isPrivate ? "primary" : "default"}
+      color={isPrivate ? "default" : "default"}
       onClick={() => onPrivacyChange(!isPrivate)}
       classNames={{
         ...SIRCH_PRIVACY_CHIP_STYLES.classNames,
-        base: `${SIRCH_PRIVACY_CHIP_STYLES.classNames.base} ${isPrivate ? 'bg-primary text-white border-primary' : ''}`,
-        content: `${SIRCH_PRIVACY_CHIP_STYLES.classNames.content} ${isPrivate ? 'text-white' : ''}`,
+        base: `${SIRCH_PRIVACY_CHIP_STYLES.classNames.base} ${isPrivate ? 'bg-white text-black border-white' : 'bg-black'}`,
+        content: `${SIRCH_PRIVACY_CHIP_STYLES.classNames.content} ${isPrivate ? 'text-black' : 'text-white'}`,
         ...props.classNames
       }}
     >
