@@ -12,28 +12,39 @@ import './SendCoins.css';
 
 interface User {
   user_id: string;
-  user_handle: string;
   full_name: string;
+  user_handle: string;
+  email: string;
 }
 
-// Form data types
-interface ValidationErrors extends Record<string, boolean> {
-  recipient: boolean;
-  amount: boolean;
-  balance: boolean;
-}
-
-interface SendCoinsFormData extends Record<string, unknown> {
+interface SendCoinsFormData {
   amount: string;
+  recipient?: User | null;
   searchText: string;
   memo: string;
   selectedRecipient: User | null;
+}
+
+interface ValidationErrors {
+  recipient?: string;
+  amount?: string;
+  balance?: string; 
+  searchText?: string;
+  memo?: string;
 }
 
 export default function Send() {
   const navigate = useNavigate();
   const authContext = useContext(AuthContext);
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
+
+  // Early return for auth check - but we need to get user data first
+  if (!authContext) {
+    navigate('/');
+    return null;
+  }
+
+  const { userInTable, userBalance } = authContext;
 
   // Initialize form data
   const initialFormData: SendCoinsFormData = {
@@ -65,14 +76,14 @@ export default function Send() {
       const amount = value as string;
       const numAmount = parseFloat(amount);
       
-      if (authContext?.userBalance && !isNaN(numAmount) && numAmount > authContext.userBalance) {
-        return { isValid: false, message: `Insufficient balance. You have ⓢ ${authContext.userBalance} available.` };
+      if (userBalance && !isNaN(numAmount) && numAmount > userBalance) {
+        return { isValid: false, message: `Insufficient balance. You have ⓢ ${userBalance} available.` };
       }
       return { isValid: true };
     },
     searchText: () => ({ isValid: true }), // Search text doesn't need validation
     memo: () => ({ isValid: true }) // Memo is optional
-  }), [authContext?.userBalance]);
+  }), [userBalance]);
 
   // Use form validation hook
   const {
@@ -99,34 +110,32 @@ export default function Send() {
     }
   }, [authContext]);
 
-  const debouncedLookupUsers = useDebounce(async () => {
+  // Debounced user lookup
+  const lookupUsers = useCallback(async () => {
     if (!formData.searchText || formData.selectedRecipient) return;
 
-    await userLookupOperation.execute(
-      async () => {
-        const { data: foundUsersData, error: foundUsersError } = await supabase.functions.invoke('lookup-user', {
-          body: { searchText: formData.searchText }
-        });
+    await userLookupOperation.execute(async () => {
+      const { data: newFoundUsers, error } = await supabase.functions.invoke('lookup-users', {
+        body: { searchText: formData.searchText }
+      });
 
-        if (foundUsersError) {
-          throw new Error("Unable to look up users at this time. Please try again later.");
-        }
-
-        const newFoundUsers = foundUsersData.found as User[];
-        setFoundUsers(newFoundUsers);
-
-        // Auto-select if exactly one user found
-        if (newFoundUsers.length === 1) {
-          handleInputChange('selectedRecipient', newFoundUsers[0]);
-        }
-
-        return newFoundUsers;
-      },
-      {
-        suppressErrorToast: false
+      if (error) {
+        throw new Error("Error looking up users");
       }
-    );
-  });
+
+      setFoundUsers(newFoundUsers || []);
+      
+      // Auto-select if exactly one match
+      if (newFoundUsers?.length === 1) {
+        handleInputChange('selectedRecipient', newFoundUsers[0]);
+      }
+    });
+  }, [formData.searchText, formData.selectedRecipient, userLookupOperation, handleInputChange]);
+
+  const debouncedLookupUsers = useMemo(() => 
+    useDebounce(lookupUsers, 350), 
+    [lookupUsers]
+  );
 
   // Enhanced input handlers
   const handleAmountChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -135,13 +144,13 @@ export default function Send() {
     handleInputChange('amount', validAmount);
     
     // Also validate balance in real-time
-    if (validAmount && authContext?.userBalance) {
+    if (validAmount && userBalance) {
       const parsedAmount = parseFloat(validAmount);
-      if (parsedAmount > authContext.userBalance) {
+      if (parsedAmount > userBalance) {
         // This will be caught by the balance validation rule
       }
     }
-  }, [handleInputChange, authContext?.userBalance]);
+  }, [handleInputChange, userBalance]);
 
   const handleSearchTextChange = useCallback((newSearchText: string) => {
     // Only process search if no recipient is selected
@@ -195,8 +204,6 @@ export default function Send() {
 
   const handleConfirmSend = useCallback(async () => {
     const recipient = formData.selectedRecipient;
-    const userInTable = authContext?.userInTable;
-    const userBalance = authContext?.userBalance;
     
     if (!recipient) {
       toast.error("Please select a recipient.");
@@ -238,11 +245,17 @@ export default function Send() {
 
         resetForm();
         await fetchUserBalance();
+        onClose();
         toast.success(`Successfully sent ⓢ ${amount} Sirch Coins to ${recipient.full_name}!`);
         navigate('/');
-      }
+      },
+      "Error sending coins"
     );
-  }, [formData, authContext, transferOperation, resetForm, fetchUserBalance, navigate]);
+  }, [formData, userBalance, userInTable, transferOperation, resetForm, fetchUserBalance, onClose, navigate]);
+
+  const onClose = useCallback(() => {
+    onOpenChange();
+  }, [onOpenChange]);
 
   // (re)fetch the user's balance when the component renders
   useEffect(() => {
@@ -256,21 +269,12 @@ export default function Send() {
     };
    }, [debouncedLookupUsers]);
 
-  if (!authContext) {
-    navigate('/');
-    return null;
-  }
-
-  return (  
-    <>
-      <ToastNotification />
-
-      <div>
-        <h2>Send ⓢ</h2>
-
-        <form onSubmit={handleSubmit} noValidate>
-          <p>You can send Sirch Coins to your friends or others here.</p>
-          <p>Please enter some details to help us identify the recipient, the amount, and an optional private note.</p>
+  return (
+    <div className='screen'>
+      <div className='content-body send-body'>
+        <h1 className='page-title'>Send ⓢ Sirch Coins</h1>
+        
+        <form className='send-form' onSubmit={handleSubmit}>
         
           <Autocomplete
             name='searchText'
@@ -292,35 +296,13 @@ export default function Send() {
             variant="bordered"
             size="lg"
             radius="none"
-            isRequired
-            isInvalid={errors.recipient}
-            errorMessage={getFieldError('recipient')}
-            endContent={
-              (formData.selectedRecipient || formData.searchText) ? (
-                <button
-                  type="button"
-                  onClick={clearRecipient}
-                  className="text-white hover:text-gray-300 p-1"
-                  aria-label="Clear"
-                >
-                  ✕
-                </button>
-              ) : null
-            }
+            color="default"
+            isInvalid={!!errors.recipient}
+            errorMessage={errors.recipient}
             classNames={{
-              base: "bg-black text-white",
-              clearButton: "!text-white !opacity-100 !visible hover:!text-gray-300",
-              endContentWrapper: "!text-white",
-              selectorButton: "text-white"
-            }}
-            clearButtonProps={{
-              className: "!text-white !opacity-100 !visible hover:!text-gray-300"
-            }}
-            inputProps={{
-              classNames: {
-                input: "bg-black text-white",
-                inputWrapper: "bg-black border-white data-[invalid=true]:border-red-500"
-              }
+              base: "send-input mb-4",
+              input: "text-white bg-black placeholder-gray-400",
+              inputWrapper: "bg-black border-white data-[hover=true]:border-gray-300"
             }}
             listboxProps={{
               emptyContent: (formData.searchText.length !== 0 && foundUsers === null && formData.selectedRecipient === null) ? 
@@ -342,22 +324,16 @@ export default function Send() {
                 content: "bg-black p-0 border-none shadow-lg rounded-lg"
               },
               placement: "bottom",
-              offset: 2
+              offset: 10
             }}
           >
-            {(user: User) => (
-              <AutocompleteItem 
-                key={user.user_id} 
-                textValue={`${user.full_name} (@${user.user_handle})`}
-                classNames={{
-                  base: "bg-black text-white hover:bg-gray-800 data-[hover=true]:bg-gray-800 data-[selected=true]:bg-gray-700 data-[focus=true]:bg-gray-800 rounded-md",
-                  title: "text-white",
-                  description: "text-gray-400"
-                }}
-              >
-                <div>
-                  <div className="font-bold text-white">{user.full_name}</div>
-                  <div className="text-small text-gray-400">@{user.user_handle}</div>
+            {(user) => (
+              <AutocompleteItem key={user.user_id} value={user.user_id} className="bg-black text-white">
+                <div className="flex items-center">
+                  <div>
+                    <div className="font-semibold">{user.full_name}</div>
+                    <div className="text-sm text-gray-400">@{user.user_handle}</div>
+                  </div>
                 </div>
               </AutocompleteItem>
             )}
@@ -373,11 +349,11 @@ export default function Send() {
             isInvalid={!!errors.amount || !!errors.balance}
             errorMessage={
               errors.amount ? "Please enter an amount" : 
-              errors.balance ? `Insufficient balance. You have ⓢ ${authContext?.userBalance || 0} available.` : 
+              errors.balance ? `Insufficient balance. You have ⓢ ${userBalance || 0} available.` : 
               ""
             }
             min="1"
-            max={authContext?.userBalance?.toString() || "0"}
+            max={userBalance?.toString() || "0"}
             step="1"
           />
 
@@ -388,7 +364,9 @@ export default function Send() {
             value={formData.memo}
             onChange={handleMemoChange}
             maxLength={60}
-          />          <div className='bottom-btn-container'>
+          />
+
+          <div className='bottom-btn-container'>
             <Button type='submit' className='big-btn'>
               Confirm...
             </Button>
@@ -403,24 +381,17 @@ export default function Send() {
         </form>
       </div>
 
-      {/* Confirmation Modal */}
       <Modal 
         isOpen={isOpen} 
         onOpenChange={onOpenChange}
-        classNames={{
-          base: "bg-black border border-white",
-          header: "border-b border-white",
-          body: "py-6",
-          footer: "border-t border-white"
-        }}
-        size="md"
-        backdrop="blur"
+        className="bg-black text-white border border-white"
+        backdrop="opaque"
       >
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1 text-white">
-                Confirm Transaction
+              <ModalHeader className="text-white border-b border-gray-700">
+                <h2>Confirm Transaction</h2>
               </ModalHeader>
               <ModalBody className="text-white">
                 <div className="space-y-4">
@@ -445,7 +416,7 @@ export default function Send() {
                     <div className="flex justify-between border-t border-gray-700 pt-2">
                       <span className="text-gray-400">Your balance after:</span>
                       <span className="font-semibold">
-                        ⓢ {authContext?.userBalance ? (authContext.userBalance - parseFloat(formData.amount || '0')).toString() : '0'}
+                        ⓢ {userBalance ? (userBalance - parseFloat(formData.amount || '0')).toString() : '0'}
                       </span>
                     </div>
                   </div>
@@ -454,30 +425,30 @@ export default function Send() {
                   </p>
                 </div>
               </ModalBody>
-              <ModalFooter>
+              <ModalFooter className="border-t border-gray-700">
                 <Button 
                   color="danger" 
                   variant="light" 
                   onPress={onClose}
-                  className="text-white border-white hover:bg-gray-800"
+                  className="text-red-400 hover:bg-red-400/10"
                 >
                   Cancel
                 </Button>
                 <Button 
-                  color="primary" 
-                  onPress={async () => {
-                    await handleConfirmSend();
-                    onClose();
-                  }}
+                  color="success" 
+                  onPress={handleConfirmSend}
+                  isLoading={transferOperation.isLoading}
                   className="bg-green-600 hover:bg-green-700 text-white"
                 >
-                  Confirm & Send
+                  {transferOperation.isLoading ? "Sending..." : "Send Coins"}
                 </Button>
               </ModalFooter>
             </>
           )}
         </ModalContent>
       </Modal>
-    </>
+
+      <ToastNotification />
+    </div>
   );
 }
