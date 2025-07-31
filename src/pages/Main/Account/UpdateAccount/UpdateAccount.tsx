@@ -166,19 +166,32 @@ export default function UpdateAccount() {
             </div>
 
             <div className="flex items-center gap-4">
-              <div className="min-w-fit">
-                <p className="text-sm font-medium">Sirch User Phrase:</p>
-              </div>
               <SirchTextInput
+                label="Sirch User Phrase"
                 value={userHandle}
                 placeholder="Loading..."
                 isReadOnly
                 className="flex-1"
+                classNames={{
+                  input: "font-mono text-lg bg-default-50 !text-white"
+                }}
+                endContent={
+                  <Button
+                    size="sm"
+                    variant="light"
+                    onPress={handleSuggestNewHandle}
+                    isDisabled={!userHandle}
+                    className="text-xs"
+                  >
+                    ↺
+                  </Button>
+                }
               />
               <Button
                 onPress={handleSuggestNewHandle}
                 variant="bordered"
                 size="lg"
+                isDisabled={!userHandle}
               >
                 Pick Another ↺
               </Button>
