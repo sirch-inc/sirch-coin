@@ -175,3 +175,18 @@ export const SirchTextInput = React.forwardRef<HTMLInputElement, Omit<InputProps
 });
 
 SirchTextInput.displayName = "SirchTextInput";
+
+/**
+ * Password input with common password-specific props
+ */
+export const SirchPasswordInput = React.forwardRef<HTMLInputElement, Omit<InputProps, 'type'>>((props, ref) => {
+  return (
+    <SirchInput
+      ref={ref}
+      type="password"
+      {...props}
+    />
+  );
+});
+
+SirchPasswordInput.displayName = "SirchPasswordInput";
