@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../_common/AuthContext';
 import { ToastNotification, toast } from '../../_common/ToastNotification';
@@ -22,6 +22,24 @@ export default function UpdateAccount() {
   const [isNamePrivate, setIsNamePrivate] = useState<boolean>(userInTable?.is_name_private ?? false);
   const [userHandle, setUserHandle] = useState<string>(userInTable?.user_handle || '');
   const navigate = useNavigate();
+
+  // Update form state when userInTable data becomes available
+  useEffect(() => {
+    if (userInTable) {
+      setFirstName(userInTable.first_name || '');
+      setLastName(userInTable.last_name || '');
+      setIsNamePrivate(userInTable.is_name_private ?? false);
+      setUserHandle(userInTable.user_handle || '');
+      setIsEmailPrivate(userInTable.is_email_private ?? false);
+    }
+  }, [userInTable]);
+
+  // Update email state when userEmail becomes available
+  useEffect(() => {
+    if (userEmail) {
+      setEmail(userEmail);
+    }
+  }, [userEmail]);
 
   const handleUpdate = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
