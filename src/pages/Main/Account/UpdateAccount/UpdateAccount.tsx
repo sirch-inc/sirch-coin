@@ -117,7 +117,7 @@ export default function UpdateAccount() {
           <h2 className="text-2xl font-bold text-center mb-8">Update Account</h2>
 
           <form onSubmit={handleUpdate} autoComplete="off">
-            <p>Update your account information below. Privacy settings control whether others can see your information.</p>
+            <p>Update your account information below. Privacy settings control whether others can find you socially.</p>
             
             <div className="flex items-center gap-4">
               <SirchEmailInput
@@ -177,24 +177,22 @@ export default function UpdateAccount() {
                 }}
                 endContent={
                   <Button
-                    size="sm"
-                    variant="light"
+                    size="md"
+                    variant="solid"
                     onPress={handleSuggestNewHandle}
                     isDisabled={!userHandle}
-                    className="text-xs"
+                    className="min-w-fit px-3 bg-default-800 text-white hover:bg-default-700"
+                    title="Pick Another Phrase"
                   >
                     ↺
                   </Button>
                 }
               />
-              <Button
-                onPress={handleSuggestNewHandle}
-                variant="bordered"
-                size="lg"
-                isDisabled={!userHandle}
-              >
-                Pick Another ↺
-              </Button>
+              <SirchPrivacyChip
+                isPrivate={false}
+                onPrivacyChange={() => {}}
+                isDisabled
+              />
             </div>
 
             <div className='bottom-btn-container'>
