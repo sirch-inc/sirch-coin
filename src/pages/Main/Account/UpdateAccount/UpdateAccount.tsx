@@ -42,17 +42,19 @@ import supabase from '../../_common/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
 import { Button, Card, CardBody } from '@heroui/react';
 import { SirchEmailInput, SirchTextInput, SirchPrivacyChip } from '../../../../components/HeroUIFormComponents';
+import { useFormValidation, useAsyncOperation } from '../../../../hooks';
+import { validators } from '../../../../utils';
 import './UpdateAccount.css';
 
-// Validation types
-interface ValidationErrors {
+// Form data types
+interface ValidationErrors extends Record<string, boolean> {
   email: boolean;
   firstName: boolean;
   lastName: boolean;
   userHandle: boolean;
 }
 
-interface FormData {
+interface FormData extends Record<string, unknown> {
   email: string;
   firstName: string;
   lastName: string;
@@ -60,21 +62,6 @@ interface FormData {
   isEmailPrivate: boolean;
   isNamePrivate: boolean;
 }
-
-// Utility functions
-const isValidEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email.trim());
-};
-
-const isValidName = (name: string): boolean => {
-  const trimmed = name.trim();
-  return trimmed.length >= 1 && trimmed.length <= 50;
-};
-
-const isRequired = (value: string): boolean => {
-  return value.trim().length > 0;
-};
 
 
 export default function UpdateAccount() {
@@ -84,74 +71,76 @@ export default function UpdateAccount() {
   const session = auth?.session;
   const navigate = useNavigate();
 
-  // Form state
-  const [formData, setFormData] = useState<FormData>({
+  // Initialize form with validation
+  const initialFormData: FormData = {
     email: userEmail || '',
     firstName: userInTable?.first_name || '',
     lastName: userInTable?.last_name || '',
     userHandle: userInTable?.user_handle || '',
     isEmailPrivate: userInTable?.is_email_private ?? false,
     isNamePrivate: userInTable?.is_name_private ?? false,
+  };
+
+  // Validation rules using shared utilities
+  const validationRules = {
+    email: (value: unknown) => validators.email(value as string),
+    firstName: (value: unknown) => validators.name(value as string, "First name"),
+    lastName: (value: unknown) => validators.name(value as string, "Last name"),
+    userHandle: (value: unknown) => validators.required(value as string, "User handle"),
+    isEmailPrivate: () => ({ isValid: true }), // Privacy fields don't need validation
+    isNamePrivate: () => ({ isValid: true })
+  };
+
+  // Use form validation hook
+  const {
+    formData,
+    errors,
+    validateForm,
+    handleInputChange,
+    updateInitialData,
+    getFieldError
+  } = useFormValidation<FormData, ValidationErrors>({
+    initialData: initialFormData,
+    validationRules
   });
 
-  // Loading and error states
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [isGeneratingHandle, setIsGeneratingHandle] = useState<boolean>(false);
+  // Use async operation hooks
+  const submitOperation = useAsyncOperation();
+  const handleGenerationOperation = useAsyncOperation();
+
+  // Additional state
   const [hasEmailChanged, setHasEmailChanged] = useState<boolean>(false);
-  const [errors, setErrors] = useState<ValidationErrors>({
-    email: false,
-    firstName: false,
-    lastName: false,
-    userHandle: false
-  });
 
-  // Update form state when userInTable data becomes available
+  // Update form state when auth data becomes available
   useEffect(() => {
-    if (userInTable) {
-      setFormData(prev => ({
-        ...prev,
-        firstName: userInTable.first_name || '',
-        lastName: userInTable.last_name || '',
-        isNamePrivate: userInTable.is_name_private ?? false,
-        userHandle: userInTable.user_handle || '',
-        isEmailPrivate: userInTable.is_email_private ?? false,
-      }));
+    if (userInTable || userEmail) {
+      const newData: Partial<FormData> = {};
+      
+      if (userInTable) {
+        newData.firstName = userInTable.first_name || '';
+        newData.lastName = userInTable.last_name || '';
+        newData.isNamePrivate = userInTable.is_name_private ?? false;
+        newData.userHandle = userInTable.user_handle || '';
+        newData.isEmailPrivate = userInTable.is_email_private ?? false;
+      }
+      
+      if (userEmail) {
+        newData.email = userEmail;
+      }
+      
+      updateInitialData(newData);
     }
-  }, [userInTable]);
+  }, [userInTable, userEmail, updateInitialData]);
 
-  // Update email state when userEmail becomes available
-  useEffect(() => {
-    if (userEmail) {
-      setFormData(prev => ({ ...prev, email: userEmail }));
-    }
-  }, [userEmail]);
-
-  // Validation functions
-  const validateForm = useCallback((): boolean => {
-    const newErrors: ValidationErrors = {
-      email: !isValidEmail(formData.email),
-      firstName: !isValidName(formData.firstName),
-      lastName: !isValidName(formData.lastName),
-      userHandle: !isRequired(formData.userHandle)
-    };
-
-    setErrors(newErrors);
-    return !Object.values(newErrors).some(Boolean);
-  }, [formData]);
-
-  const handleInputChange = useCallback((field: keyof FormData, value: string | boolean): void => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-
-    // Clear specific error when user starts typing
-    if (typeof value === 'string' && field in errors) {
-      setErrors(prev => ({ ...prev, [field]: false }));
-    }
+  // Enhanced input change handler with email change detection
+  const handleFormInputChange = useCallback((field: keyof FormData, value: string | boolean): void => {
+    handleInputChange(field, value);
 
     // Handle email change detection
     if (field === 'email' && typeof value === 'string') {
       setHasEmailChanged(value !== userEmail);
     }
-  }, [errors, userEmail]);
+  }, [handleInputChange, userEmail]);
 
   const handleUpdate = useCallback(async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
@@ -161,68 +150,64 @@ export default function UpdateAccount() {
       return;
     }
 
-    setIsSubmitting(true);
+    await submitOperation.execute(
+      async () => {
+        const { error } = await supabase.auth.updateUser({
+          email: formData.email,
+          data: {
+            full_name: `${formData.firstName} ${formData.lastName}`,
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            is_name_private: formData.isNamePrivate,
+            user_handle: formData.userHandle,
+            is_email_private: formData.isEmailPrivate
+          }
+        });
 
-    try {
-      const { error } = await supabase.auth.updateUser({
-        email: formData.email,
-        data: {
-          full_name: `${formData.firstName} ${formData.lastName}`,
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          is_name_private: formData.isNamePrivate,
-          user_handle: formData.userHandle,
-          is_email_private: formData.isEmailPrivate
+        if (error) {
+          if (isAuthApiError(error) || error.code === 'weak_password') {
+            throw new Error(error.message);
+          }
+          throw error;
         }
-      });
 
-      if (error) {
-        if (isAuthApiError(error) || error.code === 'weak_password') {
-          toast.error(error.message);
-          return;
+        if (hasEmailChanged) {
+          toast.success("A verification email was sent to your new email address.");
         }
-        throw error;
+      },
+      {
+        successMessage: "Account updated successfully!",
+        onError: (error) => console.error("Account update failed:", error)
       }
-
-      toast.success("Account updated successfully!");
-
-      if (hasEmailChanged) {
-        toast.success("A verification email was sent to your new email address.");
-      }
-    } catch (exception) {
-      console.error("An exception occurred:", exception instanceof Error ? exception.message : String(exception));
-      toast.error("Failed to update account. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [formData, hasEmailChanged, validateForm]);
+    );
+  }, [formData, hasEmailChanged, validateForm, submitOperation]);
 
   const handleSuggestNewHandle = useCallback(async (): Promise<void> => {
-    setIsGeneratingHandle(true);
-    setFormData(prev => ({ ...prev, userHandle: '' }));
+    // Clear current handle to show loading state
+    handleInputChange('userHandle', '');
 
-    try {
-      const { data, error } = await supabase.functions.invoke('generate-valid-user-handles', {
-        body: { handleCount: 1 }
-      });
-    
-      if (error) {
-        throw error;
+    await handleGenerationOperation.execute(
+      async () => {
+        const { data, error } = await supabase.functions.invoke('generate-valid-user-handles', {
+          body: { handleCount: 1 }
+        });
+      
+        if (error) {
+          throw error;
+        }
+
+        if (!data || !data.handles || data.handles.length === 0) {
+          throw new Error("No available user handles found.");
+        }
+
+        handleInputChange('userHandle', data.handles[0]);
+        return data.handles[0];
+      },
+      {
+        onError: (error) => console.error("Handle generation failed:", error)
       }
-
-      if (!data || !data.handles || data.handles.length === 0) {
-        throw new Error("No available user handles found.");
-      }
-
-      setFormData(prev => ({ ...prev, userHandle: data.handles[0] }));
-      setErrors(prev => ({ ...prev, userHandle: false }));
-    } catch (exception) {
-      console.error("An exception occurred:", exception instanceof Error ? exception.message : String(exception));
-      toast.error("Failed to generate new handle. Please try again.");
-    } finally {
-      setIsGeneratingHandle(false);
-    }
-  }, []);
+    );
+  }, [handleGenerationOperation, handleInputChange]);
   
   return (
     <div>
@@ -240,15 +225,15 @@ export default function UpdateAccount() {
                 label="Email"
                 placeholder="Enter your email"
                 value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
+                onChange={(e) => handleFormInputChange('email', e.target.value)}
                 isRequired
                 isInvalid={errors.email}
-                errorMessage={errors.email ? "Please enter a valid email address" : ""}
+                errorMessage={getFieldError('email')}
                 className="flex-1"
               />
               <SirchPrivacyChip
                 isPrivate={formData.isEmailPrivate}
-                onPrivacyChange={(value) => handleInputChange('isEmailPrivate', value)}
+                onPrivacyChange={(value) => handleFormInputChange('isEmailPrivate', value)}
               />
             </div>
 
@@ -268,26 +253,26 @@ export default function UpdateAccount() {
                   label="First Name"
                   placeholder="Enter your first name"
                   value={formData.firstName}
-                  onChange={(e) => handleInputChange('firstName', e.target.value)}
+                  onChange={(e) => handleFormInputChange('firstName', e.target.value)}
                   isRequired
                   isInvalid={errors.firstName}
-                  errorMessage={errors.firstName ? "First name is required (1-50 characters)" : ""}
+                  errorMessage={getFieldError('firstName')}
                   maxLength={50}
                 />
                 <SirchTextInput
                   label="Last Name"
                   placeholder="Enter your last name"
                   value={formData.lastName}
-                  onChange={(e) => handleInputChange('lastName', e.target.value)}
+                  onChange={(e) => handleFormInputChange('lastName', e.target.value)}
                   isRequired
                   isInvalid={errors.lastName}
-                  errorMessage={errors.lastName ? "Last name is required (1-50 characters)" : ""}
+                  errorMessage={getFieldError('lastName')}
                   maxLength={50}
                 />
               </div>
               <SirchPrivacyChip
                 isPrivate={formData.isNamePrivate}
-                onPrivacyChange={(value) => handleInputChange('isNamePrivate', value)}
+                onPrivacyChange={(value) => handleFormInputChange('isNamePrivate', value)}
               />
             </div>
 
@@ -295,11 +280,11 @@ export default function UpdateAccount() {
               <SirchTextInput
                 label="Sirch User Phrase"
                 value={formData.userHandle}
-                placeholder={isGeneratingHandle ? "Generating..." : "Loading..."}
+                placeholder={handleGenerationOperation.isLoading ? "Generating..." : "Loading..."}
                 isReadOnly
                 isRequired
                 isInvalid={errors.userHandle}
-                errorMessage={errors.userHandle ? "User handle is required" : ""}
+                errorMessage={getFieldError('userHandle')}
                 className="flex-1"
                 classNames={{
                   input: "font-mono text-lg bg-default-50 !text-white"
@@ -309,12 +294,12 @@ export default function UpdateAccount() {
                     size="md"
                     variant="solid"
                     onPress={handleSuggestNewHandle}
-                    isDisabled={!formData.userHandle || isGeneratingHandle}
-                    isLoading={isGeneratingHandle}
+                    isDisabled={!formData.userHandle || handleGenerationOperation.isLoading}
+                    isLoading={handleGenerationOperation.isLoading}
                     className="min-w-fit px-3 bg-default-800 text-white hover:bg-default-700"
                     title="Pick Another Phrase"
                   >
-                    {isGeneratingHandle ? "..." : "↺"}
+                    {handleGenerationOperation.isLoading ? "..." : "↺"}
                   </Button>
                 }
               />
@@ -329,16 +314,16 @@ export default function UpdateAccount() {
               <Button
                 type="submit"
                 className='big-btn'
-                isLoading={isSubmitting}
-                isDisabled={isSubmitting}
+                isLoading={submitOperation.isLoading}
+                isDisabled={submitOperation.isLoading}
               >
-                {isSubmitting ? "Updating..." : "Update →"}
+                {submitOperation.isLoading ? "Updating..." : "Update →"}
               </Button>
 
               <Button 
                 className='big-btn' 
                 onPress={() => { navigate(-1); }}
-                isDisabled={isSubmitting}
+                isDisabled={submitOperation.isLoading}
               >
                 Back
               </Button>
