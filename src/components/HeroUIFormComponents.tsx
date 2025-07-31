@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Checkbox, Switch, InputProps, CheckboxProps, SwitchProps } from '@heroui/react';
+import { Input, Checkbox, Switch, Chip, InputProps, CheckboxProps, SwitchProps, ChipProps } from '@heroui/react';
 
 // Standard styling for all Sirch inputs
 const SIRCH_INPUT_STYLES = {
@@ -27,6 +27,16 @@ const SIRCH_SWITCH_STYLES = {
     startContent: "text-white",
     endContent: "text-white",
     label: "text-black"
+  }
+};
+
+// Standard styling for privacy chips
+const SIRCH_PRIVACY_CHIP_STYLES = {
+  size: "lg" as const,
+  variant: "bordered" as const,
+  classNames: {
+    base: "border-gray-400 hover:border-gray-600 cursor-pointer transition-colors w-20 min-w-20",
+    content: "text-gray-700 font-medium"
   }
 };
 
@@ -85,6 +95,40 @@ export const SirchSwitch = React.forwardRef<HTMLInputElement, SwitchProps>((prop
 });
 
 SirchSwitch.displayName = "SirchSwitch";
+
+/**
+ * Privacy toggle chip component - better UX for Private/Public toggles
+ * Shows "Private" when selected, appears muted when not selected
+ */
+export const SirchPrivacyChip = React.forwardRef<HTMLDivElement, 
+  Omit<ChipProps, 'children'> & { 
+    isPrivate: boolean; 
+    onPrivacyChange: (isPrivate: boolean) => void;
+  }
+>((props, ref) => {
+  const { isPrivate, onPrivacyChange, ...chipProps } = props;
+  
+  return (
+    <Chip
+      ref={ref}
+      {...SIRCH_PRIVACY_CHIP_STYLES}
+      {...chipProps}
+      variant={isPrivate ? "solid" : "bordered"}
+      color={isPrivate ? "primary" : "default"}
+      onClick={() => onPrivacyChange(!isPrivate)}
+      classNames={{
+        ...SIRCH_PRIVACY_CHIP_STYLES.classNames,
+        base: `${SIRCH_PRIVACY_CHIP_STYLES.classNames.base} ${isPrivate ? 'bg-primary text-white border-primary' : ''}`,
+        content: `${SIRCH_PRIVACY_CHIP_STYLES.classNames.content} ${isPrivate ? 'text-white' : ''}`,
+        ...props.classNames
+      }}
+    >
+      Private
+    </Chip>
+  );
+});
+
+SirchPrivacyChip.displayName = "SirchPrivacyChip";
 
 /**
  * Email input with common email-specific props
