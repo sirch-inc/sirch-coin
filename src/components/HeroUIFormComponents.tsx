@@ -35,8 +35,8 @@ const SIRCH_PRIVACY_CHIP_STYLES = {
   size: "lg" as const,
   variant: "bordered" as const,
   classNames: {
-    base: "border-white hover:border-gray-300 cursor-pointer transition-colors w-20 min-w-20",
-    content: "text-white font-medium"
+    base: "border-white hover:border-gray-300 cursor-pointer transition-colors w-20 min-w-20 select-none",
+    content: "text-white font-medium select-none"
   }
 };
 
