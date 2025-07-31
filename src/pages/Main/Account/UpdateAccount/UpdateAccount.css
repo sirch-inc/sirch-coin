@@ -13,6 +13,40 @@
   color: rgb(34, 197, 94);
 }
 
+/* Form field spacing */
+.form-section {
+  margin-bottom: 1.5rem;
+}
+
+/* Improved loading state for handle generation */
+.handle-generating {
+  opacity: 0.7;
+  transition: opacity 0.2s ease-in-out;
+}
+
+/* Enhanced error message styling */
+.error-message {
+  font-size: 0.875rem;
+  color: rgb(239, 68, 68);
+  margin-top: 0.25rem;
+}
+
+/* Success notification styling */
+.success-notification {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .flex.gap-4 {
@@ -28,4 +62,24 @@
   .min-w-fit {
     min-width: auto;
   }
+
+  /* Stack form sections vertically on mobile */
+  .form-section .flex.gap-4 .flex-1 {
+    flex-direction: column;
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  .success-notification,
+  .handle-generating {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* Focus indicators for better accessibility */
+.big-btn:focus-visible {
+  outline: 2px solid rgb(59, 130, 246);
+  outline-offset: 2px;
 }
