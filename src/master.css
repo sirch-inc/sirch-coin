@@ -41,9 +41,7 @@
   }
   
   form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: block;
   }
   
   label {
@@ -52,13 +50,13 @@
     margin-bottom: 4px;
   }
   
-  input {
+  /* input {
     padding: 4px;
     border-radius: 2px;
     border: 2px solid #ccc;
     width: 100%;
     box-sizing: border-box;
-  }
+  } */
   
   button {
     background-color: black;
@@ -158,6 +156,14 @@
   background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(8px);
   z-index: 100;
+}
+
+
+
+
+/* this one from PurchaseCoins */
+.coin-input {
+  width: 24rem;
 }
 
 
