@@ -100,11 +100,10 @@ export default function Login() {
 
       {!auth?.session ? (
         <>
-          <h2 className="text-2xl font-bold text-center mb-8">Log In</h2>
-          <p>New users should <a href="/create-account">create an account</a> first.</p>
+          <h2 className="text-2xl font-bold text-center mb-8">Log in to Sirch Coins</h2>
+          <p>New users should <a href="/create-account">create a Sirch Coins account</a>.</p>
           
           <form className="login-form" onSubmit={handleLogin} autoComplete="off" noValidate>
-            <p>Enter your credentials to access your account.</p>
             
             <SirchEmailInput
               label="Email"
