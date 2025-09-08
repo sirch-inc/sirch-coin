@@ -124,10 +124,10 @@ export default function CreateAccount() {
     );
   }, [handleGenerationOperation, handleInputChange]);
 
+  // Generate initial handle only once on component mount
   useEffect(() => {
-      handleSuggestNewHandle();
-    }, [handleSuggestNewHandle]
-  );
+    handleSuggestNewHandle();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSignUp = useCallback(async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
@@ -174,10 +174,6 @@ export default function CreateAccount() {
       }
     );
   }, [formData, validateForm, submitOperation, navigate]);
-
-  useEffect(() => {
-    handleSuggestNewHandle();
-  }, [handleSuggestNewHandle]);
 
   // Helper to check if passwords match for UI feedback
   const passwordsMatch = formData.password && formData.confirmPassword && formData.password === formData.confirmPassword;
