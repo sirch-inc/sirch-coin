@@ -4,8 +4,8 @@ import { AuthContext } from '../_common/AuthContext';
 import { ToastNotification, toast } from '../_common/ToastNotification';
 import supabase from '../_common/supabaseProvider';
 import useDebounce from '../../../helpers/debounce';
-import { Button, Autocomplete, AutocompleteItem, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from '@heroui/react';
-import { SirchNumberInput, SirchTextInput } from '../../../components/HeroUIFormComponents';
+import { Button, AutocompleteItem, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from '@heroui/react';
+import { SirchNumberInput, SirchTextInput, SirchAutocomplete } from '../../../components/HeroUIFormComponents';
 import { useFormValidation, useAsyncOperation } from '../../../hooks';
 import 'react-toastify/dist/ReactToastify.css';
 import './SendCoins.css';
@@ -283,7 +283,7 @@ export default function Send() {
           <p>You can send Sirch Coins to your friends or others here.</p>
           <p>Please enter some details to help us identify the recipient, the amount, and an optional private note.</p>
         
-          <Autocomplete
+          <SirchAutocomplete
             name='searchText'
             label='Recipient'
             placeholder="Partial name, email, or @handle..."
@@ -300,9 +300,6 @@ export default function Send() {
             onClear={clearRecipient}
             items={foundUsers || []}
             isClearable
-            variant="bordered"
-            size="lg"
-            radius="none"
             isRequired
             isInvalid={errors.recipient}
             errorMessage={getFieldError('recipient')}
@@ -318,20 +315,8 @@ export default function Send() {
                 </button>
               ) : null
             }
-            classNames={{
-              base: "bg-black text-white",
-              clearButton: "!text-white !opacity-100 !visible hover:!text-gray-300",
-              endContentWrapper: "!text-white",
-              selectorButton: "text-white"
-            }}
             clearButtonProps={{
               className: "!text-white !opacity-100 !visible hover:!text-gray-300"
-            }}
-            inputProps={{
-              classNames: {
-                input: "bg-black text-white",
-                inputWrapper: "bg-black border-white data-[invalid=true]:border-red-500"
-              }
             }}
             listboxProps={{
               emptyContent: (formData.searchText.length !== 0 && foundUsers === null && formData.selectedRecipient === null) ? 
@@ -356,23 +341,26 @@ export default function Send() {
               offset: 2
             }}
           >
-            {(user: User) => (
-              <AutocompleteItem 
-                key={user.user_id} 
-                textValue={`${user.full_name} (@${user.user_handle})`}
-                classNames={{
-                  base: "bg-black text-white hover:bg-gray-800 data-[hover=true]:bg-gray-800 data-[selected=true]:bg-gray-700 data-[focus=true]:bg-gray-800 rounded-md",
-                  title: "text-white",
-                  description: "text-gray-400"
-                }}
-              >
-                <div>
-                  <div className="font-bold text-white">{user.full_name}</div>
-                  <div className="text-small text-gray-400">@{user.user_handle}</div>
-                </div>
-              </AutocompleteItem>
-            )}
-          </Autocomplete>
+            {(item: object) => {
+              const user = item as User;
+              return (
+                <AutocompleteItem 
+                  key={user.user_id} 
+                  textValue={`${user.full_name} (@${user.user_handle})`}
+                  classNames={{
+                    base: "bg-black text-white hover:bg-gray-800 data-[hover=true]:bg-gray-800 data-[selected=true]:bg-gray-700 data-[focus=true]:bg-gray-800 rounded-md",
+                    title: "text-white",
+                    description: "text-gray-400"
+                  }}
+                >
+                  <div>
+                    <div className="font-bold text-white">{user.full_name}</div>
+                    <div className="text-small text-gray-400">@{user.user_handle}</div>
+                  </div>
+                </AutocompleteItem>
+              );
+            }}
+          </SirchAutocomplete>
 
           <SirchNumberInput
             name='amountToSend'
@@ -399,7 +387,9 @@ export default function Send() {
             value={formData.memo}
             onChange={handleMemoChange}
             maxLength={60}
-          />          <div className='bottom-btn-container'>
+          />
+          
+          <div className='bottom-btn-container'>
             <Button type='submit' className='big-btn'>
               Confirm...
             </Button>

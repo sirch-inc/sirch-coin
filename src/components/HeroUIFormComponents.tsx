@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Input, Checkbox, Switch, Chip, InputProps, CheckboxProps, SwitchProps, ChipProps } from '@heroui/react';
+import { Input, Checkbox, Switch, Chip, Autocomplete, InputProps, CheckboxProps, SwitchProps, ChipProps, AutocompleteProps } from '@heroui/react';
 import { validators } from '../utils';
 
 // Standard styling for all Sirch inputs
@@ -258,3 +258,50 @@ export const SirchPasswordInput = React.forwardRef<HTMLInputElement, Omit<InputP
 });
 
 SirchPasswordInput.displayName = "SirchPasswordInput";
+
+// Standard styling for all Sirch autocomplete components
+const SIRCH_AUTOCOMPLETE_STYLES = {
+  variant: "bordered" as const,
+  size: "lg" as const,
+  radius: "none" as const,
+  inputProps: {
+    classNames: {
+      input: "bg-black text-white",
+      inputWrapper: "bg-black border-white data-[hover=true]:!bg-gray-800 data-[focus=true]:!bg-gray-800 data-[focus-within=true]:!bg-gray-800 data-[invalid=true]:border-red-500"
+    }
+  },
+  classNames: {
+    base: "bg-black text-white",
+    clearButton: "!text-white !opacity-100 !visible hover:!text-gray-300",
+    endContentWrapper: "!text-white",
+    selectorButton: "text-white"
+  }
+};
+
+/**
+ * Standardized Autocomplete component with Sirch styling
+ * Extends all HeroUI Autocomplete props
+ */
+export const SirchAutocomplete = React.forwardRef<HTMLInputElement, AutocompleteProps>((props, ref) => {
+  return (
+    <Autocomplete
+      ref={ref}
+      {...SIRCH_AUTOCOMPLETE_STYLES}
+      {...props}
+      inputProps={{
+        ...SIRCH_AUTOCOMPLETE_STYLES.inputProps,
+        ...props.inputProps,
+        classNames: {
+          ...SIRCH_AUTOCOMPLETE_STYLES.inputProps.classNames,
+          ...props.inputProps?.classNames
+        }
+      }}
+      classNames={{
+        ...SIRCH_AUTOCOMPLETE_STYLES.classNames,
+        ...props.classNames
+      }}
+    />
+  );
+});
+
+SirchAutocomplete.displayName = "SirchAutocomplete";
