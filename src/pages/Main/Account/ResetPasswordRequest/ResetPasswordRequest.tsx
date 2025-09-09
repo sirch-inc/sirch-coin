@@ -19,12 +19,12 @@ export default function ResetPasswordRequest({ standalone = true }: ResetPasswor
   const session = authContext?.session;
   const [userEmail, setUserEmail] = useState<string>('');
   const [sendStatus, setSendStatus] = useState<string>('');
-  const [emailTouched, setEmailTouched] = useState<boolean>(false);
+  const [emailBlurred, setEmailBlurred] = useState<boolean>(false);
 
   // Email validation using shared utility
   const emailValidation = validators.email(userEmail);
   const isEmailValid = emailValidation.isValid;
-  const emailError = emailTouched && !isEmailValid ? emailValidation.message : undefined;
+  const emailError = emailBlurred && !isEmailValid && userEmail.trim() !== '' ? emailValidation.message : undefined;
 
   const submitRequest = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -56,6 +56,7 @@ export default function ResetPasswordRequest({ standalone = true }: ResetPasswor
       // reset form
       setUserEmail('');
       setSendStatus('');
+      setEmailBlurred(false); // Reset validation state
 
       toast.success(`We've emailed ${userEmail} a link to reset your password! Please check your email inbox.`);
     } catch (exception) {
@@ -88,8 +89,11 @@ export default function ResetPasswordRequest({ standalone = true }: ResetPasswor
                 value={userEmail}
                 onChange={(e) => {
                   setUserEmail(e.target.value);
-                  setEmailTouched(true);
+                  if (emailBlurred) {
+                    setEmailBlurred(false); // Reset blur state when user starts typing again
+                  }
                 }}
+                onBlur={() => setEmailBlurred(true)}
                 isRequired
                 autoComplete="email"
                 isInvalid={!!emailError}
