@@ -3,6 +3,7 @@ import { format } from 'date-fns-tz';
 import { Tooltip } from 'react-tooltip';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 import { Button } from '@heroui/react';
+import { useState, useEffect } from 'react';
 import './TransactionCard.css';
 
 export interface TransactionDetails {
@@ -57,6 +58,27 @@ const getTransactionDetails = (type: Transaction['type'], details: TransactionDe
 
 export default function TransactionCard({ transaction }: TransactionCardProps) {
   const { created_at, type, amount, status, details } = transaction;
+  const [showPopover, setShowPopover] = useState(false);
+
+  // Close popover when scrolling occurs
+  useEffect(() => {
+    const handleScroll = () => {
+      if (showPopover) {
+        setShowPopover(false);
+      }
+    };
+
+    // Find the scrollable container
+    const scrollContainer = document.querySelector('.transactions-container');
+    if (scrollContainer) {
+      scrollContainer.addEventListener('scroll', handleScroll);
+      return () => {
+        scrollContainer.removeEventListener('scroll', handleScroll);
+      };
+    }
+    
+    return () => {}; // Return empty cleanup function if no scroll container found
+  }, [showPopover]);
 
   const detailsPopover = (
     <Popover id="details-popover">
@@ -92,12 +114,14 @@ export default function TransactionCard({ transaction }: TransactionCardProps) {
           trigger="click"
           placement="top"
           overlay={detailsPopover}
+          show={showPopover}
+          onToggle={(nextShow) => setShowPopover(nextShow)}
           rootClose
         >
           <Button
             className="transaction-details"
             aria-haspopup="true"
-            aria-expanded="false"
+            aria-expanded={showPopover}
           >
             Show Details
           </Button>
