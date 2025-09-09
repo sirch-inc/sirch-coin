@@ -9,13 +9,16 @@ const SIRCH_INPUT_STYLES = {
   radius: "none" as const,
   classNames: {
     input: "bg-black text-white",
-    inputWrapper: "bg-black border-white data-[invalid=true]:border-red-500"
+    inputWrapper: "bg-black border-white data-[hover=true]:!bg-gray-800 data-[focus=true]:!bg-gray-800 data-[focus-within=true]:!bg-gray-800 data-[invalid=true]:border-red-500"
   }
 };
 
 // Standard styling for all Sirch checkboxes
 const SIRCH_CHECKBOX_STYLES = {
-  size: "lg" as const
+  size: "lg" as const,
+  classNames: {
+    wrapper: "data-[hover=true]:!bg-gray-800 data-[focus=true]:!bg-gray-800 data-[focus-visible=true]:!bg-gray-800"
+  }
 };
 
 // Standard styling for all Sirch switches
@@ -71,6 +74,10 @@ export const SirchCheckbox = React.forwardRef<HTMLInputElement, CheckboxProps>((
       ref={ref}
       {...SIRCH_CHECKBOX_STYLES}
       {...props}
+      classNames={{
+        ...SIRCH_CHECKBOX_STYLES.classNames,
+        ...props.classNames
+      }}
     />
   );
 });
