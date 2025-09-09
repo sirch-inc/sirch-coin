@@ -22,3 +22,22 @@
   height: 16px;
   display: inline-block;
 }
+
+/* Animated spacing for autocomplete dropdown */
+.autocomplete-spacing {
+  transition: margin-bottom 0.25s ease-in-out;
+  margin-bottom: 0;
+}
+
+.autocomplete-spacing.dropdown-open {
+  margin-bottom: 240px; /* Space for dropdown - adjusted for better visual spacing */
+}
+
+.form-field-spacing {
+  transition: margin-top 0.25s ease-in-out;
+  margin-top: 0;
+}
+
+.form-field-spacing.with-dropdown {
+  margin-top: 20px; /* Additional spacing when dropdown is open */
+}

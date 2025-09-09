@@ -93,6 +93,10 @@ export default function Send() {
 
   // Additional state for user search functionality
   const [foundUsers, setFoundUsers] = useState<User[] | null>(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  
+  // Calculate if we should show the animated spacing
+  const shouldShowDropdownSpacing = isDropdownOpen && !formData.selectedRecipient;
 
   const fetchUserBalance = useCallback(async () => {
     if (authContext?.refreshUserBalance) {
@@ -283,102 +287,109 @@ export default function Send() {
           <p>You can send Sirch Coins to your friends or others here.</p>
           <p>Please enter some details to help us identify the recipient, the amount, and an optional private note.</p>
         
-          <SirchAutocomplete
-            name='searchText'
-            label='Recipient'
-            placeholder="Partial name, email, or @handle..."
-            inputValue={formData.selectedRecipient ? `${formData.selectedRecipient.full_name} (@${formData.selectedRecipient.user_handle})` : formData.searchText}
-            onInputChange={handleSearchTextChange}
-            selectedKey={formData.selectedRecipient?.user_id || null}
-            onSelectionChange={(key) => {
-              const user = foundUsers?.find(u => u.user_id === key);
-              handleInputChange('selectedRecipient', user || null);
-              if (user) {
-                handleInputChange('searchText', '');
+          <div className={`autocomplete-spacing ${shouldShowDropdownSpacing ? 'dropdown-open' : ''}`}>
+            <SirchAutocomplete
+              name='searchText'
+              label='Recipient'
+              placeholder="Partial name, email, or @handle..."
+              inputValue={formData.selectedRecipient ? `${formData.selectedRecipient.full_name} (@${formData.selectedRecipient.user_handle})` : formData.searchText}
+              onInputChange={handleSearchTextChange}
+              selectedKey={formData.selectedRecipient?.user_id || null}
+              onSelectionChange={(key) => {
+                const user = foundUsers?.find(u => u.user_id === key);
+                handleInputChange('selectedRecipient', user || null);
+                if (user) {
+                  handleInputChange('searchText', '');
+                }
+              }}
+              onClear={clearRecipient}
+              onOpenChange={(isOpen) => {
+                setIsDropdownOpen(isOpen);
+              }}
+              items={foundUsers || []}
+              isClearable
+              isRequired
+              isInvalid={errors.recipient}
+              errorMessage={getFieldError('recipient')}
+              endContent={
+                (formData.selectedRecipient || formData.searchText) ? (
+                  <button
+                    type="button"
+                    onClick={clearRecipient}
+                    className="text-white hover:text-gray-300 p-1"
+                    aria-label="Clear"
+                  >
+                    ✕
+                  </button>
+                ) : null
               }
-            }}
-            onClear={clearRecipient}
-            items={foundUsers || []}
-            isClearable
-            isRequired
-            isInvalid={errors.recipient}
-            errorMessage={getFieldError('recipient')}
-            endContent={
-              (formData.selectedRecipient || formData.searchText) ? (
-                <button
-                  type="button"
-                  onClick={clearRecipient}
-                  className="text-white hover:text-gray-300 p-1"
-                  aria-label="Clear"
-                >
-                  ✕
-                </button>
-              ) : null
-            }
-            clearButtonProps={{
-              className: "!text-white !opacity-100 !visible hover:!text-gray-300"
-            }}
-            listboxProps={{
-              emptyContent: (formData.searchText.length !== 0 && foundUsers === null && formData.selectedRecipient === null) ? 
-                <div className="flex items-center justify-center p-4">
-                  <div className="loading-spinner spin-animation mr-2"></div>
-                  <span>Searching for users...</span>
-                </div> :
-                formData.searchText.length !== 0 && foundUsers?.length === 0 ? 
-                "No users found; please refine your search or personally invite this person to join Sirch Coins." : 
-                "Start typing to search for users...",
-              className: "bg-black text-white border border-white max-h-60 rounded-lg",
-              itemClasses: {
-                base: "bg-black text-white hover:bg-gray-800 data-[hover=true]:bg-gray-800 data-[selected=true]:bg-gray-700 rounded-md"
-              }
-            }}
-            popoverProps={{
-              classNames: {
-                base: "bg-black border border-white rounded-lg",
-                content: "bg-black p-0 border-none shadow-lg rounded-lg"
-              },
-              placement: "bottom",
-              offset: 2
-            }}
-          >
-            {(item: object) => {
-              const user = item as User;
-              return (
-                <AutocompleteItem 
-                  key={user.user_id} 
-                  textValue={`${user.full_name} (@${user.user_handle})`}
-                  classNames={{
-                    base: "bg-black text-white hover:bg-gray-800 data-[hover=true]:bg-gray-800 data-[selected=true]:bg-gray-700 data-[focus=true]:bg-gray-800 rounded-md",
-                    title: "text-white",
-                    description: "text-gray-400"
-                  }}
-                >
-                  <div>
-                    <div className="font-bold text-white">{user.full_name}</div>
-                    <div className="text-small text-gray-400">@{user.user_handle}</div>
-                  </div>
-                </AutocompleteItem>
-              );
-            }}
-          </SirchAutocomplete>
+              clearButtonProps={{
+                className: "!text-white !opacity-100 !visible hover:!text-gray-300"
+              }}
+              listboxProps={{
+                emptyContent: (formData.searchText.length !== 0 && foundUsers === null && formData.selectedRecipient === null) ? 
+                  <div className="flex items-center justify-center p-4">
+                    <div className="loading-spinner spin-animation mr-2"></div>
+                    <span>Searching for users...</span>
+                  </div> :
+                  formData.searchText.length !== 0 && foundUsers?.length === 0 ? 
+                  "No users found; please refine your search or personally invite this person to join Sirch Coins." : 
+                  "Start typing to search for users...",
+                className: "bg-black text-white border border-white max-h-60 rounded-lg",
+                itemClasses: {
+                  base: "bg-black text-white hover:bg-gray-800 data-[hover=true]:bg-gray-800 data-[selected=true]:bg-gray-700 rounded-md"
+                }
+              }}
+              popoverProps={{
+                classNames: {
+                  base: "bg-black border border-white rounded-lg",
+                  content: "bg-black p-0 border-none shadow-lg rounded-lg"
+                },
+                placement: "bottom",
+                offset: 2
+              }}
+            >
+              {(item: object) => {
+                const user = item as User;
+                return (
+                  <AutocompleteItem 
+                    key={user.user_id} 
+                    textValue={`${user.full_name} (@${user.user_handle})`}
+                    classNames={{
+                      base: "bg-black text-white hover:bg-gray-800 data-[hover=true]:bg-gray-800 data-[selected=true]:bg-gray-700 data-[focus=true]:bg-gray-800 rounded-md",
+                      title: "text-white",
+                      description: "text-gray-400"
+                    }}
+                  >
+                    <div>
+                      <div className="font-bold text-white">{user.full_name}</div>
+                      <div className="text-small text-gray-400">@{user.user_handle}</div>
+                    </div>
+                  </AutocompleteItem>
+                );
+              }}
+            </SirchAutocomplete>
+          </div>
 
-          <SirchNumberInput
-            name='amountToSend'
-            label='Amount'
-            placeholder="How many ⓢ coins?"
-            value={formData.amount}
-            onChange={handleAmountChange}
-            isRequired
-            isInvalid={!!errors.amount || !!errors.balance}
-            errorMessage={
-              errors.amount ? "Please enter an amount" : 
-              errors.balance ? `Insufficient balance. You have ⓢ ${authContext?.userBalance || 0} available.` : 
-              ""
-            }
-            min="1"
-            max={authContext?.userBalance?.toString() || "0"}
-            step="1"
-          />
+          <div className={`form-field-spacing ${shouldShowDropdownSpacing ? 'with-dropdown' : ''}`}>
+            <SirchNumberInput
+              name='amountToSend'
+              label='Amount'
+              placeholder="How many ⓢ coins?"
+              value={formData.amount}
+              onChange={handleAmountChange}
+              isRequired
+              isInvalid={!!errors.amount || !!errors.balance}
+              errorMessage={
+                errors.amount ? "Please enter an amount" : 
+                errors.balance ? `Insufficient balance. You have ⓢ ${authContext?.userBalance || 0} available.` : 
+                ""
+              }
+              min="1"
+              max={authContext?.userBalance?.toString() || "0"}
+              step="1"
+            />
+          </div>
 
           <SirchTextInput
             name='memo'
