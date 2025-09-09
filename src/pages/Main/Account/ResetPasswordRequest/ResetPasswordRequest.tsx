@@ -4,7 +4,8 @@ import { AuthContext } from '../../_common/AuthContext';
 import { ToastNotification, toast } from '../../_common/ToastNotification';
 import supabase from '../../_common/supabaseProvider';
 import { isAuthApiError, AuthError } from '@supabase/supabase-js';
-import { Button } from '@heroui/react';
+import { Button, Card, CardBody } from '@heroui/react';
+import { SirchEmailInput } from '../../../../components/HeroUIFormComponents';
 import './ResetPasswordRequest.css';
 
 interface ResetPasswordRequestProps {
@@ -58,40 +59,47 @@ export default function ResetPasswordRequest({ standalone = true }: ResetPasswor
   }
 
   return (
-    <div className="reset-password-container">
+    <>
       <ToastNotification />
 
-      {standalone &&
-        <h1>Reset Password Request</h1>
-      }
+      <div>
+        {standalone &&
+          <h2>Reset Password Request</h2>
+        }
 
-      {!session ?
-        (
+        {!session ? (
           <>
-            <p>
-              Enter the email address you used to sign up for Sirch Coins.
-              <br/>
-              We will send you a reset-password email containing a link to complete that process.
-            </p>
-
-            <form className='reset-password-form' onSubmit={submitRequest}>
-              <input
-                className='account-input'
-                id='email'
-                name='email'
-                type='email'
+            <form onSubmit={submitRequest} autoComplete='off' noValidate>
+              <p>Enter the email address you used to sign up for Sirch Coins.</p>
+              <p>We will send you a reset-password email containing a link to complete that process.</p>
+            
+              <SirchEmailInput
+                label="Email Address"
                 placeholder="Your Sirch Coins account email address"
                 value={userEmail}
                 onChange={(e) => setUserEmail(e.target.value)}
-                autoComplete='email'
-                required
+                isRequired
+                autoComplete="email"
               />
 
-              <Button className='big-btn' type='submit'>
-                {standalone ? "Send" : "Resend"} Reset Password Email →
-              </Button>
+              {sendStatus && (
+                <Card className="bg-primary-50 border-primary-200">
+                  <CardBody>
+                    <p className="text-primary-600 text-sm">{sendStatus}</p>
+                  </CardBody>
+                </Card>
+              )}
 
-              {sendStatus && <p>{sendStatus}</p>}
+              <div className='bottom-btn-container'>
+                <Button 
+                  type='submit' 
+                  className='big-btn'
+                  isLoading={sendStatus === "Sending..."}
+                  isDisabled={!userEmail || sendStatus === "Sending..."}
+                >
+                  {sendStatus === "Sending..." ? "Sending..." : `${standalone ? "Send" : "Resend"} Reset Password Email →`}
+                </Button>
+              </div>
             </form>
           </>
         ) : (
@@ -108,11 +116,14 @@ export default function ResetPasswordRequest({ standalone = true }: ResetPasswor
         <div className='bottom-btn-container'>
           <Button 
             className='big-btn'
-            onPress={() => { navigate(-1); }}>
+            onPress={() => { navigate(-1); }}
+            isDisabled={sendStatus === "Sending..."}
+          >
             Back
           </Button>
         </div>
       }
-    </div>
+      </div>
+    </>
   );
 }
