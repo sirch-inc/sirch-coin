@@ -6,7 +6,7 @@ import supabase from '../../_common/supabaseProvider';
 import { isAuthApiError, AuthError } from '@supabase/supabase-js';
 import { Button } from '@heroui/react';
 import { SirchValidatedEmailInput } from '../../../../components/HeroUIFormComponents';
-import { validators } from '../../../../utils';
+import { isValidEmailForSubmission } from '../../../../utils';
 import './ResetPasswordRequest.css';
 
 interface ResetPasswordRequestProps {
@@ -20,14 +20,10 @@ export default function ResetPasswordRequest({ standalone = true }: ResetPasswor
   const [userEmail, setUserEmail] = useState<string>('');
   const [sendStatus, setSendStatus] = useState<string>('');
 
-  // Email validation using shared utility
-  const emailValidation = validators.email(userEmail);
-  const isEmailValid = emailValidation.isValid;
-
   const submitRequest = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!isEmailValid) {
+    if (!isValidEmailForSubmission(userEmail, true)) {
       toast.error("Please enter a valid email address.");
       setSendStatus(''); // Reset status when validation fails
       return;
@@ -93,7 +89,7 @@ export default function ResetPasswordRequest({ standalone = true }: ResetPasswor
                   type='submit' 
                   className='big-btn'
                   isLoading={sendStatus === "Sending..."}
-                  isDisabled={!isEmailValid || sendStatus === "Sending..."}
+                  isDisabled={!isValidEmailForSubmission(userEmail, true) || sendStatus === "Sending..."}
                 >
                   {sendStatus === "Sending..." ? "Sending..." : `${standalone ? "Send" : "Resend"} Reset Password Email →`}
                 </Button>

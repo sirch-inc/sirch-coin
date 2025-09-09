@@ -150,20 +150,32 @@ SirchEmailInput.displayName = "SirchEmailInput";
 interface SirchValidatedEmailInputProps extends Omit<InputProps, 'type' | 'isInvalid' | 'errorMessage'> {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  isRequired?: boolean;
 }
 
 /**
  * Email input with built-in validation that shows errors only on blur
  * Provides consistent email validation behavior across the app
+ * Handles both format validation and required field validation
  */
 export const SirchValidatedEmailInput = React.forwardRef<HTMLInputElement, SirchValidatedEmailInputProps>((props, ref) => {
-  const { value, onChange, onBlur, ...otherProps } = props;
+  const { value, onChange, onBlur, isRequired = false, ...otherProps } = props;
   const [emailBlurred, setEmailBlurred] = useState<boolean>(false);
 
   // Email validation using shared utility
   const emailValidation = validators.email(value);
   const isEmailValid = emailValidation.isValid;
-  const emailError = emailBlurred && !isEmailValid && value.trim() !== '' ? emailValidation.message : undefined;
+  
+  // Handle required validation
+  const isEmpty = !value || value.trim() === '';
+  const isRequiredError = isRequired && isEmpty && emailBlurred;
+  const isFormatError = !isEmpty && !isEmailValid && emailBlurred;
+  
+  const emailError = isRequiredError 
+    ? "Email is required" 
+    : isFormatError 
+      ? emailValidation.message 
+      : undefined;
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(e);
@@ -187,6 +199,7 @@ export const SirchValidatedEmailInput = React.forwardRef<HTMLInputElement, Sirch
       onBlur={handleBlur}
       isInvalid={!!emailError}
       errorMessage={emailError}
+      isRequired={isRequired}
       {...otherProps}
     />
   );

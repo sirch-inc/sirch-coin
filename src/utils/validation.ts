@@ -111,3 +111,17 @@ export const validateFields = <T extends Record<string, unknown>>(
 
   return { isValid, errors };
 };
+
+/**
+ * Utility function to validate email for form submission
+ * Returns true if email is valid (for required fields) or valid format (for optional fields)
+ */
+export const isValidEmailForSubmission = (email: string, isRequired: boolean = false): boolean => {
+  if (isRequired && (!email || email.trim() === '')) {
+    return false;
+  }
+  if (email && email.trim() !== '') {
+    return validators.email(email).isValid;
+  }
+  return true; // Empty optional field is valid
+};

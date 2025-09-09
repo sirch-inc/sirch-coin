@@ -7,7 +7,7 @@ import { isAuthApiError } from '@supabase/supabase-js';
 import { Button } from '@heroui/react';
 import { SirchValidatedEmailInput, SirchPasswordInput } from '../../../../components/HeroUIFormComponents';
 import { useFormValidation, useAsyncOperation } from '../../../../hooks';
-import { validators } from '../../../../utils';
+import { validators, isValidEmailForSubmission } from '../../../../utils';
 import './Login.css';
 
 // Form data types
@@ -59,6 +59,12 @@ export default function Login() {
   
   const handleLogin = useCallback(async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
+
+    // Additional check for required email
+    if (!isValidEmailForSubmission(formData.email, true)) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
 
     if (!validateForm()) {
       toast.error("Please fix the errors below and try again.");
