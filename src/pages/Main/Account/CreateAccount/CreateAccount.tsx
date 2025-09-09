@@ -5,7 +5,7 @@ import { AuthContext } from '../../_common/AuthContext';
 import supabase from '../../_common/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
 import { Button, Card, CardBody } from '@heroui/react';
-import { SirchEmailInput, SirchTextInput, SirchPasswordInput, SirchPrivacyChip } from '../../../../components/HeroUIFormComponents';
+import { SirchValidatedEmailInput, SirchTextInput, SirchPasswordInput, SirchPrivacyChip } from '../../../../components/HeroUIFormComponents';
 import { useFormValidation, useAsyncOperation } from '../../../../hooks';
 import { validators } from '../../../../utils';
 import './CreateAccount.css';
@@ -211,14 +211,12 @@ export default function CreateAccount() {
               <p>Create your new Sirch account below. Privacy settings control whether others can find you socially.</p>
               
               <div className="flex items-center gap-4">
-                <SirchEmailInput
+                <SirchValidatedEmailInput
                   label="Email"
                   placeholder="Enter your email"
                   value={formData.email}
                   onChange={(e) => handleFormInputChange('email', e.target.value)}
                   isRequired
-                  isInvalid={errors.email}
-                  errorMessage={getFieldError('email')}
                   className="flex-1"
                 />
                 <SirchPrivacyChip

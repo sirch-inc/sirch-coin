@@ -5,7 +5,7 @@ import { ToastNotification, toast } from '../../_common/ToastNotification';
 import supabase from '../../_common/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
 import { Button } from '@heroui/react';
-import { SirchEmailInput, SirchPasswordInput } from '../../../../components/HeroUIFormComponents';
+import { SirchValidatedEmailInput, SirchPasswordInput } from '../../../../components/HeroUIFormComponents';
 import { useFormValidation, useAsyncOperation } from '../../../../hooks';
 import { validators } from '../../../../utils';
 import './Login.css';
@@ -105,14 +105,12 @@ export default function Login() {
           
           <form className="login-form" onSubmit={handleLogin} autoComplete="off" noValidate>
             
-            <SirchEmailInput
+            <SirchValidatedEmailInput
               label="Email"
               placeholder="Enter your email"
               value={formData.email}
               onChange={(e) => handleFormInputChange('email', e.target.value)}
               isRequired
-              isInvalid={errors.email}
-              errorMessage={getFieldError('email')}
             />
 
             <SirchPasswordInput

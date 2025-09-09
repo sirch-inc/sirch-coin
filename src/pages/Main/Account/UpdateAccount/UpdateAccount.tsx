@@ -41,7 +41,7 @@ import { ToastNotification, toast } from '../../_common/ToastNotification';
 import supabase from '../../_common/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
 import { Button, Card, CardBody } from '@heroui/react';
-import { SirchEmailInput, SirchTextInput, SirchPrivacyChip } from '../../../../components/HeroUIFormComponents';
+import { SirchValidatedEmailInput, SirchTextInput, SirchPrivacyChip } from '../../../../components/HeroUIFormComponents';
 import { useFormValidation, useAsyncOperation } from '../../../../hooks';
 import { validators } from '../../../../utils';
 import './UpdateAccount.css';
@@ -221,14 +221,12 @@ export default function UpdateAccount() {
             <p>Update your account information below. Privacy settings control whether others can find you socially.</p>
             
             <div className="flex items-center gap-4">
-              <SirchEmailInput
+              <SirchValidatedEmailInput
                 label="Email"
                 placeholder="Enter your email"
                 value={formData.email}
                 onChange={(e) => handleFormInputChange('email', e.target.value)}
                 isRequired
-                isInvalid={errors.email}
-                errorMessage={getFieldError('email')}
                 className="flex-1"
               />
               <SirchPrivacyChip
