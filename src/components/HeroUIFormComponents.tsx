@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { Input, Checkbox, Switch, Chip, InputProps, CheckboxProps, SwitchProps, ChipProps } from '@heroui/react';
+import { validators } from '../utils';
 
 // Standard styling for all Sirch inputs
 const SIRCH_INPUT_STYLES = {
@@ -145,6 +146,53 @@ export const SirchEmailInput = React.forwardRef<HTMLInputElement, Omit<InputProp
 });
 
 SirchEmailInput.displayName = "SirchEmailInput";
+
+interface SirchValidatedEmailInputProps extends Omit<InputProps, 'type' | 'isInvalid' | 'errorMessage'> {
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+/**
+ * Email input with built-in validation that shows errors only on blur
+ * Provides consistent email validation behavior across the app
+ */
+export const SirchValidatedEmailInput = React.forwardRef<HTMLInputElement, SirchValidatedEmailInputProps>((props, ref) => {
+  const { value, onChange, onBlur, ...otherProps } = props;
+  const [emailBlurred, setEmailBlurred] = useState<boolean>(false);
+
+  // Email validation using shared utility
+  const emailValidation = validators.email(value);
+  const isEmailValid = emailValidation.isValid;
+  const emailError = emailBlurred && !isEmailValid && value.trim() !== '' ? emailValidation.message : undefined;
+
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(e);
+    if (emailBlurred) {
+      setEmailBlurred(false); // Reset blur state when user starts typing again
+    }
+  }, [onChange, emailBlurred]);
+
+  const handleBlur = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
+    setEmailBlurred(true);
+    onBlur?.(e);
+  }, [onBlur]);
+
+  return (
+    <SirchInput
+      ref={ref}
+      type="email"
+      autoComplete="email"
+      value={value}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      isInvalid={!!emailError}
+      errorMessage={emailError}
+      {...otherProps}
+    />
+  );
+});
+
+SirchValidatedEmailInput.displayName = "SirchValidatedEmailInput";
 
 /**
  * Number input with common number-specific props

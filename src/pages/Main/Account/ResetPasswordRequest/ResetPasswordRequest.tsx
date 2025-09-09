@@ -5,7 +5,7 @@ import { ToastNotification, toast } from '../../_common/ToastNotification';
 import supabase from '../../_common/supabaseProvider';
 import { isAuthApiError, AuthError } from '@supabase/supabase-js';
 import { Button } from '@heroui/react';
-import { SirchEmailInput } from '../../../../components/HeroUIFormComponents';
+import { SirchValidatedEmailInput } from '../../../../components/HeroUIFormComponents';
 import { validators } from '../../../../utils';
 import './ResetPasswordRequest.css';
 
@@ -19,12 +19,10 @@ export default function ResetPasswordRequest({ standalone = true }: ResetPasswor
   const session = authContext?.session;
   const [userEmail, setUserEmail] = useState<string>('');
   const [sendStatus, setSendStatus] = useState<string>('');
-  const [emailBlurred, setEmailBlurred] = useState<boolean>(false);
 
   // Email validation using shared utility
   const emailValidation = validators.email(userEmail);
   const isEmailValid = emailValidation.isValid;
-  const emailError = emailBlurred && !isEmailValid && userEmail.trim() !== '' ? emailValidation.message : undefined;
 
   const submitRequest = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -56,7 +54,6 @@ export default function ResetPasswordRequest({ standalone = true }: ResetPasswor
       // reset form
       setUserEmail('');
       setSendStatus('');
-      setEmailBlurred(false); // Reset validation state
 
       toast.success(`We've emailed ${userEmail} a link to reset your password! Please check your email inbox.`);
     } catch (exception) {
@@ -83,21 +80,12 @@ export default function ResetPasswordRequest({ standalone = true }: ResetPasswor
               <p>Enter the email address you used to sign up for Sirch Coins.</p>
               <p>We will send you a reset-password email containing a link to complete that process.</p>
             
-              <SirchEmailInput
+              <SirchValidatedEmailInput
                 label="Email Address"
                 placeholder="Your Sirch Coins account email address"
                 value={userEmail}
-                onChange={(e) => {
-                  setUserEmail(e.target.value);
-                  if (emailBlurred) {
-                    setEmailBlurred(false); // Reset blur state when user starts typing again
-                  }
-                }}
-                onBlur={() => setEmailBlurred(true)}
+                onChange={(e) => setUserEmail(e.target.value)}
                 isRequired
-                autoComplete="email"
-                isInvalid={!!emailError}
-                errorMessage={emailError}
               />
 
               <div className='bottom-btn-container'>
