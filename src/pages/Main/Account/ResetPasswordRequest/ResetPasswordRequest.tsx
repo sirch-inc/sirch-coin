@@ -4,7 +4,7 @@ import { AuthContext } from '../../_common/AuthContext';
 import { ToastNotification, toast } from '../../_common/ToastNotification';
 import supabase from '../../_common/supabaseProvider';
 import { isAuthApiError, AuthError } from '@supabase/supabase-js';
-import { Button, Card, CardBody } from '@heroui/react';
+import { Button } from '@heroui/react';
 import { SirchEmailInput } from '../../../../components/HeroUIFormComponents';
 import './ResetPasswordRequest.css';
 
@@ -19,11 +19,19 @@ export default function ResetPasswordRequest({ standalone = true }: ResetPasswor
   const [userEmail, setUserEmail] = useState<string>('');
   const [sendStatus, setSendStatus] = useState<string>('');
 
+  // Email validation function
+  const isValidEmail = (email: string): boolean => {
+    if (!email || email.trim() === '') return false;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email.trim());
+  };
+
   const submitRequest = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (userEmail === '') {
+    if (!isValidEmail(userEmail)) {
       toast.error("Please enter a valid email address.");
+      setSendStatus(''); // Reset status when validation fails
       return;
     }
 
@@ -38,6 +46,7 @@ export default function ResetPasswordRequest({ standalone = true }: ResetPasswor
       if (error) {
         if (isAuthApiError(error) || error.code === 'weak_password') {
           toast.error(error.message);
+          setSendStatus(''); // Reset status when API error occurs
           return;
         }
 
@@ -82,20 +91,12 @@ export default function ResetPasswordRequest({ standalone = true }: ResetPasswor
                 autoComplete="email"
               />
 
-              {sendStatus && (
-                <Card className="bg-primary-50 border-primary-200">
-                  <CardBody>
-                    <p className="text-primary-600 text-sm">{sendStatus}</p>
-                  </CardBody>
-                </Card>
-              )}
-
               <div className='bottom-btn-container'>
                 <Button 
                   type='submit' 
                   className='big-btn'
                   isLoading={sendStatus === "Sending..."}
-                  isDisabled={!userEmail || sendStatus === "Sending..."}
+                  isDisabled={!isValidEmail(userEmail) || sendStatus === "Sending..."}
                 >
                   {sendStatus === "Sending..." ? "Sending..." : `${standalone ? "Send" : "Resend"} Reset Password Email →`}
                 </Button>
