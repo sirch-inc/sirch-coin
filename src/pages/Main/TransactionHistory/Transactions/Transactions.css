@@ -25,3 +25,8 @@
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+
+/* Ensure react-tooltip appears above sticky header */
+.react-tooltip {
+  z-index: 20 !important;
+}
