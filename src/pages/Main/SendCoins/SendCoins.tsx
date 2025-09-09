@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useContext, useMemo } from 'react';
+import { useState, useEffect, useCallback, useContext, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../_common/AuthContext';
 import { ToastNotification, toast } from '../_common/ToastNotification';
@@ -34,6 +34,7 @@ export default function Send() {
   const navigate = useNavigate();
   const authContext = useContext(AuthContext);
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
+  const confirmButtonRef = useRef<HTMLButtonElement>(null);
 
   // Initialize form data
   const initialFormData: SendCoinsFormData = {
@@ -256,6 +257,16 @@ export default function Send() {
     };
    }, [debouncedLookupUsers]);
 
+  // Focus on confirm button when modal opens
+  useEffect(() => {
+    if (isOpen && confirmButtonRef.current) {
+      // Use setTimeout to ensure the modal is fully rendered
+      setTimeout(() => {
+        confirmButtonRef.current?.focus();
+      }, 100);
+    }
+  }, [isOpen]);
+
   if (!authContext) {
     navigate('/');
     return null;
@@ -465,6 +476,7 @@ export default function Send() {
                 </Button>
                 <Button 
                   color="primary" 
+                  ref={confirmButtonRef}
                   onPress={async () => {
                     await handleConfirmSend();
                     onClose();
