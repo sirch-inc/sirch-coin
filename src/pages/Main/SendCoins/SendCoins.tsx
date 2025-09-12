@@ -111,10 +111,12 @@ export default function Send() {
         
         if (dropdownElement) {
           const rect = dropdownElement.getBoundingClientRect();
-          setDropdownHeight(rect.height + 8); // Add small buffer for spacing
+          // Add significant extra spacing to ensure no overlap with next field
+          // The dropdown is absolutely positioned, so we need enough space for it + original field spacing
+          setDropdownHeight(rect.height + 32); // Larger buffer to ensure proper spacing
         } else {
           // Fallback to a reasonable default if we can't find the dropdown
-          setDropdownHeight(60);
+          setDropdownHeight(100); // Increased default to ensure no overlap
         }
       }, 100); // Slightly longer delay to ensure DOM is fully updated
       
@@ -407,8 +409,9 @@ export default function Send() {
           <div 
             className="form-field-spacing"
             style={{
-              marginTop: shouldShowDropdownSpacing ? '8px' : '0',
-              transition: 'margin-top 0.25s ease-in-out'
+              marginTop: shouldShowDropdownSpacing ? '24px' : '0',
+              paddingTop: shouldShowDropdownSpacing ? '12px' : '0',
+              transition: 'margin-top 0.25s ease-in-out, padding-top 0.25s ease-in-out'
             }}
           >
             <SirchNumberInput
