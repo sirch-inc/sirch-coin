@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import './AccountDeleted.css';
 
 export default function AccountDeleted() {
   return(

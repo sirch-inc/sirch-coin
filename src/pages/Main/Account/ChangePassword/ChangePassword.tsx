@@ -5,7 +5,6 @@ import { ToastNotification, toast } from '../../_common/ToastNotification';
 import supabase from '../../_common/supabaseProvider';
 import { isAuthApiError, AuthError } from '@supabase/supabase-js';
 import { Button } from '@heroui/react';
-import './ChangePassword.css';
 
 interface ChangePasswordProps {
   standalone?: boolean;

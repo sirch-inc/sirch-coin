@@ -8,7 +8,6 @@ import { Button, Card, CardBody } from '@heroui/react';
 import { SirchValidatedEmailInput, SirchTextInput, SirchPasswordInput, SirchPrivacyChip } from '../../../../components/HeroUIFormComponents';
 import { useFormValidation, useAsyncOperation } from '../../../../hooks';
 import { validators, isValidEmailForSubmission } from '../../../../utils';
-import './CreateAccount.css';
 
 // Form data types
 interface ValidationErrors extends Record<string, boolean> {

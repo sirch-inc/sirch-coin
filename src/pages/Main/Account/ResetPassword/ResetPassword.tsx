@@ -4,7 +4,6 @@ import { AuthContext } from '../../_common/AuthContext';
 import ChangePassword from '../ChangePassword/ChangePassword';
 import ResetPasswordRequest from '../ResetPasswordRequest/ResetPasswordRequest';
 import { Button } from '@heroui/react';
-import './ResetPassword.css';
 
 
 const VerificationError = () => (
