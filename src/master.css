@@ -49,18 +49,10 @@
     display: block;
     margin-bottom: 4px;
   }
-  
-  /* input {
-    padding: 4px;
-    border-radius: 2px;
-    border: 2px solid #ccc;
-    width: 100%;
-    box-sizing: border-box;
-  } */
-  
+    
   button {
-    background-color: black;
-    color: purple;
+    background-color: purple;
+    color: black;
     padding: 12px 24px;
     border: none;
     border-radius: 4px;

@@ -406,32 +406,23 @@ export default function Send() {
             </SirchAutocomplete>
           </div>
 
-          <div 
-            className="form-field-spacing"
-            style={{
-              marginTop: shouldShowDropdownSpacing ? '24px' : '0',
-              paddingTop: shouldShowDropdownSpacing ? '12px' : '0',
-              transition: 'margin-top 0.25s ease-in-out, padding-top 0.25s ease-in-out'
-            }}
-          >
-            <SirchNumberInput
-              name='amountToSend'
-              label='Amount'
-              placeholder="How many ⓢ coins?"
-              value={formData.amount}
-              onChange={handleAmountChange}
-              isRequired
-              isInvalid={!!errors.amount || !!errors.balance}
-              errorMessage={
-                errors.amount ? "Please enter an amount" : 
-                errors.balance ? `Insufficient balance. You have ⓢ ${authContext?.userBalance || 0} available.` : 
-                ""
-              }
-              min="1"
-              max={authContext?.userBalance?.toString() || "0"}
-              step="1"
-            />
-          </div>
+          <SirchNumberInput
+            name='amountToSend'
+            label='Amount'
+            placeholder="How many ⓢ coins?"
+            value={formData.amount}
+            onChange={handleAmountChange}
+            isRequired
+            isInvalid={!!errors.amount || !!errors.balance}
+            errorMessage={
+              errors.amount ? "Please enter an amount" : 
+              errors.balance ? `Insufficient balance. You have ⓢ ${authContext?.userBalance || 0} available.` : 
+              ""
+            }
+            min="1"
+            max={authContext?.userBalance?.toString() || "0"}
+            step="1"
+          />
 
           <SirchTextInput
             name='memo'
