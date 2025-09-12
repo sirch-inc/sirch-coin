@@ -94,9 +94,36 @@ export default function Send() {
   // Additional state for user search functionality
   const [foundUsers, setFoundUsers] = useState<User[] | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [dropdownHeight, setDropdownHeight] = useState(0);
   
   // Calculate if we should show the animated spacing
   const shouldShowDropdownSpacing = isDropdownOpen && !formData.selectedRecipient;
+  
+  // Measure the dropdown height when it opens or content changes
+  useEffect(() => {
+    if (shouldShowDropdownSpacing) {
+      // Use a timeout to ensure the dropdown is fully rendered
+      const timeoutId = setTimeout(() => {
+        // Look for the dropdown element in the DOM using multiple possible selectors
+        const dropdownElement = document.querySelector('[data-slot="listbox"]') || 
+                               document.querySelector('[role="listbox"]') ||
+                               document.querySelector('.bg-black.text-white.border.border-white') as HTMLElement;
+        
+        if (dropdownElement) {
+          const rect = dropdownElement.getBoundingClientRect();
+          setDropdownHeight(rect.height + 8); // Add small buffer for spacing
+        } else {
+          // Fallback to a reasonable default if we can't find the dropdown
+          setDropdownHeight(60);
+        }
+      }, 100); // Slightly longer delay to ensure DOM is fully updated
+      
+      return () => clearTimeout(timeoutId);
+    } else {
+      setDropdownHeight(0);
+      return undefined;
+    }
+  }, [shouldShowDropdownSpacing, foundUsers, formData.searchText]);
 
   const fetchUserBalance = useCallback(async () => {
     if (authContext?.refreshUserBalance) {
@@ -287,7 +314,13 @@ export default function Send() {
           <p>You can send Sirch Coins to your friends or others here.</p>
           <p>Please enter some details to help us identify the recipient, the amount, and an optional private note.</p>
         
-          <div className={`autocomplete-spacing ${shouldShowDropdownSpacing ? 'dropdown-open' : ''}`}>
+          <div 
+            className="autocomplete-spacing"
+            style={{
+              marginBottom: dropdownHeight,
+              transition: 'margin-bottom 0.25s ease-in-out'
+            }}
+          >
             <SirchAutocomplete
               name='searchText'
               label='Recipient'
@@ -371,7 +404,13 @@ export default function Send() {
             </SirchAutocomplete>
           </div>
 
-          <div className={`form-field-spacing ${shouldShowDropdownSpacing ? 'with-dropdown' : ''}`}>
+          <div 
+            className="form-field-spacing"
+            style={{
+              marginTop: shouldShowDropdownSpacing ? '8px' : '0',
+              transition: 'margin-top 0.25s ease-in-out'
+            }}
+          >
             <SirchNumberInput
               name='amountToSend'
               label='Amount'
