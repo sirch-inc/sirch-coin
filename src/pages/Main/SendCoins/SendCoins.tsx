@@ -349,7 +349,7 @@ export default function Send() {
                   <button
                     type="button"
                     onClick={clearRecipient}
-                    className="bg-black text-white hover:bg-gray-800 hover:text-gray-300 p-1 z-10 rounded"
+                    className="bg-gray-800 text-white hover:bg-gray-800 focus:bg-gray-800 active:bg-gray-800 p-1 z-10 rounded"
                     aria-label="Clear"
                   >
                     ✕
