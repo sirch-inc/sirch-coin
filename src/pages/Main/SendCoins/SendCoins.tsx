@@ -337,12 +337,10 @@ export default function Send() {
                   handleInputChange('searchText', '');
                 }
               }}
-              onClear={clearRecipient}
               onOpenChange={(isOpen) => {
                 setIsDropdownOpen(isOpen);
               }}
               items={foundUsers || []}
-              isClearable
               isRequired
               isInvalid={errors.recipient}
               errorMessage={getFieldError('recipient')}
@@ -351,16 +349,13 @@ export default function Send() {
                   <button
                     type="button"
                     onClick={clearRecipient}
-                    className="text-white hover:text-gray-300 p-1"
+                    className="text-white hover:text-gray-300 p-1 z-10"
                     aria-label="Clear"
                   >
                     ✕
                   </button>
                 ) : null
               }
-              clearButtonProps={{
-                className: "!text-white !opacity-100 !visible hover:!text-gray-300"
-              }}
               listboxProps={{
                 emptyContent: (formData.searchText.length !== 0 && foundUsers === null && formData.selectedRecipient === null) ? 
                   <div className="flex items-center justify-center p-4">

@@ -272,9 +272,8 @@ const SIRCH_AUTOCOMPLETE_STYLES = {
   },
   classNames: {
     base: "bg-black text-white",
-    clearButton: "!text-white !opacity-100 !visible hover:!text-gray-300",
     endContentWrapper: "!text-white",
-    selectorButton: "text-white"
+    selectorButton: "!text-white !opacity-100"
   }
 };
 
