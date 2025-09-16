@@ -428,6 +428,11 @@ export default function Send() {
             min="1"
             max={authContext?.userBalance?.toString() || "0"}
             step="1"
+            startContent={
+              <div className="pointer-events-none flex items-center text-white">
+                <span className="text-medium text-white font-bold">ⓢ</span>
+              </div>
+            }
           />
 
           <SirchTextInput
