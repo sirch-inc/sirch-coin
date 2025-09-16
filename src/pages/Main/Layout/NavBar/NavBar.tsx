@@ -5,6 +5,7 @@ import { useContext, useState, useEffect } from 'react';
 export default function NavBar() {
   const auth = useContext(AuthContext);
   const [isBlurred, setIsBlurred] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -25,9 +26,13 @@ export default function NavBar() {
                 alt="Sirch Coins Logo"
                 className="w-16 h-16 mr-3"
               />
-              <span className="text-3xl text-green-500 transition-all duration-500">
+              <span 
+                className="text-3xl text-green-500 transition-all duration-500 cursor-pointer"
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+              >
                 {auth?.userInTable && auth?.userBalance && (
-                  isBlurred 
+                  (isBlurred && !isHovered)
                     ? " ••••• / $ ••••• USD" 
                     : " " + auth.userBalance + " / $ " + (auth.userBalance*0.10).toFixed(2) + " USD"
                 )}
