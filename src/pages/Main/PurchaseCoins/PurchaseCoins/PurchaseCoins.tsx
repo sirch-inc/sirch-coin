@@ -213,6 +213,15 @@ export default function PurchaseCoins() {
                   <span className="text-medium text-white font-bold">ⓢ</span>
                 </div>
               }
+              endContent={
+                currentTotalPrice > 0 && (
+                  <div className="pointer-events-none flex items-center text-gray-400">
+                    <span className="text-small whitespace-nowrap">
+                      ${formatPrice(currentTotalPrice)} {formatCurrency(currency)}
+                    </span>
+                  </div>
+                )
+              }
             />
           </div>
           {/* TODO: Add "See more" link with info on Stripe/purchasing */}

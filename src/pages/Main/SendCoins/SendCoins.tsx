@@ -96,6 +96,16 @@ export default function Send() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [dropdownHeight, setDropdownHeight] = useState(0);
   
+  // State for price information to show USD equivalent
+  const [pricePerCoin, setPricePerCoin] = useState<number>(0);
+  const [currency, setCurrency] = useState<string>("USD");
+  
+  // Calculate current total USD value from form data
+  const currentTotalPrice = useMemo(() => {
+    const amount = parseFloat(formData.amount);
+    return amount && !isNaN(amount) ? amount * pricePerCoin : 0;
+  }, [formData.amount, pricePerCoin]);
+  
   // Calculate if we should show the animated spacing
   // Show spacing whenever dropdown is open, regardless of whether a recipient is selected
   const shouldShowDropdownSpacing = isDropdownOpen;
@@ -202,6 +212,14 @@ export default function Send() {
     setFoundUsers(null);
   }, [resetFormHook]);
 
+  const formatPrice = (price: number): string => {
+    return Number(price).toFixed(2);
+  }
+
+  const formatCurrency = (curr: string): string => {
+    return curr.toUpperCase();
+  }
+
   const clearRecipient = useCallback(() => {
     handleInputChange('selectedRecipient', null);
     handleInputChange('searchText', '');
@@ -283,6 +301,36 @@ export default function Send() {
   useEffect(() => {
     fetchUserBalance();
   }, [fetchUserBalance]);
+
+  // fetch current quote for USD conversion
+  useEffect(() => {
+    const fetchQuote = async () => {
+      if (!authContext?.userInTable) return;
+    
+      try {
+        const { data, error } = await supabase.functions.invoke('get-coin-purchase-quote', {
+          body: {
+            purchaseProvider: 'STRIPE'
+          }
+        });
+
+        if (error) {
+          console.error("Quote fetch error:", error);
+          return; // Fail silently for USD display feature
+        }
+
+        if (data) {
+          setPricePerCoin(data.pricePerCoin);
+          setCurrency(data.currency);
+        }
+      } catch (error) {
+        console.error("Quote fetch exception:", error instanceof Error ? error.message : String(error));
+        // Fail silently - USD display is a nice-to-have feature
+      }
+    };
+ 
+    fetchQuote();
+  }, [authContext?.userInTable]);
 
   // cancel any pending lookup when unmounting component
   useEffect(() => {
@@ -432,6 +480,15 @@ export default function Send() {
               <div className="pointer-events-none flex items-center text-white">
                 <span className="text-medium text-white font-bold">ⓢ</span>
               </div>
+            }
+            endContent={
+              currentTotalPrice > 0 && (
+                <div className="pointer-events-none flex items-center text-gray-400">
+                  <span className="text-small whitespace-nowrap">
+                    ${formatPrice(currentTotalPrice)} {formatCurrency(currency)}
+                  </span>
+                </div>
+              )
             }
           />
 
