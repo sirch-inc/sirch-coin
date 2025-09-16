@@ -9,7 +9,9 @@ const SIRCH_INPUT_STYLES = {
   radius: "none" as const,
   classNames: {
     input: "bg-black text-white",
-    inputWrapper: "bg-black border-white data-[hover=true]:!bg-gray-800 data-[focus=true]:!bg-gray-800 data-[focus-within=true]:!bg-gray-800 data-[invalid=true]:border-red-500"
+    inputWrapper: "bg-black border-white data-[hover=true]:!bg-gray-800 data-[focus=true]:!bg-gray-800 data-[focus-within=true]:!bg-gray-800 data-[invalid=true]:border-red-500",
+    innerWrapper: "bg-black",
+    mainWrapper: "bg-black"
   }
 };
 
