@@ -97,7 +97,8 @@ export default function Send() {
   const [dropdownHeight, setDropdownHeight] = useState(0);
   
   // Calculate if we should show the animated spacing
-  const shouldShowDropdownSpacing = isDropdownOpen && !formData.selectedRecipient;
+  // Show spacing whenever dropdown is open, regardless of whether a recipient is selected
+  const shouldShowDropdownSpacing = isDropdownOpen;
   
   // Measure the dropdown height when it opens or content changes
   useEffect(() => {
