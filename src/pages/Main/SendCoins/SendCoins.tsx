@@ -311,7 +311,7 @@ export default function Send() {
       <ToastNotification />
 
       <div>
-        <h2>Send ⓢ</h2>
+        <h2>Send Sirch Coins ⓢ</h2>
 
         <form onSubmit={handleSubmit} noValidate>
           <p>You can send Sirch Coins to your friends or others here.</p>

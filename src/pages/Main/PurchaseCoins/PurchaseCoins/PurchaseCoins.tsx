@@ -178,7 +178,7 @@ export default function PurchaseCoins() {
   return (
     <div>
       <div className='purchase-container'>
-        <h2>Buy Sirch Coins</h2>
+        <h2>Buy Sirch Coins ⓢ</h2>
         <h3>How many Sirch Coins would you like to purchase?</h3>
         <p>
           { pricePerCoin === 0
