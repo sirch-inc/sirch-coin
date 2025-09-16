@@ -345,6 +345,16 @@ export default function Send() {
               isRequired
               isInvalid={errors.recipient}
               errorMessage={getFieldError('recipient')}
+              inputProps={{
+                classNames: {
+                  input: formData.selectedRecipient 
+                    ? "bg-black text-green-400 cursor-pointer" 
+                    : "bg-black text-white",
+                  inputWrapper: formData.selectedRecipient
+                    ? "bg-black border-green-400 data-[hover=true]:!bg-gray-800 data-[focus=true]:!bg-gray-800 data-[focus-within=true]:!bg-gray-800 data-[invalid=true]:border-red-500 cursor-pointer"
+                    : "bg-black border-white data-[hover=true]:!bg-gray-800 data-[focus=true]:!bg-gray-800 data-[focus-within=true]:!bg-gray-800 data-[invalid=true]:border-red-500"
+                }
+              }}
               endContent={
                 (formData.selectedRecipient || formData.searchText) ? (
                   <button
