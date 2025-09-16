@@ -1,9 +1,18 @@
 import { AuthContext } from '../../_common/AuthContext';
-import { useContext } from 'react';
+import { useContext, useState, useEffect } from 'react';
 
 
 export default function NavBar() {
   const auth = useContext(AuthContext);
+  const [isBlurred, setIsBlurred] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsBlurred(true);
+    }, 30000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <nav className="w-full bg-black text-white">
@@ -16,8 +25,12 @@ export default function NavBar() {
                 alt="Sirch Coins Logo"
                 className="w-16 h-16 mr-3"
               />
-              <span className="text-3xl text-green-500">
-                {auth?.userInTable && auth?.userBalance && (" " + auth.userBalance + " / $ " + (auth.userBalance*0.10).toFixed(2) + " USD")}
+              <span className="text-3xl text-green-500 transition-all duration-500">
+                {auth?.userInTable && auth?.userBalance && (
+                  isBlurred 
+                    ? " ••••• / $ ••••• USD" 
+                    : " " + auth.userBalance + " / $ " + (auth.userBalance*0.10).toFixed(2) + " USD"
+                )}
               </span>
             </div>
           </a>
