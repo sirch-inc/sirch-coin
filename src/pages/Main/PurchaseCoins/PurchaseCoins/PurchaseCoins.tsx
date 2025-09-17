@@ -34,7 +34,7 @@ export default function PurchaseCoins() {
     lastRefresh,
     formatPrice,
     formatCurrency,
-    lastKnownQuote
+    getQuote
   } = useCoinQuote({ 
     autoRefresh: true, 
     refreshInterval: 15 
@@ -167,7 +167,11 @@ export default function PurchaseCoins() {
           <p>
             {isQuoteLoading || !quote
               ? `Quote: ⓢ 1 = Loading...`
-              : `Quote: ⓢ 1 = ${formatPrice(quote.pricePerCoin)} ${formatCurrency(quote.currency)}`
+              : (() => {
+                  const displayQuote = getQuote();
+                  const staleIndicator = displayQuote?.isStale ? ` (${displayQuote.staleReason})` : '';
+                  return `Quote: ⓢ 1 = ${formatPrice(quote.pricePerCoin)} ${formatCurrency(quote.currency)}${staleIndicator}`;
+                })()
             }
             <br />
             Note: A minimum purchase of ⓢ {quote?.minimumPurchase || '...'} is required.
@@ -210,8 +214,8 @@ export default function PurchaseCoins() {
                 errors.minimumPurchase ? getFieldError('minimumPurchase') : 
                 ""
               }
-              pricePerCoin={lastKnownQuote?.pricePerCoin || 0}
-              currency={lastKnownQuote?.currency || 'USD'}
+              pricePerCoin={getQuote()?.pricePerCoin || 0}
+              currency={getQuote()?.currency || 'USD'}
               showUsdValue={true}
             />
           </div>

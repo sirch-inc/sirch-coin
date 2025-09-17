@@ -8,7 +8,7 @@ export default function NavBar() {
   const [isBlurred, setIsBlurred] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
-  const { calculateLastKnownUsdValue } = useCoinQuote();
+  const { getQuote, calculateUsdValue } = useCoinQuote();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -38,9 +38,10 @@ export default function NavBar() {
                   (isBlurred && !isHovered)
                     ? " ••••• / $ •••••" 
                     : (() => {
-                        const usdValue = calculateLastKnownUsdValue(auth.userBalance);
+                        const usdValue = calculateUsdValue(auth.userBalance);
+                        const quote = getQuote();
                         return usdValue !== null 
-                          ? ` ${auth.userBalance} / $ ${usdValue.toFixed(2)} USD`
+                          ? ` ${auth.userBalance} / $ ${usdValue.toFixed(2)} USD${quote?.isStale ? ' (stale)' : ''}`
                           : ` ${auth.userBalance}`;
                       })()
                 )}

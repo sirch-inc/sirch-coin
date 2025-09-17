@@ -82,11 +82,11 @@ export function useCoinQuote(options: UseCoinQuoteOptions = {}) {
     // Utility functions
     formatPrice: quoteService.formatPrice,
     formatCurrency: quoteService.formatCurrency,
-    // Last known quote for display purposes (even if stale)
-    lastKnownQuote: quoteService.getLastKnownQuote(),
-    calculateLastKnownUsdValue: (coinAmount: number) => {
-      const lastKnown = quoteService.getLastKnownQuote();
-      return lastKnown ? coinAmount * lastKnown.pricePerCoin : null;
+    // Get quote (may be stale with indicators)
+    getQuote: () => quoteService.getCachedQuote(),
+    calculateUsdValue: (coinAmount: number) => {
+      const cachedQuote = quoteService.getCachedQuote();
+      return cachedQuote ? coinAmount * cachedQuote.pricePerCoin : null;
     },
   };
 }

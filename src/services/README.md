@@ -51,24 +51,30 @@ function AutoRefreshQuote() {
   const { 
     quote, 
     isLoading, 
+    error, 
     refreshQuote,
+    lastRefresh,
     formatPrice,
-    formatCurrency 
+    formatCurrency,
+    getQuote
   } = useCoinQuote({ 
     autoRefresh: true, 
-    refreshInterval: 15 // 15 minutes
+    refreshInterval: 15 
   });
+
+  const displayQuote = getQuote(); // Get cached quote with staleness info
 
   return (
     <div>
       <p>Rate: ⓢ 1 = ${formatPrice(quote?.pricePerCoin || 0)} {formatCurrency(quote?.currency || 'USD')}</p>
-      <button onClick={refreshQuote} disabled={isLoading}>
-        Refresh
-      </button>
+      {displayQuote?.isStale && (
+        <p className="warning">⚠️ {displayQuote.staleReason}</p>
+      )}
+      <button onClick={refreshQuote}>Refresh Quote</button>
+      {lastRefresh && <p>Last updated: {lastRefresh.toLocaleTimeString()}</p>}
     </div>
   );
 }
-```
 
 ## Hook Options
 
@@ -80,20 +86,22 @@ The `useCoinQuote` hook accepts the following options:
 
 ## Service Features
 
-### Caching
+### Caching & Staleness
 - Automatic 5-minute cache to reduce API calls
-- Fallback to cached data if API fails
+- Fallback to cached data if API fails with staleness indicators
 - Manual cache invalidation with `refreshQuote()`
+- `getQuote()` returns cached data with `isStale` and `staleReason` properties
 
 ### Error Handling
 - Graceful degradation when API is unavailable
 - Console warnings for failed requests
-- Cached data fallback for resilience
+- Cached data fallback for resilience with staleness indicators
 
 ### Utility Methods
 - `formatPrice(price)` - Format price to 2 decimal places
 - `formatCurrency(currency)` - Convert currency to uppercase
-- `calculateUsdValue(coinAmount, quote?)` - Calculate USD equivalent
+- `getQuote()` - Get cached quote with staleness information
+- `calculateUsdValue(coinAmount)` - Calculate USD equivalent using cached data
 
 ## Implementation Examples
 

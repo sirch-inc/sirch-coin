@@ -5,6 +5,8 @@ export interface CoinQuote {
   currency: string;
   minimumPurchase: number;
   lastUpdated: Date;
+  isStale?: boolean;
+  staleReason?: string;
 }
 
 export interface QuoteServiceOptions {
@@ -58,10 +60,14 @@ export class QuoteService {
 
       return quote;
     } catch (error) {
-      // If we have a cached quote and the fetch fails, return the cached version
+      // If we have a cached quote and the fetch fails, return the cached version with stale indicators
       if (this.cachedQuote) {
         console.warn('Failed to fetch fresh quote, using cached version:', error);
-        return this.cachedQuote;
+        return {
+          ...this.cachedQuote,
+          isStale: true,
+          staleReason: 'Network error - using cached data'
+        };
       }
       throw error;
     }
@@ -75,7 +81,20 @@ export class QuoteService {
   }
 
   // Get cached quote regardless of cache validity - for display purposes
-  getLastKnownQuote(): CoinQuote | null {
+  getCachedQuote(): CoinQuote | null {
+    if (!this.cachedQuote) return null;
+    
+    // Check if the cached data is stale (older than cache duration)
+    const isStale = !this.isCacheValid();
+    
+    if (isStale) {
+      return {
+        ...this.cachedQuote,
+        isStale: true,
+        staleReason: 'Data is older than 5 minutes'
+      };
+    }
+    
     return this.cachedQuote;
   }
 
