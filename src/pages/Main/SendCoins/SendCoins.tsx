@@ -6,7 +6,7 @@ import supabase from '../_common/supabaseProvider';
 import useDebounce from '../../../helpers/debounce';
 import { Button, AutocompleteItem, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from '@heroui/react';
 import { SirchTextInput, SirchAutocomplete, SirchCoinInput } from '../../../components/HeroUIFormComponents';
-import { useFormValidation, useAsyncOperation } from '../../../hooks';
+import { useFormValidation, useAsyncOperation, useCoinQuote } from '../../../hooks';
 import 'react-toastify/dist/ReactToastify.css';
 import './SendCoins.css';
 
@@ -35,6 +35,11 @@ export default function Send() {
   const authContext = useContext(AuthContext);
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
   const confirmButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Use the quote service for USD conversion
+  const { 
+    quote 
+  } = useCoinQuote();
 
   // Initialize form data
   const initialFormData: SendCoinsFormData = {
@@ -95,10 +100,6 @@ export default function Send() {
   const [foundUsers, setFoundUsers] = useState<User[] | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [dropdownHeight, setDropdownHeight] = useState(0);
-  
-  // State for price information to show USD equivalent
-  const [pricePerCoin, setPricePerCoin] = useState<number>(0);
-  const [currency, setCurrency] = useState<string>("USD");
   
   // Calculate if we should show the animated spacing
   // Show spacing whenever dropdown is open, regardless of whether a recipient is selected
@@ -288,36 +289,6 @@ export default function Send() {
     fetchUserBalance();
   }, [fetchUserBalance]);
 
-  // fetch current quote for USD conversion
-  useEffect(() => {
-    const fetchQuote = async () => {
-      if (!authContext?.userInTable) return;
-    
-      try {
-        const { data, error } = await supabase.functions.invoke('get-coin-purchase-quote', {
-          body: {
-            purchaseProvider: 'STRIPE'
-          }
-        });
-
-        if (error) {
-          console.error("Quote fetch error:", error);
-          return; // Fail silently for USD display feature
-        }
-
-        if (data) {
-          setPricePerCoin(data.pricePerCoin);
-          setCurrency(data.currency);
-        }
-      } catch (error) {
-        console.error("Quote fetch exception:", error instanceof Error ? error.message : String(error));
-        // Fail silently - USD display is a nice-to-have feature
-      }
-    };
- 
-    fetchQuote();
-  }, [authContext?.userInTable]);
-
   // cancel any pending lookup when unmounting component
   useEffect(() => {
     return () => {
@@ -463,8 +434,8 @@ export default function Send() {
             min="1"
             max={authContext?.userBalance?.toString() || "0"}
             step="1"
-            pricePerCoin={pricePerCoin}
-            currency={currency}
+            pricePerCoin={quote?.pricePerCoin || 0}
+            currency={quote?.currency || 'USD'}
             showUsdValue={true}
           />
 

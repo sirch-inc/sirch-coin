@@ -1,13 +1,11 @@
-import { useState, useEffect, useContext, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe, StripeElementsOptions } from '@stripe/stripe-js';
-import { AuthContext } from '../../_common/AuthContext';
-import supabase from '../../_common/supabaseProvider';
 import CheckoutForm from '../CheckoutForm/CheckoutForm';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@heroui/react';
 import { SirchCoinInput } from '../../../../components/HeroUIFormComponents';
-import { useFormValidation } from '../../../../hooks';
+import { useFormValidation, useCoinQuote } from '../../../../hooks';
 import './PurchaseCoins.css';
 
 // Call `loadStripe` outside of the component's render to avoid
@@ -26,22 +24,31 @@ interface PurchaseCoinsFormData extends Record<string, unknown> {
 
 export default function PurchaseCoins() {
   const navigate = useNavigate();
-  const auth = useContext(AuthContext);
   
-  // Force type assertion since we know context will be available
-  const userInTable = auth?.userInTable;
+  // Use the quote service hook
+  const { 
+    quote, 
+    isLoading: isQuoteLoading, 
+    error: quoteError, 
+    refreshQuote,
+    lastRefresh,
+    formatPrice,
+    formatCurrency 
+  } = useCoinQuote({ 
+    autoRefresh: true, 
+    refreshInterval: 15 
+  });
+
+  // State for checkout
+  const [showCheckoutForm, setShowCheckoutForm] = useState(false);
+  const [options, setOptions] = useState<StripeElementsOptions | null>(null);
+  const [coinAmount, setCoinAmount] = useState<number>(0);
+  const [totalPrice, setTotalPrice] = useState<number>(0);
 
   // Initialize form data
   const initialFormData: PurchaseCoinsFormData = {
-    amount: ''
+    amount: quote?.minimumPurchase?.toString() || ''
   };
-
-  // State for purchase configuration
-  const [pricePerCoin, setPricePerCoin] = useState<number>(0);
-  const [minimumPurchase, setMinimumPurchase] = useState<number | null>(null);
-  const [currency, setCurrency] = useState<string>("Loading...");
-  const [showCheckoutForm, setShowCheckoutForm] = useState(false);
-  const [options, setOptions] = useState<StripeElementsOptions | null>(null);
 
   // Validation rules
   const validationRules = useMemo(() => ({
@@ -61,12 +68,12 @@ export default function PurchaseCoins() {
       const amount = value as string;
       const numAmount = parseFloat(amount);
       
-      if (minimumPurchase && !isNaN(numAmount) && numAmount < minimumPurchase) {
-        return { isValid: false, message: `Minimum purchase is ⓢ ${minimumPurchase}` };
+      if (quote?.minimumPurchase && !isNaN(numAmount) && numAmount < quote.minimumPurchase) {
+        return { isValid: false, message: `Minimum purchase is ⓢ ${quote.minimumPurchase}` };
       }
       return { isValid: true };
     }
-  }), [minimumPurchase]);
+  }), [quote?.minimumPurchase]);
 
   // Use form validation hook
   const {
@@ -79,57 +86,20 @@ export default function PurchaseCoins() {
     validationRules
   });
 
-  // Legacy state for backward compatibility - only keep what's needed
-  const [coinAmount, setCoinAmount] = useState<number>(0);
-  const [totalPrice, setTotalPrice] = useState<number>(0);
-
-  // Calculate current total price for checkout (keeping for legacy compatibility)
+  // Calculate current total price for checkout
   const currentTotalPrice = useMemo(() => {
     const amount = parseFloat(formData.amount);
-    return amount && !isNaN(amount) ? amount * pricePerCoin : 0;
-  }, [formData.amount, pricePerCoin]);
-
-  // fetch current quote
-  useEffect(() => {
-    const fetchQuote = async () => {
-      if (!userInTable) return;
-    
-      try {
-        const { data, error } = await supabase.functions.invoke('get-coin-purchase-quote', {
-          body: {
-            purchaseProvider: 'STRIPE'
-          }
-        });
-
-        if (error) {
-          throw new Error(error);
-        }
-
-        if (!data) {
-          throw new Error("No quote was returned.");
-        }
-
-        setPricePerCoin(data.pricePerCoin.toString());
-        setCurrency(data.currency);
-        handleInputChange('amount', data.minimumPurchase.toString());
-        setMinimumPurchase(data.minimumPurchase);
-      } catch (error) {
-        console.error("An exception occurred:", error instanceof Error ? error.message : String(error));
-        navigate('/error', { replace: true });
-      }
-    };
- 
-    fetchQuote();
-  }, [userInTable, navigate, handleInputChange]);
+    return amount && !isNaN(amount) && quote ? amount * quote.pricePerCoin : 0;
+  }, [formData.amount, quote]);
 
   const handleCheckout = useCallback(async () => {
-    if (!userInTable) return;
+    if (!quote) return;
 
     const amount = parseFloat(formData.amount);
     if (!amount || amount <= 0) return;
 
     setCoinAmount(amount);
-    const totalPrice = amount * pricePerCoin;
+    const totalPrice = amount * quote.pricePerCoin;
     setTotalPrice(totalPrice);
     setShowCheckoutForm(true);
 
@@ -138,41 +108,53 @@ export default function PurchaseCoins() {
     setOptions({
       mode: 'payment',
       amount: totalAmountInCents,
-      currency: currency.toLowerCase(),
+      currency: quote.currency.toLowerCase(),
       appearance: {
         theme: 'night',
         labels: 'floating',
       }
     } as StripeElementsOptions);
-  }, [userInTable, formData.amount, pricePerCoin, currency]);
+  }, [quote, formData.amount]);
 
   const handleAmountChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-    
-    // Update form validation state
     handleInputChange('amount', newValue);
   }, [handleInputChange]);
 
   const handleBlur = useCallback(() => {
-    if (!minimumPurchase) return;
+    if (!quote?.minimumPurchase) return;
     
     const currentAmount = parseFloat(formData.amount);
-    if (!currentAmount || currentAmount < minimumPurchase) {
-      handleInputChange('amount', minimumPurchase.toString());
+    if (!currentAmount || currentAmount < quote.minimumPurchase) {
+      handleInputChange('amount', quote.minimumPurchase.toString());
     }
-  }, [minimumPurchase, formData.amount, handleInputChange]);
+  }, [quote?.minimumPurchase, formData.amount, handleInputChange]);
 
   const handleSubmit = useCallback((event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     handleCheckout();
   }, [handleCheckout]);
 
-  const formatPrice = (price: number): string => {
-    return Number(price).toFixed(2);
-  }
+  const handleRefreshQuote = useCallback(async () => {
+    try {
+      await refreshQuote();
+    } catch (error) {
+      console.error('Failed to refresh quote:', error);
+    }
+  }, [refreshQuote]);
 
-  const formatCurrency = (curr: string): string => {
-    return curr.toUpperCase();
+  const formatLastRefresh = (date: Date | null): string => {
+    if (!date) return '';
+    return new Intl.DateTimeFormat('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(date);
+  };
+
+  // Handle quote error
+  if (quoteError) {
+    navigate('/error', { replace: true });
+    return null;
   }
 
   return (
@@ -180,14 +162,32 @@ export default function PurchaseCoins() {
       <div className='purchase-container'>
         <h2>Buy Sirch Coins ⓢ</h2>
         <h3>How many Sirch Coins would you like to purchase?</h3>
-        <p>
-          { pricePerCoin === 0
-            ? `Quote: ⓢ 1 = Loading...`
-            : `Quote: ⓢ 1 = ${formatPrice(pricePerCoin)} ${currency.toUpperCase()}`
-          }
-          <br></br>
-          Note: A minimum purchase of ⓢ {minimumPurchase} is required.
-        </p>
+        <div className="quote-section">
+          <p>
+            {isQuoteLoading || !quote
+              ? `Quote: ⓢ 1 = Loading...`
+              : `Quote: ⓢ 1 = ${formatPrice(quote.pricePerCoin)} ${formatCurrency(quote.currency)}`
+            }
+            <br />
+            Note: A minimum purchase of ⓢ {quote?.minimumPurchase || '...'} is required.
+          </p>
+          <div className="quote-controls">
+            <Button 
+              size="sm" 
+              variant="light" 
+              onPress={handleRefreshQuote}
+              isLoading={isQuoteLoading}
+              disabled={isQuoteLoading}
+            >
+              Refresh Quote
+            </Button>
+            {lastRefresh && (
+              <span className="last-refresh">
+                Last updated: {formatLastRefresh(lastRefresh)}
+              </span>
+            )}
+          </div>
+        </div>
         
         <form onSubmit={handleSubmit} noValidate>
           <div className='purchase-form'>
@@ -200,7 +200,7 @@ export default function PurchaseCoins() {
               value={formData.amount}
               onChange={handleAmountChange}
               onBlur={handleBlur}
-              min={minimumPurchase?.toString()}
+              min={quote?.minimumPurchase?.toString()}
               step='1'
               isRequired
               isInvalid={!!errors.amount || !!errors.minimumPurchase}
@@ -209,27 +209,24 @@ export default function PurchaseCoins() {
                 errors.minimumPurchase ? getFieldError('minimumPurchase') : 
                 ""
               }
-              pricePerCoin={pricePerCoin}
-              currency={currency}
+              pricePerCoin={quote?.pricePerCoin || 0}
+              currency={quote?.currency || 'USD'}
               showUsdValue={true}
             />
           </div>
-          {/* TODO: Add "See more" link with info on Stripe/purchasing */}
           <p>Sirch Coins uses the payment provider Stripe for secure transactions. See more...</p>
-          { currentTotalPrice === 0
-              ? <h4>Your total price: {totalPrice} {formatCurrency(currency)}</h4>
-              : <h4>Your total price: ${formatPrice(currentTotalPrice)} {formatCurrency(currency)}</h4>
-          }
+          <h4>Your total price: ${formatPrice(currentTotalPrice)} {formatCurrency(quote?.currency || 'USD')}</h4>
           <div className='bottom-btn-container'>
             <Button 
               type='submit'
               className='big-btn'
               disabled={
+                isQuoteLoading ||
+                !quote ||
                 !!errors.amount || 
                 !!errors.minimumPurchase || 
                 !formData.amount || 
-                !minimumPurchase || 
-                parseFloat(formData.amount) < minimumPurchase
+                parseFloat(formData.amount) < (quote?.minimumPurchase || 0)
               }
             >
               Complete purchase...
@@ -246,7 +243,7 @@ export default function PurchaseCoins() {
       </div>
       <div>
         <div>
-          {stripePromise && showCheckoutForm &&
+          {stripePromise && showCheckoutForm && quote &&
             (
             <>
               <div className='overlay'></div>
@@ -256,7 +253,7 @@ export default function PurchaseCoins() {
                   options={options ?? {
                     mode: 'payment',
                     amount: 0,
-                    currency: currency.toLowerCase(),
+                    currency: quote.currency.toLowerCase(),
                     appearance: {
                       theme: 'night',
                       labels: 'floating',
@@ -266,7 +263,7 @@ export default function PurchaseCoins() {
                   <CheckoutForm
                     coinAmount={coinAmount}
                     totalPrice={totalPrice}
-                    currency={currency}
+                    currency={quote.currency}
                     formatPrice={formatPrice}
                     formatCurrency={formatCurrency}
                     setShowCheckoutForm={setShowCheckoutForm}
