@@ -306,3 +306,56 @@ export const SirchAutocomplete = React.forwardRef<HTMLInputElement, Autocomplete
 });
 
 SirchAutocomplete.displayName = "SirchAutocomplete";
+
+interface SirchCoinInputProps extends Omit<InputProps, 'type' | 'startContent'> {
+  amount: string;
+  pricePerCoin?: number;
+  currency?: string;
+  showUsdValue?: boolean;
+}
+
+/**
+ * Specialized input for Sirch Coin amounts with built-in USD conversion display
+ * Shows ⓢ symbol in startContent and USD equivalent in endContent when applicable
+ */
+export const SirchCoinInput = React.forwardRef<HTMLInputElement, SirchCoinInputProps>((props, ref) => {
+  const { amount, pricePerCoin = 0, currency = "USD", showUsdValue = true, ...otherProps } = props;
+  
+  // Calculate USD equivalent
+  const usdValue = React.useMemo(() => {
+    const numAmount = parseFloat(amount);
+    return numAmount && !isNaN(numAmount) && pricePerCoin > 0 ? numAmount * pricePerCoin : 0;
+  }, [amount, pricePerCoin]);
+
+  const formatPrice = (price: number): string => {
+    return Number(price).toFixed(2);
+  };
+
+  const formatCurrency = (curr: string): string => {
+    return curr.toUpperCase();
+  };
+
+  return (
+    <SirchInput
+      ref={ref}
+      type="number"
+      startContent={
+        <div className="pointer-events-none flex items-center text-white">
+          <span className="text-medium text-white font-bold">ⓢ</span>
+        </div>
+      }
+      endContent={
+        showUsdValue && usdValue > 0 && (
+          <div className="pointer-events-none flex items-center text-gray-400">
+            <span className="text-small whitespace-nowrap">
+              ${formatPrice(usdValue)} {formatCurrency(currency)}
+            </span>
+          </div>
+        )
+      }
+      {...otherProps}
+    />
+  );
+});
+
+SirchCoinInput.displayName = "SirchCoinInput";

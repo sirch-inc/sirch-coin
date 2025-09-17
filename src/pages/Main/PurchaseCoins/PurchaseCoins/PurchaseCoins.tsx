@@ -6,7 +6,7 @@ import supabase from '../../_common/supabaseProvider';
 import CheckoutForm from '../CheckoutForm/CheckoutForm';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@heroui/react';
-import { SirchNumberInput } from '../../../../components/HeroUIFormComponents';
+import { SirchCoinInput } from '../../../../components/HeroUIFormComponents';
 import { useFormValidation } from '../../../../hooks';
 import './PurchaseCoins.css';
 
@@ -83,7 +83,7 @@ export default function PurchaseCoins() {
   const [coinAmount, setCoinAmount] = useState<number>(0);
   const [totalPrice, setTotalPrice] = useState<number>(0);
 
-  // Calculate current total price from form data
+  // Calculate current total price for checkout (keeping for legacy compatibility)
   const currentTotalPrice = useMemo(() => {
     const amount = parseFloat(formData.amount);
     return amount && !isNaN(amount) ? amount * pricePerCoin : 0;
@@ -191,11 +191,12 @@ export default function PurchaseCoins() {
         
         <form onSubmit={handleSubmit} noValidate>
           <div className='purchase-form'>
-            <SirchNumberInput
+            <SirchCoinInput
               className='coin-input'
               name='coins'
               label="Amount"
               placeholder="Enter number of coins to purchase"
+              amount={formData.amount}
               value={formData.amount}
               onChange={handleAmountChange}
               onBlur={handleBlur}
@@ -208,20 +209,9 @@ export default function PurchaseCoins() {
                 errors.minimumPurchase ? getFieldError('minimumPurchase') : 
                 ""
               }
-              startContent={
-                <div className="pointer-events-none flex items-center text-white">
-                  <span className="text-medium text-white font-bold">ⓢ</span>
-                </div>
-              }
-              endContent={
-                currentTotalPrice > 0 && (
-                  <div className="pointer-events-none flex items-center text-gray-400">
-                    <span className="text-small whitespace-nowrap">
-                      ${formatPrice(currentTotalPrice)} {formatCurrency(currency)}
-                    </span>
-                  </div>
-                )
-              }
+              pricePerCoin={pricePerCoin}
+              currency={currency}
+              showUsdValue={true}
             />
           </div>
           {/* TODO: Add "See more" link with info on Stripe/purchasing */}

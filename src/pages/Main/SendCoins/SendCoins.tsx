@@ -5,7 +5,7 @@ import { ToastNotification, toast } from '../_common/ToastNotification';
 import supabase from '../_common/supabaseProvider';
 import useDebounce from '../../../helpers/debounce';
 import { Button, AutocompleteItem, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from '@heroui/react';
-import { SirchNumberInput, SirchTextInput, SirchAutocomplete } from '../../../components/HeroUIFormComponents';
+import { SirchTextInput, SirchAutocomplete, SirchCoinInput } from '../../../components/HeroUIFormComponents';
 import { useFormValidation, useAsyncOperation } from '../../../hooks';
 import 'react-toastify/dist/ReactToastify.css';
 import './SendCoins.css';
@@ -99,12 +99,6 @@ export default function Send() {
   // State for price information to show USD equivalent
   const [pricePerCoin, setPricePerCoin] = useState<number>(0);
   const [currency, setCurrency] = useState<string>("USD");
-  
-  // Calculate current total USD value from form data
-  const currentTotalPrice = useMemo(() => {
-    const amount = parseFloat(formData.amount);
-    return amount && !isNaN(amount) ? amount * pricePerCoin : 0;
-  }, [formData.amount, pricePerCoin]);
   
   // Calculate if we should show the animated spacing
   // Show spacing whenever dropdown is open, regardless of whether a recipient is selected
@@ -211,14 +205,6 @@ export default function Send() {
     resetFormHook();
     setFoundUsers(null);
   }, [resetFormHook]);
-
-  const formatPrice = (price: number): string => {
-    return Number(price).toFixed(2);
-  }
-
-  const formatCurrency = (curr: string): string => {
-    return curr.toUpperCase();
-  }
 
   const clearRecipient = useCallback(() => {
     handleInputChange('selectedRecipient', null);
@@ -460,10 +446,11 @@ export default function Send() {
             </SirchAutocomplete>
           </div>
 
-          <SirchNumberInput
+          <SirchCoinInput
             name='amountToSend'
             label='Amount'
             placeholder="How many ⓢ coins?"
+            amount={formData.amount}
             value={formData.amount}
             onChange={handleAmountChange}
             isRequired
@@ -476,20 +463,9 @@ export default function Send() {
             min="1"
             max={authContext?.userBalance?.toString() || "0"}
             step="1"
-            startContent={
-              <div className="pointer-events-none flex items-center text-white">
-                <span className="text-medium text-white font-bold">ⓢ</span>
-              </div>
-            }
-            endContent={
-              currentTotalPrice > 0 && (
-                <div className="pointer-events-none flex items-center text-gray-400">
-                  <span className="text-small whitespace-nowrap">
-                    ${formatPrice(currentTotalPrice)} {formatCurrency(currency)}
-                  </span>
-                </div>
-              )
-            }
+            pricePerCoin={pricePerCoin}
+            currency={currency}
+            showUsdValue={true}
           />
 
           <SirchTextInput
