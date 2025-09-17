@@ -74,14 +74,6 @@ export class QuoteService {
     return this.getQuote(options);
   }
 
-  getCachedQuote(): CoinQuote | null {
-    return this.cachedQuote;
-  }
-
-  getLastFetchTime(): Date | null {
-    return this.lastFetchTime;
-  }
-
   // Get cached quote regardless of cache validity - for display purposes
   getLastKnownQuote(): CoinQuote | null {
     return this.cachedQuote;
@@ -104,11 +96,6 @@ export class QuoteService {
 
   formatCurrency(currency: string): string {
     return currency.toUpperCase();
-  }
-
-  calculateUsdValue(coinAmount: number, quote?: CoinQuote): number {
-    const activeQuote = quote || this.cachedQuote;
-    return activeQuote ? coinAmount * activeQuote.pricePerCoin : 0;
   }
 }
 

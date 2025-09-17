@@ -82,7 +82,6 @@ export function useCoinQuote(options: UseCoinQuoteOptions = {}) {
     // Utility functions
     formatPrice: quoteService.formatPrice,
     formatCurrency: quoteService.formatCurrency,
-    calculateUsdValue: (coinAmount: number) => quoteService.calculateUsdValue(coinAmount, quote || undefined),
     // Last known quote for display purposes (even if stale)
     lastKnownQuote: quoteService.getLastKnownQuote(),
     calculateLastKnownUsdValue: (coinAmount: number) => {
