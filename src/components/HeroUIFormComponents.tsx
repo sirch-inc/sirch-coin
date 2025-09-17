@@ -312,6 +312,7 @@ interface SirchCoinInputProps extends Omit<InputProps, 'type' | 'startContent'> 
   pricePerCoin?: number;
   currency?: string;
   showUsdValue?: boolean;
+  onRefreshQuote?: () => void;
 }
 
 /**
@@ -319,7 +320,7 @@ interface SirchCoinInputProps extends Omit<InputProps, 'type' | 'startContent'> 
  * Shows ⓢ symbol in startContent and USD equivalent in endContent when applicable
  */
 export const SirchCoinInput = React.forwardRef<HTMLInputElement, SirchCoinInputProps>((props, ref) => {
-  const { amount, pricePerCoin = 0, currency = "USD", showUsdValue = true, ...otherProps } = props;
+  const { amount, pricePerCoin = 0, currency = "USD", showUsdValue = true, onRefreshQuote, ...otherProps } = props;
   
   // Calculate USD equivalent
   const usdValue = React.useMemo(() => {
@@ -345,13 +346,40 @@ export const SirchCoinInput = React.forwardRef<HTMLInputElement, SirchCoinInputP
         </div>
       }
       endContent={
-        showUsdValue && usdValue > 0 && (
-          <div className="pointer-events-none flex items-center text-gray-400">
-            <span className="text-small whitespace-nowrap">
-              ${formatPrice(usdValue)} {formatCurrency(currency)}
-            </span>
-          </div>
-        )
+        <div className="flex items-center gap-2">
+          {showUsdValue && usdValue > 0 && (
+            <div className="pointer-events-none flex items-center text-gray-400">
+              <span className="text-small whitespace-nowrap">
+                ${formatPrice(usdValue)} {formatCurrency(currency)}
+              </span>
+            </div>
+          )}
+          {onRefreshQuote && (
+            <button
+              type="button"
+              onClick={onRefreshQuote}
+              className="pointer-events-auto flex items-center justify-center w-5 h-5 text-gray-400 hover:text-white transition-colors cursor-pointer bg-transparent border-none p-0"
+              title="Refresh quote"
+              style={{ minWidth: '20px', minHeight: '20px' }}
+            >
+              <svg 
+                width="16" 
+                height="16" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+                style={{ display: 'block' }}
+              >
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="m20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+              </svg>
+            </button>
+          )}
+        </div>
       }
       {...otherProps}
     />

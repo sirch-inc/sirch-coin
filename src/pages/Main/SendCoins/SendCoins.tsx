@@ -38,7 +38,8 @@ export default function Send() {
 
   // Use the quote service for USD conversion
   const { 
-    quote
+    quote,
+    refreshQuote
   } = useCoinQuote();
 
   // Initialize form data
@@ -437,6 +438,7 @@ export default function Send() {
             pricePerCoin={quote?.pricePerCoin || 0}
             currency={quote?.currency || 'USD'}
             showUsdValue={true}
+            onRefreshQuote={refreshQuote}
           />
 
           <SirchTextInput

@@ -218,6 +218,7 @@ export default function PurchaseCoins() {
               pricePerCoin={getQuote()?.pricePerCoin || 0}
               currency={getQuote()?.currency || 'USD'}
               showUsdValue={true}
+              onRefreshQuote={refreshQuote}
             />
           </div>
           <p>Sirch Coins uses the payment provider Stripe for secure transactions. See more...</p>

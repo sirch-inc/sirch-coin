@@ -53,7 +53,8 @@ The `HeroUIFormComponents.tsx` file provides standardized, reusable form compone
   - Shows ⓢ symbol in startContent
   - Displays USD equivalent in endContent when amount > 0
   - Built-in price calculation and formatting
-  - Supports all SirchInput props plus `amount`, `pricePerCoin`, `currency`, `showUsdValue`
+  - Optional refresh icon for quote updates
+  - Supports all SirchInput props plus `amount`, `pricePerCoin`, `currency`, `showUsdValue`, `onRefreshQuote`
 
 ## Usage Examples
 
@@ -91,7 +92,7 @@ import { SirchEmailInput, SirchTextInput, SirchNumberInput, SirchCheckbox } from
   maxLength={50}
 />
 
-// Sirch Coin input with USD conversion
+// Sirch Coin input with USD conversion and refresh capability
 <SirchCoinInput
   label="Amount"
   placeholder="How many ⓢ coins?"
@@ -101,6 +102,7 @@ import { SirchEmailInput, SirchTextInput, SirchNumberInput, SirchCheckbox } from
   pricePerCoin={1.50}
   currency="USD"
   showUsdValue={true}
+  onRefreshQuote={handleRefreshQuote}
   min="1"
   step="1"
 />
