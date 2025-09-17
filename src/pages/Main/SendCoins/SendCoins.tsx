@@ -38,7 +38,7 @@ export default function Send() {
 
   // Use the quote service for USD conversion
   const { 
-    quote 
+    lastKnownQuote
   } = useCoinQuote();
 
   // Initialize form data
@@ -434,8 +434,8 @@ export default function Send() {
             min="1"
             max={authContext?.userBalance?.toString() || "0"}
             step="1"
-            pricePerCoin={quote?.pricePerCoin || 0}
-            currency={quote?.currency || 'USD'}
+            pricePerCoin={lastKnownQuote?.pricePerCoin || 0}
+            currency={lastKnownQuote?.currency || 'USD'}
             showUsdValue={true}
           />
 

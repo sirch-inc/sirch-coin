@@ -1,11 +1,14 @@
 import { AuthContext } from '../../_common/AuthContext';
 import { useContext, useState, useEffect } from 'react';
+import { useCoinQuote } from '../../../../hooks';
 
 
 export default function NavBar() {
   const auth = useContext(AuthContext);
   const [isBlurred, setIsBlurred] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+
+  const { calculateLastKnownUsdValue } = useCoinQuote();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -33,8 +36,13 @@ export default function NavBar() {
               >
                 {auth?.userInTable && auth?.userBalance && (
                   (isBlurred && !isHovered)
-                    ? " ••••• / $ ••••• USD" 
-                    : " " + auth.userBalance + " / $ " + (auth.userBalance*0.10).toFixed(2) + " USD"
+                    ? " ••••• / $ •••••" 
+                    : (() => {
+                        const usdValue = calculateLastKnownUsdValue(auth.userBalance);
+                        return usdValue !== null 
+                          ? ` ${auth.userBalance} / $ ${usdValue.toFixed(2)} USD`
+                          : ` ${auth.userBalance}`;
+                      })()
                 )}
               </span>
             </div>

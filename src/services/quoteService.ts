@@ -82,6 +82,11 @@ export class QuoteService {
     return this.lastFetchTime;
   }
 
+  // Get cached quote regardless of cache validity - for display purposes
+  getLastKnownQuote(): CoinQuote | null {
+    return this.cachedQuote;
+  }
+
   private isCacheValid(): boolean {
     if (!this.cachedQuote || !this.lastFetchTime) {
       return false;

@@ -33,7 +33,8 @@ export default function PurchaseCoins() {
     refreshQuote,
     lastRefresh,
     formatPrice,
-    formatCurrency 
+    formatCurrency,
+    lastKnownQuote
   } = useCoinQuote({ 
     autoRefresh: true, 
     refreshInterval: 15 
@@ -209,8 +210,8 @@ export default function PurchaseCoins() {
                 errors.minimumPurchase ? getFieldError('minimumPurchase') : 
                 ""
               }
-              pricePerCoin={quote?.pricePerCoin || 0}
-              currency={quote?.currency || 'USD'}
+              pricePerCoin={lastKnownQuote?.pricePerCoin || 0}
+              currency={lastKnownQuote?.currency || 'USD'}
               showUsdValue={true}
             />
           </div>
