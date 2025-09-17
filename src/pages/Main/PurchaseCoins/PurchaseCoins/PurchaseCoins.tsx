@@ -36,8 +36,7 @@ export default function PurchaseCoins() {
     formatCurrency,
     getQuote
   } = useCoinQuote({ 
-    autoRefresh: true, 
-    refreshInterval: 15 
+    provider: 'STRIPE'
   });
 
   // State for checkout
@@ -175,6 +174,8 @@ export default function PurchaseCoins() {
             }
             <br />
             Note: A minimum purchase of ⓢ {quote?.minimumPurchase || '...'} is required.
+            <br />
+            <small className="text-gray-400">📡 Quotes automatically update every 5 minutes</small>
           </p>
           <div className="quote-controls">
             <Button 

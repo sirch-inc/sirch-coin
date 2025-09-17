@@ -58,8 +58,7 @@ function AutoRefreshQuote() {
     formatCurrency,
     getQuote
   } = useCoinQuote({ 
-    autoRefresh: true, 
-    refreshInterval: 15 
+    provider: 'STRIPE'
   });
 
   const displayQuote = getQuote(); // Get cached quote with staleness info
@@ -72,6 +71,7 @@ function AutoRefreshQuote() {
       )}
       <button onClick={refreshQuote}>Refresh Quote</button>
       {lastRefresh && <p>Last updated: {lastRefresh.toLocaleTimeString()}</p>}
+      <p className="info">📡 Quotes automatically update every 5 minutes</p>
     </div>
   );
 }
@@ -80,14 +80,15 @@ function AutoRefreshQuote() {
 
 The `useCoinQuote` hook accepts the following options:
 
-- `autoRefresh` (boolean, default: false) - Enable automatic refresh
-- `refreshInterval` (number, default: 15) - Refresh interval in minutes
 - `provider` (string, default: 'STRIPE') - Quote provider to use
+
+**Note**: Automatic polling is now handled globally by the service (every 5 minutes), so individual components no longer need to configure auto-refresh. The cache duration and polling interval are aligned to ensure users always have access to fresh data when staleness is indicated.
 
 ## Service Features
 
 ### Caching & Staleness
 - Automatic 5-minute cache to reduce API calls
+- Global 5-minute polling for fresh quotes (automatic background updates)
 - Fallback to cached data if API fails with staleness indicators
 - Manual cache invalidation with `refreshQuote()`
 - `getQuote()` returns cached data with `isStale` and `staleReason` properties
@@ -96,6 +97,7 @@ The `useCoinQuote` hook accepts the following options:
 - Graceful degradation when API is unavailable
 - Console warnings for failed requests
 - Cached data fallback for resilience with staleness indicators
+- Background polling continues even if individual requests fail
 
 ### Utility Methods
 - `formatPrice(price)` - Format price to 2 decimal places
@@ -115,8 +117,7 @@ const {
   formatPrice,
   formatCurrency 
 } = useCoinQuote({ 
-  autoRefresh: true, 
-  refreshInterval: 15 
+  provider: 'STRIPE'
 });
 ```
 

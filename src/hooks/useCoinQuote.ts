@@ -3,15 +3,11 @@ import { quoteService, CoinQuote } from '../services/quoteService';
 import { AuthContext } from '../pages/Main/_common/AuthContext';
 
 interface UseCoinQuoteOptions {
-  autoRefresh?: boolean;
-  refreshInterval?: number; // in minutes
   provider?: string;
 }
 
 export function useCoinQuote(options: UseCoinQuoteOptions = {}) {
   const {
-    autoRefresh = false,
-    refreshInterval = 15,
     provider = 'STRIPE'
   } = options;
 
@@ -52,17 +48,21 @@ export function useCoinQuote(options: UseCoinQuoteOptions = {}) {
     }
   }, [userInTable, fetchQuote]);
 
-  // Auto-refresh
+  // Subscribe to quote updates from the service
   useEffect(() => {
-    if (!autoRefresh || !userInTable) return;
+    if (!userInTable) return;
 
-    const intervalMs = refreshInterval * 60 * 1000;
-    const interval = setInterval(() => {
-      fetchQuote();
-    }, intervalMs);
+    const unsubscribe = quoteService.subscribe(() => {
+      // Update quote state when service notifies of new data
+      const updatedQuote = quoteService.getCachedQuote();
+      if (updatedQuote) {
+        setQuote(updatedQuote);
+        setLastRefresh(new Date());
+      }
+    });
 
-    return () => clearInterval(interval);
-  }, [autoRefresh, refreshInterval, userInTable, fetchQuote]);
+    return unsubscribe;
+  }, [userInTable]);
 
   const refreshQuote = async () => {
     await fetchQuote(true);
@@ -85,8 +85,7 @@ export function useCoinQuote(options: UseCoinQuoteOptions = {}) {
     // Get quote (may be stale with indicators)
     getQuote: () => quoteService.getCachedQuote(),
     calculateUsdValue: (coinAmount: number) => {
-      const cachedQuote = quoteService.getCachedQuote();
-      return cachedQuote ? coinAmount * cachedQuote.pricePerCoin : null;
+      return quote ? coinAmount * quote.pricePerCoin : null;
     },
   };
 }

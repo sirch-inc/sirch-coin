@@ -18,12 +18,19 @@ export class QuoteService {
   private cachedQuote: CoinQuote | null = null;
   private lastFetchTime: Date | null = null;
   private readonly CACHE_DURATION_MS = 5 * 60 * 1000; // 5 minutes
+  private readonly POLLING_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes - aligned with staleness
+  private pollingTimer: NodeJS.Timeout | null = null;
+  private subscribers: Set<() => void> = new Set();
 
   static getInstance(): QuoteService {
     if (!QuoteService.instance) {
       QuoteService.instance = new QuoteService();
     }
     return QuoteService.instance;
+  }
+
+  constructor() {
+    this.startPolling();
   }
 
   async getQuote(options: QuoteServiceOptions = {}): Promise<CoinQuote> {
@@ -115,6 +122,53 @@ export class QuoteService {
 
   formatCurrency(currency: string): string {
     return currency.toUpperCase();
+  }
+
+  // Polling and subscription methods
+  private startPolling(): void {
+    // Start polling after initial delay to allow components to mount
+    setTimeout(() => {
+      this.pollingTimer = setInterval(() => {
+        this.pollForQuote();
+      }, this.POLLING_INTERVAL_MS);
+    }, 1000);
+  }
+
+  private async pollForQuote(): Promise<void> {
+    try {
+      // Only poll if we don't have fresh data
+      if (!this.isCacheValid()) {
+        await this.getQuote();
+        this.notifySubscribers();
+      }
+    } catch (error) {
+      console.warn('Background quote polling failed:', error);
+    }
+  }
+
+  subscribe(callback: () => void): () => void {
+    this.subscribers.add(callback);
+    return () => {
+      this.subscribers.delete(callback);
+    };
+  }
+
+  private notifySubscribers(): void {
+    this.subscribers.forEach(callback => {
+      try {
+        callback();
+      } catch (error) {
+        console.error('Error in quote subscription callback:', error);
+      }
+    });
+  }
+
+  destroy(): void {
+    if (this.pollingTimer) {
+      clearInterval(this.pollingTimer);
+      this.pollingTimer = null;
+    }
+    this.subscribers.clear();
   }
 }
 
