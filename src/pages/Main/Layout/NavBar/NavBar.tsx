@@ -30,12 +30,12 @@ export default function NavBar() {
                 className="w-16 h-16 mr-3"
               />
               <span className="text-3xl text-green-500 font-bold mr-2">ⓢ</span>
-              <div className="flex items-center gap-2">
-                <span 
-                  className="text-3xl text-green-500 transition-all duration-500 cursor-pointer"
-                  onMouseEnter={() => setIsHovered(true)}
-                  onMouseLeave={() => setIsHovered(false)}
-                >
+              <div 
+                className="flex items-center gap-2"
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+              >
+                <span className="text-3xl text-green-500 transition-all duration-500 cursor-pointer">
                   {auth?.userInTable && auth?.userBalance && (
                     (isBlurred && !isHovered)
                       ? "••••• / $ •••••" 
@@ -56,8 +56,6 @@ export default function NavBar() {
                         e.stopPropagation();
                         refreshQuote();
                       }}
-                      onMouseEnter={() => setIsHovered(true)}
-                      onMouseLeave={() => setIsHovered(false)}
                       className="flex items-center justify-center w-5 h-5 text-gray-400 hover:text-green-500 transition-colors cursor-pointer bg-transparent border-none p-0"
                       title="Refresh quote"
                       style={{ minWidth: '20px', minHeight: '20px' }}

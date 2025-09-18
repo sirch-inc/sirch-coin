@@ -31,7 +31,6 @@ export default function PurchaseCoins() {
     isLoading: isQuoteLoading, 
     error: quoteError, 
     refreshQuote,
-    lastRefresh,
     formatPrice,
     formatCurrency,
     getQuote
@@ -135,22 +134,6 @@ export default function PurchaseCoins() {
     handleCheckout();
   }, [handleCheckout]);
 
-  const handleRefreshQuote = useCallback(async () => {
-    try {
-      await refreshQuote();
-    } catch (error) {
-      console.error('Failed to refresh quote:', error);
-    }
-  }, [refreshQuote]);
-
-  const formatLastRefresh = (date: Date | null): string => {
-    if (!date) return '';
-    return new Intl.DateTimeFormat('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(date);
-  };
-
   // Handle quote error
   if (quoteError) {
     navigate('/error', { replace: true });
@@ -162,38 +145,6 @@ export default function PurchaseCoins() {
       <div className='purchase-container'>
         <h2>Buy Sirch Coins ⓢ</h2>
         <h3>How many Sirch Coins would you like to purchase?</h3>
-        <div className="quote-section">
-          <p>
-            {isQuoteLoading || !quote
-              ? `Quote: ⓢ 1 = Loading...`
-              : (() => {
-                  const displayQuote = getQuote();
-                  const staleIndicator = displayQuote?.isStale ? ` (${displayQuote.staleReason})` : '';
-                  return `Quote: ⓢ 1 = ${formatPrice(quote.pricePerCoin)} ${formatCurrency(quote.currency)}${staleIndicator}`;
-                })()
-            }
-            <br />
-            Note: A minimum purchase of ⓢ {quote?.minimumPurchase || '...'} is required.
-            <br />
-            <small className="text-gray-400">📡 Quotes automatically update every 5 minutes</small>
-          </p>
-          <div className="quote-controls">
-            <Button 
-              size="sm" 
-              variant="light" 
-              onPress={handleRefreshQuote}
-              isLoading={isQuoteLoading}
-              disabled={isQuoteLoading}
-            >
-              Refresh Quote
-            </Button>
-            {lastRefresh && (
-              <span className="last-refresh">
-                Last updated: {formatLastRefresh(lastRefresh)}
-              </span>
-            )}
-          </div>
-        </div>
         
         <form onSubmit={handleSubmit} noValidate>
           <div className='purchase-form'>
