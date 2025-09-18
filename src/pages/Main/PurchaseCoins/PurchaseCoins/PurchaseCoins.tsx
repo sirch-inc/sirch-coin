@@ -85,12 +85,6 @@ export default function PurchaseCoins() {
     validationRules
   });
 
-  // Calculate current total price for checkout
-  const currentTotalPrice = useMemo(() => {
-    const amount = parseFloat(formData.amount);
-    return amount && !isNaN(amount) && quote ? amount * quote.pricePerCoin : 0;
-  }, [formData.amount, quote]);
-
   const handleCheckout = useCallback(async () => {
     if (!quote) return;
 
@@ -147,6 +141,7 @@ export default function PurchaseCoins() {
         <h3>How many Sirch Coins would you like to purchase?</h3>
         
         <form onSubmit={handleSubmit} noValidate>
+          <p>Sirch Coins uses the payment provider Stripe for secure transactions. See more...</p>
           <div className='purchase-form'>
             <SirchCoinInput
               className='coin-input'
@@ -172,8 +167,6 @@ export default function PurchaseCoins() {
               onRefreshQuote={refreshQuote}
             />
           </div>
-          <p>Sirch Coins uses the payment provider Stripe for secure transactions. See more...</p>
-          <h4>Your total price: ${formatPrice(currentTotalPrice)} {formatCurrency(quote?.currency || 'USD')}</h4>
           <div className='bottom-btn-container'>
             <Button 
               type='submit'
