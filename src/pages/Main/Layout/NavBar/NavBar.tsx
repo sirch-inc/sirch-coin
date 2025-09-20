@@ -1,6 +1,7 @@
 import { AuthContext } from '../../_common/AuthContext';
 import { useContext, useState, useEffect } from 'react';
 import { useCoinQuote } from '../../../../hooks';
+import { RefreshButton } from '../../../../components/HeroUIFormComponents';
 
 
 export default function NavBar() {
@@ -50,32 +51,13 @@ export default function NavBar() {
                 {auth?.userInTable && auth?.userBalance && (!isBlurred || isHovered) && (() => {
                   const usdValue = calculateUsdValue(auth.userBalance);
                   return usdValue !== null && (
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
+                    <RefreshButton 
+                      onRefresh={() => {
                         refreshQuote();
                       }}
-                      className="flex items-center justify-center w-5 h-5 text-gray-400 hover:text-green-500 transition-colors cursor-pointer bg-transparent border-none p-0"
+                      className="text-gray-400 hover:text-green-500"
                       title="Refresh quote"
-                      style={{ minWidth: '20px', minHeight: '20px' }}
-                    >
-                      <svg 
-                        width="16" 
-                        height="16" 
-                        viewBox="0 0 24 24" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        strokeWidth="2" 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round"
-                        style={{ display: 'block' }}
-                      >
-                        <polyline points="23 4 23 10 17 10"></polyline>
-                        <polyline points="1 20 1 14 7 14"></polyline>
-                        <path d="m20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
-                      </svg>
-                    </button>
+                    />
                   );
                 })()}
               </div>

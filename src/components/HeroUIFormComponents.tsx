@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Input, Checkbox, Switch, Chip, Autocomplete, InputProps, CheckboxProps, SwitchProps, ChipProps, AutocompleteProps } from '@heroui/react';
 import { validators } from '../utils';
+import { RefreshButton } from './RefreshButton';
 
 // Standard styling for all Sirch inputs
 const SIRCH_INPUT_STYLES = {
@@ -355,29 +356,7 @@ export const SirchCoinInput = React.forwardRef<HTMLInputElement, SirchCoinInputP
                 </span>
               </div>
               {onRefreshQuote && (
-                <button
-                  type="button"
-                  onClick={onRefreshQuote}
-                  className="pointer-events-auto flex items-center justify-center w-5 h-5 text-gray-400 hover:text-white transition-colors cursor-pointer bg-transparent border-none p-0"
-                  title="Refresh quote"
-                  style={{ minWidth: '20px', minHeight: '20px' }}
-                >
-                  <svg 
-                    width="16" 
-                    height="16" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="2" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round"
-                    style={{ display: 'block' }}
-                  >
-                    <polyline points="23 4 23 10 17 10"></polyline>
-                    <polyline points="1 20 1 14 7 14"></polyline>
-                    <path d="m20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
-                  </svg>
-                </button>
+                <RefreshButton onRefresh={onRefreshQuote} />
               )}
             </>
           )}
@@ -389,3 +368,6 @@ export const SirchCoinInput = React.forwardRef<HTMLInputElement, SirchCoinInputP
 });
 
 SirchCoinInput.displayName = "SirchCoinInput";
+
+// Export RefreshButton
+export { RefreshButton } from './RefreshButton';

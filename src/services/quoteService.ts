@@ -98,7 +98,7 @@ export class QuoteService {
       return {
         ...this.cachedQuote,
         isStale: true,
-        staleReason: 'Data is older than 5 minutes'
+        staleReason: 'Quote data is older than 5 minutes'
       };
     }
     
