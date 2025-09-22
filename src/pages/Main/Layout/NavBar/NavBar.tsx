@@ -1,5 +1,5 @@
 import { AuthContext } from '../../_common/AuthContext';
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCoinQuote } from '../../../../hooks';
 import { RefreshButton } from '../../../../components/HeroUIFormComponents';
@@ -10,15 +10,45 @@ export default function NavBar() {
   const navigate = useNavigate();
   const [isBlurred, setIsBlurred] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const { quote, calculateUsdValue, refreshQuote, isLoading } = useCoinQuote();
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
+  const startBlurTimer = () => {
+    // Clear existing timer
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+    
+    // Start new timer
+    timerRef.current = setTimeout(() => {
       setIsBlurred(true);
     }, 30000);
+  };
 
-    return () => clearTimeout(timer);
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    // Reset timer when user reveals balance
+    if (isBlurred) {
+      setIsBlurred(false);
+      startBlurTimer();
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    // Reset timer when user stops hovering
+    startBlurTimer();
+  };
+
+  useEffect(() => {
+    startBlurTimer();
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
   }, []);
 
   return (
@@ -34,8 +64,8 @@ export default function NavBar() {
             />
             <div 
               className="flex items-center gap-2"
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
             >
                 <span className="text-3xl text-green-500 transition-all duration-500">
                   {auth?.userInTable && auth?.userBalance && (
