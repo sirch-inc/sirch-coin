@@ -349,11 +349,11 @@ export const SirchCoinInput = React.forwardRef<HTMLInputElement, SirchCoinInputP
       }
       endContent={
         <div className="flex items-center gap-2">
-          {showUsdValue && usdValue > 0 && (
+          {showUsdValue && (usdValue > 0 || onRefreshQuote) && (
             <>
               <div className="pointer-events-none flex items-center text-gray-400">
                 <span className="text-small whitespace-nowrap">
-                  ${formatPrice(usdValue)} {formatCurrency(currency)}
+                  {usdValue > 0 ? `$${formatPrice(usdValue)} ${formatCurrency(currency)}` : `$0.00 ${formatCurrency(currency)}`}
                 </span>
               </div>
               {onRefreshQuote && (

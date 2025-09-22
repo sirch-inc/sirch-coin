@@ -23,7 +23,9 @@ export const RefreshButton: React.FC<RefreshButtonProps> = ({
   color = 'default',
 }) => {
   const handlePress = () => {
-    onRefresh();
+    if (!isLoading && !isDisabled) {
+      onRefresh();
+    }
   };
 
   return (
@@ -33,7 +35,7 @@ export const RefreshButton: React.FC<RefreshButtonProps> = ({
       variant={variant}
       color={color}
       onPress={handlePress}
-      isDisabled={isDisabled}
+      isDisabled={isDisabled || isLoading}
       isLoading={isLoading}
       className={`min-w-5 min-h-5 w-5 h-5 text-gray-400 hover:text-white transition-colors ${className}`}
       title={title}

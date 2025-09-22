@@ -38,9 +38,9 @@ export default function Send() {
 
   // Use the quote service for USD conversion
   const { 
-    quote,
     refreshQuote,
-    isLoading: isQuoteLoading
+    isLoading: isQuoteLoading,
+    getQuote
   } = useCoinQuote();
 
   // Initialize form data
@@ -437,7 +437,8 @@ export default function Send() {
             max={authContext?.userBalance?.toString() || "0"}
             step="1"
             pricePerCoin={quote?.pricePerCoin || 0}
-            currency={quote?.currency || 'USD'}
+            pricePerCoin={getQuote()?.pricePerCoin || 0}
+            currency={getQuote()?.currency || 'USD'}
             showUsdValue={true}
             onRefreshQuote={refreshQuote}
             isRefreshLoading={isQuoteLoading}
