@@ -71,7 +71,7 @@ export default function NavBar() {
               >
                 <span className="text-3xl text-green-500 transition-all duration-500">
                   {(isBlurred && !isHovered)
-                    ? "••••••••••" 
+                    ? "(balance hidden for privacy)" 
                     : (() => {
                         const usdValue = calculateUsdValue(auth.userBalance);
                         return usdValue !== null 
