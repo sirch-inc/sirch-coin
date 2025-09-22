@@ -37,10 +37,11 @@ export default function UserMenu() {
           variant="bordered"
           color="success"
           onPress={() => navigate('/login')}
-          className="border-green-500 text-green-500 hover:bg-green-500 hover:text-black"
+          className="border-green-500 text-green-500 hover:bg-green-500"
         >
           Login
         </Button>
+        
         <Button
           color="success"
           onPress={() => navigate('/create-account')}
@@ -85,7 +86,7 @@ export default function UserMenu() {
       >
         <DropdownItem
           key="profile"
-          onPress={() => handleNavigation('/my-account')}
+          onPress={() => handleNavigation('/account')}
         >
           Manage Account
         </DropdownItem>
