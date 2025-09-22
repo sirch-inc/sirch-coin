@@ -145,7 +145,7 @@ export default function PurchaseCoins() {
           <div className='purchase-form'>
             <SirchCoinInput
               className='coin-input'
-              name='coins'
+              name="coins"
               label="Amount"
               placeholder="Enter number of coins to purchase"
               amount={formData.amount}
