@@ -314,6 +314,7 @@ interface SirchCoinInputProps extends Omit<InputProps, 'type' | 'startContent'> 
   currency?: string;
   showUsdValue?: boolean;
   onRefreshQuote?: () => void;
+  isRefreshLoading?: boolean;
 }
 
 /**
@@ -321,7 +322,7 @@ interface SirchCoinInputProps extends Omit<InputProps, 'type' | 'startContent'> 
  * Shows ⓢ symbol in startContent and USD equivalent in endContent when applicable
  */
 export const SirchCoinInput = React.forwardRef<HTMLInputElement, SirchCoinInputProps>((props, ref) => {
-  const { amount, pricePerCoin = 0, currency = "USD", showUsdValue = true, onRefreshQuote, ...otherProps } = props;
+  const { amount, pricePerCoin = 0, currency = "USD", showUsdValue = true, onRefreshQuote, isRefreshLoading = false, ...otherProps } = props;
   
   // Calculate USD equivalent
   const usdValue = React.useMemo(() => {
@@ -356,7 +357,10 @@ export const SirchCoinInput = React.forwardRef<HTMLInputElement, SirchCoinInputP
                 </span>
               </div>
               {onRefreshQuote && (
-                <RefreshButton onRefresh={onRefreshQuote} />
+                <RefreshButton 
+                  onRefresh={onRefreshQuote} 
+                  isLoading={isRefreshLoading}
+                />
               )}
             </>
           )}

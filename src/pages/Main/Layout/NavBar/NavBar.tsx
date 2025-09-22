@@ -9,7 +9,7 @@ export default function NavBar() {
   const [isBlurred, setIsBlurred] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
-  const { quote, calculateUsdValue, refreshQuote } = useCoinQuote();
+  const { quote, calculateUsdValue, refreshQuote, isLoading } = useCoinQuote();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -55,6 +55,7 @@ export default function NavBar() {
                       onRefresh={() => {
                         refreshQuote();
                       }}
+                      isLoading={isLoading}
                       className="text-gray-400 hover:text-green-500"
                       title="Refresh quote"
                     />

@@ -165,6 +165,7 @@ export default function PurchaseCoins() {
               currency={getQuote()?.currency || 'USD'}
               showUsdValue={true}
               onRefreshQuote={refreshQuote}
+              isRefreshLoading={isQuoteLoading}
             />
           </div>
           <div className='bottom-btn-container'>
