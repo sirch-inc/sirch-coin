@@ -436,7 +436,6 @@ export default function Send() {
             min="1"
             max={authContext?.userBalance?.toString() || "0"}
             step="1"
-            pricePerCoin={quote?.pricePerCoin || 0}
             pricePerCoin={getQuote()?.pricePerCoin || 0}
             currency={getQuote()?.currency || 'USD'}
             showUsdValue={true}
