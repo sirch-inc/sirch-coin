@@ -41,9 +41,9 @@ import { ToastNotification, toast } from '../../_common/ToastNotification';
 import supabase from '../../_common/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
 import { Button, Card, CardBody } from '@heroui/react';
-import { SirchEmailInput, SirchTextInput, SirchPrivacyChip } from '../../../../components/HeroUIFormComponents';
+import { SirchValidatedEmailInput, SirchTextInput, SirchPrivacyChip } from '../../../../components/HeroUIFormComponents';
 import { useFormValidation, useAsyncOperation } from '../../../../hooks';
-import { validators } from '../../../../utils';
+import { validators, isValidEmailForSubmission } from '../../../../utils';
 import './UpdateAccount.css';
 
 // Form data types
@@ -145,6 +145,12 @@ export default function UpdateAccount() {
   const handleUpdate = useCallback(async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
     
+    // Additional check for required email
+    if (!isValidEmailForSubmission(formData.email, true)) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+    
     if (!validateForm()) {
       toast.error("Please fix the errors below and try again.");
       return;
@@ -221,14 +227,12 @@ export default function UpdateAccount() {
             <p>Update your account information below. Privacy settings control whether others can find you socially.</p>
             
             <div className="flex items-center gap-4">
-              <SirchEmailInput
+              <SirchValidatedEmailInput
                 label="Email"
                 placeholder="Enter your email"
                 value={formData.email}
                 onChange={(e) => handleFormInputChange('email', e.target.value)}
                 isRequired
-                isInvalid={errors.email}
-                errorMessage={getFieldError('email')}
                 className="flex-1"
               />
               <SirchPrivacyChip

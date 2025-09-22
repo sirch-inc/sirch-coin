@@ -27,7 +27,7 @@ export default function App() {
         <HeroUIProvider>
           <div className='app-layout'>
             <Header />
-            <MainContent supabase={supabase}/>
+            <MainContent/>
             <Footer/>
           </div>
         </HeroUIProvider>

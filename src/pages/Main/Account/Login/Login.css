@@ -22,12 +22,6 @@
   text-decoration: underline;
 }
 
-/* Preserve global styles as needed */
-.account-input,
-.bottom-btn-container {
-  /* These styles will be inherited from master.css */
-}
-
 @media (max-width: 768px) {
   .login-container {
     padding: 1rem;

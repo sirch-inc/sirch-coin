@@ -49,18 +49,10 @@
     display: block;
     margin-bottom: 4px;
   }
-  
-  /* input {
-    padding: 4px;
-    border-radius: 2px;
-    border: 2px solid #ccc;
-    width: 100%;
-    box-sizing: border-box;
-  } */
-  
+    
   button {
-    background-color: black;
-    color: white;
+    background-color: purple;
+    color: black;
     padding: 12px 24px;
     border: none;
     border-radius: 4px;
@@ -80,53 +72,6 @@
 .big-btn:hover {
   background-color: #3AD820;
   color: black;
-}
-
-.button-group {
-  margin-bottom: 24px;
-}
-
-.bottom-btn-container {
-  position: relative;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  margin-top: 24px;
-  padding: 24px;
-  bottom: 36px;
-}
-
-/* TODO: fix this duplicate */
-.bottom-btn-container-light {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  align-items: start;
-  margin-top: 24px;
-  padding: 24px;
-}
-
-/* TODO: fix this duplicate */
-.bottom-btn-container-light {
-  position: relative;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  margin-top: 24px;
-  padding: 24px;
-  bottom: 24px;
-}
-
-.button-group {
-  margin-bottom: 24px;
 }
 
 .bottom-btn-container {
@@ -197,38 +142,6 @@ input#email {
   width: 65%;
 }
 
-input#first-name, input#last-name {
-  width: 30%;
-}
-
-div#is-email-private {
-  display: contents;
-}
-
-input#is-email-private-checkbox {
-  width: min-content;
-  margin: 0px;
-}
-
-label#is-email-private-label {
-  vertical-align: middle;
-  margin: 0px;
-}
-
-div#is-name-private {
-  display: contents;
-}
-
-input#is-name-private-checkbox {
-  width: min-content;
-  margin: 0px;
-}
-
-label#is-name-private-label {
-  vertical-align: middle;
-  margin: 0px;
-}
-
 div#account-user-handle-row {
   width: 75%;
   display: flex;
@@ -251,43 +164,11 @@ input#user-handle {
   padding-left: unset;
 }
 
-
-
-
-
-/* Styles for the success message */
-.success {
-  background-color: lightgreen;
-  padding: 12px;
-  border-radius: 4px;
-  margin-top: 24px;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* Responsive */
 @media only screen and (min-width: 768px) {
 }
 
 @media only screen and (min-width: 1200px) {
-  .navbar {
-    justify-content: flex-start;
-  }
-
-  .navbar-item {
-    font-size: 24px;
-  }
-
   .big-btn {
     height: h-14;
     width: 100%;

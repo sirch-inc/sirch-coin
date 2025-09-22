@@ -5,10 +5,9 @@ import { AuthContext } from '../../_common/AuthContext';
 import supabase from '../../_common/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
 import { Button, Card, CardBody } from '@heroui/react';
-import { SirchEmailInput, SirchTextInput, SirchPasswordInput, SirchPrivacyChip } from '../../../../components/HeroUIFormComponents';
+import { SirchValidatedEmailInput, SirchTextInput, SirchPasswordInput, SirchPrivacyChip } from '../../../../components/HeroUIFormComponents';
 import { useFormValidation, useAsyncOperation } from '../../../../hooks';
-import { validators } from '../../../../utils';
-import './CreateAccount.css';
+import { validators, isValidEmailForSubmission } from '../../../../utils';
 
 // Form data types
 interface ValidationErrors extends Record<string, boolean> {
@@ -124,13 +123,19 @@ export default function CreateAccount() {
     );
   }, [handleGenerationOperation, handleInputChange]);
 
+  // Generate initial handle only once on component mount
   useEffect(() => {
-      handleSuggestNewHandle();
-    }, [handleSuggestNewHandle]
-  );
+    handleSuggestNewHandle();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSignUp = useCallback(async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
+    
+    // Additional check for required email
+    if (!isValidEmailForSubmission(formData.email, true)) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
     
     if (!validateForm()) {
       toast.error("Please fix the errors below and try again.");
@@ -175,10 +180,6 @@ export default function CreateAccount() {
     );
   }, [formData, validateForm, submitOperation, navigate]);
 
-  useEffect(() => {
-    handleSuggestNewHandle();
-  }, [handleSuggestNewHandle]);
-
   // Helper to check if passwords match for UI feedback
   const passwordsMatch = formData.password && formData.confirmPassword && formData.password === formData.confirmPassword;
   
@@ -215,14 +216,12 @@ export default function CreateAccount() {
               <p>Create your new Sirch account below. Privacy settings control whether others can find you socially.</p>
               
               <div className="flex items-center gap-4">
-                <SirchEmailInput
+                <SirchValidatedEmailInput
                   label="Email"
                   placeholder="Enter your email"
                   value={formData.email}
                   onChange={(e) => handleFormInputChange('email', e.target.value)}
                   isRequired
-                  isInvalid={errors.email}
-                  errorMessage={getFieldError('email')}
                   className="flex-1"
                 />
                 <SirchPrivacyChip

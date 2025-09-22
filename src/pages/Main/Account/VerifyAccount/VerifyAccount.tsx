@@ -1,7 +1,6 @@
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../_common/AuthContext';
-import './VerifyAccount.css';
 
 
 export default function VerifyAccount() {

@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@heroui/react';
-import './ContactUs.css';
 
 
 export default function ContactUs() {

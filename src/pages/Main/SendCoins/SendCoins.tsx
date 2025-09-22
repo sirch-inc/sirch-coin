@@ -1,12 +1,12 @@
-import { useState, useEffect, useCallback, useContext, useMemo } from 'react';
+import { useState, useEffect, useCallback, useContext, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../_common/AuthContext';
 import { ToastNotification, toast } from '../_common/ToastNotification';
 import supabase from '../_common/supabaseProvider';
 import useDebounce from '../../../helpers/debounce';
-import { Button, Autocomplete, AutocompleteItem, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from '@heroui/react';
-import { SirchNumberInput, SirchTextInput } from '../../../components/HeroUIFormComponents';
-import { useFormValidation, useAsyncOperation } from '../../../hooks';
+import { Button, AutocompleteItem, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from '@heroui/react';
+import { SirchTextInput, SirchAutocomplete, SirchCoinInput } from '../../../components/HeroUIFormComponents';
+import { useFormValidation, useAsyncOperation, useCoinQuote } from '../../../hooks';
 import 'react-toastify/dist/ReactToastify.css';
 import './SendCoins.css';
 
@@ -34,6 +34,14 @@ export default function Send() {
   const navigate = useNavigate();
   const authContext = useContext(AuthContext);
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
+  const confirmButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Use the quote service for USD conversion
+  const { 
+    refreshQuote,
+    isLoading: isQuoteLoading,
+    getQuote
+  } = useCoinQuote();
 
   // Initialize form data
   const initialFormData: SendCoinsFormData = {
@@ -92,6 +100,40 @@ export default function Send() {
 
   // Additional state for user search functionality
   const [foundUsers, setFoundUsers] = useState<User[] | null>(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [dropdownHeight, setDropdownHeight] = useState(0);
+  
+  // Calculate if we should show the animated spacing
+  // Show spacing whenever dropdown is open, regardless of whether a recipient is selected
+  const shouldShowDropdownSpacing = isDropdownOpen;
+  
+  // Measure the dropdown height when it opens or content changes
+  useEffect(() => {
+    if (shouldShowDropdownSpacing) {
+      // Use a timeout to ensure the dropdown is fully rendered
+      const timeoutId = setTimeout(() => {
+        // Look for the dropdown element in the DOM using multiple possible selectors
+        const dropdownElement = document.querySelector('[data-slot="listbox"]') || 
+                               document.querySelector('[role="listbox"]') ||
+                               document.querySelector('.bg-black.text-white.border.border-white') as HTMLElement;
+        
+        if (dropdownElement) {
+          const rect = dropdownElement.getBoundingClientRect();
+          // Add significant extra spacing to ensure no overlap with next field
+          // The dropdown is absolutely positioned, so we need enough space for it + original field spacing
+          setDropdownHeight(rect.height + 32); // Larger buffer to ensure proper spacing
+        } else {
+          // Fallback to a reasonable default if we can't find the dropdown
+          setDropdownHeight(100); // Increased default to ensure no overlap
+        }
+      }, 100); // Slightly longer delay to ensure DOM is fully updated
+      
+      return () => clearTimeout(timeoutId);
+    } else {
+      setDropdownHeight(0);
+      return undefined;
+    }
+  }, [shouldShowDropdownSpacing, foundUsers, formData.searchText]);
 
   const fetchUserBalance = useCallback(async () => {
     if (authContext?.refreshUserBalance) {
@@ -256,6 +298,16 @@ export default function Send() {
     };
    }, [debouncedLookupUsers]);
 
+  // Focus on confirm button when modal opens
+  useEffect(() => {
+    if (isOpen && confirmButtonRef.current) {
+      // Use setTimeout to ensure the modal is fully rendered
+      setTimeout(() => {
+        confirmButtonRef.current?.focus();
+      }, 100);
+    }
+  }, [isOpen]);
+
   if (!authContext) {
     navigate('/');
     return null;
@@ -266,107 +318,112 @@ export default function Send() {
       <ToastNotification />
 
       <div>
-        <h2>Send ⓢ</h2>
+        <h2>Send Sirch Coins ⓢ</h2>
 
         <form onSubmit={handleSubmit} noValidate>
           <p>You can send Sirch Coins to your friends or others here.</p>
           <p>Please enter some details to help us identify the recipient, the amount, and an optional private note.</p>
         
-          <Autocomplete
-            name='searchText'
-            label='Recipient'
-            placeholder="Partial name, email, or @handle..."
-            inputValue={formData.selectedRecipient ? `${formData.selectedRecipient.full_name} (@${formData.selectedRecipient.user_handle})` : formData.searchText}
-            onInputChange={handleSearchTextChange}
-            selectedKey={formData.selectedRecipient?.user_id || null}
-            onSelectionChange={(key) => {
-              const user = foundUsers?.find(u => u.user_id === key);
-              handleInputChange('selectedRecipient', user || null);
-              if (user) {
-                handleInputChange('searchText', '');
-              }
-            }}
-            onClear={clearRecipient}
-            items={foundUsers || []}
-            isClearable
-            variant="bordered"
-            size="lg"
-            radius="none"
-            isRequired
-            isInvalid={errors.recipient}
-            errorMessage={getFieldError('recipient')}
-            endContent={
-              (formData.selectedRecipient || formData.searchText) ? (
-                <button
-                  type="button"
-                  onClick={clearRecipient}
-                  className="text-white hover:text-gray-300 p-1"
-                  aria-label="Clear"
-                >
-                  ✕
-                </button>
-              ) : null
-            }
-            classNames={{
-              base: "bg-black text-white",
-              clearButton: "!text-white !opacity-100 !visible hover:!text-gray-300",
-              endContentWrapper: "!text-white",
-              selectorButton: "text-white"
-            }}
-            clearButtonProps={{
-              className: "!text-white !opacity-100 !visible hover:!text-gray-300"
-            }}
-            inputProps={{
-              classNames: {
-                input: "bg-black text-white",
-                inputWrapper: "bg-black border-white data-[invalid=true]:border-red-500"
-              }
-            }}
-            listboxProps={{
-              emptyContent: (formData.searchText.length !== 0 && foundUsers === null && formData.selectedRecipient === null) ? 
-                <div className="flex items-center justify-center p-4">
-                  <div className="loading-spinner spin-animation mr-2"></div>
-                  <span>Searching for users...</span>
-                </div> :
-                formData.searchText.length !== 0 && foundUsers?.length === 0 ? 
-                "No users found; please refine your search or personally invite this person to join Sirch Coins." : 
-                "Start typing to search for users...",
-              className: "bg-black text-white border border-white max-h-60 rounded-lg",
-              itemClasses: {
-                base: "bg-black text-white hover:bg-gray-800 data-[hover=true]:bg-gray-800 data-[selected=true]:bg-gray-700 rounded-md"
-              }
-            }}
-            popoverProps={{
-              classNames: {
-                base: "bg-black border border-white rounded-lg",
-                content: "bg-black p-0 border-none shadow-lg rounded-lg"
-              },
-              placement: "bottom",
-              offset: 2
+          <div 
+            className="autocomplete-spacing"
+            style={{
+              marginBottom: dropdownHeight,
+              transition: 'margin-bottom 0.25s ease-in-out'
             }}
           >
-            {(user: User) => (
-              <AutocompleteItem 
-                key={user.user_id} 
-                textValue={`${user.full_name} (@${user.user_handle})`}
-                classNames={{
-                  base: "bg-black text-white hover:bg-gray-800 data-[hover=true]:bg-gray-800 data-[selected=true]:bg-gray-700 data-[focus=true]:bg-gray-800 rounded-md",
-                  title: "text-white",
-                  description: "text-gray-400"
-                }}
-              >
-                <div>
-                  <div className="font-bold text-white">{user.full_name}</div>
-                  <div className="text-small text-gray-400">@{user.user_handle}</div>
-                </div>
-              </AutocompleteItem>
-            )}
-          </Autocomplete>
+            <SirchAutocomplete
+              name='searchText'
+              label='Recipient'
+              placeholder="Partial name, email, or @handle..."
+              inputValue={formData.selectedRecipient ? `${formData.selectedRecipient.full_name} (@${formData.selectedRecipient.user_handle})` : formData.searchText}
+              onInputChange={handleSearchTextChange}
+              selectedKey={formData.selectedRecipient?.user_id || null}
+              onSelectionChange={(key) => {
+                const user = foundUsers?.find(u => u.user_id === key);
+                handleInputChange('selectedRecipient', user || null);
+                if (user) {
+                  handleInputChange('searchText', '');
+                }
+              }}
+              onOpenChange={(isOpen) => {
+                setIsDropdownOpen(isOpen);
+              }}
+              items={foundUsers || []}
+              isRequired
+              isInvalid={errors.recipient}
+              errorMessage={getFieldError('recipient')}
+              inputProps={{
+                classNames: {
+                  input: formData.selectedRecipient 
+                    ? "bg-black text-green-400 cursor-pointer" 
+                    : "bg-black text-white",
+                  inputWrapper: formData.selectedRecipient
+                    ? "bg-black border-green-400 data-[hover=true]:!bg-gray-800 data-[focus=true]:!bg-gray-800 data-[focus-within=true]:!bg-gray-800 data-[invalid=true]:border-red-500 cursor-pointer"
+                    : "bg-black border-white data-[hover=true]:!bg-gray-800 data-[focus=true]:!bg-gray-800 data-[focus-within=true]:!bg-gray-800 data-[invalid=true]:border-red-500"
+                }
+              }}
+              endContent={
+                (formData.selectedRecipient || formData.searchText) ? (
+                  <button
+                    type="button"
+                    onClick={clearRecipient}
+                    className="bg-transparent text-white hover:bg-transparent focus:bg-transparent active:bg-transparent p-1 z-10 rounded"
+                    aria-label="Clear"
+                  >
+                    ✕
+                  </button>
+                ) : null
+              }
+              listboxProps={{
+                emptyContent: (formData.searchText.length !== 0 && foundUsers === null && formData.selectedRecipient === null) ? 
+                  <div className="flex items-center justify-center p-4">
+                    <div className="loading-spinner spin-animation mr-2"></div>
+                    <span>Searching for users...</span>
+                  </div> :
+                  formData.searchText.length !== 0 && foundUsers?.length === 0 ? 
+                  "No users found; please refine your search or personally invite this person to join Sirch Coins." : 
+                  "Start typing to search for users...",
+                className: "bg-black text-white border border-white max-h-60 rounded-lg",
+                itemClasses: {
+                  base: "bg-black text-white hover:bg-gray-800 data-[hover=true]:bg-gray-800 data-[selected=true]:bg-gray-700 rounded-md"
+                }
+              }}
+              popoverProps={{
+                classNames: {
+                  base: "bg-black border border-white rounded-lg",
+                  content: "bg-black p-0 border-none shadow-lg rounded-lg"
+                },
+                placement: "bottom",
+                offset: 2
+              }}
+            >
+              {(item: object) => {
+                const user = item as User;
+                return (
+                  <AutocompleteItem 
+                    key={user.user_id} 
+                    textValue={`${user.full_name} (@${user.user_handle})`}
+                    classNames={{
+                      base: "bg-black text-white hover:bg-gray-800 data-[hover=true]:bg-gray-800 data-[selected=true]:bg-gray-700 data-[focus=true]:bg-gray-800 rounded-md",
+                      title: "text-white",
+                      description: "text-gray-400"
+                    }}
+                  >
+                    <div>
+                      <div className="font-bold text-white">{user.full_name}</div>
+                      <div className="text-small text-gray-400">@{user.user_handle}</div>
+                    </div>
+                  </AutocompleteItem>
+                );
+              }}
+            </SirchAutocomplete>
+          </div>
 
-          <SirchNumberInput
+          <SirchCoinInput
             name='amountToSend'
             label='Amount'
             placeholder="How many ⓢ coins?"
+            amount={formData.amount}
             value={formData.amount}
             onChange={handleAmountChange}
             isRequired
@@ -379,6 +436,11 @@ export default function Send() {
             min="1"
             max={authContext?.userBalance?.toString() || "0"}
             step="1"
+            pricePerCoin={getQuote()?.pricePerCoin || 0}
+            currency={getQuote()?.currency || 'USD'}
+            showUsdValue={true}
+            onRefreshQuote={refreshQuote}
+            isRefreshLoading={isQuoteLoading}
           />
 
           <SirchTextInput
@@ -388,7 +450,9 @@ export default function Send() {
             value={formData.memo}
             onChange={handleMemoChange}
             maxLength={60}
-          />          <div className='bottom-btn-container'>
+          />
+          
+          <div className='bottom-btn-container'>
             <Button type='submit' className='big-btn'>
               Confirm...
             </Button>
@@ -465,6 +529,7 @@ export default function Send() {
                 </Button>
                 <Button 
                   color="primary" 
+                  ref={confirmButtonRef}
                   onPress={async () => {
                     await handleConfirmSend();
                     onClose();

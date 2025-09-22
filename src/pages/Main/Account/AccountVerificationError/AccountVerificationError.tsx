@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import './AccountVerificationError.css';
 import { Button } from '@heroui/react';
 
 interface AccountVerificationErrorProps {

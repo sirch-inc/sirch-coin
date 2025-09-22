@@ -6,7 +6,6 @@ import AccountVerificationError from '../AccountVerificationError/AccountVerific
 import supabase from '../../_common/supabaseProvider';
 import { isAuthApiError } from '@supabase/supabase-js';
 import { Button } from '@heroui/react';
-import './Welcome.css';
 
 
 export default function Welcome() {

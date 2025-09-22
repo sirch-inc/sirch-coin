@@ -5,6 +5,8 @@ import { ToastNotification, toast } from '../../_common/ToastNotification';
 import supabase from '../../_common/supabaseProvider';
 import { isAuthApiError, AuthError } from '@supabase/supabase-js';
 import { Button } from '@heroui/react';
+import { SirchValidatedEmailInput } from '../../../../components/HeroUIFormComponents';
+import { isValidEmailForSubmission } from '../../../../utils';
 import './ResetPasswordRequest.css';
 
 interface ResetPasswordRequestProps {
@@ -21,8 +23,9 @@ export default function ResetPasswordRequest({ standalone = true }: ResetPasswor
   const submitRequest = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (userEmail === '') {
+    if (!isValidEmailForSubmission(userEmail, true)) {
       toast.error("Please enter a valid email address.");
+      setSendStatus(''); // Reset status when validation fails
       return;
     }
 
@@ -37,6 +40,7 @@ export default function ResetPasswordRequest({ standalone = true }: ResetPasswor
       if (error) {
         if (isAuthApiError(error) || error.code === 'weak_password') {
           toast.error(error.message);
+          setSendStatus(''); // Reset status when API error occurs
           return;
         }
 
@@ -58,40 +62,38 @@ export default function ResetPasswordRequest({ standalone = true }: ResetPasswor
   }
 
   return (
-    <div className="reset-password-container">
+    <>
       <ToastNotification />
 
-      {standalone &&
-        <h1>Reset Password Request</h1>
-      }
+      <div>
+        {standalone &&
+          <h2>Reset Password Request</h2>
+        }
 
-      {!session ?
-        (
+        {!session ? (
           <>
-            <p>
-              Enter the email address you used to sign up for Sirch Coins.
-              <br/>
-              We will send you a reset-password email containing a link to complete that process.
-            </p>
-
-            <form className='reset-password-form' onSubmit={submitRequest}>
-              <input
-                className='account-input'
-                id='email'
-                name='email'
-                type='email'
+            <form onSubmit={submitRequest} autoComplete='off' noValidate>
+              <p>Enter the email address you used to sign up for Sirch Coins.</p>
+              <p>We will send you a reset-password email containing a link to complete that process.</p>
+            
+              <SirchValidatedEmailInput
+                label="Email Address"
                 placeholder="Your Sirch Coins account email address"
                 value={userEmail}
                 onChange={(e) => setUserEmail(e.target.value)}
-                autoComplete='email'
-                required
+                isRequired
               />
 
-              <Button className='big-btn' type='submit'>
-                {standalone ? "Send" : "Resend"} Reset Password Email →
-              </Button>
-
-              {sendStatus && <p>{sendStatus}</p>}
+              <div className='bottom-btn-container'>
+                <Button 
+                  type='submit' 
+                  className='big-btn'
+                  isLoading={sendStatus === "Sending..."}
+                  isDisabled={!isValidEmailForSubmission(userEmail, true) || sendStatus === "Sending..."}
+                >
+                  {sendStatus === "Sending..." ? "Sending..." : `${standalone ? "Send" : "Resend"} Reset Password Email →`}
+                </Button>
+              </div>
             </form>
           </>
         ) : (
@@ -108,11 +110,14 @@ export default function ResetPasswordRequest({ standalone = true }: ResetPasswor
         <div className='bottom-btn-container'>
           <Button 
             className='big-btn'
-            onPress={() => { navigate(-1); }}>
+            onPress={() => { navigate(-1); }}
+            isDisabled={sendStatus === "Sending..."}
+          >
             Back
           </Button>
         </div>
       }
-    </div>
+      </div>
+    </>
   );
 }

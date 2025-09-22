@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@heroui/react';
-import './TermsOfService.css';
 
 
 export default function TermsOfService() {
