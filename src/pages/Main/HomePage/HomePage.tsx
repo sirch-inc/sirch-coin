@@ -37,7 +37,7 @@ export default function HomePage() {
             to='/transactions' 
             className='action-btn'
           >
-            Transactions
+            ⓢ Transactions
           </Button>
         </>
         ) : (
