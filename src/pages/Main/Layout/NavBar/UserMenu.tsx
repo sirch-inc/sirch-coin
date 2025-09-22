@@ -57,15 +57,16 @@ export default function UserMenu() {
       <DropdownTrigger>
         <Button
           variant="light"
-          className="p-0 bg-transparent data-[hover=true]:bg-transparent text-white hover:text-green-500"
+          className="p-2 bg-transparent data-[hover=true]:bg-transparent text-white hover:text-green-500 min-h-16"
           endContent={<span className="text-sm">▼</span>}
         >
           <User
             name={auth.userInTable.full_name}
             description={`@${auth.userInTable.user_handle}`}
             classNames={{
-              name: "text-white text-lg",
-              description: "text-gray-400 text-sm"
+              base: "py-2",
+              name: "text-white text-lg leading-relaxed",
+              description: "text-gray-400 text-sm leading-relaxed pb-1"
             }}
             avatarProps={{
               size: "sm",
