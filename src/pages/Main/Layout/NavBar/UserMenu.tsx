@@ -41,7 +41,7 @@ export default function UserMenu() {
         >
           Login
         </Button>
-        
+
         <Button
           color="success"
           onPress={() => navigate('/create-account')}
@@ -54,7 +54,12 @@ export default function UserMenu() {
   }
 
   return (
-    <Dropdown placement="bottom-end">
+    <Dropdown 
+      placement="bottom-end"
+      classNames={{
+        content: "p-0 border-gray-700 bg-gray-900 shadow-lg rounded-lg"
+      }}
+    >
       <DropdownTrigger>
         <Button
           variant="light"
