@@ -16,61 +16,55 @@ export default function HomePage() {
     <div className='home-page'>
       {auth?.session ? (
         <>
-          <div className='right-button-container'>
-            <Button 
-              as={Link} 
-              to='purchase' 
-              className='action-btn'
-            >
-              Buy ⓢ
-            </Button>
+          <Button 
+            as={Link} 
+            to='purchase' 
+            className='action-btn'
+          >
+            Buy ⓢ
+          </Button>
 
-            <Button 
-              as={Link} 
-              to='coin/send' 
-              className='action-btn'
-            >
-              Send ⓢ
-            </Button>
+          <Button 
+            as={Link} 
+            to='coin/send' 
+            className='action-btn'
+          >
+            Send ⓢ
+          </Button>
 
-            <Button 
-              as={Link} 
-              to='/transactions' 
-              className='action-btn'
-            >
-              Transactions
-            </Button>
-          </div>
+          <Button 
+            as={Link} 
+            to='/transactions' 
+            className='action-btn'
+          >
+            Transactions
+          </Button>
         </>
         ) : (
         <>
-          <div className='left-button-container'>
-            <Button 
-              as={Link} 
-              to='about' 
-              className='action-btn'
-            >
-              About
-            </Button>
-          </div>
+          <Button 
+            as={Link} 
+            to='about' 
+            className='action-btn'
+          >
+            About
+          </Button>
 
-          <div className='right-button-container'>
-            <Button 
-              as={Link} 
-              to='login' 
-              className='action-btn'
-            >
-              Log in
-            </Button>
+          <Button 
+            as={Link} 
+            to='login' 
+            className='action-btn'
+          >
+            Log in
+          </Button>
 
-            <Button 
-              as={Link} 
-              to='create-account' 
-              className='action-btn'
-            >
-              Sign up
-            </Button>
-          </div>
+          <Button 
+            as={Link} 
+            to='create-account' 
+            className='action-btn'
+          >
+            Sign up
+          </Button>
         </>
         )
       }
