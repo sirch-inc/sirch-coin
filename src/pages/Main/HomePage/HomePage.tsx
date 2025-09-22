@@ -3,26 +3,10 @@ import { AuthContext } from '../_common/AuthContext';
 import { useContext } from 'react';
 import {Button} from "@heroui/react";
 import './HomePage.css';
-import { SupabaseClient } from '@supabase/supabase-js';
 
-interface HomePageProps {
-  supabase: SupabaseClient;
-}
-
-export default function HomePage({ supabase }: HomePageProps) {
+export default function HomePage() {
   const auth = useContext(AuthContext);
   const navigate = useNavigate();
-
-  async function handleLogout() {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      navigate('/', { replace: true });
-    } catch (error) {
-      console.error("Logout error:", error);
-      navigate('/error', { replace: true });
-    }
-  }
 
   if (auth?.authError) {
     navigate('/error', { replace: true });
@@ -32,25 +16,6 @@ export default function HomePage({ supabase }: HomePageProps) {
     <div className='home-page'>
       {auth?.session ? (
         <>
-          <div className='left-button-container'>
-            <Button 
-              as={Link} 
-              to='account' 
-              className='action-btn'
-            >
-              My Account
-            </Button>
-
-            <Button 
-              as={Link} 
-              to='#' 
-              className='action-btn' 
-              onPress={handleLogout}
-            >
-              Log Out
-            </Button>
-          </div>
-
           <div className='right-button-container'>
             <Button 
               as={Link} 
