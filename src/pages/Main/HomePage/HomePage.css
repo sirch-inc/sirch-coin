@@ -7,30 +7,6 @@
   gap: 2rem;
 }
 
-.right-button-container {
-  display: flex;
-  flex-direction: column;
-  margin-right: 64px;
-}
-
-.left-button-container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-end;
-  margin-left: 64px;
-}
-
-.right-button-container > a, .left-button-container > a {
-  text-decoration: none;
-  color: white;
-}
-
-.right-button-container > a:hover, .left-button-container > a:hover {
-  background-color: #3AD820;
-  color: black;
-}
-
 .action-btn {
   @apply h-auto p-6 bg-gray-900 mt-8 w-72 rounded-xl text-3xl text-center;
   font-family: Haskoy, sans-serif;
