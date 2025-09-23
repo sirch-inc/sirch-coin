@@ -1,8 +1,7 @@
 import { parseISO, formatDistanceToNow } from 'date-fns';
 import { format } from 'date-fns-tz';
 import { Tooltip } from 'react-tooltip';
-import { OverlayTrigger, Popover } from 'react-bootstrap';
-import { Button } from '@heroui/react';
+import { Button, Popover, PopoverTrigger, PopoverContent } from '@heroui/react';
 import { useState, useEffect } from 'react';
 import './TransactionCard.css';
 
@@ -80,14 +79,7 @@ export default function TransactionCard({ transaction }: TransactionCardProps) {
     return () => {}; // Return empty cleanup function if no scroll container found
   }, [showPopover]);
 
-  const detailsPopover = (
-    <Popover id="details-popover">
-      <Popover.Header as="h3">Transaction Details</Popover.Header>
-      <Popover.Body>
-        <pre>{getTransactionDetails(type, details)}</pre>
-      </Popover.Body>
-    </Popover>
-  );
+  // This variable is no longer needed with HeroUI Popover structure
 
   return (
     <div className="transaction-row">
@@ -110,22 +102,33 @@ export default function TransactionCard({ transaction }: TransactionCardProps) {
         <p>{status}</p>
       </div>
       <div>
-        <OverlayTrigger
-          trigger="click"
-          placement="top"
-          overlay={detailsPopover}
-          show={showPopover}
-          onToggle={(nextShow) => setShowPopover(nextShow)}
-          rootClose
+        <Popover 
+          placement="bottom"
+          showArrow={true}
+          isOpen={showPopover}
+          onOpenChange={setShowPopover}
+          shouldCloseOnScroll={true}
         >
-          <Button
-            className="transaction-details"
-            aria-haspopup="true"
-            aria-expanded={showPopover}
-          >
-            Show Details
-          </Button>
-        </OverlayTrigger>
+          <PopoverTrigger>
+            <Button
+              className="transaction-details"
+              aria-haspopup="true"
+              aria-expanded={showPopover}
+            >
+              Show Details
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent>
+            {(titleProps) => (
+              <div className="px-1 py-2">
+                <h3 className="text-medium font-bold" {...titleProps}>
+                  Transaction Details
+                </h3>
+                <pre className="text-tiny">{getTransactionDetails(type, details)}</pre>
+              </div>
+            )}
+          </PopoverContent>
+        </Popover>
       </div>
     </div>
   );
