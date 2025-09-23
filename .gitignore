@@ -39,3 +39,6 @@ lerna-debug.log*
 
 ######################### filesystems fluff
 .DS_Store
+
+# Local Netlify folder
+.netlify
