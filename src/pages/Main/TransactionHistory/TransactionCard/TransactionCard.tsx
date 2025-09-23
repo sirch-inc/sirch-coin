@@ -104,7 +104,7 @@ export default function TransactionCard({ transaction }: TransactionCardProps) {
         <p>{type}</p>
       </div>
       <div>
-        <p>foo {amount}</p>
+        <p>ⓢ {amount}</p>
       </div>
       <div>
         <p>{status}</p>
