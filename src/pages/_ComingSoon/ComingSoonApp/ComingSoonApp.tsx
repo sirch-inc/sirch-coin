@@ -1,4 +1,3 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
 import {HeroUIProvider} from "@heroui/react";
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import ComingSoon from '../ComingSoon/ComingSoon';
