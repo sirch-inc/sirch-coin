@@ -27,13 +27,13 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY_TEST }}
           VITE_STRIPE_API_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_API_PUBLISHABLE_KEY_TEST }}
           VITE_BUILD_VERSION: ${{ github.sha }}
-          VITE_BUILD_VERSION_VERBOSE: ${{ github.ref }}
+          VITE_BUILD_VERSION_VERBOSE: ${{ github.ref_name }}
         run: |
           echo "Environment variables check:"
           echo "VITE_SUPABASE_PROJECT_URL is set: $([[ -n "$VITE_SUPABASE_PROJECT_URL" ]] && echo "YES" || echo "NO")"
           echo "VITE_SUPABASE_ANON_KEY is set: $([[ -n "$VITE_SUPABASE_ANON_KEY" ]] && echo "YES" || echo "NO")"
           npm run build-test
-          
+
       - name: Run Tests
         run: npm test
 
