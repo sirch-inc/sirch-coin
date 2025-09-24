@@ -22,6 +22,12 @@ jobs:
         run: npm ci
 
       - name: Build for TEST
+        env:
+          VITE_SUPABASE_PROJECT_URL: ${{ secrets.VITE_SUPABASE_PROJECT_URL_TEST }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY_TEST }}
+          VITE_STRIPE_API_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_API_PUBLISHABLE_KEY_TEST }}
+          VITE_BUILD_VERSION: ${{ github.sha }}
+          VITE_BUILD_VERSION_VERBOSE: ${{ github.ref }}
         run: npm run build-test
 
       - name: Run Tests
@@ -30,7 +36,6 @@ jobs:
       - name: Deploy to TEST
         id: netlify_deploy
         run: |
-          netlify deploy --build --dir=dist --alias=test \
-            --site ${{ secrets.NETLIFY_SITE_ID }} \
-            --auth ${{ secrets.NETLIFY_API_TOKEN }}
-            
+          netlify deploy --dir=dist --alias=test \
+            --site ${{ secrets.NETLIFY_SITE_ID_TEST }} \
+            --auth ${{ secrets.NETLIFY_API_TOKEN_TEST }}
