@@ -73,6 +73,6 @@ jobs:
       - name: Deploy to TEST
         id: netlify_deploy
         run: |
-          netlify deploy --dir=dist --alias=test \
+          netlify deploy --no-build --dir=dist --alias=preview \
             --site ${{ secrets.NETLIFY_SITE_ID_TEST }} \
             --auth ${{ secrets.NETLIFY_API_TOKEN_TEST }}
