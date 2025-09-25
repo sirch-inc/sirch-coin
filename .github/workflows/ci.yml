@@ -8,6 +8,9 @@ jobs:
     steps:
       - name: Repository Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch full history including tags, which is used in builds for version info
+          fetch-tags: true  # Explicitly fetch tags, which is used in builds for version info
 
       - name: Use Node.js
         uses: actions/setup-node@v4
@@ -23,14 +26,14 @@ jobs:
 
       - name: Build for TEST
         env:
-          VITE_SUPABASE_PROJECT_URL: https://rbsvvijnwfuiqzqcatzh.supabase.co
-          VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NieyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJic3Z2aWpud2Z1aXF6cWNhdHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTUyMTE3NjgsImV4cCI6MjAzMDc4Nzc2OH0.NNVApdf7uZDpnuVMvGwcgItI2_qWKo50TvAcfRVOcsY
-          VITE_STRIPE_API_PUBLISHABLE_KEY: pk_test_51OCYDtJk9RzUA8vMrpvpfxaPZSd7TCy8slmvYKnNuhKMUle1rxaSqSS569cKz4RDs4FWp9DDADTlIATC6ASJ9vNI007H1zkQs4
-          VITE_BUILD_VERSION: ${{ github.sha }}
-          VITE_BUILD_VERSION_VERBOSE: ${{ github.ref_name }}
-          # VITE_SUPABASE_PROJECT_URL: ${{ secrets.VITE_SUPABASE_PROJECT_URL_TEST }}
-          # VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY_TEST }}
-          # VITE_STRIPE_API_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_API_PUBLISHABLE_KEY_TEST }}
+          # VITE_SUPABASE_PROJECT_URL: https://rbsvvijnwfuiqzqcatzh.supabase.co
+          # VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NieyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJic3Z2aWpud2Z1aXF6cWNhdHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTUyMTE3NjgsImV4cCI6MjAzMDc4Nzc2OH0.NNVApdf7uZDpnuVMvGwcgItI2_qWKo50TvAcfRVOcsY
+          # VITE_STRIPE_API_PUBLISHABLE_KEY: pk_test_51OCYDtJk9RzUA8vMrpvpfxaPZSd7TCy8slmvYKnNuhKMUle1rxaSqSS569cKz4RDs4FWp9DDADTlIATC6ASJ9vNI007H1zkQs4
+          # VITE_BUILD_VERSION: ${{ github.sha }}
+          # VITE_BUILD_VERSION_VERBOSE: ${{ github.ref_name }}
+          VITE_SUPABASE_PROJECT_URL: ${{ secrets.VITE_SUPABASE_PROJECT_URL_TEST }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY_TEST }}
+          VITE_STRIPE_API_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_API_PUBLISHABLE_KEY_TEST }}
           # VITE_BUILD_VERSION: ${{ github.sha }}
           # VITE_BUILD_VERSION_VERBOSE: ${{ github.ref_name }}
         run: |
@@ -41,31 +44,7 @@ jobs:
           echo "VITE_BUILD_VERSION ${VITE_BUILD_VERSION}"
           echo "VITE_BUILD_VERSION_VERBOSE ${VITE_BUILD_VERSION_VERBOSE}"
 
-          echo " "
-          echo " "
-          env
-          echo " "
-          echo " "
-
           npm run build-test
-
-      - name: Debug Built Files
-        run: |
-          echo "=== Checking what's actually in the built files ==="
-          echo "Files in dist directory:"
-          ls -la dist/
-          
-          echo "Searching for Supabase URLs in built JavaScript files:"
-          find dist -name "*.js" -exec grep -l "supabase" {} \; | head -3
-          
-          echo "Looking for actual Supabase URLs:"
-          find dist -name "*.js" -exec grep -o "https://[^\"']*supabase[^\"']*" {} \; | head -3 || echo "No Supabase URLs found!"
-          
-          echo "Looking for import.meta.env references (these should be replaced):"
-          find dist -name "*.js" -exec grep -l "import\.meta\.env" {} \; | head -3 || echo "Good - no import.meta.env found"
-          
-          echo "Looking for VITE_ environment variable placeholders:"
-          find dist -name "*.js" -exec grep -o "VITE_[A-Z_]*" {} \; | head -5 || echo "No VITE_ placeholders found"
 
       - name: Run Tests
         run: npm test
