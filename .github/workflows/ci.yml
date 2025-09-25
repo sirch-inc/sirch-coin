@@ -1,3 +1,17 @@
+# A GitHub Actions workflow for CI (build, test, deploy to Netlify)
+# This workflow runs on every push and pull request to any branch.
+
+# Although Netlify does support continuous deployment from GitHub, we use GitHub Actions here instead in 
+# order to run tests before deploying, and to have more control over the build and deploy process.
+# See also: https://docs.netlify.com/cli/get-started/#continuous-deployment-with-github-actions.
+#
+# Additionally, at this time, Netlify (free tier) does not support deploying from private org-based repositories
+# like ours, so we are using GitHub Actions for CI. We can revisit this if we move to a paid Netlify plan later,
+# but some research suggests that Netlify builds can be expensive even under paid plans.
+#
+# We are using the Netlify CLI to deploy here, bypassing Netlify's built-in GitHub integration.
+
+
 name: CI
 
 on: [push, pull_request]
