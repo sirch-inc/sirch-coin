@@ -1,5 +1,5 @@
 # A GitHub Actions workflow for CI (build, test, deploy to Netlify)
-# This workflow runs on every push and pull request to any branch.
+# This workflow runs on every push and pull request to 'main'.
 
 # Although Netlify does support continuous deployment from GitHub, we use GitHub Actions here instead in 
 # order to run tests before deploying, and to have more control over the build and deploy process.
@@ -53,7 +53,7 @@ jobs:
         run: |
           npm run lint
 
-      - name: Run security audit
+      - name: Run NPM security audit
         run: |
           npm audit --audit-level=moderate
 
