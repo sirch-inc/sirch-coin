@@ -76,14 +76,18 @@ jobs:
       - name: Create one-off PREVIEW on pushes to any branch
         if: github.event_name == 'push'
         run: |
-          npx netlify deploy --no-build --dir=dist -alias=$BRANCH_NAME \
+          echo $BRANCH_NAME
+          # Create a unique alias for this branch by replacing slashes with dashes
+          BRANCH_NAME=${BRANCH_NAME//\//-}
+          echo $BRANCH_NAME
+          npx netlify deploy --no-build --dir=dist --alias=$BRANCH_NAME \
             --site ${{ secrets.NETLIFY_SITE_ID_TEST }} \
             --auth ${{ secrets.NETLIFY_API_TOKEN_TEST }}
 
       - name: Create well-known PREVIEW on pushes to 'main'
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
-          npx netlify deploy --no-build --dir=dist -alias=preview \
+          npx netlify deploy --no-build --dir=dist --alias=preview \
             --site ${{ secrets.NETLIFY_SITE_ID_TEST }} \
             --auth ${{ secrets.NETLIFY_API_TOKEN_TEST }}
 
