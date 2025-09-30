@@ -73,24 +73,31 @@ jobs:
         run: |
           npm run build-test
 
-      - name: Create PREVIEW on pushes to any branch
+      - name: Create one-off PREVIEW on pushes to any branch
         if: github.event_name == 'push'
         run: |
-          npx netlify deploy --no-build --dir=dist --alias=preview \
+          npx netlify deploy --no-build --dir=dist -alias=$BRANCH_NAME \
             --site ${{ secrets.NETLIFY_SITE_ID_TEST }} \
             --auth ${{ secrets.NETLIFY_API_TOKEN_TEST }}
 
-      # - name: Deploy to Netlify TEST environment on pushes to 'main' branch
-      #   # NOTE: We deploy to Netlify only on pushes to 'main' branch, not on pull requests.
-      #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      #   run: |
-      #     prod_flag=""
-      #     if [ "$BRANCH_NAME" = "main" ]; then prod_flag="--prod"; fi
+      - name: Create well-known PREVIEW on pushes to 'main'
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          npx netlify deploy --no-build --dir=dist -alias=preview \
+            --site ${{ secrets.NETLIFY_SITE_ID_TEST }} \
+            --auth ${{ secrets.NETLIFY_API_TOKEN_TEST }}
 
-      #     npx netlify deploy --no-build --dir=dist --alias=preview \
-      #       --site ${{ secrets.NETLIFY_SITE_ID_TEST }} \
-      #       --auth ${{ secrets.NETLIFY_API_TOKEN_TEST }} \
-      #       $prod_flag
+#       - name: Deploy to Netlify TEST environment on pushes to 'main' branch
+#         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+#         run: |
+#           # prod_flag=""
+#           # if [ "$BRANCH_NAME" = "main" ]; then prod_flag="--prod"; fi
+
+#           npx netlify deploy --no-build --dir=dist --alias=preview \
+#             --site ${{ secrets.NETLIFY_SITE_ID_TEST }} \
+#             --auth ${{ secrets.NETLIFY_API_TOKEN_TEST }} \
+#             --prod
+# #            $prod_flag
             
       # After actions
       - name: Upload build artifacts
