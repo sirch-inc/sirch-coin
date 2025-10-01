@@ -1,13 +1,13 @@
-# A GitHub Actions workflow for CI (build, test, deploy to Netlify)
-# This workflow runs on every push and pull request to 'main'.
+# A GitHub Actions workflow for CI (run tests, create preview deploys, etc.)
+# This workflow runs on every push (any branch) and pull request to 'main'.
 
-# Although Netlify does support continuous deployment from GitHub, we use GitHub Actions here instead in 
+# Although Netlify supports continuous deployment from GitHub, we use GitHub Actions here instead in 
 # order to run tests before deploying, and to have more control over the build and deploy process.
 # See also: https://docs.netlify.com/cli/get-started/#continuous-deployment-with-github-actions.
 #
 # Additionally, at this time, Netlify (free tier) does not support deploying from private org-based repositories
-# like ours, so we are using GitHub Actions for CI. We can revisit this if we move to a paid Netlify plan later,
-# but some research suggests that Netlify builds can be expensive even under paid plans.
+# like ours, so we are using GitHub Actions for CI which skips this. We can revisit this if we move to a paid
+# Netlify plan later, but some research suggests that Netlify builds can be expensive even under paid plans.
 #
 # We are using the Netlify CLI to deploy here, bypassing Netlify's built-in GitHub integration.
 
@@ -21,6 +21,11 @@ on:
 env:
   BRANCH_NAME: ${{ github.ref_name }}
 
+permissions:
+  pull-requests: write
+
+
+
 jobs:
   build-test-and-deploy:
     runs-on: ubuntu-latest
@@ -29,8 +34,8 @@ jobs:
       - name: Repository Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Fetch full history including tags, which is used in builds for version info
-          fetch-tags: true  # Explicitly fetch tags, which is used in builds for version info
+          fetch-depth: 0  # Fetch full history including tags, which are used in builds for version info
+          fetch-tags: true  # Explicitly fetch tags, which are used in builds for version info
 
       - name: Use Node.js
         uses: actions/setup-node@v4
@@ -58,7 +63,7 @@ jobs:
         run: |
           npm audit --audit-level=moderate
 
-      - name: Run Tests
+      - name: Run unit tests
         run: |
           npm test
 
@@ -76,20 +81,58 @@ jobs:
       - name: Create one-off PREVIEW on pushes to any branch
         if: github.event_name == 'push'
         run: |
-          echo $BRANCH_NAME
           # Create a unique alias for this branch by replacing slashes with dashes
           BRANCH_NAME=${BRANCH_NAME//\//-}
-          echo $BRANCH_NAME
           npx netlify deploy --no-build --dir=dist --alias=$BRANCH_NAME \
             --site ${{ secrets.NETLIFY_SITE_ID_TEST }} \
-            --auth ${{ secrets.NETLIFY_API_TOKEN_TEST }}
+            --auth ${{ secrets.NETLIFY_API_TOKEN_TEST }} \
+            --json \
+            > deploy_output_branch.json
 
-      - name: Create well-known PREVIEW on pushes to 'main'
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      - name: Generate URL Preview Comment in pull requests
+        id: lookup_preview_url
+        if: ${{ env.BRANCH_NAME != 'main' }}
         run: |
-          npx netlify deploy --no-build --dir=dist --alias=preview \
-            --site ${{ secrets.NETLIFY_SITE_ID_TEST }} \
-            --auth ${{ secrets.NETLIFY_API_TOKEN_TEST }}
+          NETLIFY_PREVIEW_URL=$(jq -r '.deploy_url' deploy_output_branch.json)
+          echo "NETLIFY_PREVIEW_URL=$NETLIFY_PREVIEW_URL" >> "$GITHUB_OUTPUT"
+
+      - name: DEBUG=WILL BE REMOVED
+        run: echo ${{ steps.lookup_preview_url.outputs.NETLIFY_PREVIEW_URL }}
+
+      # - name: Create well-known PREVIEW on pull_requests to 'main'
+      #   if: github.ref == 'refs/heads/main' && github.event_name == 'pull_request'
+      #   run: |
+      #     npx netlify deploy --no-build --dir=dist --alias=preview \
+      #       --site ${{ secrets.NETLIFY_SITE_ID_TEST }} \
+      #       --auth ${{ secrets.NETLIFY_API_TOKEN_TEST }}
+
+
+      - name: Comment URL Preview on PR
+        uses: actions/github-script@v7
+        if: ${{ env.BRANCH_NAME != 'main' }}
+        env:
+          NETLIFY_PREVIEW_URL: ${{ steps.lookup_preview_url.outputs.NETLIFY_PREVIEW_URL }}
+        with:
+          script: |
+            async function comment() {
+              const result = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                commit_sha: context.sha,
+              })
+              const issueNumber = result.data[0].number
+              if (issueNumber) {
+                await github.rest.issues.createComment({
+                  issue_number: issueNumber,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: 'Preview URL: ' + process.env.NETLIFY_PREVIEW_URL
+                })
+              } else {
+                console.log('No PR found for commit ' + context.sha)
+              }
+            }
+            comment()
 
 #       - name: Deploy to Netlify TEST environment on pushes to 'main' branch
 #         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
