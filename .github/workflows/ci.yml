@@ -121,7 +121,7 @@ jobs:
                 repo: context.repo.repo,
                 commit_sha: context.sha,
               })
-              const issueNumber = result.data[0].number
+              const issueNumber = result.data[0]?.number
               if (issueNumber) {
                 await github.rest.issues.createComment({
                   issue_number: issueNumber,
