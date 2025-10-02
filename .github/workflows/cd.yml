@@ -1,0 +1,119 @@
+# A GitHub Actions workflow for CD (build, test, deploy to Netlify)
+# This workflow runs on every pull request to 'main'.
+
+# Although Netlify does support continuous deployment from GitHub, we use GitHub Actions here instead in 
+# order to run tests before deploying, and to have more control over the build and deploy process.
+# See also: https://docs.netlify.com/cli/get-started/#continuous-deployment-with-github-actions.
+#
+# Additionally, at this time, Netlify (free tier) does not support deploying from private org-based repositories
+# like ours, so we are using GitHub Actions for CI. We can revisit this if we move to a paid Netlify plan later,
+# but some research suggests that Netlify builds can be expensive even under paid plans.
+#
+# We are using the Netlify CLI to deploy here, bypassing Netlify's built-in GitHub integration.
+
+
+name: CD
+
+on:
+  workflow_dispatch:  # Allow manual triggering of the workflow from the Actions tab in GitHub
+
+env:
+  BRANCH_NAME: ${{ github.ref_name }}
+
+jobs:
+  build-test-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Repository Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch full history including tags, which is used in builds for version info
+          fetch-tags: true  # Explicitly fetch tags, which is used in builds for version info
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: 
+          npm ci
+
+      - name: Run linting
+        run: |
+          npm run lint
+
+      - name: Run NPM security audit
+        run: |
+          npm audit --audit-level=moderate
+
+      - name: Run Tests
+        run: |
+          npm test
+
+      - name: Build for TEST
+        env:
+          # grab env "secrets" from GitHub Actions Secrets for safety
+          VITE_SUPABASE_PROJECT_URL: ${{ secrets.VITE_SUPABASE_PROJECT_URL_TEST }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY_TEST }}
+          VITE_STRIPE_API_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_API_PUBLISHABLE_KEY_TEST }}
+          # VITE_BUILD_VERSION: ...obtained by build-variables.sh script that is run during the build
+          # VITE_BUILD_VERSION_VERBOSE: ...obtained by build-variables.sh script that is run during the build
+        run: |
+          npm run build-test
+
+      # - name: Create one-off PREVIEW on pushes to any branch
+      #   if: github.event_name == 'push'
+      #   run: |
+      #     # Create a unique alias for this branch by replacing slashes with dashes
+      #     BRANCH_NAME=${BRANCH_NAME//\//-}
+      #     npx netlify deploy --no-build --dir=dist --alias=$BRANCH_NAME \
+      #       --site ${{ secrets.NETLIFY_SITE_ID_TEST }} \
+      #       --auth ${{ secrets.NETLIFY_API_TOKEN_TEST }}
+      #       --json \
+      #       > deploy_output_branch.json
+
+
+      - name: Create well-known PREVIEW on pull_requests to 'main'
+        if: github.ref == 'refs/heads/main' && github.event_name == 'pull_request'
+        run: |
+          npx netlify deploy --no-build --dir=dist --alias=preview \
+            --site ${{ secrets.NETLIFY_SITE_ID_TEST }} \
+            --auth ${{ secrets.NETLIFY_API_TOKEN_TEST }}
+
+      - name: Generate URL Preview Comment in pull requests
+        id: url_preview
+        if: ${{ env.BRANCH_NAME != 'main' }}
+        run: |
+          NETLIFY_PREVIEW_URL=$(jq -r '.deploy_url' deploy_output_branch.json)
+          echo "NETLIFY_PREVIEW_URL=$NETLIFY_PREVIEW_URL" >> "$GITHUB_OUTPUT"
+
+#       - name: Deploy to Netlify TEST environment on pushes to 'main' branch
+#         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+#         run: |
+#           # prod_flag=""
+#           # if [ "$BRANCH_NAME" = "main" ]; then prod_flag="--prod"; fi
+
+#           npx netlify deploy --no-build --dir=dist --alias=preview \
+#             --site ${{ secrets.NETLIFY_SITE_ID_TEST }} \
+#             --auth ${{ secrets.NETLIFY_API_TOKEN_TEST }} \
+#             --prod
+# #            $prod_flag
+            
+      # After actions
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-files
+          path: dist
+          retention-days: 7
