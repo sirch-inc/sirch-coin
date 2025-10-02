@@ -21,8 +21,8 @@ on:
 env:
   BRANCH_NAME: ${{ github.ref_name }}
 
-# permissions:
-#   pull-requests: write
+permissions:
+  pull-requests: write
 
 
 
@@ -89,15 +89,15 @@ jobs:
             --json \
             > deploy_output_branch.json
 
-      # - name: Generate URL Preview Comment in pull requests
-      #   id: lookup_preview_url
-      #   if: ${{ env.BRANCH_NAME != 'main' }}
-      #   run: |
-      #     NETLIFY_PREVIEW_URL=$(jq -r '.deploy_url' deploy_output_branch.json)
-      #     echo "NETLIFY_PREVIEW_URL=$NETLIFY_PREVIEW_URL" >> "$GITHUB_OUTPUT"
+      - name: Generate URL Preview Comment in pull requests
+        id: lookup_preview_url
+        if: ${{ env.BRANCH_NAME != 'main' }}
+        run: |
+          NETLIFY_PREVIEW_URL=$(jq -r '.deploy_url' deploy_output_branch.json)
+          echo "NETLIFY_PREVIEW_URL=$NETLIFY_PREVIEW_URL" >> "$GITHUB_OUTPUT"
 
-      # - name: DEBUG=WILL BE REMOVED
-      #   run: echo ${{ steps.lookup_preview_url.outputs.NETLIFY_PREVIEW_URL }}
+      - name: DEBUG=WILL BE REMOVED
+        run: echo ${{ steps.lookup_preview_url.outputs.NETLIFY_PREVIEW_URL }}
 
       # - name: Create well-known PREVIEW on pull_requests to 'main'
       #   if: github.ref == 'refs/heads/main' && github.event_name == 'pull_request'
