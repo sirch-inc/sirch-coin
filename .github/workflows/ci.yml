@@ -25,7 +25,6 @@ permissions:
   pull-requests: write
 
 
-
 jobs:
   build-test-and-deploy:
     runs-on: ubuntu-latest
@@ -34,7 +33,7 @@ jobs:
       - name: Repository Checkout
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_FOR_GITHUB_ACTIONS }}
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_FOR_GITHUB_ACTIONS }}  # Using a privileged PAT here to enable writing to PRs
           fetch-depth: 0  # Fetch full history including tags, which are used in builds for version info
           fetch-tags: true  # Explicitly fetch tags, which are used in builds for version info
 
@@ -90,50 +89,51 @@ jobs:
             --json \
             > deploy_output_branch.json
 
-      - name: Generate URL Preview Comment in pull requests
-        id: lookup_preview_url
+      - name: Look up generated preview URL from logs
+        id: lookup_generated_preview_url
         if: ${{ env.BRANCH_NAME != 'main' }}
         run: |
           NETLIFY_PREVIEW_URL=$(jq -r '.deploy_url' deploy_output_branch.json)
           echo "NETLIFY_PREVIEW_URL=$NETLIFY_PREVIEW_URL" >> "$GITHUB_OUTPUT"
 
-      - name: DEBUG=WILL BE REMOVED
-        run: echo ${{ steps.lookup_preview_url.outputs.NETLIFY_PREVIEW_URL }}
+      - name: DEBUG=TO BE REMOVED
+        run: |
+          echo ${{ steps.lookup_generated_preview_url.outputs.NETLIFY_PREVIEW_URL }}
 
-      # - name: Create well-known PREVIEW on pull_requests to 'main'
-      #   if: github.ref == 'refs/heads/main' && github.event_name == 'pull_request'
-      #   run: |
-      #     npx netlify deploy --no-build --dir=dist --alias=preview \
-      #       --site ${{ secrets.NETLIFY_SITE_ID_TEST }} \
-      #       --auth ${{ secrets.NETLIFY_API_TOKEN_TEST }}
+      - name: Create well-known PREVIEW on pull_requests to 'main'
+        if: github.ref == 'refs/heads/main' && github.event_name == 'pull_request'
+        run: |
+          npx netlify deploy --no-build --dir=dist --alias=preview \
+            --site ${{ secrets.NETLIFY_SITE_ID_TEST }} \
+            --auth ${{ secrets.NETLIFY_API_TOKEN_TEST }}
 
 
-      # - name: Comment URL Preview on PR
-      #   uses: actions/github-script@v7
-      #   if: ${{ env.BRANCH_NAME != 'main' }}
-      #   env:
-      #     NETLIFY_PREVIEW_URL: ${{ steps.lookup_preview_url.outputs.NETLIFY_PREVIEW_URL }}
-      #   with:
-      #     script: |
-      #       async function comment() {
-      #         const result = await github.rest.repos.listPullRequestsAssociatedWithCommit({
-      #           owner: context.repo.owner,
-      #           repo: context.repo.repo,
-      #           commit_sha: context.sha,
-      #         })
-      #         const issueNumber = result.data[0].number
-      #         if (issueNumber) {
-      #           await github.rest.issues.createComment({
-      #             issue_number: issueNumber,
-      #             owner: context.repo.owner,
-      #             repo: context.repo.repo,
-      #             body: 'Preview URL: ' + process.env.NETLIFY_PREVIEW_URL
-      #           })
-      #         } else {
-      #           console.log('No PR found for commit ' + context.sha)
-      #         }
-      #       }
-      #       comment()
+      - name: Comment URL Preview on PR
+        uses: actions/github-script@v7
+        if: ${{ env.BRANCH_NAME != 'main' }}
+        env:
+          NETLIFY_PREVIEW_URL: ${{ steps.generated_.outputs.NETLIFY_PREVIEW_URL }}
+        with:
+          script: |
+            async function comment() {
+              const result = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                commit_sha: context.sha,
+              })
+              const issueNumber = result.data[0].number
+              if (issueNumber) {
+                await github.rest.issues.createComment({
+                  issue_number: issueNumber,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: 'Preview URL: ' + process.env.NETLIFY_PREVIEW_URL
+                })
+              } else {
+                console.log('No PR found for commit ' + context.sha)
+              }
+            }
+            comment()
 
 #       - name: Deploy to Netlify TEST environment on pushes to 'main' branch
 #         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
