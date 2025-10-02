@@ -21,8 +21,8 @@ on:
 env:
   BRANCH_NAME: ${{ github.ref_name }}
 
-permissions:
-  pull-requests: write
+# permissions:
+#   pull-requests: write
 
 
 
