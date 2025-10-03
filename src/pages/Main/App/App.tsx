@@ -1,4 +1,3 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
 import {HeroUIProvider} from "@heroui/react";
 import { BrowserRouter } from 'react-router-dom';
 import supabase from '../_common/supabaseProvider';
