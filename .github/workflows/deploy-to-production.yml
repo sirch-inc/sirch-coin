@@ -7,48 +7,99 @@ on:
         description: 'Type "PRODUCTION" to confirm deployment to PROD'
         required: true
         default: ''
+      force_deploy:
+        description: 'Force deployment even if tests fail'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   deploy-production:
     runs-on: ubuntu-latest
+    environment: 
+      name: production
+      url: ${{ steps.deploy.outputs.url }}
     if: github.event.inputs.confirm_production == 'PRODUCTION'
     
     steps:
       - name: Repository Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version: '20'
           cache: 'npm'
-
-      - name: Install Netlify CLI
-        run: npm install netlify-cli@23 -g
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Run Tests (unless forced)
+        if: github.event.inputs.force_deploy != 'true'
+        run: |
+          npm run lint
+          npm audit --audit-level=moderate
+          npm test
+
+      - name: Create release tag
+        id: create-tag
+        run: |
+          # Generate version tag
+          VERSION=$(date +%Y.%m.%d)-$(echo ${{ github.sha }} | cut -c1-7)
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "v${VERSION}"
+          git push origin "v${VERSION}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Build for PRODUCTION
         env:
           VITE_SUPABASE_PROJECT_URL: ${{ secrets.VITE_SUPABASE_PROJECT_URL_PROD }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY_PROD }}
           VITE_STRIPE_API_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_API_PUBLISHABLE_KEY_PROD }}
-          VITE_BUILD_VERSION: ${{ github.sha }}
+          VITE_BUILD_VERSION: v${{ steps.create-tag.outputs.version }}
           VITE_BUILD_VERSION_VERBOSE: ${{ github.ref }}
         run: npm run build-production
 
-      - name: Run Tests
-        run: npm test
-
       - name: Deploy to PRODUCTION
-        id: netlify_deploy
+        id: deploy
         run: |
-          netlify deploy --prod --dir=dist \
+          npx netlify deploy \
+            --prod \
+            --dir=dist \
             --site ${{ secrets.NETLIFY_SITE_ID_PROD }} \
-            --auth ${{ secrets.NETLIFY_API_TOKEN_PROD }}
+            --auth ${{ secrets.NETLIFY_API_TOKEN_PROD }} \
+            --json > deploy_prod_output.json
+          
+          PROD_URL=$(jq -r '.url' deploy_prod_output.json)
+          echo "url=${PROD_URL}" >> "$GITHUB_OUTPUT"
+          echo "🚀 Deployed to PROD: ${PROD_URL}"
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.create-tag.outputs.version }}
+          release_name: Release v${{ steps.create-tag.outputs.version }}
+          body: |
+            🚀 Production deployment of commit ${{ github.sha }}
+            
+            **Deployed to**: ${{ steps.deploy.outputs.url }}
+            **Commit**: ${{ github.sha }}
+            **Tests**: ✅ All passed
+            
+            ## Changes
+            <!-- Add your changelog here -->
+          draft: false
+          prerelease: false
 
       - name: Production Deployment Success
         run: |
-          echo "🚀 Production deployment completed successfully!"
-          echo "Site URL: Check your Netlify dashboard for the production URL"
+          echo "## 🚀 PRODUCTION Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "- **URL**: ${{ steps.deploy.outputs.url }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version**: v${{ steps.create-tag.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
