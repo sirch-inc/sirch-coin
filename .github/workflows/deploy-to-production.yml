@@ -1,3 +1,7 @@
+# Deploy to Production environment workflow
+# Artifact Retention: Production builds (365d), Deployment logs (365d)
+# See: CICD_ARTIFACT_RETENTION_POLICY.md for complete retention strategy
+
 name: Deploy to Production
 
 on:
@@ -64,6 +68,13 @@ jobs:
           VITE_BUILD_VERSION_VERBOSE: ${{ github.ref }}
         run: npm run build-production
 
+      - name: Upload build artifacts (PRODUCTION)
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-build-v${{ steps.create-tag.outputs.version }}
+          path: dist
+          retention-days: 365  # Keep PROD builds for a full year
+
       - name: Deploy to PRODUCTION
         id: deploy
         run: |
@@ -78,6 +89,14 @@ jobs:
           echo "url=${PROD_URL}" >> "$GITHUB_OUTPUT"
           echo "🚀 Deployed to PROD: ${PROD_URL}"
 
+      - name: Upload deployment logs
+        uses: actions/upload-artifact@v4
+        if: always()  # Upload even if deployment fails
+        with:
+          name: production-deployment-logs-v${{ steps.create-tag.outputs.version }}
+          path: deploy_prod_output.json
+          retention-days: 365  # Keep PROD deployment logs for a full year
+
       - name: Create GitHub Release
         uses: actions/create-release@v1
         env:
@@ -91,6 +110,7 @@ jobs:
             **Deployed to**: ${{ steps.deploy.outputs.url }}
             **Commit**: ${{ github.sha }}
             **Tests**: ✅ All passed
+            **Artifacts**: [production-build-v${{ steps.create-tag.outputs.version }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
             
             ## Changes
             <!-- Add your changelog here -->
@@ -103,3 +123,4 @@ jobs:
           echo "- **URL**: ${{ steps.deploy.outputs.url }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Version**: v${{ steps.create-tag.outputs.version }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Artifacts**: [production-build-v${{ steps.create-tag.outputs.version }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY

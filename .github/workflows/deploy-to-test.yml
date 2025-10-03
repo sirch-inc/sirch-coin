@@ -1,3 +1,7 @@
+# Deploy to TEST environment workflow
+# Artifact Retention: TEST builds (30d), Deployment logs (90d)
+# See: CICD_ARTIFACT_RETENTION_POLICY.md for complete retention strategy
+
 name: Deploy to TEST
 
 on:
@@ -54,6 +58,13 @@ jobs:
           VITE_STRIPE_API_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_API_PUBLISHABLE_KEY_TEST }}
         run: npm run build-test
 
+      - name: Upload build artifacts (TEST)
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-build-${{ github.sha }}
+          path: dist
+          retention-days: 30  # Longer retention for TEST builds
+
       - name: Deploy to TEST
         id: deploy
         run: |
@@ -67,6 +78,14 @@ jobs:
           TEST_URL=$(jq -r '.url' deploy_test_output.json)
           echo "url=${TEST_URL}" >> "$GITHUB_OUTPUT"
           echo "🚀 Deployed to TEST: ${TEST_URL}"
+
+      - name: Upload deployment logs
+        uses: actions/upload-artifact@v4
+        if: always()  # Upload even if deployment fails
+        with:
+          name: test-deployment-logs-${{ github.sha }}
+          path: deploy_test_output.json
+          retention-days: 90  # Keep deployment logs longer
 
       - name: Run QA Tests (placeholder)
         id: qa-tests
@@ -83,3 +102,4 @@ jobs:
           echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Tests**: ✅ Passed" >> $GITHUB_STEP_SUMMARY
           echo "- **Ready for PROD**: ✅ QA Complete" >> $GITHUB_STEP_SUMMARY
+          echo "- **Artifacts**: [test-build-${{ github.sha }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY

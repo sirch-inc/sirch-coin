@@ -1,5 +1,8 @@
 # A GitHub Actions workflow for CI (run tests, create preview deploys, etc.)
 # This workflow runs on PRs to main and direct pushes to main (for emergency fixes).
+#
+# Artifact Retention: CI builds (7d), Test results (14d), Preview logs (14d)
+# See: CICD_ARTIFACT_RETENTION_POLICY.md for complete retention strategy
 
 # Although Netlify supports continuous deployment from GitHub, we use GitHub Actions here instead in 
 # order to run tests before deploying, and to have more control over the build and deploy process.
@@ -78,6 +81,17 @@ jobs:
       - name: Run unit tests
         run: npm test
 
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()  # Upload even if tests fail
+        with:
+          name: test-results-${{ github.sha }}
+          path: |
+            coverage/
+            test-results.xml
+            junit.xml
+          retention-days: 14
+
       - name: Build for TEST
         env:
           # grab env "secrets" from GitHub Actions Secrets for safety
@@ -110,6 +124,14 @@ jobs:
           echo "NETLIFY_PREVIEW_URL=$NETLIFY_PREVIEW_URL" >> "$GITHUB_OUTPUT"
           echo "Preview deployed to: $NETLIFY_PREVIEW_URL"
 
+      - name: Upload preview deployment logs
+        uses: actions/upload-artifact@v4
+        if: github.event_name == 'pull_request' && always()
+        with:
+          name: preview-deployment-logs-${{ github.sha }}
+          path: deploy_output_branch.json
+          retention-days: 14
+
       - name: Add URL Preview comment to PR
         uses: actions/github-script@v7
         if: github.event_name == 'pull_request' && steps.create_preview.outputs.NETLIFY_PREVIEW_URL
@@ -127,6 +149,8 @@ jobs:
             **Commit**: ${{ github.sha }}
             
             All tests passed ✅
+            
+            **Artifacts**: [Build files & test results](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
             
             ---
             *This preview will be updated automatically when you push new commits to this PR.*`;
@@ -147,11 +171,37 @@ jobs:
           echo "Build: ✅ Completed"
           echo "No preview created for direct pushes to main"
           echo "=================================="
+
+      - name: Create workflow summary
+        if: always()
+        run: |
+          echo "## 🛠️ CI Workflow Complete" >> $GITHUB_STEP_SUMMARY
+          echo "- **Event**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: ${{ env.SOURCE_BRANCH }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "- **Preview**: ${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "- **Artifacts**: [View all artifacts](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
       
       # After actions
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: build-files-${{ github.sha }}
+          name: ci-build-${{ github.event_name }}-${{ github.sha }}
           path: dist
           retention-days: 7
+
+      - name: Upload build logs and metadata
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-logs-${{ github.sha }}
+          path: |
+            npm-debug.log*
+            yarn-debug.log*
+            yarn-error.log*
+            .npm/_logs/
+          retention-days: 7
+          if-no-files-found: ignore
