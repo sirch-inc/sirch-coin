@@ -1,10 +1,10 @@
-name: Deploy Production
+name: Deploy to Production
 
 on:
   workflow_dispatch: # Manual "push-button" trigger
     inputs:
       confirm_production:
-        description: 'Type "PRODUCTION" to confirm deployment'
+        description: 'Type "PRODUCTION" to confirm deployment to PROD'
         required: true
         default: ''
 
