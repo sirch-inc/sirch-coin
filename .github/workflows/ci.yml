@@ -170,13 +170,15 @@ jobs:
             );
             
             const commitShort = '${{ github.event.pull_request.head.sha || github.sha }}'.substring(0, 7);
-            const deployLogUrl = \`${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\`;
+            const deployLogUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
+            const commitUrl = '${{ github.server_url }}/${{ github.repository }}/commit/${{ github.event.pull_request.head.sha || github.sha }}';
+            const configUrl = '${{ github.server_url }}/${{ github.repository }}/blob/${{ github.ref_name }}/.github/workflows/ci.yml';
             
-            const body = \`## ✅ Deploy Preview for **${sourceBranch}** ready!
+            const body = `## ✅ Deploy Preview for **${sourceBranch}** ready!
             
             | Name | Link |
             |------|------|
-            | 🔗 Latest commit | [\`${commitShort}\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.event.pull_request.head.sha || github.sha }}) |
+            | 🔗 Latest commit | [\`${commitShort}\`](${commitUrl}) |
             | 📋 Latest deploy log | [View build details](${deployLogUrl}) |
             | 😎 Deploy Preview | [Visit Preview](${previewUrl}) |
             | 📱 Preview on mobile | <details><summary>▶️ Toggle QR Code...</summary><br/>**Scan with your phone:**<br/><br/>![QR Code](${qrCodeUrl})<br/><br/>Or copy: \`${previewUrl}\`</details> |
@@ -187,7 +189,7 @@ jobs:
             
             ---
             
-            *To edit notification comments on pull requests, go to your [CI/CD workflow configuration](${{ github.server_url }}/${{ github.repository }}/blob/${{ github.ref_name }}/.github/workflows/ci.yml).*\`;
+            *To edit notification comments on pull requests, go to your [CI/CD workflow configuration](${configUrl}).*`;
             
             if (botComment) {
               // Update existing comment
