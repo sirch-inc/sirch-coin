@@ -21,17 +21,15 @@ on:
   push:
     branches: [main]
     paths-ignore:
-      - 'README.md'
       - 'docs/**'
-      - '*.md'
+      - '**/*.md'
   
   # Run on all PRs to main (your primary workflow)
   pull_request:
     branches: [main]
     paths-ignore:
-      - 'README.md'
       - 'docs/**'
-      - '*.md'
+      - '**/*.md'
 
 env:
   SOURCE_BRANCH: ${{ github.head_ref || github.ref_name }}  # Fixed: Use source branch for PRs
