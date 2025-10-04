@@ -182,8 +182,7 @@ jobs:
             | 📱 Preview on mobile | <details><summary>▶️ Toggle QR Code...</summary><br/>**Scan with your phone:**<br/><br/>![QR Code](${qrCodeUrl})<br/><br/>Or copy: \`${previewUrl}\`</details> |
             | 🕒 Updated | ${new Date().toLocaleString('en-US', { timeZone: 'UTC' })} UTC |
             
-            ---
-            
+  
             Built with ❤️ by GitHub Actions`;
             
             if (botComment) {
