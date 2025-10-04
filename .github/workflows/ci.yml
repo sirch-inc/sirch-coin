@@ -35,8 +35,11 @@ env:
   SOURCE_BRANCH: ${{ github.head_ref || github.ref_name }}  # Fixed: Use source branch for PRs
 
 permissions:
+  contents: read
   pull-requests: write
   checks: write
+  issues: write
+  statuses: write
 
 
 jobs:
@@ -144,6 +147,18 @@ jobs:
           path: deploy_output_branch.json
           retention-days: 14
 
+      - name: Debug conditional check
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "=== DEBUG CONDITIONAL CHECK ==="
+          echo "Event name: ${{ github.event_name }}"
+          echo "Preview URL output: ${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}"
+          echo "Has preview URL: ${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL != '' }}"
+          echo "Condition result: ${{ github.event_name == 'pull_request' && steps.create_preview.outputs.NETLIFY_PREVIEW_URL != '' }}"
+          echo "Issue number: ${{ github.event.number }}"
+          echo "PR number: ${{ github.event.pull_request.number }}"
+          echo "=============================="
+
       - name: Update or create preview comment
         uses: actions/github-script@v7
         if: github.event_name == 'pull_request' && steps.create_preview.outputs.NETLIFY_PREVIEW_URL
@@ -151,18 +166,40 @@ jobs:
           NETLIFY_PREVIEW_URL: ${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}
         with:
           script: |
+            console.log('=== COMMENT CREATION DEBUG ===');
+            console.log(`Event type: ${context.eventName}`);
+            console.log(`Preview URL from step: ${process.env.NETLIFY_PREVIEW_URL}`);
+            console.log(`Issue number: ${context.issue.number}`);
+            console.log(`PR number: ${context.payload.pull_request?.number}`);
+            console.log(`Repo: ${context.repo.owner}/${context.repo.repo}`);
+            
             const previewUrl = process.env.NETLIFY_PREVIEW_URL;
             const sourceBranch = '${{ env.SOURCE_BRANCH }}';
+            
+            if (!previewUrl) {
+              console.log('❌ No preview URL available, skipping comment');
+              return;
+            }
+            
+            // Use explicit PR number
+            const prNumber = context.payload.pull_request?.number || context.issue.number;
+            if (!prNumber) {
+              console.log('❌ No PR number available, skipping comment');
+              return;
+            }
             
             // Generate QR code URL using qr-server.com (free service)
             const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(previewUrl)}`;
             
-            // Look for existing preview comment from this workflow
-            const comments = await github.rest.issues.listComments({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-            });
+            try {
+              // Look for existing preview comment from this workflow
+              const comments = await github.rest.issues.listComments({
+                issue_number: prNumber,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+              });
+              
+              console.log('Successfully fetched comments for PR');
             
             // Find existing preview comment with multiple search criteria for robustness
             const botComment = comments.data.find(comment => 
@@ -198,24 +235,29 @@ jobs:
             
             *Built with ❤️ by GitHub Actions*`;
             
-            if (botComment) {
-              // Update existing comment
-              await github.rest.issues.updateComment({
-                comment_id: botComment.id,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: body
-              });
-              console.log('Updated existing preview comment with QR code');
-            } else {
-              // Create new comment
-              await github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: body
-              });
-              console.log('Created new preview comment with QR code');
+              if (botComment) {
+                // Update existing comment
+                const result = await github.rest.issues.updateComment({
+                  comment_id: botComment.id,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: body
+                });
+                console.log(`✅ Successfully updated existing preview comment (ID: ${botComment.id})`);
+              } else {
+                // Create new comment
+                const result = await github.rest.issues.createComment({
+                  issue_number: prNumber,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: body
+                });
+                console.log(`✅ Successfully created new preview comment (ID: ${result.data.id})`);
+              }
+            } catch (error) {
+              console.log('❌ Error creating/updating comment:', error.message);
+              console.log('Full error:', error);
+              throw error;
             }
 
       - name: Create deployment status check
