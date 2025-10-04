@@ -108,17 +108,33 @@ jobs:
           # Create safe alias from source branch name
           SAFE_BRANCH=$(echo "${{ env.SOURCE_BRANCH }}" | sed 's/[^a-zA-Z0-9-]/-/g' | tr '[:upper:]' '[:lower:]')
           
+          # Use correct commit SHA for PRs
+          COMMIT_SHA="${{ github.event.pull_request.head.sha || github.sha }}"
+          SHORT_SHA=$(echo "$COMMIT_SHA" | cut -c1-7)
+          
           # Deploy to Netlify with branch-specific alias
           npx netlify deploy \
             --no-build \
             --dir=dist \
-            --alias="preview-${SAFE_BRANCH}-$(echo ${{ github.sha }} | cut -c1-7)" \
+            --alias="preview-${SAFE_BRANCH}-${SHORT_SHA}" \
             --site ${{ secrets.NETLIFY_SITE_ID_TEST }} \
             --auth ${{ secrets.NETLIFY_API_TOKEN_TEST }} \
             --json > deploy_output_branch.json
           
+          # Check if deployment was successful
+          if [ ! -f "deploy_output_branch.json" ]; then
+            echo "❌ Preview deployment failed - no output file generated"
+            exit 1
+          fi
+          
           # Extract and output the preview URL
-          NETLIFY_PREVIEW_URL=$(jq -r '.deploy_url' deploy_output_branch.json)
+          NETLIFY_PREVIEW_URL=$(jq -r '.deploy_url' deploy_output_branch.json 2>/dev/null || echo "")
+          if [ -z "$NETLIFY_PREVIEW_URL" ] || [ "$NETLIFY_PREVIEW_URL" = "null" ]; then
+            echo "❌ Failed to parse preview URL from deployment output"
+            cat deploy_output_branch.json
+            exit 1
+          fi
+          
           echo "NETLIFY_PREVIEW_URL=$NETLIFY_PREVIEW_URL" >> "$GITHUB_OUTPUT"
           echo "Preview deployed to: $NETLIFY_PREVIEW_URL"
 
