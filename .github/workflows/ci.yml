@@ -105,26 +105,16 @@ jobs:
         # Only create previews for PRs (not direct pushes to main)
         if: github.event_name == 'pull_request'
         run: |
-          # Create safe alias from source branch name
-          SAFE_BRANCH=$(echo "${{ env.SOURCE_BRANCH }}" | sed 's/[^a-zA-Z0-9-]/-/g' | tr '[:upper:]' '[:lower:]')
-          
           # Use correct commit SHA for PRs
           COMMIT_SHA="${{ github.event.pull_request.head.sha || github.sha }}"
           SHORT_SHA=$(echo "$COMMIT_SHA" | cut -c1-7)
-
-          # JEFFTESTING--------------Deploy to Netlify with branch-specific alias
-          npx netlify deploy \
-            --no-build \
-            --dir=dist \
-            --alias="JEFFTESTING-${SHORT_SHA}" \
-            --site ${{ secrets.NETLIFY_SITE_ID_TEST }} \
-            --auth ${{ secrets.NETLIFY_API_TOKEN_TEST }} \
+          PREVIEW_ALIAS="preview-${SHORT_SHA}"
           
           # Deploy to Netlify with branch-specific alias
           npx netlify deploy \
             --no-build \
             --dir=dist \
-            --alias="preview-${SAFE_BRANCH}-${SHORT_SHA}" \
+            --alias="$PREVIEW_ALIAS" \
             --site ${{ secrets.NETLIFY_SITE_ID_TEST }} \
             --auth ${{ secrets.NETLIFY_API_TOKEN_TEST }} \
             --json > deploy_output_branch.json
