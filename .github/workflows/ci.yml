@@ -183,10 +183,7 @@ jobs:
             | 😎 Deploy Preview | [Visit Preview](${previewUrl}) |
             | 📱 Preview on mobile | <details><summary>▶️ Toggle QR Code...</summary><br/>**Scan with your phone:**<br/><br/>![QR Code](${qrCodeUrl})<br/><br/>Or copy: \`${previewUrl}\`</details> |
             | 🕒 Updated | ${new Date().toLocaleString('en-US', { timeZone: 'UTC', hour12: true })} UTC • Built with ❤️ by GitHub Actions |
-            
-            ---
-            
-            *To edit notification comments on pull requests, go to your [CI/CD workflow configuration](${configUrl}).*`;            
+                       
             if (botComment) {
               // Update existing comment
               await github.rest.issues.updateComment({
