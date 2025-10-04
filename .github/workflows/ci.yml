@@ -144,7 +144,7 @@ jobs:
             
             **Branch**: \`${sourceBranch}\`
             **Preview URL**: ${previewUrl}
-            **Commit**: ${{ github.sha }}
+            **Commit**: ${{ github.event.pull_request.head.sha || github.sha }}
             
             All tests passed ✅
             
