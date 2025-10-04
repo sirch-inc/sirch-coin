@@ -169,32 +169,25 @@ jobs:
               comment.body.includes('🚀 Preview Deployment Ready')
             );
             
-            const body = `## 🚀 Preview Deployment Ready
+            const commitShort = '${{ github.event.pull_request.head.sha || github.sha }}'.substring(0, 7);
+            const deployLogUrl = \`${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\`;
             
-            **Branch**: \`${sourceBranch}\`  
-            **Preview URL**: ${previewUrl}  
-            **Commit**: ${{ github.event.pull_request.head.sha || github.sha }}  
-            **Updated**: ${new Date().toLocaleString('en-US', { timeZone: 'UTC' })} UTC
+            const body = \`## ✅ Deploy Preview for **${sourceBranch}** ready!
             
-            ### 📱 Preview on Mobile
-            
-            <details>
-            <summary>📱 Click to show QR code for mobile testing</summary>
-            
-            **Scan with your phone to open preview:**
-            
-            ![QR Code](${qrCodeUrl})
-            
-            Or copy this link: \`${previewUrl}\`
-            
-            </details>
+            | Name | Link |
+            |------|------|
+            | 🔗 Latest commit | [\`${commitShort}\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.event.pull_request.head.sha || github.sha }}) |
+            | 📋 Latest deploy log | [View build details](${deployLogUrl}) |
+            | 😎 Deploy Preview | [Visit Preview](${previewUrl}) |
+            | 📱 Preview on mobile | <details><summary>▶️ Toggle QR Code...</summary><br/>**Scan with your phone:**<br/><br/>![QR Code](${qrCodeUrl})<br/><br/>Or copy: \`${previewUrl}\`</details> |
             
             ---
             
-            **Artifacts**: [Build files & test results](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            **Updated**: ${new Date().toLocaleString('en-US', { timeZone: 'UTC' })} UTC • Built with ❤️ by GitHub Actions
             
             ---
-            *This preview updates automatically with new commits to this PR.*`;
+            
+            *To edit notification comments on pull requests, go to your [CI/CD workflow configuration](${{ github.server_url }}/${{ github.repository }}/blob/${{ github.ref_name }}/.github/workflows/ci.yml).*\`;
             
             if (botComment) {
               // Update existing comment
