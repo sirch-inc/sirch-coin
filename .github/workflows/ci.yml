@@ -167,8 +167,8 @@ jobs:
             // Find existing preview comment with multiple search criteria for robustness
             const botComment = comments.data.find(comment => 
               comment.user.type === 'Bot' && 
-              (comment.body.includes('✅ Deploy Preview for') || 
-               comment.body.includes('Deploy Preview for') ||
+              (comment.body.includes('✅ Preview for') || 
+               comment.body.includes('Preview for') ||
                comment.body.includes('Built with ❤️ by GitHub Actions'))
             );
             
@@ -184,13 +184,13 @@ jobs:
             const commitUrl = '${{ github.server_url }}/${{ github.repository }}/commit/${{ github.event.pull_request.head.sha || github.sha }}';
             const configUrl = '${{ github.server_url }}/${{ github.repository }}/blob/${{ github.event.pull_request.head.ref || github.ref_name }}/.github/workflows/ci.yml';
             
-            const body = `## ✅ Deploy Preview for **${sourceBranch}** ready!
+            const body = `## ✅ Preview for **${sourceBranch}** ready!
             
             | Name | Link |
             |------|------|
             | 🔗 Latest commit | [\`${commitShort}\`](${commitUrl}) |
             | 📋 Latest deploy log | [View build details](${deployLogUrl}) |
-            | 😎 Deploy Preview | [Visit Preview](${previewUrl}) |
+            | 😎 Preview | [Visit Preview](${previewUrl}) |
             | 📱 Preview on mobile | <details><summary>▶️ Toggle QR Code...</summary><br/>**Scan with your phone:**<br/><br/>![QR Code](${qrCodeUrl})<br/><br/>Or copy: \`${previewUrl}\`</details> |
             | 🕒 Updated | ${new Date().toLocaleString('en-US', { timeZone: 'UTC', hour12: true })} UTC |
             
