@@ -111,6 +111,14 @@ jobs:
           # Use correct commit SHA for PRs
           COMMIT_SHA="${{ github.event.pull_request.head.sha || github.sha }}"
           SHORT_SHA=$(echo "$COMMIT_SHA" | cut -c1-7)
+
+          # JEFFTESTING--------------Deploy to Netlify with branch-specific alias
+          npx netlify deploy \
+            --no-build \
+            --dir=dist \
+            --alias="JEFFTESTING-${SHORT_SHA}" \
+            --site ${{ secrets.NETLIFY_SITE_ID_TEST }} \
+            --auth ${{ secrets.NETLIFY_API_TOKEN_TEST }} \
           
           # Deploy to Netlify with branch-specific alias
           npx netlify deploy \
