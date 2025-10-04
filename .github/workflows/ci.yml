@@ -206,20 +206,25 @@ jobs:
         with:
           script: |
             const previewUrl = '${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}';
-            const state = previewUrl ? 'success' : 'failure';
-            const description = previewUrl ? 'Preview deployment ready' : 'Preview deployment failed';
+            const conclusion = previewUrl ? 'success' : 'failure';
+            const summary = previewUrl ? 'Preview deployment ready' : 'Preview deployment failed';
             
-            await github.rest.repos.createCommitStatus({
+            await github.rest.checks.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              sha: '${{ github.event.pull_request.head.sha || github.sha }}',
-              state: state,
-              target_url: previewUrl || undefined,
-              description: description,
-              context: 'Preview Deployment'
+              name: 'Preview Deployment',
+              head_sha: '${{ github.event.pull_request.head.sha || github.sha }}',
+              status: 'completed',
+              conclusion: conclusion,
+              details_url: previewUrl || undefined,
+              output: {
+                title: 'Preview Deployment',
+                summary: summary,
+                text: previewUrl ? `Preview available at: ${previewUrl}` : 'Preview deployment failed'
+              }
             });
             
-            console.log(`Created status check: ${state} - ${description}`);
+            console.log(`Created deployment check: ${conclusion} - ${summary}`);
 
       - name: Log results for direct pushes to main
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
