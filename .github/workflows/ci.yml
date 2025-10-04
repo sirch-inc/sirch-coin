@@ -172,7 +172,7 @@ jobs:
             const commitShort = '${{ github.event.pull_request.head.sha || github.sha }}'.substring(0, 7);
             const deployLogUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
             const commitUrl = '${{ github.server_url }}/${{ github.repository }}/commit/${{ github.event.pull_request.head.sha || github.sha }}';
-            const configUrl = '${{ github.server_url }}/${{ github.repository }}/blob/${{ github.ref_name }}/.github/workflows/ci.yml';
+            const configUrl = '${{ github.server_url }}/${{ github.repository }}/blob/${{ github.event.pull_request.head.ref || github.ref_name }}/.github/workflows/ci.yml';
             
             const body = `## ✅ Deploy Preview for **${sourceBranch}** ready!
             
