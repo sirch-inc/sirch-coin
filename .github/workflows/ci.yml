@@ -180,14 +180,11 @@ jobs:
             | 📋 Latest deploy log | [View build details](${deployLogUrl}) |
             | 😎 Deploy Preview | [Visit Preview](${previewUrl}) |
             | 📱 Preview on mobile | <details><summary>▶️ Toggle QR Code...</summary><br/>**Scan with your phone:**<br/><br/>![QR Code](${qrCodeUrl})<br/><br/>Or copy: \`${previewUrl}\`</details> |
+            | 🕒 Updated | ${new Date().toLocaleString('en-US', { timeZone: 'UTC' })} UTC |
             
             ---
             
-            **Updated**: ${new Date().toLocaleString('en-US', { timeZone: 'UTC' })} UTC • Built with ❤️ by GitHub Actions
-            
-            ---
-            
-            *To edit notification comments on pull requests, go to your [CI/CD workflow configuration](${{ github.server_url }}/${{ github.repository }}/blob/${{ github.ref_name }}/.github/workflows/ci.yml).*`;
+            Built with ❤️ by GitHub Actions`;
             
             if (botComment) {
               // Update existing comment
