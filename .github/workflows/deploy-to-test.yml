@@ -58,6 +58,9 @@ jobs:
           VITE_STRIPE_API_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_API_PUBLISHABLE_KEY_TEST }}
         run: npm run build-test
 
+      - name: Install Netlify CLI
+        run: npm install -g netlify-cli
+
       - name: Upload build artifacts (TEST)
         uses: actions/upload-artifact@v4
         with:
@@ -75,7 +78,19 @@ jobs:
             --auth ${{ secrets.NETLIFY_API_TOKEN_TEST }} \
             --json > deploy_test_output.json
           
-          TEST_URL=$(jq -r '.url' deploy_test_output.json)
+          # Check if deployment was successful
+          if [ ! -f "deploy_test_output.json" ]; then
+            echo "❌ Deployment failed - no output file generated"
+            exit 1
+          fi
+          
+          TEST_URL=$(jq -r '.url' deploy_test_output.json 2>/dev/null || echo "")
+          if [ -z "$TEST_URL" ] || [ "$TEST_URL" = "null" ]; then
+            echo "❌ Failed to parse deployment URL from output"
+            cat deploy_test_output.json
+            exit 1
+          fi
+          
           echo "url=${TEST_URL}" >> "$GITHUB_OUTPUT"
           echo "🚀 Deployed to TEST: ${TEST_URL}"
 
@@ -100,6 +115,10 @@ jobs:
           echo "## 🚀 TEST Deployment Complete" >> $GITHUB_STEP_SUMMARY
           echo "- **URL**: ${{ steps.deploy.outputs.url }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Tests**: ✅ Passed" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ github.event.inputs.force_deploy }}" = "true" ]; then
+            echo "- **Tests**: ⚠️ Skipped (Forced Deployment)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- **Tests**: ✅ Passed" >> $GITHUB_STEP_SUMMARY
+          fi
           echo "- **Ready for PROD**: ✅ QA Complete" >> $GITHUB_STEP_SUMMARY
           echo "- **Artifacts**: [test-build-${{ github.sha }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
