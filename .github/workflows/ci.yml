@@ -154,6 +154,9 @@ jobs:
             const previewUrl = process.env.NETLIFY_PREVIEW_URL;
             const sourceBranch = '${{ env.SOURCE_BRANCH }}';
             
+            // Generate QR code URL using qr-server.com (free service)
+            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(previewUrl)}`;
+            
             // Look for existing preview comment from this workflow
             const comments = await github.rest.issues.listComments({
               issue_number: context.issue.number,
@@ -173,7 +176,20 @@ jobs:
             **Commit**: ${{ github.event.pull_request.head.sha || github.sha }}  
             **Updated**: ${new Date().toLocaleString('en-US', { timeZone: 'UTC' })} UTC
             
-            All tests passed ✅
+            ### 📱 Preview on Mobile
+            
+            <details>
+            <summary>📱 Click to show QR code for mobile testing</summary>
+            
+            **Scan with your phone to open preview:**
+            
+            ![QR Code](${qrCodeUrl})
+            
+            Or copy this link: \`${previewUrl}\`
+            
+            </details>
+            
+            ---
             
             **Artifacts**: [Build files & test results](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
             
@@ -188,7 +204,7 @@ jobs:
                 repo: context.repo.repo,
                 body: body
               });
-              console.log('Updated existing preview comment');
+              console.log('Updated existing preview comment with QR code');
             } else {
               // Create new comment
               await github.rest.issues.createComment({
@@ -197,7 +213,7 @@ jobs:
                 repo: context.repo.repo,
                 body: body
               });
-              console.log('Created new preview comment');
+              console.log('Created new preview comment with QR code');
             }
 
       - name: Create deployment status check
