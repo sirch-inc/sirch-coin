@@ -1,5 +1,8 @@
 # A GitHub Actions workflow for CI (run tests, create preview deploys, etc.)
-# This workflow runs on every push (any branch) and pull request to 'main'.
+# This workflow runs on PRs to main and direct pushes to main (for emergency fixes).
+#
+# Artifact Retention: CI builds (7d), Test results (14d), Preview logs (14d)
+# See: CICD_ARTIFACT_RETENTION_POLICY.md for complete retention strategy
 
 # Although Netlify supports continuous deployment from GitHub, we use GitHub Actions here instead in 
 # order to run tests before deploying, and to have more control over the build and deploy process.
@@ -11,26 +14,39 @@
 #
 # We are using the Netlify CLI to deploy here, bypassing Netlify's built-in GitHub integration.
 
-
 name: CI
 
 on:
-  # push:
+  # Run on pushes to main (for direct commits/emergency fixes)
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+  
+  # Run on all PRs to main (your primary workflow)
   pull_request:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
 
 env:
-  BRANCH_NAME: ${{ github.ref_name }}
+  SOURCE_BRANCH: ${{ github.head_ref || github.ref_name }}  # Fixed: Use source branch for PRs
 
 permissions:
   pull-requests: write
+  checks: write
 
 
 jobs:
   build-test-and-deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Allow skipping CI with commit message
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, '[ci skip]') }}
     steps:
-      - name: Repository Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN_FOR_GITHUB_ACTIONS }}  # Using a privileged PAT here to enable writing to PRs
@@ -52,20 +68,27 @@ jobs:
             ${{ runner.os }}-node-
 
       - name: Install dependencies
-        run: 
-          npm ci
+        run: npm ci
 
-      - name: Run linting
-        run: |
-          npm run lint
+      - name: Run lint checks
+        run: npm run lint
 
       - name: Run NPM security audit
-        run: |
-          npm audit --audit-level=moderate
+        run: npm audit --audit-level=moderate
 
       - name: Run unit tests
-        run: |
-          npm test
+        run: npm test
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()  # Upload even if tests fail
+        with:
+          name: test-results-${{ github.sha }}
+          path: |
+            coverage/
+            test-results.xml
+            junit.xml
+          retention-days: 14
 
       - name: Build for TEST
         env:
@@ -75,70 +98,185 @@ jobs:
           VITE_STRIPE_API_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_API_PUBLISHABLE_KEY_TEST }}
           # VITE_BUILD_VERSION: ...obtained by build-variables.sh script that is run during the build
           # VITE_BUILD_VERSION_VERBOSE: ...obtained by build-variables.sh script that is run during the build
-        run: |
-          npm run build-test
+        run: npm run build-test
 
-      - name: Create one-off PREVIEW on PRs to any non-main branch
-        if: github.event_name == 'pull_request' && github.ref != 'refs/heads/main'
+      - name: Create preview deployment
+        id: create_preview
+        # Only create previews for PRs (not direct pushes to main)
+        if: github.event_name == 'pull_request'
         run: |
-          # Create a unique alias for this branch by replacing slashes with dashes
-          BRANCH_NAME=${BRANCH_NAME//\//-}
-          npx netlify deploy --no-build --dir=dist --alias=$BRANCH_NAME \
+          # Use correct commit SHA for PRs
+          COMMIT_SHA="${{ github.event.pull_request.head.sha || github.sha }}"
+          SHORT_SHA=$(echo "$COMMIT_SHA" | cut -c1-7)
+          PREVIEW_ALIAS="preview-${SHORT_SHA}"
+          
+          # Deploy to Netlify with branch-specific alias
+          npx netlify deploy \
+            --no-build \
+            --dir=dist \
+            --alias="$PREVIEW_ALIAS" \
             --site ${{ secrets.NETLIFY_SITE_ID_TEST }} \
             --auth ${{ secrets.NETLIFY_API_TOKEN_TEST }} \
-            --json \
-            > deploy_output_branch.json
-
-      - name: Look up generated preview URL from logs
-        id: lookup_generated_preview_url
-        if: ${{ env.BRANCH_NAME != 'main' }}
-        run: |
-          NETLIFY_PREVIEW_URL=$(jq -r '.deploy_url' deploy_output_branch.json)
+            --json > deploy_output_branch.json
+          
+          # Check if deployment was successful
+          if [ ! -f "deploy_output_branch.json" ]; then
+            echo "❌ Preview deployment failed - no output file generated"
+            exit 1
+          fi
+          
+          # Extract and output the preview URL
+          NETLIFY_PREVIEW_URL=$(jq -r '.deploy_url' deploy_output_branch.json 2>/dev/null || echo "")
+          if [ -z "$NETLIFY_PREVIEW_URL" ] || [ "$NETLIFY_PREVIEW_URL" = "null" ]; then
+            echo "❌ Failed to parse preview URL from deployment output"
+            cat deploy_output_branch.json
+            exit 1
+          fi
+          
           echo "NETLIFY_PREVIEW_URL=$NETLIFY_PREVIEW_URL" >> "$GITHUB_OUTPUT"
+          echo "Preview deployed to: $NETLIFY_PREVIEW_URL"
 
-      # - name: Create well-known PREVIEW on pull_requests to 'main'
-      #   if: github.ref == 'refs/heads/main' && github.event_name == 'pull_request'
-      #   run: |
-      #     npx netlify deploy --no-build --dir=dist --alias=preview \
-      #       --site ${{ secrets.NETLIFY_SITE_ID_TEST }} \
-      #       --auth ${{ secrets.NETLIFY_API_TOKEN_TEST }}
+      - name: Upload preview deployment logs
+        uses: actions/upload-artifact@v4
+        if: github.event_name == 'pull_request' && always()
+        with:
+          name: preview-deployment-logs-${{ github.sha }}
+          path: deploy_output_branch.json
+          retention-days: 14
 
-      - name: DEBUG=TO BE REMOVED
-        run: |
-          echo ${{ steps.lookup_generated_preview_url.outputs.NETLIFY_PREVIEW_URL }}
-
-
-      - name: Add URL Preview comment to any associated PR
+      - name: Update or create preview comment
         uses: actions/github-script@v7
-        if: ${{ env.BRANCH_NAME != 'main' }}
+        if: github.event_name == 'pull_request' && steps.create_preview.outputs.NETLIFY_PREVIEW_URL
         env:
-          NETLIFY_PREVIEW_URL: ${{ steps.generated_.outputs.NETLIFY_PREVIEW_URL }}
+          NETLIFY_PREVIEW_URL: ${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}
         with:
           script: |
-            async function comment() {
-              const result = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+            const previewUrl = process.env.NETLIFY_PREVIEW_URL;
+            const sourceBranch = '${{ env.SOURCE_BRANCH }}';
+            
+            // Generate QR code URL using qr-server.com (free service)
+            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(previewUrl)}`;
+            
+            // Look for existing preview comment from this workflow
+            const comments = await github.rest.issues.listComments({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+            
+            const botComment = comments.data.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('🚀 Preview Deployment Ready')
+            );
+            
+            const commitShort = '${{ github.event.pull_request.head.sha || github.sha }}'.substring(0, 7);
+            const deployLogUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
+            const commitUrl = '${{ github.server_url }}/${{ github.repository }}/commit/${{ github.event.pull_request.head.sha || github.sha }}';
+            const configUrl = '${{ github.server_url }}/${{ github.repository }}/blob/${{ github.ref_name }}/.github/workflows/ci.yml';
+            
+            const body = `## ✅ Deploy Preview for **${sourceBranch}** ready!
+            
+            | Name | Link |
+            |------|------|
+            | 🔗 Latest commit | [\`${commitShort}\`](${commitUrl}) |
+            | 📋 Latest deploy log | [View build details](${deployLogUrl}) |
+            | 😎 Deploy Preview | [Visit Preview](${previewUrl}) |
+            | 📱 Preview on mobile | <details><summary>▶️ Toggle QR Code...</summary><br/>**Scan with your phone:**<br/><br/>![QR Code](${qrCodeUrl})<br/><br/>Or copy: \`${previewUrl}\`</details> |
+            
+            ---
+            
+            **Updated**: ${new Date().toLocaleString('en-US', { timeZone: 'UTC' })} UTC • Built with ❤️ by GitHub Actions
+            
+            ---
+            
+            *To edit notification comments on pull requests, go to your [CI/CD workflow configuration](${configUrl}).*`;
+            
+            if (botComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                comment_id: botComment.id,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                commit_sha: context.sha,
-              })
-              const issueNumber = result.data[0]?.number
-              if (issueNumber) {
-                await github.rest.issues.createComment({
-                  issue_number: issueNumber,
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  body: 'Preview URL: ' + process.env.NETLIFY_PREVIEW_URL
-                })
-              } else {
-                console.log('No PR found for commit ' + context.sha)
-              }
+                body: body
+              });
+              console.log('Updated existing preview comment with QR code');
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body
+              });
+              console.log('Created new preview comment with QR code');
             }
-            comment()
+
+      - name: Create deployment status check
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        with:
+          script: |
+            const previewUrl = '${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}';
+            const conclusion = previewUrl ? 'success' : 'failure';
+            const summary = previewUrl ? 'Preview deployment ready' : 'Preview deployment failed';
             
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'Preview Deployment',
+              head_sha: '${{ github.event.pull_request.head.sha || github.sha }}',
+              status: 'completed',
+              conclusion: conclusion,
+              details_url: previewUrl || undefined,
+              output: {
+                title: 'Preview Deployment',
+                summary: summary,
+                text: previewUrl ? `Preview available at: ${previewUrl}` : 'Preview deployment failed'
+              }
+            });
+            
+            console.log(`Created deployment check: ${conclusion} - ${summary}`);
+
+      - name: Log results for direct pushes to main
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo "=== Direct push to main detected ==="
+          echo "Commit: ${{ github.sha }}"
+          echo "Tests: ✅ Passed"
+          echo "Build: ✅ Completed"
+          echo "No preview created for direct pushes to main"
+          echo "=================================="
+
+      - name: Create workflow summary
+        if: always()
+        run: |
+          echo "## 🛠️ CI Workflow Complete" >> $GITHUB_STEP_SUMMARY
+          echo "- **Event**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: ${{ env.SOURCE_BRANCH }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "- **Preview**: ${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "- **Artifacts**: [View all artifacts](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+      
       # After actions
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: build-files
+          name: ci-build-${{ github.event_name }}-${{ github.sha }}
           path: dist
           retention-days: 7
+
+      - name: Upload build logs and metadata
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-logs-${{ github.sha }}
+          path: |
+            npm-debug.log*
+            yarn-debug.log*
+            yarn-error.log*
+            .npm/_logs/
+          retention-days: 7
+          if-no-files-found: ignore

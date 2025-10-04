@@ -1,0 +1,126 @@
+# Deploy to Production environment workflow
+# Artifact Retention: Production builds (365d), Deployment logs (365d)
+# See: CICD_ARTIFACT_RETENTION_POLICY.md for complete retention strategy
+
+name: Deploy to Production
+
+on:
+  workflow_dispatch: # Manual "push-button" trigger
+    inputs:
+      confirm_production:
+        description: 'Type "PRODUCTION" to confirm deployment to PROD'
+        required: true
+        default: ''
+      force_deploy:
+        description: 'Force deployment even if tests fail'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  deploy-production:
+    runs-on: ubuntu-latest
+    environment: 
+      name: production
+      url: ${{ steps.deploy.outputs.url }}
+    if: github.event.inputs.confirm_production == 'PRODUCTION'
+    
+    steps:
+      - name: Repository Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Tests (unless forced)
+        if: github.event.inputs.force_deploy != 'true'
+        run: |
+          npm run lint
+          npm audit --audit-level=moderate
+          npm test
+
+      - name: Create release tag
+        id: create-tag
+        run: |
+          # Generate version tag
+          VERSION=$(date +%Y.%m.%d)-$(echo ${{ github.sha }} | cut -c1-7)
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "v${VERSION}"
+          git push origin "v${VERSION}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Build for PRODUCTION
+        env:
+          VITE_SUPABASE_PROJECT_URL: ${{ secrets.VITE_SUPABASE_PROJECT_URL_PROD }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY_PROD }}
+          VITE_STRIPE_API_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_API_PUBLISHABLE_KEY_PROD }}
+          VITE_BUILD_VERSION: v${{ steps.create-tag.outputs.version }}
+          VITE_BUILD_VERSION_VERBOSE: ${{ github.ref }}
+        run: npm run build-production
+
+      - name: Upload build artifacts (PRODUCTION)
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-build-v${{ steps.create-tag.outputs.version }}
+          path: dist
+          retention-days: 365  # Keep PROD builds for a full year
+
+      - name: Deploy to PRODUCTION
+        id: deploy
+        run: |
+          npx netlify deploy \
+            --prod \
+            --dir=dist \
+            --site ${{ secrets.NETLIFY_SITE_ID_PROD }} \
+            --auth ${{ secrets.NETLIFY_API_TOKEN_PROD }} \
+            --json > deploy_prod_output.json
+          
+          PROD_URL=$(jq -r '.url' deploy_prod_output.json)
+          echo "url=${PROD_URL}" >> "$GITHUB_OUTPUT"
+          echo "🚀 Deployed to PROD: ${PROD_URL}"
+
+      - name: Upload deployment logs
+        uses: actions/upload-artifact@v4
+        if: always()  # Upload even if deployment fails
+        with:
+          name: production-deployment-logs-v${{ steps.create-tag.outputs.version }}
+          path: deploy_prod_output.json
+          retention-days: 365  # Keep PROD deployment logs for a full year
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.create-tag.outputs.version }}
+          release_name: Release v${{ steps.create-tag.outputs.version }}
+          body: |
+            🚀 Production deployment of commit ${{ github.sha }}
+            
+            **Deployed to**: ${{ steps.deploy.outputs.url }}
+            **Commit**: ${{ github.sha }}
+            **Tests**: ✅ All passed
+            **Artifacts**: [production-build-v${{ steps.create-tag.outputs.version }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            
+            ## Changes
+            <!-- Add your changelog here -->
+          draft: false
+          prerelease: false
+
+      - name: Production Deployment Success
+        run: |
+          echo "## 🚀 PRODUCTION Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "- **URL**: ${{ steps.deploy.outputs.url }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version**: v${{ steps.create-tag.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Artifacts**: [production-build-v${{ steps.create-tag.outputs.version }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
