@@ -172,7 +172,7 @@ jobs:
             const commitShort = '${{ github.event.pull_request.head.sha || github.sha }}'.substring(0, 7);
             const deployLogUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
             
-            const body = `## ✅ Deploy Preview for **${sourceBranch}** ready!
+            const body = `## 🔄 Preview
             
             | Name | Link |
             |------|------|
