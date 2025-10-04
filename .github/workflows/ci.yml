@@ -178,7 +178,7 @@ jobs:
             |------|------|
             | 🔗 Latest commit | [\`${commitShort}\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.event.pull_request.head.sha || github.sha }}) |
             | 📋 Latest deploy log | [View build details](${deployLogUrl}) |
-            | 😎 Deploy Preview | [Visit Preview](${previewUrl}) |
+            | 😎 Preview | [Visit Preview](${previewUrl}) |
             | 📱 Preview on mobile | <details><summary>▶️ Toggle QR Code...</summary><br/>**Scan with your phone:**<br/><br/>![QR Code](${qrCodeUrl})<br/><br/>Or copy: \`${previewUrl}\`</details> |
             
             ---
