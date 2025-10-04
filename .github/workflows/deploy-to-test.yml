@@ -58,9 +58,6 @@ jobs:
           VITE_STRIPE_API_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_API_PUBLISHABLE_KEY_TEST }}
         run: npm run build-test
 
-      - name: Install Netlify CLI
-        run: npm install -g netlify-cli
-
       - name: Upload build artifacts (TEST)
         uses: actions/upload-artifact@v4
         with:
