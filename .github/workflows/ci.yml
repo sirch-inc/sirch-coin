@@ -192,11 +192,11 @@ jobs:
             | 📋 Latest deploy log | [View build details](${deployLogUrl}) |
             | 😎 Deploy Preview | [Visit Preview](${previewUrl}) |
             | 📱 Preview on mobile | <details><summary>▶️ Toggle QR Code...</summary><br/>**Scan with your phone:**<br/><br/>![QR Code](${qrCodeUrl})<br/><br/>Or copy: \`${previewUrl}\`</details> |
-            | 🕒 Updated | ${new Date().toLocaleString('en-US', { timeZone: 'UTC', hour12: true })} UTC • Built with ❤️ by GitHub Actions |
+            | 🕒 Updated | ${new Date().toLocaleString('en-US', { timeZone: 'UTC', hour12: true })} UTC |
             
             ---
             
-            *To edit notification comments on pull requests, go to your [CI/CD workflow configuration](${configUrl}).*`;
+            *Built with ❤️ by GitHub Actions*`;
             
             if (botComment) {
               // Update existing comment
