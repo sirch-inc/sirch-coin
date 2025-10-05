@@ -166,13 +166,13 @@ jobs:
             
             const botComment = comments.data.find(comment => 
               comment.user.type === 'Bot' && 
-              comment.body.includes('🚀 Preview Deployment Ready')
+              comment.body.includes('## ✅ Preview')
             );
             
             const commitShort = '${{ github.event.pull_request.head.sha || github.sha }}'.substring(0, 7);
             const deployLogUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
             
-            const body = `## ✅ Deploy Preview for **${sourceBranch}** ready!
+            const body = `## ✅ Preview
             
             | Name | Link |
             |------|------|
