@@ -46,6 +46,10 @@ jobs:
     # Allow skipping CI with commit message
     if: ${{ !contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, '[ci skip]') }}
     steps:
+      ############################################################
+      # Startup steps
+      ############################################################
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -70,6 +74,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      ############################################################
+      # Test steps
+      ############################################################
+
       - name: Run lint checks
         run: npm run lint
 
@@ -92,6 +100,10 @@ jobs:
             test-results.xml
           retention-days: 14
           if-no-files-found: warn
+
+      ############################################################
+      # Build steps
+      ############################################################
 
       - name: Build for TEST
         env:
