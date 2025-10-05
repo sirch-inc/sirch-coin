@@ -32,7 +32,7 @@ on:
       - '**/*.md'
 
 env:
-  SOURCE_BRANCH: ${{ github.head_ref || github.ref_name }}  # Fixed: Use source branch for PRs
+  SOURCE_BRANCH: ${{ github.head_ref || github.ref_name }}
 
 permissions:
   pull-requests: write
@@ -100,7 +100,7 @@ jobs:
           # VITE_BUILD_VERSION_VERBOSE: ...obtained by build-variables.sh script that is run during the build
         run: npm run build-test
 
-      - name: Create preview deployment
+      - name: Create preview
         id: create_preview
         # Only create previews for PRs (not direct pushes to main)
         if: github.event_name == 'pull_request'
@@ -176,11 +176,11 @@ jobs:
             
             | Name | Link |
             |------|------|
-            | 🔗 Latest commit | [\`${commitShort}\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.event.pull_request.head.sha || github.sha }}) |
-            | 📋 Latest deploy log | [View build details](${deployLogUrl}) |
             | 😎 Preview | [Visit Preview](${previewUrl}) |
             | 📱 Preview on mobile | <details><summary>▶️ Toggle QR Code...</summary><br/>**Scan with your phone:**<br/><br/>![QR Code](${qrCodeUrl})<br/><br/>Or copy: \`${previewUrl}\`</details> |
-            | 🕒 Updated | ${new Date().toLocaleString('en-US', { timeZone: 'UTC' })} UTC |
+            | 🔗 Latest commit | [\`${commitShort}\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.event.pull_request.head.sha || github.sha }}) |
+            | 📋 Latest deploy log | [View build details](${deployLogUrl}) |
+            | 🕒 Last updated | ${new Date().toLocaleString('en-US', { timeZone: 'UTC' })} UTC |
             | ⚙️ Edit notifications | [CI/CD workflow configuration](${{ github.server_url }}/${{ github.repository }}/blob/${{ github.event.pull_request.head.sha || github.sha }}/.github/workflows/ci.yml) |
             
             Built with ❤️ by [GitHub Actions](${{ github.server_url }}/${{ github.repository }}/blob/${{ github.event.pull_request.head.sha || github.sha }}/.github/workflows/ci.yml)
