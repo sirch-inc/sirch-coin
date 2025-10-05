@@ -8,8 +8,8 @@ Ask a developer for invites to access any of these services, if you are working 
 * Auth:  SupaBase built-in authentication/authorization.
 * Backend:  SupaBase is our backend-as-a-service which runs a Postgres DB and has a number of edge functions to handle front-end and webhook API requests.  Our backend repo is located here:  https://github.com/sirch-inc/sirch-coin-supabase
 * Email:  SendGrid manages our email (some of which is emitted from SupaBase).  Basic plan currently owned by Jeff.
-* Payments:  Stripe.  Josh can provide access.
-* Webhost:  Netlify.  Basic plan currently owned by Jeff.
+* Payments:  Stripe. Josh can provide access.
+* Webhost:  Netlify. Basic plan currently owned by Jeff.
 * Domain/DNS:  Godaddy (for now).  Josh can provide access if necessary.
 
 ### Hosted Environments
