@@ -180,8 +180,10 @@ jobs:
             | 📋 Latest deploy log | [View build details](${deployLogUrl}) |
             | 😎 Preview | [Visit Preview](${previewUrl}) |
             | 📱 Preview on mobile | <details><summary>▶️ Toggle QR Code...</summary><br/>**Scan with your phone:**<br/><br/>![QR Code](${qrCodeUrl})<br/><br/>Or copy: \`${previewUrl}\`</details> |
-            | 🕒 Updated | ${new Date().toLocaleString('en-US', { timeZone: 'UTC' })} UTC • Built with ❤️ by [GitHub Actions](${{ github.server_url }}/${{ github.repository }}/blob/${{ github.ref_name }}/.github/workflows/ci.yml) |
-            | ⚙️ Edit notifications | [CI/CD workflow configuration](${{ github.server_url }}/${{ github.repository }}/blob/${{ github.ref_name }}/.github/workflows/ci.yml) |`;
+            | 🕒 Updated | ${new Date().toLocaleString('en-US', { timeZone: 'UTC' })} UTC |
+            | ⚙️ Edit notifications | [CI/CD workflow configuration](${{ github.server_url }}/${{ github.repository }}/blob/${{ github.ref_name }}/.github/workflows/ci.yml) |
+            
+            Built with ❤️ by [GitHub Actions](${{ github.server_url }}/${{ github.repository }}/blob/${{ github.ref_name }}/.github/workflows/ci.yml)`;
             
             if (botComment) {
               // Update existing comment
