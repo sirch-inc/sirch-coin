@@ -90,7 +90,7 @@ jobs:
       - name: Run unit tests with coverage
         run: npm run test:coverage
 
-      - name: Upload test results
+      - name: Upload test result artifacts
         uses: actions/upload-artifact@v4
         if: always()  # Upload even if tests fail
         with:
@@ -102,7 +102,7 @@ jobs:
           if-no-files-found: warn
 
       ############################################################
-      # Build steps
+      # Preview build steps
       ############################################################
 
       - name: Build for TEST
@@ -120,7 +120,6 @@ jobs:
         # Only create previews for PRs (not direct pushes to main)
         if: github.event_name == 'pull_request'
         run: |
-          # Use correct commit SHA for PRs
           COMMIT_SHA="${{ github.event.pull_request.head.sha || github.sha }}"
           SHORT_SHA=$(echo "$COMMIT_SHA" | cut -c1-7)
           PREVIEW_ALIAS="preview-${SHORT_SHA}"
@@ -151,13 +150,18 @@ jobs:
           echo "NETLIFY_PREVIEW_URL=$NETLIFY_PREVIEW_URL" >> "$GITHUB_OUTPUT"
           echo "Preview deployed to: $NETLIFY_PREVIEW_URL"
 
-      - name: Upload preview deployment logs
+      - name: Upload preview deployment artifacts
         uses: actions/upload-artifact@v4
-        if: github.event_name == 'pull_request' && always()
+        if: github.event_name == 'pull_request'
         with:
           name: preview-deployment-logs-${{ github.sha }}
           path: deploy_output_branch.json
           retention-days: 14
+
+
+      ############################################################
+      # Comment/Annotation steps (for PRs only)
+      ############################################################
 
       - name: Update or create preview comment
         uses: actions/github-script@v7
@@ -283,7 +287,7 @@ jobs:
 
       - name: Upload build logs and metadata
         uses: actions/upload-artifact@v4
-        if: always()
+        if: failure()
         with:
           name: ci-logs-${{ github.sha }}
           path: |
