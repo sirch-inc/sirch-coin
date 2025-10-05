@@ -73,11 +73,14 @@ jobs:
       - name: Run lint checks
         run: npm run lint
 
+      - name: Check TypeScript compilation
+        run: npm run tsc
+
       - name: Run NPM security audit
         run: npm audit --audit-level=moderate
 
-      - name: Run unit tests
-        run: npm test
+      - name: Run unit tests with coverage
+        run: npm run test:coverage
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
