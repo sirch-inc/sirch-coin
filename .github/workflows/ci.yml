@@ -83,123 +83,112 @@ jobs:
         run: npm run lint
         continue-on-error: true
 
-      - name: Create lint check status
-        uses: actions/github-script@v7
-        if: github.event_name == 'pull_request'
-        with:
-          script: |
-            const conclusion = '${{ steps.lint.outcome }}' === 'success' ? 'success' : 'failure';
-            const summary = conclusion === 'success' ? 'All lint checks passed' : 'Lint checks failed';
-            
-            await github.rest.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'Lint Checks',
-              head_sha: '${{ github.event.pull_request.head.sha || github.sha }}',
-              status: 'completed',
-              conclusion: conclusion,
-              output: {
-                title: 'ESLint & Prettier',
-                summary: summary,
-                text: conclusion === 'failure' ? 'Run `npm run lint` locally to see detailed errors' : 'All code style and linting rules passed'
-              }
-            });
-
       - name: Check TypeScript compilation
         id: typescript
         run: npm run tsc
         continue-on-error: true
-
-      - name: Create TypeScript check status
-        uses: actions/github-script@v7
-        if: github.event_name == 'pull_request'
-        with:
-          script: |
-            const conclusion = '${{ steps.typescript.outcome }}' === 'success' ? 'success' : 'failure';
-            const summary = conclusion === 'success' ? 'TypeScript compilation successful' : 'TypeScript compilation failed';
-            
-            await github.rest.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'TypeScript Compilation',
-              head_sha: '${{ github.event.pull_request.head.sha || github.sha }}',
-              status: 'completed',
-              conclusion: conclusion,
-              output: {
-                title: 'TypeScript Compiler',
-                summary: summary,
-                text: conclusion === 'failure' ? 'Run `npm run tsc` locally to see type errors' : 'All TypeScript types are valid'
-              }
-            });
 
       - name: Run NPM security audit
         id: security
         run: npm audit --audit-level=moderate
         continue-on-error: true
 
-      - name: Create security audit check status
-        uses: actions/github-script@v7
-        if: github.event_name == 'pull_request'
-        with:
-          script: |
-            const conclusion = '${{ steps.security.outcome }}' === 'success' ? 'success' : 'failure';
-            const summary = conclusion === 'success' ? 'No security vulnerabilities found' : 'Security vulnerabilities detected';
-            
-            await github.rest.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'Security Audit',
-              head_sha: '${{ github.event.pull_request.head.sha || github.sha }}',
-              status: 'completed',
-              conclusion: conclusion,
-              output: {
-                title: 'NPM Security Audit',
-                summary: summary,
-                text: conclusion === 'failure' ? 'Run `npm audit` locally to see security issues and `npm audit fix` to resolve them' : 'All dependencies are secure'
-              }
-            });
-
       - name: Run unit tests with coverage
         id: tests
         run: npm run test:coverage
         continue-on-error: true
 
-      - name: Create unit tests check status
+      - name: Create all test check statuses
         uses: actions/github-script@v7
         if: github.event_name == 'pull_request'
         with:
           script: |
-            const conclusion = '${{ steps.tests.outcome }}' === 'success' ? 'success' : 'failure';
-            let summary = conclusion === 'success' ? 'All tests passed' : 'Some tests failed';
-            let text = '';
-            
-            // Try to read coverage data if available
             const fs = require('fs');
-            try {
-              if (fs.existsSync('coverage/coverage-summary.json')) {
-                const coverage = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
-                const lineCoverage = coverage.total.lines.pct;
-                text = conclusion === 'success' 
-                  ? `All tests passed with ${lineCoverage}% line coverage`
-                  : `Tests failed. Run \`npm test\` locally to see details`;
-              }
-            } catch (e) {
-              text = conclusion === 'success' ? 'All tests passed' : 'Tests failed. Run `npm test` locally to see details';
-            }
             
-            await github.rest.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'Unit Tests',
-              head_sha: '${{ github.event.pull_request.head.sha || github.sha }}',
-              status: 'completed',
-              conclusion: conclusion,
-              output: {
+            // Define all checks with their configurations
+            const checks = [
+              {
+                step: 'lint',
+                name: 'Lint Checks',
+                title: 'ESLint & Prettier',
+                successText: 'All code style and linting rules passed',
+                failureText: 'Run `npm run lint` locally to see detailed errors'
+              },
+              {
+                step: 'typescript',
+                name: 'TypeScript Compilation',
+                title: 'TypeScript Compiler',
+                successText: 'All TypeScript types are valid',
+                failureText: 'Run `npm run tsc` locally to see type errors'
+              },
+              {
+                step: 'security',
+                name: 'Security Audit',
+                title: 'NPM Security Audit',
+                successText: 'All dependencies are secure',
+                failureText: 'Run `npm audit` locally to see security issues and `npm audit fix` to resolve them'
+              },
+              {
+                step: 'tests',
+                name: 'Unit Tests',
                 title: 'Jest Unit Tests',
-                summary: summary,
-                text: text
+                successText: 'All tests passed',
+                failureText: 'Tests failed. Run `npm test` locally to see details',
+                includeCoverage: true
               }
-            });
+            ];
+
+            // Get step outcomes from environment
+            const outcomes = {
+              lint: '${{ steps.lint.outcome }}',
+              typescript: '${{ steps.typescript.outcome }}',
+              security: '${{ steps.security.outcome }}',
+              tests: '${{ steps.tests.outcome }}'
+            };
+
+            // Create checks for each test step
+            for (const check of checks) {
+              const outcome = outcomes[check.step];
+              const conclusion = outcome === 'success' ? 'success' : 'failure';
+              let summary = conclusion === 'success' ? 
+                (check.step === 'lint' ? 'All lint checks passed' :
+                 check.step === 'typescript' ? 'TypeScript compilation successful' :
+                 check.step === 'security' ? 'No security vulnerabilities found' :
+                 'All tests passed') :
+                (check.step === 'lint' ? 'Lint checks failed' :
+                 check.step === 'typescript' ? 'TypeScript compilation failed' :
+                 check.step === 'security' ? 'Security vulnerabilities detected' :
+                 'Some tests failed');
+              
+              let text = conclusion === 'success' ? check.successText : check.failureText;
+              
+              // Add coverage info for tests if available
+              if (check.includeCoverage && conclusion === 'success') {
+                try {
+                  if (fs.existsSync('coverage/coverage-summary.json')) {
+                    const coverage = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
+                    const lineCoverage = coverage.total.lines.pct;
+                    text = `All tests passed with ${lineCoverage}% line coverage`;
+                  }
+                } catch (e) {
+                  // Fall back to default text if coverage reading fails
+                }
+              }
+              
+              await github.rest.checks.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: check.name,
+                head_sha: '${{ github.event.pull_request.head.sha || github.sha }}',
+                status: 'completed',
+                conclusion: conclusion,
+                output: {
+                  title: check.title,
+                  summary: summary,
+                  text: text
+                }
+              });
+            }
 
       - name: Check all test results
         if: |
