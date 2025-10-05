@@ -183,7 +183,11 @@ jobs:
             | 🕒 Updated | ${new Date().toLocaleString('en-US', { timeZone: 'UTC' })} UTC |
             | ⚙️ Edit notifications | [CI/CD workflow configuration](${{ github.server_url }}/${{ github.repository }}/blob/${{ github.event.pull_request.head.sha || github.sha }}/.github/workflows/ci.yml) |
             
-            Built with ❤️ by [GitHub Actions](${{ github.server_url }}/${{ github.repository }}/blob/${{ github.event.pull_request.head.sha || github.sha }}/.github/workflows/ci.yml)`;
+            Built with ❤️ by [GitHub Actions](${{ github.server_url }}/${{ github.repository }}/blob/${{ github.event.pull_request.head.sha || github.sha }}/.github/workflows/ci.yml)
+            
+            ---
+            
+            💡 *This comment will be automatically updated when you push new commits to this PR.*`;
             
             if (botComment) {
               // Update existing comment
