@@ -172,7 +172,7 @@ jobs:
             const commitShort = '${{ github.event.pull_request.head.sha || github.sha }}'.substring(0, 7);
             const deployLogUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
             
-            const body = `## ✅ Preview
+            const body = `## ✅ Preview (\`${sourceBranch}\`)
             
             | Name | Link |
             |------|------|
@@ -187,7 +187,7 @@ jobs:
             
             ---
             
-            💡 *This comment will be automatically updated when you push new commits to this PR.*`;
+            💡 *This comment will be automatically updated when you push new commits to the \`${sourceBranch}\` branch.*`;
             
             if (botComment) {
               // Update existing comment
