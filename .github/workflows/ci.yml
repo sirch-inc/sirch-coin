@@ -160,7 +160,7 @@ jobs:
 
 
       ############################################################
-      # Comment/Annotation steps (for PRs only)
+      # Add comment/annotation steps (for PRs only)
       ############################################################
 
       - name: Update or create preview comment
@@ -206,7 +206,7 @@ jobs:
             
             ---
             
-            💡 *This comment will be automatically updated when you push new commits to the \`${sourceBranch}\` branch.*`;
+            💡 *This comment will be automatically updated when you push new commits to the source branch.*`;
             
             if (botComment) {
               // Update existing comment
@@ -216,7 +216,6 @@ jobs:
                 repo: context.repo.repo,
                 body: body
               });
-              console.log('Updated existing preview comment with QR code');
             } else {
               // Create new comment
               await github.rest.issues.createComment({
@@ -225,7 +224,6 @@ jobs:
                 repo: context.repo.repo,
                 body: body
               });
-              console.log('Created new preview comment with QR code');
             }
 
       - name: Create deployment status check
