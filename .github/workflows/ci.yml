@@ -90,8 +90,8 @@ jobs:
           path: |
             coverage/
             test-results.xml
-            junit.xml
           retention-days: 14
+          if-no-files-found: warn
 
       - name: Build for TEST
         env:

@@ -4,8 +4,22 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   test: {
-    environment: 'jsdom',
     globals: true,
-    setupFiles: ['./src/test/setup.js'],
+    environment: 'jsdom',
+    setupFiles: './src/test/setup.js',
+    coverage: {
+      reporter: ['text', 'json', 'html', 'lcov'],
+      exclude: [
+        'node_modules/',
+        'src/test/',
+        '**/*.d.ts',
+        '**/*.config.*',
+      ],
+    },
+    // Add JUnit reporter for CI
+    reporter: ['default', 'junit'],
+    outputFile: {
+      junit: './test-results.xml'
+    }
   },
-}); 
+})
