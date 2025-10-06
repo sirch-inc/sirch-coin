@@ -1,7 +1,6 @@
 import './master.css';
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
-import { useState } from 'react'; // TODO: Remove this unused import to test CI
 
 // yields one of several pages based on environment variables
 
@@ -25,6 +24,8 @@ const root = ReactDOM.createRoot(rootElement);
 /* eslint-disable react/jsx-no-comment-textnodes */
 root.render(
   <StrictMode>
+    {/* TODO: Remove this test link after CI testing - violates jsx-no-target-blank */}
+    <a href="https://example.com" target="_blank">Test</a>
 // #v-ifdef VITE_IS_COMING_SOON.toLowerCase()
     <ComingSoonApp/>
 // #v-elif VITE_IS_OFFLINE.toLowerCase()
