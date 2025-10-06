@@ -169,7 +169,7 @@ jobs:
               {
                 step: 'tests',
                 name: 'Unit Tests',
-                title: 'Jest Unit Tests',
+                title: 'Vitest Unit Tests',
                 successText: 'All tests passed',
                 failureText: 'Tests failed. Run `npm test` locally to see details',
                 includeCoverage: true
@@ -303,7 +303,7 @@ jobs:
         uses: dorny/test-reporter@v1
         if: always() && steps.tests.outcome != 'skipped'
         with:
-          name: Jest Test Results
+          name: Vitest Test Results
           path: 'test-results.xml'
           reporter: jest-junit
           fail-on-error: false
