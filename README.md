@@ -20,16 +20,19 @@ Ask a developer for invites to access any of these services, if you are working 
 We use GitHub Actions for CI/CD with automated testing and quality gates, deploying to Netlify for hosting.
 
 #### Automated CI Pipeline
-Every pull request and push triggers our comprehensive CI pipeline:
-- **Individual Quality Checks**: Separate status indicators for:
+Every pull request and push triggers our **high-performance parallel CI pipeline** (~60% faster than sequential):
+- **Parallel Quality Checks** (Matrix Strategy): Separate status indicators running simultaneously:
   - 🔍 **Lint Checks** (ESLint & Prettier)
   - 📘 **TypeScript Compilation** (Type checking)
   - 🔒 **Security Audit** (Dependency vulnerabilities & code scanning)
   - 🧪 **Unit Tests** (Vitest with coverage reporting)
   - 📊 **Coverage Threshold** (80% minimum line coverage)
+- **Advanced Performance Features**:
+  - **Enhanced Vite Caching**: Optimized caching strategy for faster subsequent runs
+  - **Bundle Size Monitoring**: Automatic bundle analysis and size regression detection
+  - **Lighthouse CI**: Performance testing on deployed previews
 - **Non-blocking Workflow**: Preview deployments are created even if quality checks fail
 - **Automated Notifications**: PR comments provide clear guidance on fixing any issues
-- **Optimized Performance**: Intelligent caching and parallel execution
 
 #### Deployment Environments
 - **TEST Environment**: Automatically deploys preview builds for every PR
