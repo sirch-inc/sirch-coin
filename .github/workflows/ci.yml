@@ -269,19 +269,26 @@ jobs:
             if ('${{ steps.coverage-check.outcome }}' === 'failure') failures.push('📊 Coverage threshold');
             
             if (failures.length > 0) {
-              const failureList = failures.map(f => '- ' + f).join('\\n');
+              const failureList = failures.map(f => '- ' + f).join('\n');
               const workflowUrl = context.payload.repository.html_url + '/actions/runs/' + context.runId;
               
-              const body = '## ❌ CI Quality Checks Failed\\n\\n' +
-                'The following checks failed:\\n' + failureList + '\\n\\n' +
-                '### 🛠️ How to Fix:\\n' +
-                '- **Lint issues**: Run `npm run lint` locally\\n' +
-                '- **TypeScript errors**: Run `npm run tsc` locally\\n' +
-                '- **Security vulnerabilities**: Run `npm audit` locally\\n' +
-                '- **Test failures**: Run `npm test` locally\\n' +
-                '- **Coverage issues**: Add more tests to reach 80% coverage\\n\\n' +
-                '📋 Check the [workflow logs](' + workflowUrl + ') for detailed error information.\\n\\n' +
-                '*Note: The preview build will still be created so you can test your changes.*';
+              const body = [
+                '## ❌ CI Quality Checks Failed',
+                '',
+                'The following checks failed:',
+                failureList,
+                '',
+                '### 🛠️ How to Fix:',
+                '- **Lint issues**: Run `npm run lint` locally',
+                '- **TypeScript errors**: Run `npm run tsc` locally',
+                '- **Security vulnerabilities**: Run `npm audit` locally',
+                '- **Test failures**: Run `npm test` locally',
+                '- **Coverage issues**: Add more tests to reach 80% coverage',
+                '',
+                '📋 Check the [workflow logs](' + workflowUrl + ') for detailed error information.',
+                '',
+                '*Note: The preview build will still be created so you can test your changes.*'
+              ].join('\n');
 
               await github.rest.issues.createComment({
                 issue_number: context.issue.number,
