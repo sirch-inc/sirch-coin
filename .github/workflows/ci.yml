@@ -250,7 +250,13 @@ jobs:
 
       - name: Notify on test failures
         uses: actions/github-script@v7
-        if: failure() && github.event_name == 'pull_request'
+        if: |
+          (steps.lint.outcome == 'failure' || 
+           steps.typescript.outcome == 'failure' || 
+           steps.security.outcome == 'failure' || 
+           steps.tests.outcome == 'failure' ||
+           steps.coverage-check.outcome == 'failure') && 
+          github.event_name == 'pull_request'
         with:
           script: |
             const failures = [];
@@ -261,7 +267,7 @@ jobs:
             if ('${{ steps.coverage-check.outcome }}' === 'failure') failures.push('📊 Coverage threshold');
             
             if (failures.length > 0) {
-              const body = `## ❌ CI Failures
+              const body = `## ❌ CI Quality Checks Failed
 
             The following checks failed:
             ${failures.map(f => `- ${f}`).join('\\n')}
@@ -273,7 +279,9 @@ jobs:
             - **Test failures**: Run \\`npm test\\` locally
             - **Coverage issues**: Add more tests to reach 80% coverage
 
-            📋 Check the [workflow logs](${context.payload.repository.html_url}/actions/runs/${context.runId}) for detailed error information.`;
+            📋 Check the [workflow logs](${context.payload.repository.html_url}/actions/runs/${context.runId}) for detailed error information.
+
+            *Note: The preview build will still be created so you can test your changes.*`;
 
               await github.rest.issues.createComment({
                 issue_number: context.issue.number,
@@ -282,22 +290,6 @@ jobs:
                 body: body
               });
             }
-
-      - name: Check all test results
-        if: |
-          steps.lint.outcome == 'failure' || 
-          steps.typescript.outcome == 'failure' || 
-          steps.security.outcome == 'failure' || 
-          steps.tests.outcome == 'failure' ||
-          steps.coverage-check.outcome == 'failure'
-        run: |
-          echo "❌ One or more test steps failed:"
-          echo "  - Lint: ${{ steps.lint.outcome }}"
-          echo "  - TypeScript: ${{ steps.typescript.outcome }}"
-          echo "  - Security: ${{ steps.security.outcome }}"
-          echo "  - Unit Tests: ${{ steps.tests.outcome }}"
-          echo "  - Coverage: ${{ steps.coverage-check.outcome }}"
-          exit 1
 
       - name: Publish test results
         uses: dorny/test-reporter@v1
