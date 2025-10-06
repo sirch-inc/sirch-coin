@@ -14,6 +14,11 @@ import App from './pages/Main/App/App';
 
 document.title = import.meta.env.VITE_PAGE_TITLE;
 
+// TODO: Remove these intentional TypeScript errors after CI testing
+const testNumber: string = 123; // Type error: number assigned to string
+const testObj = { name: 'test' };
+console.log(testObj.nonExistentProperty); // Type error: property doesn't exist
+
 const rootElement = document.getElementById('root');
 if (!rootElement) throw new Error('Failed to find the root element');
 
