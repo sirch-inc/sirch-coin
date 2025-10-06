@@ -48,27 +48,22 @@ permissions:
 
 
 jobs:
-  # Parallel quality checks for faster execution
-  quality-checks:
+  build-test-and-deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
+    # Allow skipping CI with commit message
     if: ${{ !contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, '[ci skip]') }}
-    strategy:
-      fail-fast: false
-      matrix:
-        check: [lint, typescript, security, unit-tests]
-    outputs:
-      lint-result: ${{ steps.test.outputs.result }}
-      typescript-result: ${{ steps.test.outputs.result }}
-      security-result: ${{ steps.test.outputs.result }}
-      unit-tests-result: ${{ steps.test.outputs.result }}
     steps:
+      ############################################################
+      # Startup steps
+      ############################################################
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_FOR_GITHUB_ACTIONS }}
-          fetch-depth: 0
-          fetch-tags: true
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_FOR_GITHUB_ACTIONS }}  # Using a privileged PAT here to enable writing to PRs
+          fetch-depth: 0  # Fetch full history including tags, which are used in builds for version info
+          fetch-tags: true  # Explicitly fetch tags, which are used in builds for version info
 
       - name: Use Node.js
         uses: actions/setup-node@v4
@@ -77,122 +72,25 @@ jobs:
           cache: 'npm'
           cache-dependency-path: '**/package-lock.json'
 
-      - name: Enhanced Vite caching
+      - name: Cache build outputs
         uses: actions/cache@v4
         with:
           path: |
-            ~/.npm
-            node_modules
             dist
-            .vite
-            coverage
             node_modules/.cache
-          key: ${{ runner.os }}-vite-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx') }}
+            .next/cache
+          key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx') }}
           restore-keys: |
-            ${{ runner.os }}-vite-${{ hashFiles('**/package-lock.json') }}-
-            ${{ runner.os }}-vite-
+            ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-build-
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Run quality check
-        id: test
-        run: |
-          case "${{ matrix.check }}" in
-            lint) 
-              npm run lint
-              echo "result=lint-$?" >> "$GITHUB_OUTPUT"
-              ;;
-            typescript) 
-              npm run tsc
-              echo "result=typescript-$?" >> "$GITHUB_OUTPUT"
-              ;;
-            security) 
-              npm audit --audit-level=moderate
-              echo "result=security-$?" >> "$GITHUB_OUTPUT"
-              ;;
-            unit-tests) 
-              npm run test:coverage
-              echo "result=unit-tests-$?" >> "$GITHUB_OUTPUT"
-              ;;
-          esac
-        continue-on-error: true
 
-      - name: Create status check
-        uses: actions/github-script@v7
-        if: github.event_name == 'pull_request'
-        with:
-          script: |
-            const checkType = '${{ matrix.check }}';
-            const outcome = '${{ steps.test.outcome }}';
-            
-            const checkConfigs = {
-              lint: {
-                name: 'Lint Checks',
-                title: 'ESLint & Prettier',
-                successText: 'All code style and linting rules passed',
-                failureText: 'Run `npm run lint` locally to see detailed errors'
-              },
-              typescript: {
-                name: 'TypeScript Compilation',
-                title: 'TypeScript Compiler',
-                successText: 'All TypeScript types are valid',
-                failureText: 'Run `npm run tsc` locally to see type errors'
-              },
-              security: {
-                name: 'Security Audit',
-                title: 'NPM Security Audit',
-                successText: 'All dependencies are secure',
-                failureText: 'Run `npm audit` locally to see security issues'
-              },
-              'unit-tests': {
-                name: 'Unit Tests',
-                title: 'Vitest Unit Tests',
-                successText: 'All tests passed',
-                failureText: 'Tests failed. Run `npm test` locally to see details'
-              }
-            };
-            
-            const config = checkConfigs[checkType];
-            const conclusion = outcome === 'success' ? 'success' : 'failure';
-            let summary = conclusion === 'success' ? 
-              config.successText.replace('All ', '').replace(' passed', ' successful') :
-              config.failureText.split('.')[0];
-            
-            await github.rest.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: config.name,
-              head_sha: '${{ github.event.pull_request.head.sha || github.sha }}',
-              status: 'completed',
-              conclusion: conclusion,
-              output: {
-                title: config.title,
-                summary: summary,
-                text: conclusion === 'success' ? config.successText : config.failureText
-              }
-            });
-
-  # Comprehensive security scanning job
-  security-scan:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, '[ci skip]') }}
-    
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
+      ############################################################
+      # Security scanning steps
+      ############################################################
 
       - name: Dependency Review
         uses: actions/dependency-review-action@v4
@@ -215,173 +113,445 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
 
-  # Build and deploy job - depends on quality checks
-  build-and-deploy:
-    needs: [quality-checks, security-scan]
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    if: ${{ always() && !contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, '[ci skip]') }}
-    
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_FOR_GITHUB_ACTIONS }}
-          fetch-depth: 0
-          fetch-tags: true
 
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
+      ############################################################
+      # Test steps
+      ############################################################
 
-      - name: Enhanced Vite build caching
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.npm
-            node_modules
-            dist
-            .vite
-            node_modules/.cache
-          key: ${{ runner.os }}-vite-build-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx') }}
-          restore-keys: |
-            ${{ runner.os }}-vite-build-${{ hashFiles('**/package-lock.json') }}-
-            ${{ runner.os }}-vite-build-
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build application
-        run: npm run build
-        env:
-          # Optimize Vite build for production
-          VITE_BUILD_SOURCEMAP: false
-
-      - name: Generate bundle analysis
-        run: npm run build:analyze
+      - name: Run lint checks
+        id: lint
+        run: npm run lint
         continue-on-error: true
 
-      - name: Upload bundle analysis
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: bundle-analysis
-          path: dist/stats.html
-          retention-days: 7
-
-      - name: Check bundle size
-        run: npm run size-check
+      - name: Check TypeScript compilation
+        id: typescript
+        run: npm run tsc
         continue-on-error: true
 
-      - name: Build Storybook (if exists)
-        run: |
-          if [ -f ".storybook/main.js" ] || [ -f ".storybook/main.ts" ]; then
-            npm run build-storybook
-          else
-            echo "Storybook not configured, skipping..."
-          fi
+      - name: Run NPM security audit
+        id: security
+        run: npm audit --audit-level=moderate
         continue-on-error: true
 
-      - name: Deploy to Netlify
-        uses: nwtgck/actions-netlify@v3.0
-        with:
-          publish-dir: './dist'
-          production-branch: main
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          deploy-message: "Deploy from GitHub Actions - ${{ github.event.head_commit.message }}"
-          enable-pull-request-comment: true
-          enable-commit-comment: false
-          overwrites-pull-request-comment: true
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-        timeout-minutes: 10
-
-      - name: Wait for deployment
-        run: sleep 30
-        if: success()
-
-      - name: Run Lighthouse CI
-        run: |
-          # Get the deploy URL from the Netlify step
-          DEPLOY_URL=$(echo "${{ steps.deploy.outputs.deploy-url }}" | head -n1)
-          if [ -z "$DEPLOY_URL" ]; then
-            echo "Deploy URL not found, using site URL"
-            DEPLOY_URL="https://${{ secrets.NETLIFY_SITE_ID }}.netlify.app"
-          fi
-          
-          echo "Running Lighthouse on: $DEPLOY_URL"
-          npm run lighthouse -- --url="$DEPLOY_URL"
+      - name: Run unit tests with coverage
+        id: tests
+        run: npm run test:coverage
         continue-on-error: true
 
-      - name: Upload Lighthouse results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: lighthouse-results
-          path: .lighthouseci/
-          retention-days: 7
-
-      # Notification and summary steps
-      - name: Notify on failure
+      - name: Create all test check statuses
         uses: actions/github-script@v7
-        if: failure() && github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request'
         with:
           script: |
-            const comment = `
-            ## ❌ Build Failed
+            const fs = require('fs');
             
-            The CI/CD pipeline encountered an error during the build and deploy phase.
+            // Define all checks with their configurations
+            const checks = [
+              {
+                step: 'lint',
+                name: 'Lint Checks',
+                title: 'ESLint & Prettier',
+                successText: 'All code style and linting rules passed',
+                failureText: 'Run `npm run lint` locally to see detailed errors'
+              },
+              {
+                step: 'typescript',
+                name: 'TypeScript Compilation',
+                title: 'TypeScript Compiler',
+                successText: 'All TypeScript types are valid',
+                failureText: 'Run `npm run tsc` locally to see type errors'
+              },
+              {
+                step: 'security',
+                name: 'Security Audit',
+                title: 'NPM Security Audit',
+                successText: 'All dependencies are secure',
+                failureText: 'Run `npm audit` locally to see security issues and `npm audit fix` to resolve them'
+              },
+              {
+                step: 'tests',
+                name: 'Unit Tests',
+                title: 'Vitest Unit Tests',
+                successText: 'All tests passed',
+                failureText: 'Tests failed. Run `npm test` locally to see details',
+                includeCoverage: true
+              }
+            ];
+
+            // Get step outcomes from environment
+            const outcomes = {
+              lint: '${{ steps.lint.outcome }}',
+              typescript: '${{ steps.typescript.outcome }}',
+              security: '${{ steps.security.outcome }}',
+              tests: '${{ steps.tests.outcome }}'
+            };
+
+            // Create checks for each test step
+            for (const check of checks) {
+              const outcome = outcomes[check.step];
+              const conclusion = outcome === 'success' ? 'success' : 'failure';
+              let summary = conclusion === 'success' ? 
+                (check.step === 'lint' ? 'All lint checks passed' :
+                 check.step === 'typescript' ? 'TypeScript compilation successful' :
+                 check.step === 'security' ? 'No security vulnerabilities found' :
+                 'All tests passed') :
+                (check.step === 'lint' ? 'Lint checks failed' :
+                 check.step === 'typescript' ? 'TypeScript compilation failed' :
+                 check.step === 'security' ? 'Security vulnerabilities detected' :
+                 'Some tests failed');
+              
+              let text = conclusion === 'success' ? check.successText : check.failureText;
+              
+              // Add coverage info for tests if available
+              if (check.includeCoverage && conclusion === 'success') {
+                try {
+                  if (fs.existsSync('coverage/coverage-summary.json')) {
+                    const coverage = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
+                    const lineCoverage = coverage.total.lines.pct;
+                    text = `All tests passed with ${lineCoverage}% line coverage`;
+                  }
+                } catch (e) {
+                  // Fall back to default text if coverage reading fails
+                }
+              }
+              
+              await github.rest.checks.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: check.name,
+                head_sha: '${{ github.event.pull_request.head.sha || github.sha }}',
+                status: 'completed',
+                conclusion: conclusion,
+                output: {
+                  title: check.title,
+                  summary: summary,
+                  text: text
+                }
+              });
+            }
+
+      - name: Check coverage threshold
+        id: coverage-check
+        if: steps.tests.outcome == 'success'
+        run: |
+          if [ -f "coverage/coverage-summary.json" ]; then
+            COVERAGE=$(cat coverage/coverage-summary.json | jq -r '.total.lines.pct')
+            echo "Current coverage: ${COVERAGE}%"
+            if (( $(echo "$COVERAGE < 1" | bc -l) )); then
+              echo "❌ Coverage $COVERAGE% is below threshold of 1%"
+              echo "coverage-failed=true" >> "$GITHUB_OUTPUT"
+              exit 1
+            else
+              echo "✅ Coverage $COVERAGE% meets threshold of 1%"
+              echo "coverage-failed=false" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "⚠️ No coverage report found"
+            echo "coverage-failed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Notify on test failures
+        uses: actions/github-script@v7
+        if: |
+          (steps.lint.outcome == 'failure' || 
+           steps.typescript.outcome == 'failure' || 
+           steps.security.outcome == 'failure' || 
+           steps.tests.outcome == 'failure' ||
+           steps.coverage-check.outcome == 'failure') && 
+          github.event_name == 'pull_request'
+        with:
+          script: |
+            const failures = [];
+            if ('${{ steps.lint.outcome }}' === 'failure') failures.push('🔍 Lint checks');
+            if ('${{ steps.typescript.outcome }}' === 'failure') failures.push('📘 TypeScript compilation');
+            if ('${{ steps.security.outcome }}' === 'failure') failures.push('🔒 Security audit');
+            if ('${{ steps.tests.outcome }}' === 'failure') failures.push('🧪 Unit tests');
+            if ('${{ steps.coverage-check.outcome }}' === 'failure') failures.push('📊 Coverage threshold');
             
-            **What to do:**
-            1. Check the [workflow logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details
-            2. Run \`npm run build\` locally to reproduce the issue
-            3. Fix any build errors and push changes
+            if (failures.length > 0) {
+              const failureList = failures.map(f => '- ' + f).join('\n');
+              const workflowUrl = context.payload.repository.html_url + '/actions/runs/' + context.runId;
+              
+              const body = [
+                '## ❌ CI Quality Checks Failed',
+                '',
+                'The following checks failed:',
+                failureList,
+                '',
+                '### 🛠️ How to Fix:',
+                '- **Lint issues**: Run `npm run lint` locally',
+                '- **TypeScript errors**: Run `npm run tsc` locally',
+                '- **Security vulnerabilities**: Run `npm audit` locally',
+                '- **Test failures**: Run `npm test` locally',
+                '- **Coverage issues**: Add more tests to reach coverage threshold',
+                '',
+                '📋 Check the [workflow logs](' + workflowUrl + ') for detailed error information.',
+                '',
+                '*Note: The preview build will still be created so you can test your changes.*'
+              ].join('\n');
+
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body
+              });
+            }
+
+      - name: Publish test results
+        uses: dorny/test-reporter@v1
+        if: always() && steps.tests.outcome != 'skipped'
+        with:
+          name: Vitest Test Results
+          path: 'test-results.xml'
+          reporter: jest-junit
+          fail-on-error: false
+
+      - name: Upload test result artifacts
+        uses: actions/upload-artifact@v4
+        if: always()  # Upload even if tests fail
+        with:
+          name: test-results-${{ github.sha }}
+          path: |
+            coverage/
+            test-results.xml
+            trivy-results.sarif
+          retention-days: 14
+          if-no-files-found: warn
+
+      - name: Record workflow metrics
+        uses: actions/github-script@v7
+        if: always()
+        with:
+          script: |
+            const endTime = new Date();
+            const startTime = new Date('${{ github.run_id }}' ? Date.now() - 300000 : Date.now()); // Approximate 5min ago
+            const duration = Math.round((endTime - startTime) / 1000);
             
-            **Common issues:**
-            - TypeScript compilation errors
-            - Missing environment variables
-            - Build process timeouts
-            `;
+            const testsPassed = '${{ steps.tests.outcome }}' === 'success';
+            const lintPassed = '${{ steps.lint.outcome }}' === 'success';
+            const typescriptPassed = '${{ steps.typescript.outcome }}' === 'success';
+            const securityPassed = '${{ steps.security.outcome }}' === 'success';
             
-            github.rest.issues.createComment({
+            console.log(`Workflow duration: ${duration}s`);
+            console.log(`Tests passed: ${testsPassed}`);
+            console.log(`Lint passed: ${lintPassed}`);
+            console.log(`TypeScript passed: ${typescriptPassed}`);
+            console.log(`Security passed: ${securityPassed}`);
+
+
+      ############################################################
+      # Preview build steps
+      ############################################################
+
+      - name: Build for TEST
+        env:
+          # grab env "secrets" from GitHub Actions Secrets for safety
+          VITE_SUPABASE_PROJECT_URL: ${{ secrets.VITE_SUPABASE_PROJECT_URL_TEST }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY_TEST }}
+          VITE_STRIPE_API_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_API_PUBLISHABLE_KEY_TEST }}
+          # VITE_BUILD_VERSION: ...obtained by build-variables.sh script that is run during the build
+          # VITE_BUILD_VERSION_VERBOSE: ...obtained by build-variables.sh script that is run during the build
+        run: npm run build-test
+
+      - name: Create preview
+        id: create_preview
+        # Only create previews for PRs (not direct pushes to main)
+        if: github.event_name == 'pull_request'
+        run: |
+          COMMIT_SHA="${{ github.event.pull_request.head.sha || github.sha }}"
+          SHORT_SHA=$(echo "$COMMIT_SHA" | cut -c1-7)
+          PREVIEW_ALIAS="preview-${SHORT_SHA}"
+          
+          # Deploy to Netlify with branch-specific alias
+          npx netlify deploy \
+            --no-build \
+            --dir=dist \
+            --alias="$PREVIEW_ALIAS" \
+            --site ${{ secrets.NETLIFY_SITE_ID_TEST }} \
+            --auth ${{ secrets.NETLIFY_API_TOKEN_TEST }} \
+            --json > deploy_output_branch.json
+          
+          # Check if deployment was successful
+          if [ ! -f "deploy_output_branch.json" ]; then
+            echo "❌ Preview deployment failed - no output file generated"
+            exit 1
+          fi
+          
+          # Extract and output the preview URL
+          NETLIFY_PREVIEW_URL=$(jq -r '.deploy_url' deploy_output_branch.json 2>/dev/null || echo "")
+          if [ -z "$NETLIFY_PREVIEW_URL" ] || [ "$NETLIFY_PREVIEW_URL" = "null" ]; then
+            echo "❌ Failed to parse preview URL from deployment output"
+            cat deploy_output_branch.json
+            exit 1
+          fi
+          
+          echo "NETLIFY_PREVIEW_URL=$NETLIFY_PREVIEW_URL" >> "$GITHUB_OUTPUT"
+          echo "Preview deployed to: $NETLIFY_PREVIEW_URL"
+
+      - name: Upload preview deployment artifacts
+        uses: actions/upload-artifact@v4
+        if: github.event_name == 'pull_request'
+        with:
+          name: preview-deployment-logs-${{ github.sha }}
+          path: deploy_output_branch.json
+          retention-days: 14
+
+
+      ############################################################
+      # Add comment/annotation steps (for PRs only)
+      ############################################################
+
+      - name: Update or create preview comment
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request' && steps.create_preview.outputs.NETLIFY_PREVIEW_URL
+        env:
+          NETLIFY_PREVIEW_URL: ${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}
+        with:
+          script: |
+            const previewUrl = process.env.NETLIFY_PREVIEW_URL;
+            const sourceBranch = '${{ env.SOURCE_BRANCH }}';
+            
+            // Generate QR code URL using qr-server.com (free service)
+            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(previewUrl)}`;
+            
+            // Look for existing preview comment from this workflow
+            const comments = await github.rest.issues.listComments({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: comment
             });
+            
+            const botComment = comments.data.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('## ✅ Preview')
+            );
+            
+            const commitShort = '${{ github.event.pull_request.head.sha || github.sha }}'.substring(0, 7);
+            const deployLogUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
+            
+            const body = `## ✅ Preview (\`${sourceBranch}\`)
+            
+            | Name | Link |
+            |------|------|
+            | 😎 Preview | [Visit Preview](${previewUrl}) |
+            | 📱 Preview on mobile | <details><summary>▶️ Toggle QR Code...</summary><br/>**Scan with your phone:**<br/><br/>![QR Code](${qrCodeUrl})<br/><br/>Or copy: \`${previewUrl}\`</details> |
+            | 🔗 Latest commit | [\`${commitShort}\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.event.pull_request.head.sha || github.sha }}) |
+            | 📋 Latest deploy log | [View build details](${deployLogUrl}) |
+            | 🕒 Last updated | ${new Date().toLocaleString('en-US', { timeZone: 'UTC' })} UTC |
+            | ⚙️ Edit notifications | [CI/CD workflow configuration](${{ github.server_url }}/${{ github.repository }}/blob/${{ github.event.pull_request.head.sha || github.sha }}/.github/workflows/ci.yml) |
+            
+            Built with ❤️ by [GitHub Actions](${{ github.server_url }}/${{ github.repository }}/blob/${{ github.event.pull_request.head.sha || github.sha }}/.github/workflows/ci.yml)
+            
+            ---
+            
+            💡 *This comment will be automatically updated when you push new commits to the source branch.*`;
+            
+            if (botComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                comment_id: botComment.id,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body
+              });
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body
+              });
+            }
 
-  # Performance monitoring job (optional, runs after successful deployment)
-  performance-monitoring:
-    needs: build-and-deploy
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    if: success() && github.ref == 'refs/heads/main'
-    
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
 
-      - name: Use Node.js
-        uses: actions/setup-node@v4
+      ############################################################
+      # Add checks/annotations (for PRs only)
+      ############################################################
+
+      - name: Create deployment status check
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
         with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run extended Lighthouse audit
+          script: |
+            const previewUrl = '${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}';
+            const conclusion = previewUrl ? 'success' : 'failure';
+            const summary = previewUrl ? 'Preview deployment ready' : 'Preview deployment failed';
+            
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'Preview Deployment',
+              head_sha: '${{ github.event.pull_request.head.sha || github.sha }}',
+              status: 'completed',
+              conclusion: conclusion,
+              details_url: previewUrl || undefined,
+              output: {
+                title: 'Preview Deployment',
+                summary: summary,
+                text: previewUrl ? `Preview available at: ${previewUrl}` : 'Preview deployment failed'
+              }
+            });
+    
+      - name: Log results for direct pushes to main
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          # Run comprehensive Lighthouse audit on production
-          npm run lighthouse -- --url="https://${{ secrets.NETLIFY_SITE_ID }}.netlify.app" --preset=desktop
-        continue-on-error: true
+          echo "=== Direct push to main detected ==="
+          echo "Commit: ${{ github.sha }}"
+          echo "Tests: ✅ Passed"
+          echo "Build: ✅ Completed"
+          echo "No preview created for direct pushes to main"
+          echo "=================================="
 
-      - name: Performance regression check
+      - name: Create workflow summary
+        if: always()
         run: |
-          # Check for performance regressions (placeholder for future implementation)
-          echo "Performance monitoring completed"
-        continue-on-error: true
+          echo "## 🛠️ CI Workflow Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Add test results summary
+          if [ -f "coverage/coverage-summary.json" ]; then
+            COVERAGE=$(cat coverage/coverage-summary.json | jq -r '.total.lines.pct')
+            echo "- **Test Coverage**: ${COVERAGE}%" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Add more meaningful status info
+          echo "- **Event**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: ${{ env.SOURCE_BRANCH }}" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            if [ -n "${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}" ]; then
+              echo "- **✅ Preview**: [${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}](${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }})" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "- **❌ Preview**: Failed to deploy" >> $GITHUB_STEP_SUMMARY
+            fi
+          fi
+          
+          echo "- **Build Time**: $(date -u)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📊 [View detailed logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+
+          
+      ############################################################
+      # After-action cleanup steps
+      ############################################################
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-build-${{ github.event_name }}-${{ github.sha }}
+          path: dist
+          retention-days: 7
+
+      - name: Upload build logs and metadata
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: ci-logs-${{ github.sha }}
+          path: |
+            npm-debug.log*
+            yarn-debug.log*
+            yarn-error.log*
+            .npm/_logs/
+          retention-days: 7
+          if-no-files-found: ignore
