@@ -283,7 +283,7 @@ jobs:
                 '- **TypeScript errors**: Run `npm run tsc` locally',
                 '- **Security vulnerabilities**: Run `npm audit` locally',
                 '- **Test failures**: Run `npm test` locally',
-                '- **Coverage issues**: Add more tests to reach 80% coverage',
+                '- **Coverage issues**: Add more tests to reach coverage threshold',
                 '',
                 '📋 Check the [workflow logs](' + workflowUrl + ') for detailed error information.',
                 '',

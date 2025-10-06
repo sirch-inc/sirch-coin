@@ -15,17 +15,13 @@ import App from './pages/Main/App/App';
 document.title = import.meta.env.VITE_PAGE_TITLE;
 
 const rootElement = document.getElementById('root');
-if (!rootElement) throw new Error('Failed to find the root element')
-
-// TODO: Remove this intentional formatting error after testing CI (missing semicolon above)
+if (!rootElement) throw new Error('Failed to find the root element');
 
 const root = ReactDOM.createRoot(rootElement);
 
 /* eslint-disable react/jsx-no-comment-textnodes */
 root.render(
   <StrictMode>
-    {/* TODO: Remove this test link after CI testing - violates jsx-no-target-blank */}
-    <a href="https://example.com" target="_blank">Test</a>
 // #v-ifdef VITE_IS_COMING_SOON.toLowerCase()
     <ComingSoonApp/>
 // #v-elif VITE_IS_OFFLINE.toLowerCase()
