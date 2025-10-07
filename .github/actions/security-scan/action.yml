@@ -1,11 +1,11 @@
-name: 'Security Scanning'
-description: 'Runs comprehensive security scans including Trivy, dependency review, and npm audit'
+name: "Security Scanning"
+description: "Runs comprehensive security scans including Trivy, dependency review, and npm audit"
 outputs:
   security-status:
-    description: 'Overall security scan status'
+    description: "Overall security scan status"
     value: ${{ steps.security-summary.outputs.status }}
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - name: Dependency Review with enhanced security
       uses: actions/dependency-review-action@v4
@@ -19,19 +19,19 @@ runs:
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
       with:
-        scan-type: 'fs'
-        scan-ref: '.'
-        format: 'sarif'
-        output: 'trivy-results.sarif'
-        severity: 'CRITICAL,HIGH,MEDIUM'
-        scanners: 'vuln,secret,config'
-        timeout: '10m'
+        scan-type: "fs"
+        scan-ref: "."
+        format: "sarif"
+        output: "trivy-results.sarif"
+        severity: "CRITICAL,HIGH,MEDIUM"
+        scanners: "vuln,secret,config"
+        timeout: "10m"
 
     - name: Upload Trivy scan results
       uses: github/codeql-action/upload-sarif@v4
       if: always() && hashFiles('trivy-results.sarif') != ''
       with:
-        sarif_file: 'trivy-results.sarif'
+        sarif_file: "trivy-results.sarif"
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v4
@@ -64,7 +64,7 @@ runs:
       with:
         script: |
           const { context, github } = require('@actions/github');
-          
+
           await github.rest.checks.create({
             owner: context.repo.owner,
             repo: context.repo.repo,
@@ -75,8 +75,8 @@ runs:
             output: {
               title: 'Security Analysis Complete',
               summary: 'Comprehensive security scanning including dependency review, Trivy, and npm audit completed.',
-              text: '${{ steps.security.outcome }}' === 'success' ? 
-                '✅ All security checks passed successfully' : 
+              text: '${{ steps.security.outcome }}' === 'success' ?
+                '✅ All security checks passed successfully' :
                 '⚠️ Security issues detected - please review the logs'
             }
           });

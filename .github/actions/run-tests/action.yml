@@ -1,20 +1,20 @@
-name: 'Run Tests and Quality Checks'
-description: 'Runs linting, TypeScript checks, and unit tests with coverage'
+name: "Run Tests and Quality Checks"
+description: "Runs linting, TypeScript checks, and unit tests with coverage"
 outputs:
   lint-result:
-    description: 'Lint check result'
+    description: "Lint check result"
     value: ${{ steps.lint.outcome }}
   typescript-result:
-    description: 'TypeScript check result'
+    description: "TypeScript check result"
     value: ${{ steps.typescript.outcome }}
   tests-result:
-    description: 'Unit tests result'
+    description: "Unit tests result"
     value: ${{ steps.tests.outcome }}
   coverage-status:
-    description: 'Coverage check status'
+    description: "Coverage check status"
     value: ${{ steps.coverage-check.outcome }}
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - name: Run lint checks
       id: lint
@@ -40,31 +40,31 @@ runs:
       with:
         script: |
           const { context, github } = require('@actions/github');
-          
+
           const checks = [
             {
               name: 'ESLint Analysis',
               conclusion: '${{ steps.lint.outcome }}' === 'success' ? 'success' : 'failure',
-              summary: '${{ steps.lint.outcome }}' === 'success' ? 
-                '✅ Code style and quality checks passed' : 
+              summary: '${{ steps.lint.outcome }}' === 'success' ?
+                '✅ Code style and quality checks passed' :
                 '❌ Linting issues found - run `npm run lint` to fix'
             },
             {
               name: 'TypeScript Compilation',
               conclusion: '${{ steps.typescript.outcome }}' === 'success' ? 'success' : 'failure',
-              summary: '${{ steps.typescript.outcome }}' === 'success' ? 
-                '✅ TypeScript compilation successful' : 
+              summary: '${{ steps.typescript.outcome }}' === 'success' ?
+                '✅ TypeScript compilation successful' :
                 '❌ TypeScript errors found - run `npm run tsc` to check'
             },
             {
               name: 'Unit Tests',
               conclusion: '${{ steps.tests.outcome }}' === 'success' ? 'success' : 'failure',
-              summary: '${{ steps.tests.outcome }}' === 'success' ? 
-                '✅ All unit tests passed' : 
+              summary: '${{ steps.tests.outcome }}' === 'success' ?
+                '✅ All unit tests passed' :
                 '❌ Test failures found - run `npm test` locally'
             }
           ];
-          
+
           for (const check of checks) {
             await github.rest.checks.create({
               owner: context.repo.owner,
@@ -105,12 +105,12 @@ runs:
       run: |
         echo "# 🧪 Test Results Summary" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        
+
         LINT_STATUS="${{ steps.lint.outcome == 'success' && '✅ Passed' || '❌ Failed' }}"
         TS_STATUS="${{ steps.typescript.outcome == 'success' && '✅ Passed' || '❌ Failed' }}"
         TEST_STATUS="${{ steps.tests.outcome == 'success' && '✅ Passed' || '❌ Failed' }}"
         COV_STATUS="${{ steps.coverage-check.outcome == 'success' && '✅ Passed' || '❌ Failed' }}"
-        
+
         echo "| Check | Status | Action |" >> $GITHUB_STEP_SUMMARY
         echo "|-------|--------|--------|" >> $GITHUB_STEP_SUMMARY
         echo "| 🔍 ESLint | $LINT_STATUS | \`npm run lint\` |" >> $GITHUB_STEP_SUMMARY
@@ -118,7 +118,7 @@ runs:
         echo "| 🧪 Unit Tests | $TEST_STATUS | \`npm test\` |" >> $GITHUB_STEP_SUMMARY
         echo "| 📊 Coverage | $COV_STATUS | Add more tests |" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        
+
         ALL_PASSED=${{ steps.lint.outcome == 'success' && steps.typescript.outcome == 'success' && steps.tests.outcome == 'success' && steps.coverage-check.outcome == 'success' }}
         if [[ "$ALL_PASSED" == "true" ]]; then
           echo "🎉 **All tests passed!** Your code is ready for review." >> $GITHUB_STEP_SUMMARY
@@ -131,7 +131,7 @@ runs:
       if: always() && steps.tests.outcome != 'skipped'
       with:
         name: Vitest Test Results
-        path: 'test-results.xml'
+        path: "test-results.xml"
         reporter: jest-junit
         fail-on-error: false
 

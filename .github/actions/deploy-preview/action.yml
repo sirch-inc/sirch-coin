@@ -1,21 +1,21 @@
-name: 'Deploy Preview'
-description: 'Deploys preview to Netlify and creates status checks'
+name: "Deploy Preview"
+description: "Deploys preview to Netlify and creates status checks"
 inputs:
   netlify-site-id:
-    description: 'Netlify Site ID'
+    description: "Netlify Site ID"
     required: true
   netlify-auth-token:
-    description: 'Netlify Auth Token'
+    description: "Netlify Auth Token"
     required: true
 outputs:
   preview-url:
-    description: 'The URL of the preview deployment'
+    description: "The URL of the preview deployment"
     value: ${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}
   deployment-status:
-    description: 'Deployment status'
+    description: "Deployment status"
     value: ${{ steps.create_preview.outcome }}
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - name: Create preview
       id: create_preview
@@ -27,7 +27,7 @@ runs:
         COMMIT_SHA="${{ github.event.pull_request.head.sha || github.sha }}"
         SHORT_SHA=$(echo "$COMMIT_SHA" | cut -c1-7)
         PREVIEW_ALIAS="preview-${SHORT_SHA}"
-        
+
         # Deploy to Netlify with branch-specific alias
         npx netlify deploy \
           --dir=dist \
@@ -36,13 +36,13 @@ runs:
           --alias="$PREVIEW_ALIAS" \
           --message="Preview deploy for PR #${{ github.event.pull_request.number || 'direct-push' }} (${SHORT_SHA})" \
           --json > deploy_output_branch.json
-        
+
         # Check if deployment was successful
         if [ ! -f "deploy_output_branch.json" ]; then
           echo "❌ Netlify deployment failed - no output file created"
           exit 1
         fi
-        
+
         # Extract and output the preview URL
         NETLIFY_PREVIEW_URL=$(jq -r '.deploy_url' deploy_output_branch.json 2>/dev/null || echo "")
         if [ -z "$NETLIFY_PREVIEW_URL" ] || [ "$NETLIFY_PREVIEW_URL" = "null" ]; then
@@ -50,7 +50,7 @@ runs:
           cat deploy_output_branch.json
           exit 1
         fi
-        
+
         echo "NETLIFY_PREVIEW_URL=$NETLIFY_PREVIEW_URL" >> "$GITHUB_OUTPUT"
         echo "Preview deployed to: $NETLIFY_PREVIEW_URL"
 
@@ -62,9 +62,9 @@ runs:
       with:
         script: |
           const { context, github } = require('@actions/github');
-          
+
           const previewUrl = process.env.NETLIFY_PREVIEW_URL;
-          
+
           await github.rest.checks.create({
             owner: context.repo.owner,
             repo: context.repo.repo,
@@ -83,7 +83,7 @@ runs:
               identifier: 'preview'
             }]
           });
-          
+
           // Also create a deployment
           const deployment = await github.rest.repos.createDeployment({
             owner: context.repo.owner,
@@ -93,7 +93,7 @@ runs:
             description: `Preview deployment for PR #${context.payload.pull_request?.number || 'direct-push'}`,
             auto_merge: false
           });
-          
+
           await github.rest.repos.createDeploymentStatus({
             owner: context.repo.owner,
             repo: context.repo.repo,
@@ -109,7 +109,7 @@ runs:
       with:
         script: |
           const { context, github } = require('@actions/github');
-          
+
           // Create performance monitoring check
           await github.rest.checks.create({
             owner: context.repo.owner,
@@ -130,7 +130,7 @@ runs:
       run: |
         echo "# 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        
+
         if [ "${{ steps.create_preview.outcome }}" == "success" ]; then
           echo "## ✅ Preview Deployment Successful" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -151,7 +151,7 @@ runs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "The preview deployment encountered an error. Please check the logs above for details." >> $GITHUB_STEP_SUMMARY
         fi
-        
+
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "---" >> $GITHUB_STEP_SUMMARY
         echo "*Deployment completed at $(date -u)*" >> $GITHUB_STEP_SUMMARY

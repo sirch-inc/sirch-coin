@@ -1,21 +1,21 @@
-name: 'Build and Analyze'
-description: 'Builds the application and runs bundle analysis and Lighthouse checks'
+name: "Build and Analyze"
+description: "Builds the application and runs bundle analysis and Lighthouse checks"
 inputs:
   supabase-url:
-    description: 'Supabase project URL'
+    description: "Supabase project URL"
     required: true
   supabase-key:
-    description: 'Supabase anonymous key'
+    description: "Supabase anonymous key"
     required: true
   stripe-key:
-    description: 'Stripe publishable key'
+    description: "Stripe publishable key"
     required: true
 outputs:
   build-status:
-    description: 'Build status'
+    description: "Build status"
     value: ${{ steps.build.outcome }}
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - name: Build for TEST
       id: build
@@ -29,13 +29,13 @@ runs:
     - name: Analyze Vite build output
       shell: bash
       run: |
-        echo "🏗️ Vite Build Analysis" 
+        echo "🏗️ Vite Build Analysis"
         echo "===================="
-        
+
         # Check build structure
         echo "📁 Build Directory Structure:"
         ls -la dist/ || echo "No dist directory found"
-        
+
         # Validate Vite manifest
         if [ -f "dist/.vite/manifest.json" ]; then
           ENTRY_COUNT=$(cat dist/.vite/manifest.json | jq 'keys | length')
@@ -46,22 +46,22 @@ runs:
         else
           echo "⚠️ No build manifest found"
         fi
-        
+
         # Check for modern/legacy builds
         MODERN_COUNT=$(find dist -name "*.js" | grep -v legacy | wc -l | tr -d ' ')
         LEGACY_COUNT=$(find dist -name "*legacy*.js" | wc -l | tr -d ' ')
-        
+
         echo "🚀 Modern ES modules: $MODERN_COUNT files"
         if [ "$LEGACY_COUNT" -gt 0 ]; then
           echo "🔄 Legacy bundles: $LEGACY_COUNT files"
         else
           echo "✨ Modern-only build (no legacy fallbacks)"
         fi
-        
-        # Asset optimization check  
+
+        # Asset optimization check
         TOTAL_IMAGES=$(find dist -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.webp" | wc -l | tr -d ' ')
         WEBP_COUNT=$(find dist -name "*.webp" | wc -l | tr -d ' ')
-        
+
         if [ "$TOTAL_IMAGES" -gt 0 ]; then
           WEBP_RATIO=$(echo "scale=0; $WEBP_COUNT * 100 / $TOTAL_IMAGES" | bc)
           echo "📷 Images: $TOTAL_IMAGES total, ${WEBP_RATIO}% WebP optimized"
@@ -71,22 +71,22 @@ runs:
         else
           echo "📷 No images found in build"
         fi
-        
+
         # Check Vite-specific optimizations
         echo ""
         echo "⚡ Vite Optimizations:"
         if [ -d "dist/assets" ]; then
           echo "✅ Assets properly hashed for caching"
         fi
-        
+
         if find dist -name "*.js" | grep -q "vendor"; then
           echo "✅ Vendor code splitting detected"
         fi
-        
+
         if find dist -name "*.css" | head -1 | grep -q "\."; then
           echo "✅ CSS extracted and optimized"
         fi
-        
+
         echo "🎯 Build optimized with Vite's modern tooling"
 
     - name: Generate comprehensive bundle size report
@@ -95,13 +95,13 @@ runs:
       run: |
         echo "## 📊 Bundle Size Report" > bundle-size-report.md
         echo "" >> bundle-size-report.md
-        
+
         # Get detailed file sizes
         echo "### 📦 Asset Sizes" >> bundle-size-report.md
         echo "" >> bundle-size-report.md
         echo "| File | Size | Gzipped* |" >> bundle-size-report.md
         echo "|------|------|----------|" >> bundle-size-report.md
-        
+
         find dist -type f \( -name "*.js" -o -name "*.css" -o -name "*.html" \) | sort | while read file; do
           SIZE=$(du -h "$file" | cut -f1)
           FILENAME=$(basename "$file")
@@ -113,23 +113,23 @@ runs:
             echo "| \`$FILENAME\` | $SIZE | - |" >> bundle-size-report.md
           fi
         done
-        
+
         echo "" >> bundle-size-report.md
         echo "*Estimated gzipped sizes" >> bundle-size-report.md
         echo "" >> bundle-size-report.md
-        
+
         # Bundle summary
         TOTAL_JS=$(find dist -name "*.js" -exec cat {} + | wc -c | awk '{printf "%.1fKB", $1/1024}')
         TOTAL_CSS=$(find dist -name "*.css" -exec cat {} + | wc -c | awk '{printf "%.1fKB", $1/1024}')
-        
+
         echo "### 📈 Bundle Summary" >> bundle-size-report.md
         echo "- **Total JavaScript**: ~$TOTAL_JS" >> bundle-size-report.md
         echo "- **Total CSS**: ~$TOTAL_CSS" >> bundle-size-report.md
-        
+
         # Performance recommendations
         echo "" >> bundle-size-report.md
         echo "### 💡 Performance Notes" >> bundle-size-report.md
-        
+
         # Check for large files
         LARGE_FILES=$(find dist -name "*.js" -size +100k | wc -l | tr -d ' ')
         if [ "$LARGE_FILES" -gt 0 ]; then
@@ -138,7 +138,7 @@ runs:
         else
           echo "- ✅ All JavaScript files are under 100KB - good for performance" >> bundle-size-report.md
         fi
-        
+
         echo "- 🚀 Files are automatically compressed by Vite and CDN" >> bundle-size-report.md
         echo "- 📱 Modern browsers will only load the code they need" >> bundle-size-report.md
 
@@ -146,7 +146,7 @@ runs:
       uses: treosh/lighthouse-ci-action@v12
       if: github.event_name == 'pull_request'
       with:
-        configPath: '.lighthouserc.json'
+        configPath: ".lighthouserc.json"
         uploadArtifacts: true
         temporaryPublicStorage: true
       env:
@@ -159,7 +159,7 @@ runs:
       run: |
         echo "## 🚦 Lighthouse Performance Report" > lighthouse-report.md
         echo "" >> lighthouse-report.md
-        
+
         # Check if lighthouse results exist
         if [ -f ".lighthouseci/lhr-*.json" ]; then
           PERF=$(cat .lighthouseci/lhr-*.json | jq -r '.categories.performance.score * 100' | head -1)
@@ -169,7 +169,7 @@ runs:
           FCP=$(cat .lighthouseci/lhr-*.json | jq -r '.audits["first-contentful-paint"].displayValue' | head -1)
           LCP=$(cat .lighthouseci/lhr-*.json | jq -r '.audits["largest-contentful-paint"].displayValue' | head -1)
           CLS=$(cat .lighthouseci/lhr-*.json | jq -r '.audits["cumulative-layout-shift"].displayValue' | head -1)
-          
+
           echo "### 🎯 Core Web Vitals" >> lighthouse-report.md
           echo "- **Performance**: ${PERF}%" >> lighthouse-report.md
           echo "- **Accessibility**: ${A11Y}%" >> lighthouse-report.md
@@ -183,7 +183,7 @@ runs:
         else
           echo "⚠️ Lighthouse analysis not available for this build" >> lighthouse-report.md
         fi
-        
+
         echo "" >> lighthouse-report.md
         echo "📈 *Performance monitoring helps ensure optimal user experience*" >> lighthouse-report.md
 
@@ -195,7 +195,7 @@ runs:
         BUNDLE_SIZE=$(find dist -name "*.js" -exec cat {} + | wc -c)
         CSS_SIZE=$(find dist -name "*.css" -exec cat {} + | wc -c)
         ASSET_COUNT=$(find dist -type f | wc -l | tr -d ' ')
-        
+
         cat > performance-metrics.json << EOF
         {
           "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
@@ -206,16 +206,16 @@ runs:
           "buildTime": "$(date -u +%s)"
         }
         EOF
-        
+
         # Create trend summary
         echo "## 📈 Performance Trends" > performance-trend.md
         echo "" >> performance-trend.md
         echo "| Metric | Current | Trend |" >> performance-trend.md
         echo "|--------|---------|--------|" >> performance-trend.md
-        
+
         BUNDLE_SIZE_KB=$(echo "scale=1; $BUNDLE_SIZE / 1024" | bc)
         CSS_SIZE_KB=$(echo "scale=1; $CSS_SIZE / 1024" | bc)
-        
+
         echo "| Bundle Size | ${BUNDLE_SIZE_KB} KB | 📊 Tracking |" >> performance-trend.md
         echo "| CSS Size | ${CSS_SIZE_KB} KB | 📊 Tracking |" >> performance-trend.md
         echo "| Asset Count | $ASSET_COUNT | 📊 Tracking |" >> performance-trend.md
