@@ -129,6 +129,16 @@ jobs:
               }
             });
 
+      - name: Upload security scan results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-results-${{ github.sha }}
+          path: |
+            trivy-results.sarif
+          retention-days: 14
+          if-no-files-found: ignore
+
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -351,7 +361,6 @@ jobs:
           path: |
             coverage/
             test-results.xml
-            trivy-results.sarif
           retention-days: 14
           if-no-files-found: warn
 
@@ -372,26 +381,6 @@ jobs:
             console.log(`Tests passed: ${testsPassed}`);
             console.log(`Lint passed: ${lintPassed}`);
             console.log(`TypeScript passed: ${typescriptPassed}`);
-
-      - name: Upload test result artifacts
-        uses: actions/upload-artifact@v4
-        if: always()  # Upload even if tests fail
-        with:
-          name: test-results-${{ github.sha }}
-          path: |
-            coverage/
-            test-results.xml
-          retention-days: 14
-          if-no-files-found: warn
-
-      - name: Publish test results
-        uses: dorny/test-reporter@v1
-        if: always() && steps.tests.outcome != 'skipped'
-        with:
-          name: Vitest Test Results
-          path: 'test-results.xml'
-          reporter: jest-junit
-          fail-on-error: false
 
   build-deploy:
     needs: [security, test]
