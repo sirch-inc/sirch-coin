@@ -1,31 +1,31 @@
-name: 'Setup Node.js and Dependencies'
-description: 'Common setup steps for Node.js projects with caching'
+name: "Setup Node.js and Dependencies"
+description: "Common setup steps for Node.js projects with caching"
 
 inputs:
   cache-key-suffix:
-    description: 'Suffix to append to cache key for job-specific caching'
+    description: "Suffix to append to cache key for job-specific caching"
     required: false
-    default: 'default'
-  
+    default: "default"
+
   additional-cache-paths:
-    description: 'Additional paths to include in cache (newline separated)'
+    description: "Additional paths to include in cache (newline separated)"
     required: false
-    default: ''
+    default: ""
 
 outputs:
   cache-hit:
-    description: 'Whether there was a cache hit'
+    description: "Whether there was a cache hit"
     value: ${{ steps.cache.outputs.cache-hit }}
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - name: Use Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
-        cache: 'npm'
-        cache-dependency-path: '**/package-lock.json'
+        node-version: "20"
+        cache: "npm"
+        cache-dependency-path: "**/package-lock.json"
 
     - name: Cache dependencies and build outputs
       uses: actions/cache@v4
