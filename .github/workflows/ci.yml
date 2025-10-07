@@ -412,7 +412,8 @@ jobs:
           if [ -f "coverage/coverage-summary.json" ]; then
             COVERAGE=$(cat coverage/coverage-summary.json | jq -r '.total.lines.pct')
             echo "Current coverage: ${COVERAGE}%"
-            if (( $(echo "$COVERAGE < 1" | bc -l) )); then
+            # Use awk for floating point comparison instead of bc
+            if awk "BEGIN {exit ($COVERAGE < 1) ? 0 : 1}"; then
               echo "❌ Coverage $COVERAGE% is below threshold of 1%"
               echo "coverage-failed=true" >> "$GITHUB_OUTPUT"
               exit 1
