@@ -682,7 +682,7 @@ jobs:
           minimum-change-threshold: 100
           show-total: true
           collapse-unchanged: true
-          build-script: ""
+          build-script: false
 
       - name: Generate Vite bundle analysis report
         if: github.event_name == 'pull_request'
