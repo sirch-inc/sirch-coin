@@ -1,0 +1,147 @@
+name: 'Run Tests and Quality Checks'
+description: 'Runs linting, TypeScript checks, and unit tests with coverage'
+outputs:
+  lint-result:
+    description: 'Lint check result'
+    value: ${{ steps.lint.outcome }}
+  typescript-result:
+    description: 'TypeScript check result'
+    value: ${{ steps.typescript.outcome }}
+  tests-result:
+    description: 'Unit tests result'
+    value: ${{ steps.tests.outcome }}
+  coverage-status:
+    description: 'Coverage check status'
+    value: ${{ steps.coverage-check.outcome }}
+runs:
+  using: 'composite'
+  steps:
+    - name: Run lint checks
+      id: lint
+      shell: bash
+      run: npm run lint -- --cache --cache-location .eslintcache
+      continue-on-error: true
+
+    - name: Check TypeScript compilation
+      id: typescript
+      shell: bash
+      run: npm run tsc
+      continue-on-error: true
+
+    - name: Run unit tests with coverage
+      id: tests
+      shell: bash
+      run: npm run test:coverage
+      continue-on-error: true
+
+    - name: Create test check statuses
+      uses: actions/github-script@v7
+      if: github.event_name == 'pull_request'
+      with:
+        script: |
+          const { context, github } = require('@actions/github');
+          
+          const checks = [
+            {
+              name: 'ESLint Analysis',
+              conclusion: '${{ steps.lint.outcome }}' === 'success' ? 'success' : 'failure',
+              summary: '${{ steps.lint.outcome }}' === 'success' ? 
+                '✅ Code style and quality checks passed' : 
+                '❌ Linting issues found - run `npm run lint` to fix'
+            },
+            {
+              name: 'TypeScript Compilation',
+              conclusion: '${{ steps.typescript.outcome }}' === 'success' ? 'success' : 'failure',
+              summary: '${{ steps.typescript.outcome }}' === 'success' ? 
+                '✅ TypeScript compilation successful' : 
+                '❌ TypeScript errors found - run `npm run tsc` to check'
+            },
+            {
+              name: 'Unit Tests',
+              conclusion: '${{ steps.tests.outcome }}' === 'success' ? 'success' : 'failure',
+              summary: '${{ steps.tests.outcome }}' === 'success' ? 
+                '✅ All unit tests passed' : 
+                '❌ Test failures found - run `npm test` locally'
+            }
+          ];
+          
+          for (const check of checks) {
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: check.name,
+              head_sha: context.payload.pull_request?.head?.sha || context.sha,
+              status: 'completed',
+              conclusion: check.conclusion,
+              output: {
+                title: check.name,
+                summary: check.summary
+              }
+            });
+          }
+
+    - name: Check coverage threshold
+      id: coverage-check
+      shell: bash
+      run: |
+        if [ -f "coverage/coverage-summary.json" ]; then
+          COVERAGE=$(cat coverage/coverage-summary.json | jq -r '.total.lines.pct')
+          echo "Current coverage: ${COVERAGE}%"
+          if awk "BEGIN {exit ($COVERAGE < 1) ? 0 : 1}"; then
+            echo "❌ Coverage $COVERAGE% is below threshold"
+            echo "coverage-failed=true" >> "$GITHUB_OUTPUT"
+            exit 1
+          else
+            echo "✅ Coverage $COVERAGE% meets threshold"
+            echo "coverage-failed=false" >> "$GITHUB_OUTPUT"
+          fi
+        else
+          echo "⚠️ No coverage report found"
+          echo "coverage-failed=false" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Update test job summary
+      shell: bash
+      run: |
+        echo "# 🧪 Test Results Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        LINT_STATUS="${{ steps.lint.outcome == 'success' && '✅ Passed' || '❌ Failed' }}"
+        TS_STATUS="${{ steps.typescript.outcome == 'success' && '✅ Passed' || '❌ Failed' }}"
+        TEST_STATUS="${{ steps.tests.outcome == 'success' && '✅ Passed' || '❌ Failed' }}"
+        COV_STATUS="${{ steps.coverage-check.outcome == 'success' && '✅ Passed' || '❌ Failed' }}"
+        
+        echo "| Check | Status | Action |" >> $GITHUB_STEP_SUMMARY
+        echo "|-------|--------|--------|" >> $GITHUB_STEP_SUMMARY
+        echo "| 🔍 ESLint | $LINT_STATUS | \`npm run lint\` |" >> $GITHUB_STEP_SUMMARY
+        echo "| 📘 TypeScript | $TS_STATUS | \`npm run tsc\` |" >> $GITHUB_STEP_SUMMARY
+        echo "| 🧪 Unit Tests | $TEST_STATUS | \`npm test\` |" >> $GITHUB_STEP_SUMMARY
+        echo "| 📊 Coverage | $COV_STATUS | Add more tests |" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        ALL_PASSED=${{ steps.lint.outcome == 'success' && steps.typescript.outcome == 'success' && steps.tests.outcome == 'success' && steps.coverage-check.outcome == 'success' }}
+        if [[ "$ALL_PASSED" == "true" ]]; then
+          echo "🎉 **All tests passed!** Your code is ready for review." >> $GITHUB_STEP_SUMMARY
+        else
+          echo "⚠️ **Some tests failed.** Use the commands above to fix issues locally." >> $GITHUB_STEP_SUMMARY
+        fi
+
+    - name: Publish test results
+      uses: dorny/test-reporter@v1
+      if: always() && steps.tests.outcome != 'skipped'
+      with:
+        name: Vitest Test Results
+        path: 'test-results.xml'
+        reporter: jest-junit
+        fail-on-error: false
+
+    - name: Upload test result artifacts
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-${{ github.sha }}
+        path: |
+          coverage/
+          test-results.xml
+        retention-days: 14
+        if-no-files-found: warn

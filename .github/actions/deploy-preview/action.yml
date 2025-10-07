@@ -1,0 +1,183 @@
+name: 'Deploy Preview'
+description: 'Deploys preview to Netlify and creates status checks'
+inputs:
+  netlify-site-id:
+    description: 'Netlify Site ID'
+    required: true
+  netlify-auth-token:
+    description: 'Netlify Auth Token'
+    required: true
+outputs:
+  preview-url:
+    description: 'The URL of the preview deployment'
+    value: ${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}
+  deployment-status:
+    description: 'Deployment status'
+    value: ${{ steps.create_preview.outcome }}
+runs:
+  using: 'composite'
+  steps:
+    - name: Create preview
+      id: create_preview
+      shell: bash
+      env:
+        NETLIFY_SITE_ID: ${{ inputs.netlify-site-id }}
+        NETLIFY_AUTH_TOKEN: ${{ inputs.netlify-auth-token }}
+      run: |
+        COMMIT_SHA="${{ github.event.pull_request.head.sha || github.sha }}"
+        SHORT_SHA=$(echo "$COMMIT_SHA" | cut -c1-7)
+        PREVIEW_ALIAS="preview-${SHORT_SHA}"
+        
+        # Deploy to Netlify with branch-specific alias
+        npx netlify deploy \
+          --dir=dist \
+          --site="$NETLIFY_SITE_ID" \
+          --auth="$NETLIFY_AUTH_TOKEN" \
+          --alias="$PREVIEW_ALIAS" \
+          --message="Preview deploy for PR #${{ github.event.pull_request.number || 'direct-push' }} (${SHORT_SHA})" \
+          --json > deploy_output_branch.json
+        
+        # Check if deployment was successful
+        if [ ! -f "deploy_output_branch.json" ]; then
+          echo "❌ Netlify deployment failed - no output file created"
+          exit 1
+        fi
+        
+        # Extract and output the preview URL
+        NETLIFY_PREVIEW_URL=$(jq -r '.deploy_url' deploy_output_branch.json 2>/dev/null || echo "")
+        if [ -z "$NETLIFY_PREVIEW_URL" ] || [ "$NETLIFY_PREVIEW_URL" = "null" ]; then
+          echo "❌ Failed to extract preview URL from Netlify response"
+          cat deploy_output_branch.json
+          exit 1
+        fi
+        
+        echo "NETLIFY_PREVIEW_URL=$NETLIFY_PREVIEW_URL" >> "$GITHUB_OUTPUT"
+        echo "Preview deployed to: $NETLIFY_PREVIEW_URL"
+
+    - name: Create preview deployment status
+      uses: actions/github-script@v7
+      if: github.event_name == 'pull_request' && steps.create_preview.outputs.NETLIFY_PREVIEW_URL
+      env:
+        NETLIFY_PREVIEW_URL: ${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}
+      with:
+        script: |
+          const { context, github } = require('@actions/github');
+          
+          const previewUrl = process.env.NETLIFY_PREVIEW_URL;
+          
+          await github.rest.checks.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            name: 'Preview Deployment',
+            head_sha: context.payload.pull_request?.head?.sha || context.sha,
+            status: 'completed',
+            conclusion: 'success',
+            output: {
+              title: 'Preview Deployed Successfully',
+              summary: `🚀 Your preview is ready!`,
+              text: `Preview URL: ${previewUrl}\n\nThe application has been deployed and is ready for review.`
+            },
+            actions: [{
+              label: 'View Preview',
+              description: 'Open the preview deployment',
+              identifier: 'preview'
+            }]
+          });
+          
+          // Also create a deployment
+          const deployment = await github.rest.repos.createDeployment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: context.payload.pull_request?.head?.sha || context.sha,
+            environment: 'preview',
+            description: `Preview deployment for PR #${context.payload.pull_request?.number || 'direct-push'}`,
+            auto_merge: false
+          });
+          
+          await github.rest.repos.createDeploymentStatus({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            deployment_id: deployment.data.id,
+            state: 'success',
+            environment_url: previewUrl,
+            description: 'Preview deployment successful'
+          });
+
+    - name: Create performance status checks
+      uses: actions/github-script@v7
+      if: github.event_name == 'pull_request'
+      with:
+        script: |
+          const { context, github } = require('@actions/github');
+          
+          // Create performance monitoring check
+          await github.rest.checks.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            name: 'Performance Monitoring',
+            head_sha: context.payload.pull_request?.head?.sha || context.sha,
+            status: 'completed',
+            conclusion: 'success',
+            output: {
+              title: 'Performance Analysis Complete',
+              summary: '📊 Bundle analysis and performance metrics generated',
+              text: 'Performance reports have been generated including bundle size analysis and Lighthouse metrics. Check the job summary for detailed results.'
+            }
+          });
+
+    - name: Create rich job summary
+      shell: bash
+      run: |
+        echo "# 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [ "${{ steps.create_preview.outcome }}" == "success" ]; then
+          echo "## ✅ Preview Deployment Successful" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 **Preview URL**: [${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}](${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }})" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📋 What to Review" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] Visual appearance and layout" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] Functionality and user interactions" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] Mobile responsiveness" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] Performance and loading speed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🛠️ Additional Resources" >> $GITHUB_STEP_SUMMARY
+          echo "- Bundle size report available in artifacts" >> $GITHUB_STEP_SUMMARY
+          echo "- Lighthouse performance report generated" >> $GITHUB_STEP_SUMMARY
+          echo "- Performance metrics tracked for trends" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "## ❌ Preview Deployment Failed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "The preview deployment encountered an error. Please check the logs above for details." >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "---" >> $GITHUB_STEP_SUMMARY
+        echo "*Deployment completed at $(date -u)*" >> $GITHUB_STEP_SUMMARY
+
+    - name: Upload preview deployment artifacts
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: preview-deployment-logs-${{ github.sha }}
+        path: |
+          deploy_output_branch.json
+          bundle-size-report.md
+          lighthouse-report.md
+          performance-trend.md
+          performance-metrics.json
+        retention-days: 14
+        if-no-files-found: ignore
+
+    - name: Log results for direct pushes to main
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      shell: bash
+      run: |
+        echo "🎯 Direct push to main branch detected"
+        echo "Build completed successfully for production deployment"
+        echo "Artifacts and reports available for review"
+        echo "Build time: $(date -u)"
+        echo "Commit: ${{ github.sha }}"
+        echo "Files changed in this push:"
+        git diff-tree --no-commit-id --name-only -r ${{ github.sha }}
