@@ -680,6 +680,8 @@ jobs:
           exclude: "{**/*.map,**/node_modules/**}"
           strip-hash: "\\.(\\w{8})\\."
           minimum-change-threshold: 100
+          show-total: true
+          collapse-unchanged: true
 
       - name: Generate Vite bundle analysis report
         if: github.event_name == 'pull_request'
