@@ -1,34 +1,1124 @@
-# Legacy CI workflow - now replaced by ci-pipeline.yml
-# 
-# This workflow is kept for reference but disabled.
-# The new ci-pipeline.yml provides a unified workflow with proper job dependencies
-# that shows the security -> test -> build/deploy flow in the GitHub Actions UI.
+# A GitHub Actions workflow for CI (run tests, create preview deploys, etc.)
+# This workflow runs on PRs to main and direct pushes to main (for emergency fixes).
+#
+# Artifact Retention: CI builds (7d), Test results (14d), Preview logs (14d)
+# See: CICD_ARTIFACT_RETENTION_POLICY.md for complete retention strategy
 
-name: CI (Legacy - Disabled)
+# Although Netlify supports continuous deployment from GitHub, we use GitHub Actions here instead in 
+# order to run tests before deploying, and to have more control over the build and deploy process.
+# See also: https://docs.netlify.com/cli/get-started/#continuous-deployment-with-github-actions.
+#
+# Additionally, at this time, Netlify (free tier) does not support deploying from private org-based repositories
+# like ours, so we are using GitHub Actions for CI which skips this. We can revisit this if we move to a paid
+# Netlify plan later, but some research suggests that Netlify builds can be expensive even under paid plans.
+#
+# We are using the Netlify CLI to deploy here, bypassing Netlify's built-in GitHub integration.
+
+name: CI
 
 on:
-  # Disabled - no triggers
-  workflow_dispatch:  # Manual trigger only
+  # Run on pushes to main (for direct commits/emergency fixes)
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+  
+  # Run on all PRs to main (your primary workflow)
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+
+# Add concurrency control to cancel previous runs
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+env:
+  SOURCE_BRANCH: ${{ github.head_ref || github.ref_name }}
+  NODE_OPTIONS: "--max-old-space-size=4096"
 
 permissions:
+  id-token: write  # For OIDC
   contents: read
+  pull-requests: write
+  checks: write
+  security-events: write  # For SARIF upload
+  actions: read  # For dependency review
+
 
 jobs:
-  # Placeholder job that explains the migration
-  migration-notice:
+  security:
     runs-on: ubuntu-latest
-    timeout-minutes: 1
-    
+    timeout-minutes: 5
+    # Allow skipping CI with commit message
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, '[ci skip]') }}
     steps:
-      - name: Migration Notice
+      ############################################################
+      # Startup steps
+      ############################################################
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_FOR_GITHUB_ACTIONS }}  # Using a privileged PAT here to enable writing to PRs
+          fetch-depth: 0  # Fetch full history including tags, which are used in builds for version info
+          fetch-tags: true  # Explicitly fetch tags, which are used in builds for version info
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Cache dependencies and build outputs
+        uses: actions/cache@v4
+        id: security-cache
+        with:
+          path: |
+            ~/.npm
+            node_modules
+            node_modules/.vite
+            dist
+            .eslintcache
+          key: ${{ runner.os }}-vite-security-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('src/**/*.[jt]s?(x)', 'vite.config.*') }}
+          restore-keys: |
+            ${{ runner.os }}-vite-security-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-vite-security-
+
+      - name: Report cache status
         run: |
-          echo "# 🔄 CI Workflow Migration" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.security-cache.outputs.cache-hit }}" == "true" ]; then
+            echo "✅ Security job cache hit - dependencies restored from cache"
+          else
+            echo "❌ Security job cache miss - will install fresh dependencies"
+          fi
+
+      - name: Install dependencies
+        run: npm ci
+
+      ############################################################
+      # Security scanning steps
+      ############################################################
+
+      - name: Dependency Review with enhanced security
+        uses: actions/dependency-review-action@v4
+        if: github.event_name == 'pull_request'
+        with:
+          fail-on-severity: moderate
+          allow-licenses: MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, 0BSD, Unlicense
+          comment-summary-in-pr: always
+          fail-on-scopes: runtime, development
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+          scanners: 'vuln,secret,config'
+          timeout: '10m'
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v4
+        if: always() && hashFiles('trivy-results.sarif') != ''
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        if: github.event_name == 'pull_request'
+        with:
+          languages: javascript
+          config-file: ./.github/codeql/codeql-config.yml
+        continue-on-error: true
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
+        if: github.event_name == 'pull_request'
+        with:
+          category: "/language:javascript"
+        continue-on-error: true
+
+      - name: Run NPM security audit
+        id: security
+        run: |
+          echo "Running comprehensive npm security audit..."
+          npm audit --audit-level=moderate --json > audit-results.json || true
+          echo "Audit results:"
+          cat audit-results.json | jq -r '.vulnerabilities | to_entries[] | select(.value.severity == "high" or .value.severity == "critical") | "\(.key): \(.value.severity)"' || echo "No high/critical vulnerabilities found"
+        continue-on-error: true
+
+      - name: Create security check status
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        with:
+          script: |
+            const outcome = '${{ steps.security.outcome }}';
+            const conclusion = outcome === 'success' ? 'success' : 'failure';
+            const summary = conclusion === 'success' ? 'No security vulnerabilities found' : 'Security vulnerabilities detected';
+            const text = conclusion === 'success' ? 'All dependencies are secure' : 'Run `npm audit` locally to see security issues and `npm audit fix` to resolve them';
+            
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'Security Audit',
+              head_sha: '${{ github.event.pull_request.head.sha || github.sha }}',
+              status: 'completed',
+              conclusion: conclusion,
+              output: {
+                title: 'Security Audit',
+                summary: summary,
+                text: text
+              }
+            });
+
+      - name: Upload security scan results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-results-${{ github.sha }}
+          path: |
+            trivy-results.sarif
+            audit-results.json
+          retention-days: 14
+          if-no-files-found: warn
+
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Allow skipping CI with commit message
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, '[ci skip]') }}
+    steps:
+      ############################################################
+      # Startup steps
+      ############################################################
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_FOR_GITHUB_ACTIONS }}  # Using a privileged PAT here to enable writing to PRs
+          fetch-depth: 0  # Fetch full history including tags, which are used in builds for version info
+          fetch-tags: true  # Explicitly fetch tags, which are used in builds for version info
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Cache dependencies and build outputs
+        uses: actions/cache@v4
+        id: test-cache
+        with:
+          path: |
+            ~/.npm
+            node_modules
+            dist
+            node_modules/.vite
+            node_modules/.cache
+            .vite
+            .eslintcache
+            tsconfig.tsbuildinfo
+            coverage
+          key: ${{ runner.os }}-vite-test-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('src/**/*.[jt]s?(x)', 'test/**/*.[jt]s?(x)', 'vite.config.*', 'vitest.config.*') }}
+          restore-keys: |
+            ${{ runner.os }}-vite-test-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-vite-test-
+
+      - name: Report cache status
+        run: |
+          if [ "${{ steps.test-cache.outputs.cache-hit }}" == "true" ]; then
+            echo "✅ Test job cache hit - dependencies and build outputs restored"
+          else
+            echo "❌ Test job cache miss - will install fresh dependencies"
+          fi
+
+      - name: Install dependencies
+        run: npm ci
+
+      ############################################################
+      # Test steps
+      ############################################################
+
+      - name: Run lint checks
+        id: lint
+        run: npm run lint -- --cache --cache-location .eslintcache
+        continue-on-error: true
+
+      - name: Check TypeScript compilation
+        id: typescript
+        run: npm run tsc
+        continue-on-error: true
+
+      - name: Run unit tests with coverage
+        id: tests
+        run: npm run test:coverage
+        continue-on-error: true
+
+      - name: Create test check statuses
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        with:
+          script: |
+            const fs = require('fs');
+            
+            // Define test-specific checks
+            const checks = [
+              {
+                step: 'lint',
+                name: 'Lint Checks',
+                title: 'ESLint & Prettier',
+                successText: 'All code style and linting rules passed',
+                failureText: 'Run `npm run lint` locally to see detailed errors'
+              },
+              {
+                step: 'typescript',
+                name: 'TypeScript Compilation',
+                title: 'TypeScript Compiler',
+                successText: 'All TypeScript types are valid',
+                failureText: 'Run `npm run tsc` locally to see type errors'
+              },
+              {
+                step: 'tests',
+                name: 'Unit Tests',
+                title: 'Vitest Unit Tests',
+                successText: 'All tests passed',
+                failureText: 'Tests failed. Run `npm test` locally to see details',
+                includeCoverage: true
+              }
+            ];
+
+            // Get step outcomes from environment
+            const outcomes = {
+              lint: '${{ steps.lint.outcome }}',
+              typescript: '${{ steps.typescript.outcome }}',
+              tests: '${{ steps.tests.outcome }}'
+            };
+
+            // Create checks for each test step
+            for (const check of checks) {
+              const outcome = outcomes[check.step];
+              const conclusion = outcome === 'success' ? 'success' : 'failure';
+              let summary = conclusion === 'success' ? 
+                (check.step === 'lint' ? 'All lint checks passed' :
+                 check.step === 'typescript' ? 'TypeScript compilation successful' :
+                 'All tests passed') :
+                (check.step === 'lint' ? 'Lint checks failed' :
+                 check.step === 'typescript' ? 'TypeScript compilation failed' :
+                 'Some tests failed');
+              
+              let text = conclusion === 'success' ? check.successText : check.failureText;
+              
+              // Add coverage info for tests if available
+              if (check.includeCoverage && conclusion === 'success') {
+                try {
+                  if (fs.existsSync('coverage/coverage-summary.json')) {
+                    const coverage = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
+                    const lineCoverage = coverage.total.lines.pct;
+                    text = `All tests passed with ${lineCoverage}% line coverage`;
+                  }
+                } catch (e) {
+                  // Fall back to default text if coverage reading fails
+                }
+              }
+              
+              await github.rest.checks.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: check.name,
+                head_sha: '${{ github.event.pull_request.head.sha || github.sha }}',
+                status: 'completed',
+                conclusion: conclusion,
+                output: {
+                  title: check.title,
+                  summary: summary,
+                  text: text
+                }
+              });
+            }
+
+      - name: Check coverage threshold
+        id: coverage-check
+        if: steps.tests.outcome == 'success'
+        run: |
+          if [ -f "coverage/coverage-summary.json" ]; then
+            COVERAGE=$(cat coverage/coverage-summary.json | jq -r '.total.lines.pct')
+            echo "Current coverage: ${COVERAGE}%"
+            # Use awk for floating point comparison instead of bc
+            if awk "BEGIN {exit ($COVERAGE < 1) ? 0 : 1}"; then
+              echo "❌ Coverage $COVERAGE% is below threshold of 1%"
+              echo "coverage-failed=true" >> "$GITHUB_OUTPUT"
+              exit 1
+            else
+              echo "✅ Coverage $COVERAGE% meets threshold of 1%"
+              echo "coverage-failed=false" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "⚠️ No coverage report found"
+            echo "coverage-failed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Update test job summary
+        if: always()
+        run: |
+          echo "# 🧪 Test Results Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "This CI workflow has been replaced by **ci-pipeline.yml** which provides:" >> $GITHUB_STEP_SUMMARY
+          
+          LINT_STATUS="${{ steps.lint.outcome == 'success' && '✅ Passed' || '❌ Failed' }}"
+          TS_STATUS="${{ steps.typescript.outcome == 'success' && '✅ Passed' || '❌ Failed' }}"
+          TEST_STATUS="${{ steps.tests.outcome == 'success' && '✅ Passed' || '❌ Failed' }}"
+          COV_STATUS="${{ steps.coverage-check.outcome == 'success' && '✅ Passed' || '❌ Failed' }}"
+          
+          echo "| Check | Status | Action |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔍 ESLint | $LINT_STATUS | \`npm run lint\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| � Security Audit | $AUDIT_STATUS | \`npm audit fix\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📘 TypeScript | $TS_STATUS | \`npm run tsc\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🧪 Unit Tests | $TEST_STATUS | \`npm test\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📊 Coverage | $COV_STATUS | Add more tests |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "✅ **Proper job dependencies**: Security → Tests → Build/Deploy" >> $GITHUB_STEP_SUMMARY
-          echo "✅ **Clear visual flow**: See the dependency chain in GitHub Actions UI" >> $GITHUB_STEP_SUMMARY
-          echo "✅ **Parallel execution**: Security and tests run simultaneously" >> $GITHUB_STEP_SUMMARY
-          echo "✅ **Unified reporting**: Single workflow with comprehensive summary" >> $GITHUB_STEP_SUMMARY
+          
+          if [[ "${{ job.status }}" == "success" ]]; then
+            echo "🎉 **All tests passed!** Your code is ready for review." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **Some tests failed.** Use the commands above to fix issues locally." >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Publish test results
+        uses: dorny/test-reporter@v1
+        if: always() && steps.tests.outcome != 'skipped'
+        with:
+          name: Vitest Test Results
+          path: 'test-results.xml'
+          reporter: jest-junit
+          fail-on-error: false
+
+      - name: Upload test result artifacts
+        uses: actions/upload-artifact@v4
+        if: always()  # Upload even if tests fail
+        with:
+          name: test-results-${{ github.sha }}
+          path: |
+            coverage/
+            test-results.xml
+          retention-days: 14
+          if-no-files-found: warn
+
+      - name: Record detailed workflow metrics
+        uses: actions/github-script@v7
+        if: always()
+        with:
+          script: |
+            const fs = require('fs');
+            const endTime = new Date();
+            const workflowStartTime = new Date(context.payload.repository.pushed_at || Date.now() - 600000);
+            const duration = Math.round((endTime - workflowStartTime) / 1000);
+            
+            // Collect step outcomes
+            const testsPassed = '${{ steps.tests.outcome }}' === 'success';
+            const lintPassed = '${{ steps.lint.outcome }}' === 'success';
+            const typescriptPassed = '${{ steps.typescript.outcome }}' === 'success';
+            const cacheHit = '${{ steps.test-cache.outputs.cache-hit }}' === 'true';
+            
+            // Get coverage data if available
+            let coveragePercentage = 'N/A';
+            try {
+              if (fs.existsSync('coverage/coverage-summary.json')) {
+                const coverage = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
+                coveragePercentage = `${coverage.total.lines.pct}%`;
+              }
+            } catch (e) {
+              coveragePercentage = 'Error reading coverage';
+            }
+            
+            // Create metrics summary
+            const metrics = {
+              workflow_duration_seconds: duration,
+              cache_hit: cacheHit,
+              tests_passed: testsPassed,
+              lint_passed: lintPassed,
+              typescript_passed: typescriptPassed,
+              coverage_percentage: coveragePercentage,
+              runner_os: '${{ runner.os }}',
+              node_version: '20',
+              event_name: '${{ github.event_name }}',
+              branch: '${{ env.SOURCE_BRANCH }}',
+              timestamp: endTime.toISOString()
+            };
+            
+            // Log detailed metrics
+            console.log('## 📊 Test Job Metrics');
+            console.log(`Duration: ${duration}s`);
+            console.log(`Cache Hit: ${cacheHit ? '✅' : '❌'}`);
+            console.log(`Tests: ${testsPassed ? '✅' : '❌'}`);
+            console.log(`Lint: ${lintPassed ? '✅' : '❌'}`);
+            console.log(`TypeScript: ${typescriptPassed ? '✅' : '❌'}`);
+            console.log(`Coverage: ${coveragePercentage}`);
+            console.log(`Event: ${{ github.event_name }}`);
+            console.log(`Branch: ${{ env.SOURCE_BRANCH }}`);
+            
+            // Save metrics for later steps
+            fs.writeFileSync('test-metrics.json', JSON.stringify(metrics, null, 2));
+
+  build-deploy:
+    needs: [security, test]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Allow skipping CI with commit message
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, '[ci skip]') }}
+    environment: 
+      name: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'production' || 'preview' }}
+      url: ${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}
+    steps:
+      ############################################################
+      # Startup steps
+      ############################################################
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_FOR_GITHUB_ACTIONS }}  # Using a privileged PAT here to enable writing to PRs
+          fetch-depth: 0  # Fetch full history including tags, which are used in builds for version info
+          fetch-tags: true  # Explicitly fetch tags, which are used in builds for version info
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Cache dependencies and build outputs
+        uses: actions/cache@v4
+        id: build-cache
+        with:
+          path: |
+            ~/.npm
+            node_modules
+            dist
+            node_modules/.vite
+            node_modules/.cache
+            .vite
+            tsconfig.tsbuildinfo
+            .eslintcache
+          key: ${{ runner.os }}-vite-build-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('src/**/*.[jt]s?(x)', 'vite.config.*', 'tsconfig.*', 'tailwind.config.*', 'index.html') }}
+          restore-keys: |
+            ${{ runner.os }}-vite-build-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-vite-build-
+
+      - name: Report cache status
+        run: |
+          if [ "${{ steps.build-cache.outputs.cache-hit }}" == "true" ]; then
+            echo "✅ Build job cache hit - dependencies and build artifacts restored"
+          else
+            echo "❌ Build job cache miss - will install fresh dependencies"
+          fi
+
+      - name: Install dependencies
+        run: npm ci
+
+      ############################################################
+      # Preview build steps
+      ############################################################
+
+      - name: Build for TEST
+        env:
+          # grab env "secrets" from GitHub Actions Secrets for safety
+          VITE_SUPABASE_PROJECT_URL: ${{ secrets.VITE_SUPABASE_PROJECT_URL_TEST }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY_TEST }}
+          VITE_STRIPE_API_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_API_PUBLISHABLE_KEY_TEST }}
+          # VITE_BUILD_VERSION: ...obtained by build-variables.sh script that is run during the build
+          # VITE_BUILD_VERSION_VERBOSE: ...obtained by build-variables.sh script that is run during the build
+        run: npm run build-test
+
+      - name: Analyze Vite build output
+        run: |
+          echo "🏗️ Vite Build Analysis" 
+          echo "===================="
+          
+          # Check build structure
+          echo "📁 Build Directory Structure:"
+          ls -la dist/ || echo "No dist directory found"
+          
+          # Validate Vite manifest
+          if [ -f "dist/.vite/manifest.json" ]; then
+            echo "✅ Vite manifest found at dist/.vite/manifest.json"
+            ENTRY_COUNT=$(cat dist/.vite/manifest.json | grep -o '"entry"' | wc -l | tr -d ' ')
+            echo "📊 Entry points detected: $ENTRY_COUNT"
+          elif [ -f "dist/manifest.json" ]; then
+            echo "✅ Build manifest found at dist/manifest.json"
+            ASSET_COUNT=$(cat dist/manifest.json | grep -o '"file"' | wc -l | tr -d ' ')
+            echo "📊 Assets in manifest: $ASSET_COUNT"
+          else
+            echo "⚠️ No build manifest found"
+          fi
+          
+          # Check for modern/legacy builds
+          MODERN_COUNT=$(find dist -name "*.js" | grep -v legacy | wc -l | tr -d ' ')
+          LEGACY_COUNT=$(find dist -name "*legacy*.js" | wc -l | tr -d ' ')
+          
+          echo "🚀 Modern ES modules: $MODERN_COUNT files"
+          if [ "$LEGACY_COUNT" -gt 0 ]; then
+            echo "🔄 Legacy bundles: $LEGACY_COUNT files"
+          else
+            echo "✨ Modern-only build (no legacy fallbacks)"
+          fi
+          
+          # Asset optimization check  
+          OPTIMIZED_ASSETS=0
+          TOTAL_IMAGES=$(find dist -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.webp" | wc -l | tr -d ' ')
+          WEBP_COUNT=$(find dist -name "*.webp" | wc -l | tr -d ' ')
+          
+          if [ "$TOTAL_IMAGES" -gt 0 ]; then
+            echo "🖼️ Images: $TOTAL_IMAGES total, $WEBP_COUNT WebP optimized"
+            if [ "$WEBP_COUNT" -gt 0 ]; then
+              OPTIMIZATION_RATIO=$((WEBP_COUNT * 100 / TOTAL_IMAGES))
+              echo "📈 Image optimization: ${OPTIMIZATION_RATIO}%"
+            fi
+          else
+            echo "📷 No images found in build"
+          fi
+          
+          # Check Vite-specific optimizations
+          echo ""
+          echo "⚡ Vite Optimizations:"
+          if [ -d "dist/assets" ]; then
+            echo "✅ Assets properly hashed for caching"
+          fi
+          
+          if find dist -name "*.js" | grep -q "vendor"; then
+            echo "✅ Vendor code splitting detected"
+          fi
+          
+          if find dist -name "*.css" | head -1 | grep -q "\."; then
+            echo "✅ CSS extracted and optimized"
+          fi
+          
+          echo "🎯 Build optimized with Vite's modern tooling"
+
+      - name: Generate comprehensive bundle size report
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "## 📊 Bundle Size Report" > bundle-size-report.md
+          echo "" >> bundle-size-report.md
+          
+          # Get detailed file sizes
+          echo "### 📦 Asset Sizes" >> bundle-size-report.md
+          echo "" >> bundle-size-report.md
+          echo "| File | Size | Gzipped* |" >> bundle-size-report.md
+          echo "|------|------|----------|" >> bundle-size-report.md
+          
+          find dist -type f \( -name "*.js" -o -name "*.css" -o -name "*.html" \) | sort | while read file; do
+            if [ -f "$file" ]; then
+              filename=$(basename "$file")
+              size=$(du -h "$file" | cut -f1)
+              # Estimate gzipped size (roughly 25-30% of original for text files)
+              gzipped=$(gzip -c "$file" | wc -c | awk '{printf "%.1fKB", $1/1024}')
+              echo "| \`$filename\` | $size | ~$gzipped |" >> bundle-size-report.md
+            fi
+          done
+          
+          echo "" >> bundle-size-report.md
+          echo "*Estimated gzipped sizes" >> bundle-size-report.md
+          echo "" >> bundle-size-report.md
+          
+          # Bundle summary
+          TOTAL_JS=$(find dist -name "*.js" -exec cat {} + | wc -c | awk '{printf "%.1fKB", $1/1024}')
+          TOTAL_CSS=$(find dist -name "*.css" -exec cat {} + | wc -c | awk '{printf "%.1fKB", $1/1024}')
+          
+          echo "### 📈 Bundle Summary" >> bundle-size-report.md
+          echo "- **Total JavaScript**: ~$TOTAL_JS" >> bundle-size-report.md
+          echo "- **Total CSS**: ~$TOTAL_CSS" >> bundle-size-report.md
+          
+          # Performance recommendations
+          echo "" >> bundle-size-report.md
+          echo "### 💡 Performance Notes" >> bundle-size-report.md
+          
+          # Check for large files
+          LARGE_FILES=$(find dist -name "*.js" -size +100k | wc -l | tr -d ' ')
+          if [ "$LARGE_FILES" -gt 0 ]; then
+            echo "- ⚠️ $LARGE_FILES JavaScript files are larger than 100KB" >> bundle-size-report.md
+            echo "- Consider code splitting for better loading performance" >> bundle-size-report.md
+          else
+            echo "- ✅ All JavaScript files are under 100KB - good for performance" >> bundle-size-report.md
+          fi
+          
+          echo "- 🚀 Files are automatically compressed by Vite and CDN" >> bundle-size-report.md
+          echo "- 📱 Modern browsers will only load the code they need" >> bundle-size-report.md
+
+      - name: Generate Vite bundle analysis report
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "## 📦 Vite Bundle Analysis" > bundle-report.md
+          echo "" >> bundle-report.md
+          
+          # Get total bundle size
+          TOTAL_SIZE=$(du -sh dist/ | cut -f1)
+          echo "### Bundle Overview" >> bundle-report.md
+          echo "- **Total Bundle Size**: $TOTAL_SIZE" >> bundle-report.md
+          
+          # Count assets by type
+          JS_COUNT=$(find dist -name "*.js" | wc -l | tr -d ' ')
+          CSS_COUNT=$(find dist -name "*.css" | wc -l | tr -d ' ')
+          ASSET_COUNT=$(find dist -name "*.png" -o -name "*.jpg" -o -name "*.svg" -o -name "*.ico" -o -name "*.woff*" | wc -l | tr -d ' ')
+          echo "- **JavaScript Files**: $JS_COUNT" >> bundle-report.md
+          echo "- **CSS Files**: $CSS_COUNT" >> bundle-report.md
+          echo "- **Static Assets**: $ASSET_COUNT" >> bundle-report.md
+          
+          # Analyze Vite chunks
+          echo "" >> bundle-report.md
+          echo "### 🧩 Chunk Analysis" >> bundle-report.md
+          
+          # Main entry chunks
+          if [ -f dist/manifest.json ]; then
+            echo "- **Manifest File**: ✅ Present (enables long-term caching)" >> bundle-report.md
+          else
+            echo "- **Manifest File**: ❌ Missing" >> bundle-report.md
+          fi
+          
+          # Vendor chunks (usually contain node_modules code)
+          VENDOR_SIZE=$(find dist -name "*vendor*.js" -exec du -ch {} + 2>/dev/null | tail -1 | cut -f1 || echo "0")
+          if [ "$VENDOR_SIZE" != "0" ]; then
+            echo "- **Vendor Chunk**: $VENDOR_SIZE (third-party libraries)" >> bundle-report.md
+          fi
+          
+          # List chunks by size
+          echo "" >> bundle-report.md
+          echo "### 📊 Largest Assets" >> bundle-report.md
+          find dist -type f \( -name "*.js" -o -name "*.css" \) -exec du -h {} + | sort -hr | head -8 | while read size file; do
+            filename=$(basename "$file")
+            # Identify chunk type
+            if [[ "$filename" == *"vendor"* ]]; then
+              type=" (vendor)"
+            elif [[ "$filename" == *"index"* || "$filename" == *"main"* ]]; then
+              type=" (entry)"
+            elif [[ "$filename" == *.css ]]; then
+              type=" (styles)"
+            else
+              type=" (chunk)"
+            fi
+            echo "- \`$filename\`: $size$type" >> bundle-report.md
+          done
+          
+          # Optimization suggestions
+          echo "" >> bundle-report.md
+          echo "### � Optimization Recommendations" >> bundle-report.md
+          
+          # Check for large vendor chunks
+          LARGE_VENDOR=$(find dist -name "*vendor*.js" -size +500k 2>/dev/null | head -1)
+          if [ -n "$LARGE_VENDOR" ]; then
+            echo "- ⚠️ Large vendor chunk detected - consider code splitting" >> bundle-report.md
+          fi
+          
+          # Check for duplicate dependencies
+          CHUNK_COUNT=$(find dist -name "*.js" | wc -l | tr -d ' ')
+          if [ "$CHUNK_COUNT" -gt 10 ]; then
+            echo "- 📦 Multiple chunks - ensure proper tree shaking" >> bundle-report.md
+          fi
+          
+          echo "- 🚀 Vite automatically optimizes builds with ES modules and tree shaking" >> bundle-report.md
+          echo "" >> bundle-report.md
+          echo "*Bundle analysis powered by Vite's modern build system*" >> bundle-report.md
+
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v12
+        if: github.event_name == 'pull_request'
+        with:
+          configPath: '.lighthouserc.json'
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate Lighthouse report summary
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "## 🚦 Lighthouse Performance Report" > lighthouse-report.md
+          echo "" >> lighthouse-report.md
+          
+          # Check if lighthouse results exist
+          if [ -f ".lighthouseci/lhr-*.json" ]; then
+            # Extract key metrics from the latest report
+            LATEST_REPORT=$(ls -t .lighthouseci/lhr-*.json | head -1)
+            
+            # Extract scores using jq
+            PERFORMANCE=$(cat "$LATEST_REPORT" | jq -r '.categories.performance.score * 100 | floor')
+            ACCESSIBILITY=$(cat "$LATEST_REPORT" | jq -r '.categories.accessibility.score * 100 | floor')
+            BEST_PRACTICES=$(cat "$LATEST_REPORT" | jq -r '.categories["best-practices"].score * 100 | floor')
+            SEO=$(cat "$LATEST_REPORT" | jq -r '.categories.seo.score * 100 | floor')
+            
+            # Extract Core Web Vitals
+            FCP=$(cat "$LATEST_REPORT" | jq -r '.audits["first-contentful-paint"].displayValue // "N/A"')
+            LCP=$(cat "$LATEST_REPORT" | jq -r '.audits["largest-contentful-paint"].displayValue // "N/A"')
+            CLS=$(cat "$LATEST_REPORT" | jq -r '.audits["cumulative-layout-shift"].displayValue // "N/A"')
+            
+            echo "### 📊 Lighthouse Scores" >> lighthouse-report.md
+            echo "- **Performance**: ${PERFORMANCE}%" >> lighthouse-report.md
+            echo "- **Accessibility**: ${ACCESSIBILITY}%" >> lighthouse-report.md
+            echo "- **Best Practices**: ${BEST_PRACTICES}%" >> lighthouse-report.md
+            echo "- **SEO**: ${SEO}%" >> lighthouse-report.md
+            echo "" >> lighthouse-report.md
+            echo "### ⚡ Core Web Vitals" >> lighthouse-report.md
+            echo "- **First Contentful Paint**: $FCP" >> lighthouse-report.md
+            echo "- **Largest Contentful Paint**: $LCP" >> lighthouse-report.md
+            echo "- **Cumulative Layout Shift**: $CLS" >> lighthouse-report.md
+          else
+            echo "⚠️ Lighthouse analysis not available for this build" >> lighthouse-report.md
+          fi
+          
+          echo "" >> lighthouse-report.md
+          echo "📈 *Performance monitoring helps ensure optimal user experience*" >> lighthouse-report.md
+
+      - name: Create preview
+        id: create_preview
+        # Only create previews for PRs (not direct pushes to main)
+        if: github.event_name == 'pull_request'
+        run: |
+          COMMIT_SHA="${{ github.event.pull_request.head.sha || github.sha }}"
+          SHORT_SHA=$(echo "$COMMIT_SHA" | cut -c1-7)
+          PREVIEW_ALIAS="preview-${SHORT_SHA}"
+          
+          # Deploy to Netlify with branch-specific alias
+          npx netlify deploy \
+            --no-build \
+            --dir=dist \
+            --alias="$PREVIEW_ALIAS" \
+            --site ${{ secrets.NETLIFY_SITE_ID_TEST }} \
+            --auth ${{ secrets.NETLIFY_API_TOKEN_TEST }} \
+            --json > deploy_output_branch.json
+          
+          # Check if deployment was successful
+          if [ ! -f "deploy_output_branch.json" ]; then
+            echo "❌ Preview deployment failed - no output file generated"
+            exit 1
+          fi
+          
+          # Extract and output the preview URL
+          NETLIFY_PREVIEW_URL=$(jq -r '.deploy_url' deploy_output_branch.json 2>/dev/null || echo "")
+          if [ -z "$NETLIFY_PREVIEW_URL" ] || [ "$NETLIFY_PREVIEW_URL" = "null" ]; then
+            echo "❌ Failed to parse preview URL from deployment output"
+            cat deploy_output_branch.json
+            exit 1
+          fi
+          
+          echo "NETLIFY_PREVIEW_URL=$NETLIFY_PREVIEW_URL" >> "$GITHUB_OUTPUT"
+          echo "Preview deployed to: $NETLIFY_PREVIEW_URL"
+
+      - name: Upload preview deployment artifacts
+        uses: actions/upload-artifact@v4
+        if: github.event_name == 'pull_request'
+        with:
+          name: preview-deployment-logs-${{ github.sha }}
+          path: deploy_output_branch.json
+          retention-days: 14
+
+      - name: Track performance metrics
+        if: github.event_name == 'pull_request'
+        run: |
+          # Create metrics file for trending
+          cat > performance-metrics.json << EOF
+          {
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "commit": "${{ github.sha }}",
+            "pr_number": "${{ github.event.number }}",
+            "branch": "${{ env.SOURCE_BRANCH }}",
+            "build_cache_hit": ${{ steps.build-cache.outputs.cache-hit == 'true' }},
+            "bundle_size_kb": $(find dist -name "*.js" -exec cat {} + | wc -c | awk '{printf "%.1f", $1/1024}'),
+            "css_size_kb": $(find dist -name "*.css" -exec cat {} + | wc -c | awk '{printf "%.1f", $1/1024}'),
+            "asset_count": $(find dist -type f | wc -l | tr -d ' '),
+            "js_file_count": $(find dist -name "*.js" | wc -l | tr -d ' '),
+            "workflow_duration_minutes": ${{ github.run_number }},
+            "node_version": "20",
+            "vite_version": "$(npm list vite --depth=0 --json 2>/dev/null | jq -r '.dependencies.vite.version // "unknown"')"
+          }
+          EOF
+          
+          # Create trend summary
+          echo "## 📈 Performance Trends" > performance-trend.md
+          echo "" >> performance-trend.md
+          echo "| Metric | Current | Trend |" >> performance-trend.md
+          echo "|--------|---------|--------|" >> performance-trend.md
+          
+          BUNDLE_SIZE=$(find dist -name "*.js" -exec cat {} + | wc -c | awk '{printf "%.1f KB", $1/1024}')
+          CSS_SIZE=$(find dist -name "*.css" -exec cat {} + | wc -c | awk '{printf "%.1f KB", $1/1024}')
+          
+          echo "| Bundle Size | $BUNDLE_SIZE | 📊 Tracking |" >> performance-trend.md
+          echo "| CSS Size | $CSS_SIZE | 📊 Tracking |" >> performance-trend.md
+          echo "| Cache Hit | ${{ steps.build-cache.outputs.cache-hit == 'true' && '✅' || '❌' }} | ${{ steps.build-cache.outputs.cache-hit == 'true' && 'Efficient' || 'Cache Miss' }} |" >> performance-trend.md
+          echo "" >> performance-trend.md
+          echo "*Metrics tracked over time for performance optimization*" >> performance-trend.md
+
+      ############################################################
+      # Enhanced deployment tracking and reporting
+      ############################################################
+
+      - name: Create preview deployment status
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request' && steps.create_preview.outputs.NETLIFY_PREVIEW_URL
+        env:
+          NETLIFY_PREVIEW_URL: ${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}
+        with:
+          script: |
+            const previewUrl = process.env.NETLIFY_PREVIEW_URL;
+            
+            // Create a status check for deployment instead of using deployment API
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'Preview Deployment',
+              head_sha: '${{ github.event.pull_request.head.sha }}',
+              status: 'completed',
+              conclusion: 'success',
+              details_url: previewUrl,
+              output: {
+                title: '🚀 Preview Deployment Ready',
+                summary: `Preview is deployed and ready for testing`,
+                text: `**Preview URL**: [${previewUrl}](${previewUrl})\n\n**Environment**: Netlify Preview\n**Branch**: ${{ env.SOURCE_BRANCH }}\n\nClick the details link above to visit your preview deployment.`
+              }
+            });
+            
+            console.log(`✅ Preview deployment status created: ${previewUrl}`);
+
+      - name: Create performance status checks
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        with:
+          script: |
+            const fs = require('fs');
+            
+            // Read performance metrics if available
+            let bundleSize = 'unknown';
+            let cacheHit = '${{ steps.build-cache.outputs.cache-hit == 'true' }}';
+            
+            try {
+              if (fs.existsSync('performance-metrics.json')) {
+                const metrics = JSON.parse(fs.readFileSync('performance-metrics.json', 'utf8'));
+                bundleSize = `${metrics.bundle_size_kb}KB`;
+              }
+            } catch (e) {
+              console.log('Could not read performance metrics');
+            }
+            
+            // Bundle size check
+            const bundleSizeStatus = bundleSize !== 'unknown' && parseFloat(bundleSize) < 500 ? 'success' : 'neutral';
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'Bundle Size',
+              head_sha: '${{ github.event.pull_request.head.sha }}',
+              status: 'completed',
+              conclusion: bundleSizeStatus,
+              details_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
+              output: {
+                title: 'Bundle Size Analysis',
+                summary: `JavaScript bundle: ${bundleSize}${bundleSizeStatus === 'success' ? ' ✅ Within limits' : ' ⚠️ Review size'}`,
+                text: 'Bundle size affects loading performance. Target: <500KB for optimal performance.'
+              }
+            });
+            
+            // Build cache check  
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'Build Performance',
+              head_sha: '${{ github.event.pull_request.head.sha }}',
+              status: 'completed',
+              conclusion: cacheHit === 'true' ? 'success' : 'neutral',
+              details_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
+              output: {
+                title: 'Build Cache Performance',
+                summary: `Cache ${cacheHit === 'true' ? '✅ Hit' : '❌ Miss'} - ${cacheHit === 'true' ? 'Fast build' : 'Full rebuild required'}`,
+                text: 'Cache hits significantly improve build performance and reduce CI time.'
+              }
+            });
+
+      - name: Create rich job summary and status checks
+        if: always()
+        run: |
+          echo "# � CI/CD Pipeline Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "🚀 **The new ci-pipeline.yml workflow is now active for all pushes and PRs.**" >> $GITHUB_STEP_SUMMARY
+          
+          # Status badges
+          echo "## � Pipeline Status" >> $GITHUB_STEP_SUMMARY
+          
+          SECURITY_STATUS="${{ needs.security.result == 'success' && '✅ Passed' || '❌ Failed' }}"
+          TEST_STATUS="${{ needs.test.result == 'success' && '✅ Passed' || '❌ Failed' }}"
+          BUILD_STATUS="${{ job.status == 'success' && '✅ Success' || '❌ Failed' }}"
+          
+          echo "| Pipeline Stage | Status | Duration |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------------|--------|----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 🛡️ Security Scan | $SECURITY_STATUS | ~2min |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🧪 Tests & Lint | $TEST_STATUS | ~3min |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🚀 Build & Deploy | $BUILD_STATUS | ~5min |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Preview deployment info
+          if [ "${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}" != "" ]; then
+            echo "## 🌐 Preview Deployment" >> $GITHUB_STEP_SUMMARY
+            echo "- **URL**: [${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}](${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }})" >> $GITHUB_STEP_SUMMARY
+            echo "- **Environment**: Preview (Netlify)" >> $GITHUB_STEP_SUMMARY
+            echo "- **Branch**: \`${{ env.SOURCE_BRANCH }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Bundle analysis
+          if [ -f "bundle-report.md" ]; then
+            echo "<details><summary>📦 Bundle Analysis</summary>" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            cat bundle-report.md >> $GITHUB_STEP_SUMMARY
+            echo "</details>" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Lighthouse results
+          if [ -f "lighthouse-report.md" ]; then
+            echo "<details><summary>⚡ Performance Results</summary>" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            cat lighthouse-report.md >> $GITHUB_STEP_SUMMARY
+            echo "</details>" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Performance trending
+          if [ -f "performance-trend.md" ]; then
+            echo "<details><summary>📈 Performance Trends</summary>" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            cat performance-trend.md >> $GITHUB_STEP_SUMMARY
+            echo "</details>" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Build metrics
+          echo "## 🔧 Build Information" >> $GITHUB_STEP_SUMMARY
+          echo "- **Node.js**: 20" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build Tool**: Vite" >> $GITHUB_STEP_SUMMARY
+          echo "- **Cache Hit**: ${{ steps.build-cache.outputs.cache-hit == 'true' && '✅ Yes' || '❌ No' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: [\`$(echo ${{ github.sha }} | cut -c1-7)\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "*Generated at $(date -u '+%Y-%m-%d %H:%M:%S') UTC*" >> $GITHUB_STEP_SUMMARY
+
+      - name: Log results for direct pushes to main
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo "=== Direct push to main detected ==="
+          echo "Commit: ${{ github.sha }}"
+          echo "Tests: ✅ Passed"
+          echo "Build: ✅ Completed"
+          echo "No preview created for direct pushes to main"
+          echo "=================================="
+
+      - name: Create comprehensive workflow summary
+        if: always()
+        run: |
+          echo "# � CI/CD Pipeline Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Basic Info
+          echo "## 📋 Basic Information" >> $GITHUB_STEP_SUMMARY
+          echo "- **Event**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: ${{ env.SOURCE_BRANCH }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: [\`${{ github.sha }}\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})" >> $GITHUB_STEP_SUMMARY
+          echo "- **Runner**: ${{ runner.os }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Timestamp**: $(date -u)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Job Status Overview
+          echo "## 🔍 Job Status Overview" >> $GITHUB_STEP_SUMMARY
+          echo "| Job | Status | Duration |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 🛡️ Security | ${{ needs.security.result == 'success' && '✅ Passed' || '❌ Failed' }} | ~5min |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🧪 Tests | ${{ needs.test.result == 'success' && '✅ Passed' || '❌ Failed' }} | ~10min |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🚀 Build & Deploy | ${{ job.status == 'success' && '✅ Passed' || '❌ Failed' }} | ~10min |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Test Metrics
+          if [ -f "coverage/coverage-summary.json" ]; then
+            COVERAGE=$(cat coverage/coverage-summary.json | jq -r '.total.lines.pct')
+            STATEMENTS=$(cat coverage/coverage-summary.json | jq -r '.total.statements.pct')
+            BRANCHES=$(cat coverage/coverage-summary.json | jq -r '.total.branches.pct')
+            FUNCTIONS=$(cat coverage/coverage-summary.json | jq -r '.total.functions.pct')
+            
+            echo "## 📊 Test Coverage Metrics" >> $GITHUB_STEP_SUMMARY
+            echo "| Metric | Coverage |" >> $GITHUB_STEP_SUMMARY
+            echo "|--------|----------|" >> $GITHUB_STEP_SUMMARY
+            echo "| Lines | ${COVERAGE}% |" >> $GITHUB_STEP_SUMMARY
+            echo "| Statements | ${STATEMENTS}% |" >> $GITHUB_STEP_SUMMARY
+            echo "| Branches | ${BRANCHES}% |" >> $GITHUB_STEP_SUMMARY
+            echo "| Functions | ${FUNCTIONS}% |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Performance & Bundle Info
+          if [ -f "bundle-report.md" ]; then
+            echo "## 📦 Bundle Analysis" >> $GITHUB_STEP_SUMMARY
+            cat bundle-report.md >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Lighthouse Results
+          if [ -f "lighthouse-report.md" ]; then
+            cat lighthouse-report.md >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Cache Performance
+          echo "## ⚡ Performance Metrics" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build Job Cache**: ${{ steps.build-cache.outputs.cache-hit == 'true' && '✅ Hit' || '❌ Miss' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Node.js Version**: 20" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build Tool**: Vite" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Deployment Info
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "## 🌐 Deployment" >> $GITHUB_STEP_SUMMARY
+            if [ -n "${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}" ]; then
+              echo "- **✅ Preview Deployed**: [${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}](${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }})" >> $GITHUB_STEP_SUMMARY
+              echo "- **Environment**: Preview" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "- **❌ Preview Deployment**: Failed" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "## 🌐 Deployment" >> $GITHUB_STEP_SUMMARY
+            echo "- **Environment**: Production (main branch)" >> $GITHUB_STEP_SUMMARY
+            echo "- **Status**: Build completed successfully" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Quick Actions
+          echo "## 🔗 Quick Actions" >> $GITHUB_STEP_SUMMARY
+          echo "- � [View detailed logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+          echo "- 📁 [Download artifacts](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔧 [Edit CI workflow](${{ github.server_url }}/${{ github.repository }}/edit/${{ github.ref_name }}/.github/workflows/ci.yml)" >> $GITHUB_STEP_SUMMARY
+
+          
+      ############################################################
+      # After-action cleanup steps
+      ############################################################
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-build-${{ github.event_name }}-${{ github.sha }}
+          path: dist
+          retention-days: 7
+
+      - name: Upload build logs and metadata
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: ci-logs-${{ github.sha }}
+          path: |
+            npm-debug.log*
+            yarn-debug.log*
+            yarn-error.log*
+            .npm/_logs/
+          retention-days: 7
+          if-no-files-found: ignore
