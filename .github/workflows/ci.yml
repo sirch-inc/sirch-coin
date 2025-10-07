@@ -48,9 +48,90 @@ permissions:
 
 
 jobs:
-  build-test-and-deploy:
+  security:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
+    # Allow skipping CI with commit message
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, '[ci skip]') }}
+    steps:
+      ############################################################
+      # Startup steps
+      ############################################################
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_FOR_GITHUB_ACTIONS }}  # Using a privileged PAT here to enable writing to PRs
+          fetch-depth: 0  # Fetch full history including tags, which are used in builds for version info
+          fetch-tags: true  # Explicitly fetch tags, which are used in builds for version info
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Install dependencies
+        run: npm ci
+
+      ############################################################
+      # Security scanning steps
+      ############################################################
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        if: github.event_name == 'pull_request'
+        with:
+          fail-on-severity: moderate
+          allow-licenses: MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: Run NPM security audit
+        id: security
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
+      - name: Create security check status
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        with:
+          script: |
+            const outcome = '${{ steps.security.outcome }}';
+            const conclusion = outcome === 'success' ? 'success' : 'failure';
+            const summary = conclusion === 'success' ? 'No security vulnerabilities found' : 'Security vulnerabilities detected';
+            const text = conclusion === 'success' ? 'All dependencies are secure' : 'Run `npm audit` locally to see security issues and `npm audit fix` to resolve them';
+            
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'Security Audit',
+              head_sha: '${{ github.event.pull_request.head.sha || github.sha }}',
+              status: 'completed',
+              conclusion: conclusion,
+              output: {
+                title: 'Security Audit',
+                summary: summary,
+                text: text
+              }
+            });
+
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
     # Allow skipping CI with commit message
     if: ${{ !contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, '[ci skip]') }}
     steps:
@@ -87,33 +168,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-
-      ############################################################
-      # Security scanning steps
-      ############################################################
-
-      - name: Dependency Review
-        uses: actions/dependency-review-action@v4
-        if: github.event_name == 'pull_request'
-        with:
-          fail-on-severity: moderate
-          allow-licenses: MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC
-
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-
-      - name: Upload Trivy scan results
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: 'trivy-results.sarif'
-
-
       ############################################################
       # Test steps
       ############################################################
@@ -128,24 +182,19 @@ jobs:
         run: npm run tsc
         continue-on-error: true
 
-      - name: Run NPM security audit
-        id: security
-        run: npm audit --audit-level=moderate
-        continue-on-error: true
-
       - name: Run unit tests with coverage
         id: tests
         run: npm run test:coverage
         continue-on-error: true
 
-      - name: Create all test check statuses
+      - name: Create test check statuses
         uses: actions/github-script@v7
         if: github.event_name == 'pull_request'
         with:
           script: |
             const fs = require('fs');
             
-            // Define all checks with their configurations
+            // Define test-specific checks
             const checks = [
               {
                 step: 'lint',
@@ -162,13 +211,6 @@ jobs:
                 failureText: 'Run `npm run tsc` locally to see type errors'
               },
               {
-                step: 'security',
-                name: 'Security Audit',
-                title: 'NPM Security Audit',
-                successText: 'All dependencies are secure',
-                failureText: 'Run `npm audit` locally to see security issues and `npm audit fix` to resolve them'
-              },
-              {
                 step: 'tests',
                 name: 'Unit Tests',
                 title: 'Vitest Unit Tests',
@@ -182,7 +224,6 @@ jobs:
             const outcomes = {
               lint: '${{ steps.lint.outcome }}',
               typescript: '${{ steps.typescript.outcome }}',
-              security: '${{ steps.security.outcome }}',
               tests: '${{ steps.tests.outcome }}'
             };
 
@@ -193,11 +234,9 @@ jobs:
               let summary = conclusion === 'success' ? 
                 (check.step === 'lint' ? 'All lint checks passed' :
                  check.step === 'typescript' ? 'TypeScript compilation successful' :
-                 check.step === 'security' ? 'No security vulnerabilities found' :
                  'All tests passed') :
                 (check.step === 'lint' ? 'Lint checks failed' :
                  check.step === 'typescript' ? 'TypeScript compilation failed' :
-                 check.step === 'security' ? 'Security vulnerabilities detected' :
                  'Some tests failed');
               
               let text = conclusion === 'success' ? check.successText : check.failureText;
@@ -255,7 +294,6 @@ jobs:
         if: |
           (steps.lint.outcome == 'failure' || 
            steps.typescript.outcome == 'failure' || 
-           steps.security.outcome == 'failure' || 
            steps.tests.outcome == 'failure' ||
            steps.coverage-check.outcome == 'failure') && 
           github.event_name == 'pull_request'
@@ -264,7 +302,6 @@ jobs:
             const failures = [];
             if ('${{ steps.lint.outcome }}' === 'failure') failures.push('🔍 Lint checks');
             if ('${{ steps.typescript.outcome }}' === 'failure') failures.push('📘 TypeScript compilation');
-            if ('${{ steps.security.outcome }}' === 'failure') failures.push('🔒 Security audit');
             if ('${{ steps.tests.outcome }}' === 'failure') failures.push('🧪 Unit tests');
             if ('${{ steps.coverage-check.outcome }}' === 'failure') failures.push('📊 Coverage threshold');
             
@@ -273,7 +310,7 @@ jobs:
               const workflowUrl = context.payload.repository.html_url + '/actions/runs/' + context.runId;
               
               const body = [
-                '## ❌ CI Quality Checks Failed',
+                '## ❌ CI Test Checks Failed',
                 '',
                 'The following checks failed:',
                 failureList,
@@ -281,7 +318,6 @@ jobs:
                 '### 🛠️ How to Fix:',
                 '- **Lint issues**: Run `npm run lint` locally',
                 '- **TypeScript errors**: Run `npm run tsc` locally',
-                '- **Security vulnerabilities**: Run `npm audit` locally',
                 '- **Test failures**: Run `npm test` locally',
                 '- **Coverage issues**: Add more tests to reach coverage threshold',
                 '',
@@ -331,14 +367,71 @@ jobs:
             const testsPassed = '${{ steps.tests.outcome }}' === 'success';
             const lintPassed = '${{ steps.lint.outcome }}' === 'success';
             const typescriptPassed = '${{ steps.typescript.outcome }}' === 'success';
-            const securityPassed = '${{ steps.security.outcome }}' === 'success';
             
-            console.log(`Workflow duration: ${duration}s`);
+            console.log(`Test workflow duration: ${duration}s`);
             console.log(`Tests passed: ${testsPassed}`);
             console.log(`Lint passed: ${lintPassed}`);
             console.log(`TypeScript passed: ${typescriptPassed}`);
-            console.log(`Security passed: ${securityPassed}`);
 
+      - name: Upload test result artifacts
+        uses: actions/upload-artifact@v4
+        if: always()  # Upload even if tests fail
+        with:
+          name: test-results-${{ github.sha }}
+          path: |
+            coverage/
+            test-results.xml
+          retention-days: 14
+          if-no-files-found: warn
+
+      - name: Publish test results
+        uses: dorny/test-reporter@v1
+        if: always() && steps.tests.outcome != 'skipped'
+        with:
+          name: Vitest Test Results
+          path: 'test-results.xml'
+          reporter: jest-junit
+          fail-on-error: false
+
+  build-deploy:
+    needs: [security, test]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Allow skipping CI with commit message
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, '[ci skip]') }}
+    steps:
+      ############################################################
+      # Startup steps
+      ############################################################
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_FOR_GITHUB_ACTIONS }}  # Using a privileged PAT here to enable writing to PRs
+          fetch-depth: 0  # Fetch full history including tags, which are used in builds for version info
+          fetch-tags: true  # Explicitly fetch tags, which are used in builds for version info
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Cache build outputs
+        uses: actions/cache@v4
+        with:
+          path: |
+            dist
+            node_modules/.cache
+            .next/cache
+          key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-build-
+
+      - name: Install dependencies
+        run: npm ci
 
       ############################################################
       # Preview build steps
