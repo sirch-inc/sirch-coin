@@ -859,39 +859,32 @@ jobs:
       # Enhanced deployment tracking and reporting
       ############################################################
 
-      - name: Create deployment and status
+      - name: Create preview deployment status
         uses: actions/github-script@v7
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && steps.create_preview.outputs.NETLIFY_PREVIEW_URL
         env:
           NETLIFY_PREVIEW_URL: ${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}
         with:
           script: |
             const previewUrl = process.env.NETLIFY_PREVIEW_URL;
-            const success = !!previewUrl;
             
-            if (success) {
-              // Create GitHub deployment
-              const deployment = await github.rest.repos.createDeployment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: '${{ github.event.pull_request.head.sha }}',
-                environment: 'preview',
-                description: `Preview deployment for PR #${{ github.event.number }}`,
-                auto_merge: false,
-                required_contexts: []
-              });
-
-              // Create deployment status
-              await github.rest.repos.createDeploymentStatus({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                deployment_id: deployment.data.id,
-                state: 'success',
-                environment_url: previewUrl,
-                description: '🚀 Preview deployment ready',
-                log_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
-              });
-            }
+            // Create a status check for deployment instead of using deployment API
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'Preview Deployment',
+              head_sha: '${{ github.event.pull_request.head.sha }}',
+              status: 'completed',
+              conclusion: 'success',
+              details_url: previewUrl,
+              output: {
+                title: '🚀 Preview Deployment Ready',
+                summary: `Preview is deployed and ready for testing`,
+                text: `**Preview URL**: [${previewUrl}](${previewUrl})\n\n**Environment**: Netlify Preview\n**Branch**: ${{ env.SOURCE_BRANCH }}\n\nClick the details link above to visit your preview deployment.`
+              }
+            });
+            
+            console.log(`✅ Preview deployment status created: ${previewUrl}`);
 
       - name: Create performance status checks
         uses: actions/github-script@v7
