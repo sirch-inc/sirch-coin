@@ -671,17 +671,55 @@ jobs:
           
           echo "🎯 Build optimized with Vite's modern tooling"
 
-      - name: Analyze bundle size
-        uses: preactjs/compressed-size-action@v2
+      - name: Generate comprehensive bundle size report
         if: github.event_name == 'pull_request'
-        with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
-          pattern: "./dist/**/*.{js,css,html}"
-          exclude: "{**/*.map,**/node_modules/**}"
-          strip-hash: "\\.(\\w{8})\\."
-          minimum-change-threshold: 100
-          show-total: true
-          collapse-unchanged: true
+        run: |
+          echo "## 📊 Bundle Size Report" > bundle-size-report.md
+          echo "" >> bundle-size-report.md
+          
+          # Get detailed file sizes
+          echo "### 📦 Asset Sizes" >> bundle-size-report.md
+          echo "" >> bundle-size-report.md
+          echo "| File | Size | Gzipped* |" >> bundle-size-report.md
+          echo "|------|------|----------|" >> bundle-size-report.md
+          
+          find dist -type f \( -name "*.js" -o -name "*.css" -o -name "*.html" \) | sort | while read file; do
+            if [ -f "$file" ]; then
+              filename=$(basename "$file")
+              size=$(du -h "$file" | cut -f1)
+              # Estimate gzipped size (roughly 25-30% of original for text files)
+              gzipped=$(gzip -c "$file" | wc -c | awk '{printf "%.1fKB", $1/1024}')
+              echo "| \`$filename\` | $size | ~$gzipped |" >> bundle-size-report.md
+            fi
+          done
+          
+          echo "" >> bundle-size-report.md
+          echo "*Estimated gzipped sizes" >> bundle-size-report.md
+          echo "" >> bundle-size-report.md
+          
+          # Bundle summary
+          TOTAL_JS=$(find dist -name "*.js" -exec cat {} + | wc -c | awk '{printf "%.1fKB", $1/1024}')
+          TOTAL_CSS=$(find dist -name "*.css" -exec cat {} + | wc -c | awk '{printf "%.1fKB", $1/1024}')
+          
+          echo "### 📈 Bundle Summary" >> bundle-size-report.md
+          echo "- **Total JavaScript**: ~$TOTAL_JS" >> bundle-size-report.md
+          echo "- **Total CSS**: ~$TOTAL_CSS" >> bundle-size-report.md
+          
+          # Performance recommendations
+          echo "" >> bundle-size-report.md
+          echo "### 💡 Performance Notes" >> bundle-size-report.md
+          
+          # Check for large files
+          LARGE_FILES=$(find dist -name "*.js" -size +100k | wc -l | tr -d ' ')
+          if [ "$LARGE_FILES" -gt 0 ]; then
+            echo "- ⚠️ $LARGE_FILES JavaScript files are larger than 100KB" >> bundle-size-report.md
+            echo "- Consider code splitting for better loading performance" >> bundle-size-report.md
+          else
+            echo "- ✅ All JavaScript files are under 100KB - good for performance" >> bundle-size-report.md
+          fi
+          
+          echo "- 🚀 Files are automatically compressed by Vite and CDN" >> bundle-size-report.md
+          echo "- 📱 Modern browsers will only load the code they need" >> bundle-size-report.md
 
       - name: Generate Vite bundle analysis report
         if: github.event_name == 'pull_request'

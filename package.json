@@ -7,7 +7,6 @@
     "dev": ". ./build-variables.sh && vite --mode development",
     "test-env": ". ./build-variables.sh && vite --mode test",
     "prod-env": ". ./build-variables.sh && vite --mode production",
-    "build": "echo 'Build already completed in previous step'",
     "build-dev": ". ./build-variables.sh && vite build --mode development",
     "build-test": ". ./build-variables.sh && vite build --mode test",
     "build-production": ". ./build-variables.sh && vite build --mode production",
