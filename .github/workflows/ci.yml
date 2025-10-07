@@ -1,108 +1,34 @@
-# Main CI orchestrator workflow
-# Coordinates security scans, tests, and deployments across separate workflow files
+# Legacy CI workflow - now replaced by ci-pipeline.yml
 # 
-# This workflow provides a unified status check and overview of all CI processes.
-# The actual work is done by separate, focused workflows:
-# - security.yml: Security scans and vulnerability checks
-# - test.yml: Linting, TypeScript compilation, and unit tests  
-# - deploy.yml: Building and deploying to preview/production
-#
-# Artifact Retention: CI builds (7d), Test results (14d), Preview logs (14d)
-# See: CICD_ARTIFACT_RETENTION_POLICY.md for complete retention strategy
+# This workflow is kept for reference but disabled.
+# The new ci-pipeline.yml provides a unified workflow with proper job dependencies
+# that shows the security -> test -> build/deploy flow in the GitHub Actions UI.
 
-name: CI
+name: CI (Legacy - Disabled)
 
 on:
-  push:
-    branches: [main]
-    paths-ignore:
-      - 'docs/**'
-      - '**/*.md'
-  
-  pull_request:
-    branches: [main]
-    paths-ignore:
-      - 'docs/**'
-      - '**/*.md'
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+  # Disabled - no triggers
+  workflow_dispatch:  # Manual trigger only
 
 permissions:
   contents: read
-  pull-requests: write
-  checks: write
-  actions: read
 
 jobs:
-  # This job waits for all individual workflows to complete
-  ci-status:
+  # Placeholder job that explains the migration
+  migration-notice:
     runs-on: ubuntu-latest
-    timeout-minutes: 2
-    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, '[ci skip]') }}
-    
-    outputs:
-      status: success
+    timeout-minutes: 1
     
     steps:
-      - name: Wait for workflow completion
-        uses: actions/github-script@v7
-        id: status-check
-        with:
-          script: |
-            const workflows = ['Security Scan', 'Test & Lint', 'Build & Deploy'];
-            let allPassed = true;
-            let statusMessage = '';
-            
-            // For workflow_run events, we can get more detailed status
-            if (context.eventName === 'workflow_run') {
-              console.log(`Triggered by: ${context.payload.workflow_run.name}`);
-              console.log(`Status: ${context.payload.workflow_run.conclusion}`);
-            }
-            
-            // Create a unified status check
-            await github.rest.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'CI Pipeline Status',
-              head_sha: context.payload.pull_request?.head?.sha || context.sha,
-              status: 'completed',
-              conclusion: 'success',  // This will be updated based on individual workflow results
-              output: {
-                title: '🔄 CI Pipeline Orchestrator',
-                summary: 'Coordinating security, testing, and deployment workflows',
-                text: `This workflow orchestrates the following CI processes:
-                
-                **🛡️ Security Scan**: Dependency review, vulnerability scanning, and security audits
-                **🧪 Test & Lint**: ESLint, TypeScript compilation, and unit tests
-                **🚀 Build & Deploy**: Vite builds, bundle analysis, and preview deployments
-                
-                Check individual workflow runs for detailed results.`
-              }
-            });
-            
-            return { status: 'success' };
-
-      - name: Update CI job summary
+      - name: Migration Notice
         run: |
-          echo "# 🔄 CI Pipeline Overview" >> $GITHUB_STEP_SUMMARY
+          echo "# 🔄 CI Workflow Migration" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "This orchestrator workflow coordinates multiple specialized CI workflows:" >> $GITHUB_STEP_SUMMARY
+          echo "This CI workflow has been replaced by **ci-pipeline.yml** which provides:" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "## 📋 Active Workflows" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Proper job dependencies**: Security → Tests → Build/Deploy" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Clear visual flow**: See the dependency chain in GitHub Actions UI" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Parallel execution**: Security and tests run simultaneously" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Unified reporting**: Single workflow with comprehensive summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Workflow | Purpose | Runs |" >> $GITHUB_STEP_SUMMARY
-          echo "|----------|---------|------|" >> $GITHUB_STEP_SUMMARY
-          echo "| 🛡️ Security Scan | Vulnerability & dependency checks | Parallel |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🧪 Test & Lint | Code quality & testing | Parallel |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🚀 Build & Deploy | Build, bundle analysis & deployment | After tests |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "## ⚡ Benefits of Separation" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Parallel execution**: Security and tests run simultaneously" >> $GITHUB_STEP_SUMMARY
-          echo "- **Focused responsibility**: Each workflow has a clear purpose" >> $GITHUB_STEP_SUMMARY
-          echo "- **Better maintainability**: Smaller, more manageable workflow files" >> $GITHUB_STEP_SUMMARY
-          echo "- **Flexible triggering**: Can run workflows independently" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Check the **Actions** tab to see individual workflow results." >> $GITHUB_STEP_SUMMARY
+          echo "🚀 **The new ci-pipeline.yml workflow is now active for all pushes and PRs.**" >> $GITHUB_STEP_SUMMARY
