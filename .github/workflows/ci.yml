@@ -72,6 +72,28 @@ jobs:
           cache: 'npm'
           cache-dependency-path: '**/package-lock.json'
 
+      - name: Cache dependencies and build outputs
+        uses: actions/cache@v4
+        id: security-cache
+        with:
+          path: |
+            ~/.npm
+            node_modules
+            dist
+            .eslintcache
+          key: ${{ runner.os }}-security-deps-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('src/**/*.[jt]s?(x)') }}
+          restore-keys: |
+            ${{ runner.os }}-security-deps-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-security-deps-
+
+      - name: Report cache status
+        run: |
+          if [ "${{ steps.security-cache.outputs.cache-hit }}" == "true" ]; then
+            echo "✅ Security job cache hit - dependencies restored from cache"
+          else
+            echo "❌ Security job cache miss - will install fresh dependencies"
+          fi
+
       - name: Install dependencies
         run: npm ci
 
@@ -163,17 +185,31 @@ jobs:
           cache: 'npm'
           cache-dependency-path: '**/package-lock.json'
 
-      - name: Cache build outputs
+      - name: Cache dependencies and build outputs
         uses: actions/cache@v4
+        id: test-cache
         with:
           path: |
+            ~/.npm
+            node_modules
             dist
             node_modules/.cache
             .next/cache
-          key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx') }}
+            .eslintcache
+            tsconfig.tsbuildinfo
+            coverage
+          key: ${{ runner.os }}-test-deps-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('src/**/*.[jt]s?(x)', 'test/**/*.[jt]s?(x)', '*.config.*') }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}-
-            ${{ runner.os }}-build-
+            ${{ runner.os }}-test-deps-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-test-deps-
+
+      - name: Report cache status
+        run: |
+          if [ "${{ steps.test-cache.outputs.cache-hit }}" == "true" ]; then
+            echo "✅ Test job cache hit - dependencies and build outputs restored"
+          else
+            echo "❌ Test job cache miss - will install fresh dependencies"
+          fi
 
       - name: Install dependencies
         run: npm ci
@@ -184,7 +220,7 @@ jobs:
 
       - name: Run lint checks
         id: lint
-        run: npm run lint
+        run: npm run lint -- --cache --cache-location .eslintcache
         continue-on-error: true
 
       - name: Check TypeScript compilation
@@ -407,17 +443,31 @@ jobs:
           cache: 'npm'
           cache-dependency-path: '**/package-lock.json'
 
-      - name: Cache build outputs
+      - name: Cache dependencies and build outputs
         uses: actions/cache@v4
+        id: build-cache
         with:
           path: |
+            ~/.npm
+            node_modules
             dist
             node_modules/.cache
             .next/cache
-          key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx') }}
+            .vite
+            tsconfig.tsbuildinfo
+            .eslintcache
+          key: ${{ runner.os }}-build-deps-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('src/**/*.[jt]s?(x)', 'vite.config.*', 'tsconfig.*', 'tailwind.config.*') }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}-
-            ${{ runner.os }}-build-
+            ${{ runner.os }}-build-deps-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-build-deps-
+
+      - name: Report cache status
+        run: |
+          if [ "${{ steps.build-cache.outputs.cache-hit }}" == "true" ]; then
+            echo "✅ Build job cache hit - dependencies and build artifacts restored"
+          else
+            echo "❌ Build job cache miss - will install fresh dependencies"
+          fi
 
       - name: Install dependencies
         run: npm ci
