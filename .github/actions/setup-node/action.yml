@@ -1,27 +1,27 @@
-name: "Setup Node.js Environment"
-description: "Sets up Node.js with caching and dependency installation"
+name: 'Setup Node.js Environment'
+description: 'Sets up Node.js with caching and dependency installation'
 inputs:
   node-version:
-    description: "Node.js version to use"
+    description: 'Node.js version to use'
     required: false
-    default: "20"
+    default: '20'
   cache-key-suffix:
-    description: "Suffix for cache key to differentiate between jobs"
+    description: 'Suffix for cache key to differentiate between jobs'
     required: true
 outputs:
   cache-hit:
-    description: "Whether the cache was hit"
+    description: 'Whether the cache was hit'
     value: ${{ steps.node-cache.outputs.cache-hit }}
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: Use Node.js
       uses: actions/setup-node@v4
       with:
         node-version: ${{ inputs.node-version }}
-        cache: "npm"
-        cache-dependency-path: "**/package-lock.json"
-
+        cache: 'npm'
+        cache-dependency-path: '**/package-lock.json'
+    
     - name: Cache dependencies and build outputs
       uses: actions/cache@v4
       id: node-cache
@@ -38,7 +38,7 @@ runs:
         restore-keys: |
           ${{ runner.os }}-vite-${{ inputs.cache-key-suffix }}-${{ hashFiles('**/package-lock.json') }}-
           ${{ runner.os }}-vite-${{ inputs.cache-key-suffix }}-
-
+    
     - name: Report cache status
       shell: bash
       run: |
@@ -47,7 +47,7 @@ runs:
         else
           echo "❌ Cache miss - will install fresh dependencies"
         fi
-
+    
     - name: Install dependencies
       shell: bash
       run: npm ci
