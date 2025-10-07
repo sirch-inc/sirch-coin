@@ -365,50 +365,31 @@ jobs:
             echo "coverage-failed=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Notify on test failures
-        uses: actions/github-script@v7
-        if: |
-          (steps.lint.outcome == 'failure' || 
-           steps.typescript.outcome == 'failure' || 
-           steps.tests.outcome == 'failure' ||
-           steps.coverage-check.outcome == 'failure') && 
-          github.event_name == 'pull_request'
-        with:
-          script: |
-            const failures = [];
-            if ('${{ steps.lint.outcome }}' === 'failure') failures.push('🔍 Lint checks');
-            if ('${{ steps.typescript.outcome }}' === 'failure') failures.push('📘 TypeScript compilation');
-            if ('${{ steps.tests.outcome }}' === 'failure') failures.push('🧪 Unit tests');
-            if ('${{ steps.coverage-check.outcome }}' === 'failure') failures.push('📊 Coverage threshold');
-            
-            if (failures.length > 0) {
-              const failureList = failures.map(f => '- ' + f).join('\n');
-              const workflowUrl = context.payload.repository.html_url + '/actions/runs/' + context.runId;
-              
-              const body = [
-                '## ❌ CI Test Checks Failed',
-                '',
-                'The following checks failed:',
-                failureList,
-                '',
-                '### 🛠️ How to Fix:',
-                '- **Lint issues**: Run `npm run lint` locally',
-                '- **TypeScript errors**: Run `npm run tsc` locally',
-                '- **Test failures**: Run `npm test` locally',
-                '- **Coverage issues**: Add more tests to reach coverage threshold',
-                '',
-                '📋 Check the [workflow logs](' + workflowUrl + ') for detailed error information.',
-                '',
-                '*Note: The preview build will still be created so you can test your changes.*'
-              ].join('\n');
-
-              await github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: body
-              });
-            }
+      - name: Update test job summary
+        if: always()
+        run: |
+          echo "# 🧪 Test Results Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          LINT_STATUS="${{ steps.lint.outcome == 'success' && '✅ Passed' || '❌ Failed' }}"
+          TS_STATUS="${{ steps.typescript.outcome == 'success' && '✅ Passed' || '❌ Failed' }}"
+          TEST_STATUS="${{ steps.tests.outcome == 'success' && '✅ Passed' || '❌ Failed' }}"
+          COV_STATUS="${{ steps.coverage-check.outcome == 'success' && '✅ Passed' || '❌ Failed' }}"
+          
+          echo "| Check | Status | Action |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔍 ESLint | $LINT_STATUS | \`npm run lint\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| � Security Audit | $AUDIT_STATUS | \`npm audit fix\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📘 TypeScript | $TS_STATUS | \`npm run tsc\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🧪 Unit Tests | $TEST_STATUS | \`npm test\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📊 Coverage | $COV_STATUS | Add more tests |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [[ "${{ job.status }}" == "success" ]]; then
+            echo "🎉 **All tests passed!** Your code is ready for review." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **Some tests failed.** Use the commands above to fix issues locally." >> $GITHUB_STEP_SUMMARY
+          fi
 
       - name: Publish test results
         uses: dorny/test-reporter@v1
@@ -838,151 +819,199 @@ jobs:
           path: deploy_output_branch.json
           retention-days: 14
 
+      - name: Track performance metrics
+        if: github.event_name == 'pull_request'
+        run: |
+          # Create metrics file for trending
+          cat > performance-metrics.json << EOF
+          {
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "commit": "${{ github.sha }}",
+            "pr_number": "${{ github.event.number }}",
+            "branch": "${{ env.SOURCE_BRANCH }}",
+            "build_cache_hit": ${{ steps.build-cache.outputs.cache-hit == 'true' }},
+            "bundle_size_kb": $(find dist -name "*.js" -exec cat {} + | wc -c | awk '{printf "%.1f", $1/1024}'),
+            "css_size_kb": $(find dist -name "*.css" -exec cat {} + | wc -c | awk '{printf "%.1f", $1/1024}'),
+            "asset_count": $(find dist -type f | wc -l | tr -d ' '),
+            "js_file_count": $(find dist -name "*.js" | wc -l | tr -d ' '),
+            "workflow_duration_minutes": ${{ github.run_number }},
+            "node_version": "20",
+            "vite_version": "$(npm list vite --depth=0 --json 2>/dev/null | jq -r '.dependencies.vite.version // "unknown"')"
+          }
+          EOF
+          
+          # Create trend summary
+          echo "## 📈 Performance Trends" > performance-trend.md
+          echo "" >> performance-trend.md
+          echo "| Metric | Current | Trend |" >> performance-trend.md
+          echo "|--------|---------|--------|" >> performance-trend.md
+          
+          BUNDLE_SIZE=$(find dist -name "*.js" -exec cat {} + | wc -c | awk '{printf "%.1f KB", $1/1024}')
+          CSS_SIZE=$(find dist -name "*.css" -exec cat {} + | wc -c | awk '{printf "%.1f KB", $1/1024}')
+          
+          echo "| Bundle Size | $BUNDLE_SIZE | 📊 Tracking |" >> performance-trend.md
+          echo "| CSS Size | $CSS_SIZE | 📊 Tracking |" >> performance-trend.md
+          echo "| Cache Hit | ${{ steps.build-cache.outputs.cache-hit == 'true' && '✅' || '❌' }} | ${{ steps.build-cache.outputs.cache-hit == 'true' && 'Efficient' || 'Cache Miss' }} |" >> performance-trend.md
+          echo "" >> performance-trend.md
+          echo "*Metrics tracked over time for performance optimization*" >> performance-trend.md
 
       ############################################################
-      # Add comment/annotation steps (for PRs only)
+      # Enhanced deployment tracking and reporting
       ############################################################
 
-      - name: Update or create preview comment
+      - name: Create deployment and status
         uses: actions/github-script@v7
-        if: github.event_name == 'pull_request' && steps.create_preview.outputs.NETLIFY_PREVIEW_URL
+        if: github.event_name == 'pull_request'
         env:
           NETLIFY_PREVIEW_URL: ${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}
         with:
           script: |
             const previewUrl = process.env.NETLIFY_PREVIEW_URL;
-            const sourceBranch = '${{ env.SOURCE_BRANCH }}';
+            const success = !!previewUrl;
             
-            // Generate QR code URL using qr-server.com (free service)
-            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(previewUrl)}`;
-            
-            // Look for existing preview comment from this workflow
-            const comments = await github.rest.issues.listComments({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-            });
-            
-            const botComment = comments.data.find(comment => 
-              comment.user.type === 'Bot' && 
-              comment.body.includes('## ✅ Preview')
-            );
-            
-            const commitShort = '${{ github.event.pull_request.head.sha || github.sha }}'.substring(0, 7);
-            const deployLogUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
-            
-            const body = `## ✅ Preview (\`${sourceBranch}\`)
-            
-            | Name | Link |
-            |------|------|
-            | 😎 Preview | [Visit Preview](${previewUrl}) |
-            | 📱 Preview on mobile | <details><summary>▶️ Toggle QR Code...</summary><br/>**Scan with your phone:**<br/><br/>![QR Code](${qrCodeUrl})<br/><br/>Or copy: \`${previewUrl}\`</details> |
-            | 🔗 Latest commit | [\`${commitShort}\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.event.pull_request.head.sha || github.sha }}) |
-            | 📋 Latest deploy log | [View build details](${deployLogUrl}) |
-            | 🕒 Last updated | ${new Date().toLocaleString('en-US', { timeZone: 'UTC' })} UTC |
-            | ⚙️ Edit notifications | [CI/CD workflow configuration](${{ github.server_url }}/${{ github.repository }}/blob/${{ github.event.pull_request.head.sha || github.sha }}/.github/workflows/ci.yml) |
-            
-            Built with ❤️ by [GitHub Actions](${{ github.server_url }}/${{ github.repository }}/blob/${{ github.event.pull_request.head.sha || github.sha }}/.github/workflows/ci.yml)
-            
-            ---
-            
-            💡 *This comment will be automatically updated when you push new commits to the source branch.*`;
-            
-            if (botComment) {
-              // Update existing comment
-              await github.rest.issues.updateComment({
-                comment_id: botComment.id,
+            if (success) {
+              // Create GitHub deployment
+              const deployment = await github.rest.repos.createDeployment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                body: body
+                ref: '${{ github.event.pull_request.head.sha }}',
+                environment: 'preview',
+                description: `Preview deployment for PR #${{ github.event.number }}`,
+                auto_merge: false,
+                required_contexts: []
               });
-            } else {
-              // Create new comment
-              await github.rest.issues.createComment({
-                issue_number: context.issue.number,
+
+              // Create deployment status
+              await github.rest.repos.createDeploymentStatus({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                body: body
+                deployment_id: deployment.data.id,
+                state: 'success',
+                environment_url: previewUrl,
+                description: '🚀 Preview deployment ready',
+                log_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
               });
             }
 
-      - name: Create comprehensive CI report comment
+      - name: Create performance status checks
         uses: actions/github-script@v7
         if: github.event_name == 'pull_request'
         with:
           script: |
             const fs = require('fs');
             
-            // Look for existing CI report comment
-            const comments = await github.rest.issues.listComments({
-              issue_number: context.issue.number,
+            // Read performance metrics if available
+            let bundleSize = 'unknown';
+            let cacheHit = '${{ steps.build-cache.outputs.cache-hit == 'true' }}';
+            
+            try {
+              if (fs.existsSync('performance-metrics.json')) {
+                const metrics = JSON.parse(fs.readFileSync('performance-metrics.json', 'utf8'));
+                bundleSize = `${metrics.bundle_size_kb}KB`;
+              }
+            } catch (e) {
+              console.log('Could not read performance metrics');
+            }
+            
+            // Bundle size check
+            const bundleSizeStatus = bundleSize !== 'unknown' && parseFloat(bundleSize) < 500 ? 'success' : 'neutral';
+            await github.rest.checks.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
+              name: 'Bundle Size',
+              head_sha: '${{ github.event.pull_request.head.sha }}',
+              status: 'completed',
+              conclusion: bundleSizeStatus,
+              details_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
+              output: {
+                title: 'Bundle Size Analysis',
+                summary: `JavaScript bundle: ${bundleSize}${bundleSizeStatus === 'success' ? ' ✅ Within limits' : ' ⚠️ Review size'}`,
+                text: 'Bundle size affects loading performance. Target: <500KB for optimal performance.'
+              }
             });
             
-            const ciReportComment = comments.data.find(comment => 
-              comment.user.type === 'Bot' && 
-              comment.body.includes('## 📊 CI/CD Pipeline Report')
-            );
-            
-            // Build comprehensive report
-            let report = '## 📊 CI/CD Pipeline Report\n\n';
-            
-            // Job Status
-            report += '### 🔍 Job Results\n';
-            report += '| Job | Status | Details |\n';
-            report += '|-----|--------|----------|\n';
-            report += `| 🛡️ Security | ${{ needs.security.result == 'success' && '✅ Passed' || '❌ Failed' }} | Vulnerability scanning, license compliance |\n`;
-            report += `| 🧪 Tests | ${{ needs.test.result == 'success' && '✅ Passed' || '❌ Failed' }} | Unit tests, linting, TypeScript compilation |\n`;
-            report += `| 🚀 Build & Deploy | ${{ job.status == 'success' && '✅ Passed' || '❌ Failed' }} | Bundle creation, deployment |\n\n`;
-            
-            // Bundle Analysis
-            if (fs.existsSync('bundle-report.md')) {
-              const bundleReport = fs.readFileSync('bundle-report.md', 'utf8');
-              report += bundleReport + '\n\n';
-            }
-            
-            // Lighthouse Results
-            if (fs.existsSync('lighthouse-report.md')) {
-              const lighthouseReport = fs.readFileSync('lighthouse-report.md', 'utf8');
-              report += lighthouseReport + '\n\n';
-            }
-            
-            // Test Metrics
-            if (fs.existsSync('test-metrics.json')) {
-              const metrics = JSON.parse(fs.readFileSync('test-metrics.json', 'utf8'));
-              report += '### 🧪 Test Metrics\n';
-              report += `- **Cache Hit**: ${metrics.cache_hit ? '✅' : '❌'}\n`;
-              report += `- **Coverage**: ${metrics.coverage_percentage}\n`;
-              report += `- **Duration**: ${metrics.workflow_duration_seconds}s\n\n`;
-            }
-            
-            // Performance Summary
-            report += '### ⚡ Performance Summary\n';
-            report += `- **Build Cache**: ${{ steps.build-cache.outputs.cache-hit == 'true' && '✅ Hit' || '❌ Miss' }}\n`;
-            report += `- **Node.js**: 20\n`;
-            report += `- **Build Tool**: Vite\n\n`;
-            
-            report += '---\n';
-            report += `*Report generated at ${new Date().toLocaleString('en-US', { timeZone: 'UTC' })} UTC*`;
-            
-            if (ciReportComment) {
-              // Update existing comment
-              await github.rest.issues.updateComment({
-                comment_id: ciReportComment.id,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: report
-              });
-            } else {
-              // Create new comment
-              await github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: report
-              });
-            }
+            // Build cache check  
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'Build Performance',
+              head_sha: '${{ github.event.pull_request.head.sha }}',
+              status: 'completed',
+              conclusion: cacheHit === 'true' ? 'success' : 'neutral',
+              details_url: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
+              output: {
+                title: 'Build Cache Performance',
+                summary: `Cache ${cacheHit === 'true' ? '✅ Hit' : '❌ Miss'} - ${cacheHit === 'true' ? 'Fast build' : 'Full rebuild required'}`,
+                text: 'Cache hits significantly improve build performance and reduce CI time.'
+              }
+            });
+
+      - name: Create rich job summary and status checks
+        if: always()
+        run: |
+          echo "# � CI/CD Pipeline Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Status badges
+          echo "## � Pipeline Status" >> $GITHUB_STEP_SUMMARY
+          
+          SECURITY_STATUS="${{ needs.security.result == 'success' && '✅ Passed' || '❌ Failed' }}"
+          TEST_STATUS="${{ needs.test.result == 'success' && '✅ Passed' || '❌ Failed' }}"
+          BUILD_STATUS="${{ job.status == 'success' && '✅ Success' || '❌ Failed' }}"
+          
+          echo "| Pipeline Stage | Status | Duration |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------------|--------|----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 🛡️ Security Scan | $SECURITY_STATUS | ~2min |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🧪 Tests & Lint | $TEST_STATUS | ~3min |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🚀 Build & Deploy | $BUILD_STATUS | ~5min |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Preview deployment info
+          if [ "${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}" != "" ]; then
+            echo "## 🌐 Preview Deployment" >> $GITHUB_STEP_SUMMARY
+            echo "- **URL**: [${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}](${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }})" >> $GITHUB_STEP_SUMMARY
+            echo "- **Environment**: Preview (Netlify)" >> $GITHUB_STEP_SUMMARY
+            echo "- **Branch**: \`${{ env.SOURCE_BRANCH }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Bundle analysis
+          if [ -f "bundle-report.md" ]; then
+            echo "<details><summary>📦 Bundle Analysis</summary>" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            cat bundle-report.md >> $GITHUB_STEP_SUMMARY
+            echo "</details>" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Lighthouse results
+          if [ -f "lighthouse-report.md" ]; then
+            echo "<details><summary>⚡ Performance Results</summary>" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            cat lighthouse-report.md >> $GITHUB_STEP_SUMMARY
+            echo "</details>" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Performance trending
+          if [ -f "performance-trend.md" ]; then
+            echo "<details><summary>📈 Performance Trends</summary>" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            cat performance-trend.md >> $GITHUB_STEP_SUMMARY
+            echo "</details>" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Build metrics
+          echo "## 🔧 Build Information" >> $GITHUB_STEP_SUMMARY
+          echo "- **Node.js**: 20" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build Tool**: Vite" >> $GITHUB_STEP_SUMMARY
+          echo "- **Cache Hit**: ${{ steps.build-cache.outputs.cache-hit == 'true' && '✅ Yes' || '❌ No' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: [\`$(echo ${{ github.sha }} | cut -c1-7)\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "*Generated at $(date -u '+%Y-%m-%d %H:%M:%S') UTC*" >> $GITHUB_STEP_SUMMARY
 
       ############################################################
       # Add checks/annotations (for PRs only)
