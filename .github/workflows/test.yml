@@ -1,0 +1,230 @@
+# GitHub Actions workflow for testing and linting
+# Runs ESLint, TypeScript compilation, unit tests, and coverage analysis
+#
+# Artifact Retention: Test results (14d), Coverage reports (14d)
+# See: CICD_ARTIFACT_RETENTION_POLICY.md for complete retention strategy
+
+name: Test & Lint
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+  
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+
+# Add concurrency control to cancel previous runs
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+env:
+  SOURCE_BRANCH: ${{ github.head_ref || github.ref_name }}
+  NODE_OPTIONS: "--max-old-space-size=4096"
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Allow skipping CI with commit message
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, '[ci skip]') }}
+    
+    outputs:
+      test-status: ${{ steps.test-summary.outputs.status }}
+      lint-status: ${{ steps.lint.outcome }}
+      typescript-status: ${{ steps.typescript.outcome }}
+      coverage-status: ${{ steps.coverage-check.outcome }}
+    
+    steps:
+      ############################################################
+      # Startup steps
+      ############################################################
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_FOR_GITHUB_ACTIONS }}
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Setup Node.js and Dependencies
+        uses: ./.github/actions/setup
+        with:
+          cache-key-suffix: test
+          additional-cache-paths: |
+            coverage
+
+      ############################################################
+      # Test steps
+      ############################################################
+
+      - name: Run lint checks
+        id: lint
+        run: npm run lint -- --cache --cache-location .eslintcache
+        continue-on-error: true
+
+      - name: Check TypeScript compilation
+        id: typescript
+        run: npm run tsc
+        continue-on-error: true
+
+      - name: Run unit tests with coverage
+        id: tests
+        run: npm run test:coverage
+        continue-on-error: true
+
+      - name: Create test check statuses
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        with:
+          script: |
+            const { context, github } = require('@actions/core');
+            
+            const checks = [
+              {
+                name: 'ESLint Check',
+                outcome: '${{ steps.lint.outcome }}',
+                summary: 'Code linting and style checks'
+              },
+              {
+                name: 'TypeScript Check', 
+                outcome: '${{ steps.typescript.outcome }}',
+                summary: 'TypeScript compilation and type checking'
+              },
+              {
+                name: 'Unit Tests',
+                outcome: '${{ steps.tests.outcome }}',
+                summary: 'Unit test execution and results'
+              }
+            ];
+            
+            for (const check of checks) {
+              await github.rest.checks.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: check.name,
+                head_sha: context.payload.pull_request.head.sha,
+                status: 'completed',
+                conclusion: check.outcome === 'success' ? 'success' : 'failure',
+                output: {
+                  title: check.name,
+                  summary: check.summary
+                }
+              });
+            }
+
+      - name: Check coverage threshold
+        id: coverage-check
+        if: steps.tests.outcome == 'success'
+        run: |
+          if [ -f "coverage/coverage-summary.json" ]; then
+            COVERAGE=$(jq -r '.total.lines.pct' coverage/coverage-summary.json)
+            echo "Current coverage: ${COVERAGE}%"
+            if (( $(echo "$COVERAGE < 80" | bc -l) )); then
+              echo "❌ Coverage ${COVERAGE}% is below threshold (80%)"
+              echo "coverage-failed=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "✅ Coverage ${COVERAGE}% meets threshold"
+              echo "coverage-failed=false" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "⚠️ Coverage report not found"
+            echo "coverage-failed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Test summary
+        id: test-summary
+        run: |
+          LINT_OK="${{ steps.lint.outcome == 'success' }}"
+          TS_OK="${{ steps.typescript.outcome == 'success' }}"
+          TEST_OK="${{ steps.tests.outcome == 'success' }}"
+          COV_OK="${{ steps.coverage-check.outputs.coverage-failed != 'true' }}"
+          
+          if [[ "$LINT_OK" == "true" && "$TS_OK" == "true" && "$TEST_OK" == "true" && "$COV_OK" == "true" ]]; then
+            echo "status=success" >> "$GITHUB_OUTPUT"
+            echo "✅ All tests and checks passed"
+          else
+            echo "status=failure" >> "$GITHUB_OUTPUT"
+            echo "❌ Some tests or checks failed"
+          fi
+
+      - name: Update test job summary
+        if: always()
+        run: |
+          echo "# 🧪 Test Results Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          LINT_STATUS="${{ steps.lint.outcome == 'success' && '✅ Passed' || '❌ Failed' }}"
+          TS_STATUS="${{ steps.typescript.outcome == 'success' && '✅ Passed' || '❌ Failed' }}"
+          TEST_STATUS="${{ steps.tests.outcome == 'success' && '✅ Passed' || '❌ Failed' }}"
+          COV_STATUS="${{ steps.coverage-check.outcome == 'success' && '✅ Passed' || '❌ Failed' }}"
+          
+          echo "| Check | Status | Action |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔍 ESLint | $LINT_STATUS | \`npm run lint\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📘 TypeScript | $TS_STATUS | \`npm run tsc\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🧪 Unit Tests | $TEST_STATUS | \`npm test\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📊 Coverage | $COV_STATUS | Add more tests |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [[ "${{ steps.test-summary.outputs.status }}" == "success" ]]; then
+            echo "🎉 **All tests passed!** Your code is ready for review." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **Some tests failed.** Use the commands above to fix issues locally." >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Publish test results
+        uses: dorny/test-reporter@v1
+        if: always() && steps.tests.outcome != 'skipped'
+        with:
+          name: Vitest Test Results
+          path: 'test-results.xml'
+          reporter: jest-junit
+          fail-on-error: false
+
+      - name: Upload test result artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ github.sha }}
+          path: |
+            coverage/
+            test-results.xml
+          retention-days: 14
+          if-no-files-found: warn
+
+      - name: Record detailed workflow metrics
+        uses: actions/github-script@v7
+        if: always()
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            // Create workflow metrics
+            const metrics = {
+              workflow: 'test',
+              timestamp: new Date().toISOString(),
+              branch: '${{ github.ref_name }}',
+              commit: '${{ github.sha }}',
+              results: {
+                lint: '${{ steps.lint.outcome }}',
+                typescript: '${{ steps.typescript.outcome }}',
+                tests: '${{ steps.tests.outcome }}',
+                coverage: '${{ steps.coverage-check.outcome }}'
+              },
+              cache_hit: false  # Will be set by composite action
+            };
+            
+            console.log('Test workflow metrics:', JSON.stringify(metrics, null, 2));
