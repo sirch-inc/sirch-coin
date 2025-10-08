@@ -155,6 +155,40 @@ jobs:
           git push origin "v${VERSION}"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
 
+      - name: Validate Environment Variables
+        env:
+          VITE_SUPABASE_PROJECT_URL: ${{ secrets.VITE_SUPABASE_PROJECT_URL_PROD }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY_PROD }}
+          VITE_STRIPE_API_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_API_PUBLISHABLE_KEY_PROD }}
+        run: |
+          echo "🔍 Validating required environment variables for PRODUCTION..."
+          
+          # Check VITE_SUPABASE_PROJECT_URL
+          if [[ -z "$VITE_SUPABASE_PROJECT_URL" ]]; then
+            echo "❌ VITE_SUPABASE_PROJECT_URL_PROD secret is not set or empty"
+            echo "🚨 PRODUCTION DEPLOYMENT BLOCKED - Missing Supabase URL"
+            exit 1
+          fi
+          echo "✅ VITE_SUPABASE_PROJECT_URL: ${#VITE_SUPABASE_PROJECT_URL} characters"
+          
+          # Check VITE_SUPABASE_ANON_KEY
+          if [[ -z "$VITE_SUPABASE_ANON_KEY" ]]; then
+            echo "❌ VITE_SUPABASE_ANON_KEY_PROD secret is not set or empty"
+            echo "🚨 PRODUCTION DEPLOYMENT BLOCKED - Missing Supabase Key"
+            exit 1
+          fi
+          echo "✅ VITE_SUPABASE_ANON_KEY: ${#VITE_SUPABASE_ANON_KEY} characters"
+          
+          # Check VITE_STRIPE_API_PUBLISHABLE_KEY
+          if [[ -z "$VITE_STRIPE_API_PUBLISHABLE_KEY" ]]; then
+            echo "❌ VITE_STRIPE_API_PUBLISHABLE_KEY_PROD secret is not set or empty"
+            echo "🚨 PRODUCTION DEPLOYMENT BLOCKED - Missing Stripe Key"
+            exit 1
+          fi
+          echo "✅ VITE_STRIPE_API_PUBLISHABLE_KEY: ${#VITE_STRIPE_API_PUBLISHABLE_KEY} characters"
+          
+          echo "🎉 All required environment variables are properly configured for PRODUCTION!"
+
       - name: Build for PRODUCTION
         env:
           VITE_SUPABASE_PROJECT_URL: ${{ secrets.VITE_SUPABASE_PROJECT_URL_PROD }}
