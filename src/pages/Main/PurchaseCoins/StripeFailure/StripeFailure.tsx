@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@heroui/react';
-import './StripeFailure.css';
 
 
 // TODO: not sure we still need this component...

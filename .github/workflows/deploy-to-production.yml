@@ -98,12 +98,10 @@ jobs:
           retention-days: 365  # Keep PROD deployment logs for a full year
 
       - name: Create GitHub Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.create-tag.outputs.version }}
-          release_name: Release v${{ steps.create-tag.outputs.version }}
+          name: Release v${{ steps.create-tag.outputs.version }}
           body: |
             🚀 Production deployment of commit ${{ github.sha }}
             
@@ -116,6 +114,10 @@ jobs:
             <!-- Add your changelog here -->
           draft: false
           prerelease: false
+          files: |
+            deploy_prod_output.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Production Deployment Success
         run: |

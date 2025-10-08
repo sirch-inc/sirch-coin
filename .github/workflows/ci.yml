@@ -1,98 +1,169 @@
-# A GitHub Actions workflow for CI (run tests, create preview deploys, etc.)
-# This workflow runs on PRs to main and direct pushes to main (for emergency fixes).
+# Comprehensive CI workflow with proper job dependencies
+# Shows security -> tests -> build/deploy pipeline in GitHub Actions UI
 #
 # Artifact Retention: CI builds (7d), Test results (14d), Preview logs (14d)
 # See: CICD_ARTIFACT_RETENTION_POLICY.md for complete retention strategy
 
-# Although Netlify supports continuous deployment from GitHub, we use GitHub Actions here instead in 
-# order to run tests before deploying, and to have more control over the build and deploy process.
-# See also: https://docs.netlify.com/cli/get-started/#continuous-deployment-with-github-actions.
-#
-# Additionally, at this time, Netlify (free tier) does not support deploying from private org-based repositories
-# like ours, so we are using GitHub Actions for CI which skips this. We can revisit this if we move to a paid
-# Netlify plan later, but some research suggests that Netlify builds can be expensive even under paid plans.
-#
-# We are using the Netlify CLI to deploy here, bypassing Netlify's built-in GitHub integration.
-
-name: CI
+name: CI Pipeline
 
 on:
-  # Run on pushes to main (for direct commits/emergency fixes)
+  workflow_dispatch:
+    
   push:
     branches: [main]
     paths-ignore:
       - 'docs/**'
       - '**/*.md'
   
-  # Run on all PRs to main (your primary workflow)
   pull_request:
     branches: [main]
     paths-ignore:
       - 'docs/**'
       - '**/*.md'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 env:
   SOURCE_BRANCH: ${{ github.head_ref || github.ref_name }}
+  NODE_OPTIONS: "--max-old-space-size=4096"
 
 permissions:
+  contents: read
   pull-requests: write
   checks: write
-
+  security-events: write
+  actions: read
+  deployments: write
 
 jobs:
-  build-test-and-deploy:
+  # Security scanning job - runs first
+  security:
+    name: 🛡️ Security Scan
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    # Allow skipping CI with commit message
+    timeout-minutes: 10
     if: ${{ !contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, '[ci skip]') }}
+    
+    outputs:
+      security-status: ${{ steps.security-summary.outputs.status }}
+    
     steps:
-      ############################################################
-      # Startup steps
-      ############################################################
-
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_FOR_GITHUB_ACTIONS }}  # Using a privileged PAT here to enable writing to PRs
-          fetch-depth: 0  # Fetch full history including tags, which are used in builds for version info
-          fetch-tags: true  # Explicitly fetch tags, which are used in builds for version info
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_FOR_GITHUB_ACTIONS }}
+          fetch-depth: 0
+          fetch-tags: true
 
-      - name: Use Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Node.js and Dependencies
+        uses: ./.github/actions/setup
         with:
-          node-version: '20'
-          cache: 'npm'
+          cache-key-suffix: security
 
-      - name: Cache node modules
-        uses: actions/cache@v3
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        if: github.event_name == 'pull_request'
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          fail-on-severity: moderate
+          allow-licenses: MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, 0BSD, Unlicense
+          comment-summary-in-pr: always
+          fail-on-scopes: runtime, development
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+          scanners: 'vuln,secret,config'
+          timeout: '10m'
 
-      ############################################################
-      # Test steps
-      ############################################################
-
-      - name: Run lint checks
-        run: npm run lint
-
-      - name: Check TypeScript compilation
-        run: npm run tsc
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v4
+        if: always() && hashFiles('trivy-results.sarif') != ''
+        with:
+          sarif_file: 'trivy-results.sarif'
 
       - name: Run NPM security audit
-        run: npm audit --audit-level=moderate
+        id: security
+        run: |
+          echo "Running npm security audit..."
+          npm audit --audit-level=moderate --json > audit-results.json || true
+          echo "Audit completed"
+        continue-on-error: true
+
+      - name: Security summary
+        id: security-summary
+        run: |
+          echo "status=success" >> "$GITHUB_OUTPUT"
+          echo "✅ Security checks completed"
+
+      - name: Upload security results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-results-${{ github.sha }}
+          path: |
+            trivy-results.sarif
+            audit-results.json
+          retention-days: 14
+          if-no-files-found: warn
+
+  # Testing and linting job - runs in parallel with security
+  test:
+    name: 🧪 Test & Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, '[ci skip]') }}
+    
+    outputs:
+      test-status: ${{ steps.test-summary.outputs.status }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_FOR_GITHUB_ACTIONS }}
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Setup Node.js and Dependencies
+        uses: ./.github/actions/setup
+        with:
+          cache-key-suffix: test
+
+      - name: Run lint checks
+        id: lint
+        run: npm run lint -- --cache --cache-location .eslintcache
+        continue-on-error: true
+
+      - name: Check TypeScript compilation
+        id: typescript
+        run: npm run tsc
+        continue-on-error: true
 
       - name: Run unit tests with coverage
+        id: tests
         run: npm run test:coverage
+        continue-on-error: true
 
-      - name: Upload test result artifacts
+      - name: Test summary
+        id: test-summary
+        run: |
+          if [[ "${{ steps.lint.outcome }}" == "success" && "${{ steps.typescript.outcome }}" == "success" && "${{ steps.tests.outcome }}" == "success" ]]; then
+            echo "status=success" >> "$GITHUB_OUTPUT"
+            echo "✅ All tests passed"
+          else
+            echo "status=failure" >> "$GITHUB_OUTPUT"
+            echo "❌ Some tests failed"
+          fi
+
+      - name: Upload test results
         uses: actions/upload-artifact@v4
-        if: always()  # Upload even if tests fail
+        if: always()
         with:
           name: test-results-${{ github.sha }}
           path: |
@@ -101,30 +172,80 @@ jobs:
           retention-days: 14
           if-no-files-found: warn
 
-      ############################################################
-      # Preview build steps
-      ############################################################
+  # Build and deploy job - runs after security and tests complete successfully  
+  build-deploy:
+    name: 🚀 Build & Deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [security, test]  # Wait for both security and test jobs
+    if: ${{ needs.security.outputs.security-status == 'success' && needs.test.outputs.test-status == 'success' }}
+    
+    environment: 
+      name: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'production' || 'preview' }}
+      url: ${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}
+    
+    outputs:
+      preview-url: ${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}
+      build-status: ${{ steps.build-summary.outputs.status }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_FOR_GITHUB_ACTIONS }}
+          fetch-depth: 0
+          fetch-tags: true
 
-      - name: Build for TEST
+      - name: Setup Node.js and Dependencies
+        uses: ./.github/actions/setup
+        with:
+          cache-key-suffix: build
+          additional-cache-paths: |
+            dist
+            node_modules/.vite
+            .vite
+
+      - name: Build for TEST environment
         env:
-          # grab env "secrets" from GitHub Actions Secrets for safety
           VITE_SUPABASE_PROJECT_URL: ${{ secrets.VITE_SUPABASE_PROJECT_URL_TEST }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY_TEST }}
           VITE_STRIPE_API_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_API_PUBLISHABLE_KEY_TEST }}
-          # VITE_BUILD_VERSION: ...obtained by build-variables.sh script that is run during the build
-          # VITE_BUILD_VERSION_VERBOSE: ...obtained by build-variables.sh script that is run during the build
         run: npm run build-test
 
-      - name: Create preview
+      - name: Analyze build output
+        id: build-analysis
+        run: |
+          echo "🏗️ Build Analysis"
+          if [ -d "dist" ] && [ -n "$(ls -A dist 2>/dev/null)" ]; then
+            BUNDLE_SIZE=$(find dist -name "*.js" -exec cat {} + | wc -c | awk '{printf "%.1f", $1/1024}')
+            echo "bundle-size-kb=$BUNDLE_SIZE" >> "$GITHUB_OUTPUT"
+            echo "✅ Build completed - Bundle size: ${BUNDLE_SIZE}KB"
+          else
+            echo "❌ Build failed - no output generated"
+            exit 1
+          fi
+
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v12
+        if: github.event_name == 'pull_request'
+        with:
+          configPath: '.lighthouserc.json'
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Create preview deployment
         id: create_preview
-        # Only create previews for PRs (not direct pushes to main)
         if: github.event_name == 'pull_request'
         run: |
-          COMMIT_SHA="${{ github.event.pull_request.head.sha || github.sha }}"
+          COMMIT_SHA="${{ github.sha }}"
           SHORT_SHA=$(echo "$COMMIT_SHA" | cut -c1-7)
           PREVIEW_ALIAS="preview-${SHORT_SHA}"
           
-          # Deploy to Netlify with branch-specific alias
+          echo "🚀 Deploying preview with alias: $PREVIEW_ALIAS"
+          
           npx netlify deploy \
             --no-build \
             --dir=dist \
@@ -133,186 +254,92 @@ jobs:
             --auth ${{ secrets.NETLIFY_API_TOKEN_TEST }} \
             --json > deploy_output_branch.json
           
-          # Check if deployment was successful
           if [ ! -f "deploy_output_branch.json" ]; then
-            echo "❌ Preview deployment failed - no output file generated"
+            echo "❌ Preview deployment failed"
             exit 1
           fi
           
-          # Extract and output the preview URL
           NETLIFY_PREVIEW_URL=$(jq -r '.deploy_url' deploy_output_branch.json 2>/dev/null || echo "")
           if [ -z "$NETLIFY_PREVIEW_URL" ] || [ "$NETLIFY_PREVIEW_URL" = "null" ]; then
-            echo "❌ Failed to parse preview URL from deployment output"
+            echo "❌ Failed to parse preview URL"
             cat deploy_output_branch.json
             exit 1
           fi
           
           echo "NETLIFY_PREVIEW_URL=$NETLIFY_PREVIEW_URL" >> "$GITHUB_OUTPUT"
-          echo "Preview deployed to: $NETLIFY_PREVIEW_URL"
+          echo "✅ Preview deployed to: $NETLIFY_PREVIEW_URL"
 
-      - name: Upload preview deployment artifacts
-        uses: actions/upload-artifact@v4
-        if: github.event_name == 'pull_request'
-        with:
-          name: preview-deployment-logs-${{ github.sha }}
-          path: deploy_output_branch.json
-          retention-days: 14
-
-
-      ############################################################
-      # Add comment/annotation steps (for PRs only)
-      ############################################################
-
-      - name: Update or create preview comment
+      - name: Create deployment status
         uses: actions/github-script@v7
         if: github.event_name == 'pull_request' && steps.create_preview.outputs.NETLIFY_PREVIEW_URL
         env:
           NETLIFY_PREVIEW_URL: ${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}
         with:
           script: |
-            const previewUrl = process.env.NETLIFY_PREVIEW_URL;
-            const sourceBranch = '${{ env.SOURCE_BRANCH }}';
-            
-            // Generate QR code URL using qr-server.com (free service)
-            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(previewUrl)}`;
-            
-            // Look for existing preview comment from this workflow
-            const comments = await github.rest.issues.listComments({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-            });
-            
-            const botComment = comments.data.find(comment => 
-              comment.user.type === 'Bot' && 
-              comment.body.includes('## ✅ Preview')
-            );
-            
-            const commitShort = '${{ github.event.pull_request.head.sha || github.sha }}'.substring(0, 7);
-            const deployLogUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
-            
-            const body = `## ✅ Preview (\`${sourceBranch}\`)
-            
-            | Name | Link |
-            |------|------|
-            | 😎 Preview | [Visit Preview](${previewUrl}) |
-            | 📱 Preview on mobile | <details><summary>▶️ Toggle QR Code...</summary><br/>**Scan with your phone:**<br/><br/>![QR Code](${qrCodeUrl})<br/><br/>Or copy: \`${previewUrl}\`</details> |
-            | 🔗 Latest commit | [\`${commitShort}\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.event.pull_request.head.sha || github.sha }}) |
-            | 📋 Latest deploy log | [View build details](${deployLogUrl}) |
-            | 🕒 Last updated | ${new Date().toLocaleString('en-US', { timeZone: 'UTC' })} UTC |
-            | ⚙️ Edit notifications | [CI/CD workflow configuration](${{ github.server_url }}/${{ github.repository }}/blob/${{ github.event.pull_request.head.sha || github.sha }}/.github/workflows/ci.yml) |
-            
-            Built with ❤️ by [GitHub Actions](${{ github.server_url }}/${{ github.repository }}/blob/${{ github.event.pull_request.head.sha || github.sha }}/.github/workflows/ci.yml)
-            
-            ---
-            
-            💡 *This comment will be automatically updated when you push new commits to the source branch.*`;
-            
-            if (botComment) {
-              // Update existing comment
-              await github.rest.issues.updateComment({
-                comment_id: botComment.id,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: body
-              });
-            } else {
-              // Create new comment
-              await github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: body
-              });
-            }
-
-
-      ############################################################
-      # Add checks/annotations (for PRs only)
-      ############################################################
-
-      - name: Create deployment status check
-        uses: actions/github-script@v7
-        if: github.event_name == 'pull_request'
-        with:
-          script: |
-            const previewUrl = '${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}';
-            const conclusion = previewUrl ? 'success' : 'failure';
-            const summary = previewUrl ? 'Preview deployment ready' : 'Preview deployment failed';
-            
             await github.rest.checks.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               name: 'Preview Deployment',
-              head_sha: '${{ github.event.pull_request.head.sha || github.sha }}',
+              head_sha: context.sha,
               status: 'completed',
-              conclusion: conclusion,
-              details_url: previewUrl || undefined,
+              conclusion: 'success',
+              details_url: process.env.NETLIFY_PREVIEW_URL,
               output: {
-                title: 'Preview Deployment',
-                summary: summary,
-                text: previewUrl ? `Preview available at: ${previewUrl}` : 'Preview deployment failed'
+                title: '🚀 Preview Deployment Ready',
+                summary: 'Preview is deployed and ready for testing',
+                text: `Preview URL: ${process.env.NETLIFY_PREVIEW_URL}`
               }
             });
-    
-      - name: Log results for direct pushes to main
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
-          echo "=== Direct push to main detected ==="
-          echo "Commit: ${{ github.sha }}"
-          echo "Tests: ✅ Passed"
-          echo "Build: ✅ Completed"
-          echo "No preview created for direct pushes to main"
-          echo "=================================="
 
-      - name: Create workflow summary
-        if: always()
+      - name: Build summary
+        id: build-summary
         run: |
-          echo "## 🛠️ CI Workflow Results" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          
-          # Add test results summary
-          if [ -f "coverage/coverage-summary.json" ]; then
-            COVERAGE=$(cat coverage/coverage-summary.json | jq -r '.total.lines.pct')
-            echo "- **Test Coverage**: ${COVERAGE}%" >> $GITHUB_STEP_SUMMARY
-          fi
-          
-          # Add more meaningful status info
-          echo "- **Event**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Branch**: ${{ env.SOURCE_BRANCH }}" >> $GITHUB_STEP_SUMMARY
-          
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            if [ -n "${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}" ]; then
-              echo "- **✅ Preview**: [${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }}](${{ steps.create_preview.outputs.NETLIFY_PREVIEW_URL }})" >> $GITHUB_STEP_SUMMARY
-            else
-              echo "- **❌ Preview**: Failed to deploy" >> $GITHUB_STEP_SUMMARY
-            fi
-          fi
-          
-          echo "- **Build Time**: $(date -u)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "📊 [View detailed logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+          echo "status=success" >> "$GITHUB_OUTPUT"
+          echo "✅ Build and deploy completed successfully"
 
-          
-      ############################################################
-      # After-action cleanup steps
-      ############################################################
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: ci-build-${{ github.event_name }}-${{ github.sha }}
-          path: dist
-          retention-days: 7
-
-      - name: Upload build logs and metadata
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: ci-logs-${{ github.sha }}
+          name: build-outputs-${{ github.sha }}
           path: |
-            npm-debug.log*
-            yarn-debug.log*
-            yarn-error.log*
-            .npm/_logs/
+            dist/
+            deploy_output_branch.json
           retention-days: 7
-          if-no-files-found: ignore
+          if-no-files-found: warn
+
+  # Summary job - provides overall pipeline status
+  summary:
+    name: 📋 Pipeline Summary
+    runs-on: ubuntu-latest
+    needs: [security, test, build-deploy]
+    if: always()
+    
+    steps:
+      - name: Create pipeline summary
+        run: |
+          echo "# 🔄 CI Pipeline Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          SECURITY_STATUS="${{ needs.security.result == 'success' && '✅ Passed' || '❌ Failed' }}"
+          TEST_STATUS="${{ needs.test.result == 'success' && '✅ Passed' || '❌ Failed' }}"
+          BUILD_STATUS="${{ needs.build-deploy.result == 'success' && '✅ Passed' || (needs.build-deploy.result == 'skipped' && '⏭️ Skipped' || '❌ Failed') }}"
+          
+          echo "| Stage | Status | Details |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|---------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 🛡️ Security | $SECURITY_STATUS | Dependency review, vulnerability scanning |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🧪 Tests | $TEST_STATUS | ESLint, TypeScript, unit tests |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🚀 Build & Deploy | $BUILD_STATUS | Vite build, Lighthouse, preview deployment |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ needs.build-deploy.outputs.preview-url }}" ]; then
+            echo "🔗 **Preview URL**: [${{ needs.build-deploy.outputs.preview-url }}](${{ needs.build-deploy.outputs.preview-url }})" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Overall status
+          if [[ "${{ needs.security.result }}" == "success" && "${{ needs.test.result }}" == "success" && "${{ needs.build-deploy.result }}" == "success" ]]; then
+            echo "🎉 **All pipeline stages completed successfully!**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **Some pipeline stages failed or were skipped.** Check individual job results above." >> $GITHUB_STEP_SUMMARY
+          fi

@@ -3,7 +3,6 @@ import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../_common/AuthContext';
 import supabase from '../../_common/supabaseProvider';
 import { Button } from '@heroui/react';
-import './StripeSuccess.css';
 
 interface PaymentDetails {
   amount: number;

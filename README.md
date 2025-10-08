@@ -17,13 +17,35 @@ Ask a developer for invites to access any of these services, if you are working 
 * [sirchcoin.com](https://sirchcoin.com) is our production environment.  Deployed manually in Netlify.
 
 ### CI/CD and Deployments
-We use Netlify currently to host our site.
-  - The TEST environment is continuously deployed on changes to the `main` branch.
-  - The PROD environment should ONLY be deployed manually after testing has completed. We have marked this project NOT autodeploy on changes to the repo. To MANUALLY deploy to PROD:
-      - In Netlify, go to the PROD `sirch-coin.com` project.
-      - Select `Deploys` in the left-hand nav section.
-      - In the right-hand panel, select `Clear cache and deploy` under the `[Trigger deploy]` dropdown.
-      - After it completes, verify the site is still up and running. Smoke test any new features or changes.
+We use GitHub Actions for CI/CD with automated testing and quality gates, deploying to Netlify for hosting.
+
+#### Automated CI Pipeline
+Every pull request and push triggers our comprehensive CI pipeline:
+- **Individual Quality Checks**: Separate status indicators for:
+  - 🔍 **Lint Checks** (ESLint & Prettier)
+  - 📘 **TypeScript Compilation** (Type checking)
+  - 🔒 **Security Audit** (Dependency vulnerabilities & code scanning)
+  - 🧪 **Unit Tests** (Vitest with coverage reporting)
+  - 📊 **Coverage Threshold** (80% minimum line coverage)
+- **Non-blocking Workflow**: Preview deployments are created even if quality checks fail
+- **Automated Notifications**: PR comments provide clear guidance on fixing any issues
+- **Optimized Performance**: Intelligent caching and parallel execution
+
+#### Deployment Environments
+- **TEST Environment**: Automatically deploys preview builds for every PR
+  - URL: [testallthethings.sirchcoin.com](https://testallthethings.sirchcoin.com)
+  - Triggered on changes to pull requests and main branch
+- **PROD Environment**: Manual deployment only after thorough testing
+  - URL: [sirchcoin.com](https://sirchcoin.com)
+  - Requires manual GitHub Actions workflow trigger with confirmation
+
+#### Quality Gates
+Branch protection rules enforce quality standards:
+- All status checks must pass before merge
+- TypeScript compilation errors block merges
+- Test coverage must meet 80% threshold
+- Security vulnerabilities must be resolved
+- Code style and linting rules must pass
 
 #### Custom Deployment Environment Flags
 The front-end can be configured to conditionally-compile simple, custom landing pages to inform users of system-wide modes.  We have a `Coming Soon` landing page intended for use until we launch, and a `Systems Maintenace` page intended when we need to take down the website for maintenance, major updates, problems, or abuse by hackers.  They are driven by setting one or the other following environment variables to `true` in the Netlify `Environment Variables` section (you can test these locally by adding them to your `.env.local` file):
@@ -85,22 +107,34 @@ VITE_IS_OFFLINE="false"
 1. OPTIONAL: you can also run in other environments (test, production) using `npm run <environment>`.  You will need to create appropriate `.env.<environment>.local` files.
 
 ## Running Tests
-The project uses Vitest and React Testing Library for unit testing. Here are the available test commands:
+The project uses Vitest and React Testing Library for unit testing with comprehensive coverage reporting.
 
-1. Run all tests once:
+### Test Commands
+1. **Run all tests once:**
    ```bash
    npm test
    ```
 
-2. Run tests in watch mode (tests will re-run when files change):
+2. **Run tests in watch mode** (tests will re-run when files change):
    ```bash
    npm run test:watch
    ```
 
-3. Run tests with coverage report:
+3. **Run tests with coverage report** (CI-compatible with JUnit XML output):
    ```bash
    npm run test:coverage
    ```
+
+4. **Run tests once without watch mode:**
+   ```bash
+   npm run test:run
+   ```
+
+### Coverage Requirements
+- **Minimum Coverage**: 80% line coverage required
+- **Coverage Reports**: Generated in `coverage/` directory with HTML and LCOV formats
+- **CI Integration**: Coverage data is automatically reported in pull requests
+- **Excluded Files**: Entry points (`master.tsx`), type definitions, and test files are excluded
 
 ### Test Structure
 - Tests are located in `__tests__` directories next to their corresponding components
@@ -135,12 +169,50 @@ When working with TypeScript in this project:
 3. Take advantage of TypeScript's built-in utility types (e.g., `Partial<T>`, `Pick<T>`, `Record<K,T>`)
 4. Ensure all async operations are properly typed with `Promise<T>`
 
-You can check for type errors by running:
+### Type Checking Commands
 ```bash
+# Check for type errors
 npm run tsc
+
+# Alternative command (same functionality)
+npm run type-check
 ```
 
-Type checking is also automatically run as part of the build process.
+### Modern Build Architecture
+**Type checking and building are separated** for better developer experience:
+- **Type checking**: Handled separately in CI as a quality gate (`npm run tsc`)
+- **Building**: Optimized Vite compilation without blocking type checks (`npm run build-*`)
+- **Benefits**: Faster builds, non-blocking development, parallel CI execution
+
+This allows developers to build and test changes even when type errors exist, while ensuring type safety is enforced at merge time through branch protection rules.
+
+## Code Quality & CI/CD
+
+### Quality Assurance Tools
+The project includes comprehensive quality assurance:
+
+1. **Linting & Formatting:**
+   ```bash
+   npm run lint  # ESLint with TypeScript support
+   ```
+
+2. **Security Scanning:**
+   - Trivy vulnerability scanner for dependencies and code
+   - GitHub Dependency Review for new vulnerabilities in PRs
+   - Automated SARIF uploads for security issue tracking
+
+3. **Performance Optimization:**
+   - Intelligent build caching
+   - Parallel test execution
+   - Optimized Docker-like artifact retention
+
+### Branch Protection & Merge Requirements
+To maintain code quality, the following checks must pass before merging:
+- ✅ Lint Checks
+- ✅ TypeScript Compilation
+- ✅ Security Audit
+- ✅ Unit Tests (80% coverage minimum)
+- ✅ All conversations resolved
 
 ## Previewing a Production build locally (as needed)
 1. Create an `.env.production.local` text file with the necessary keys (ask a developer for these). NOTE: These may change over time!

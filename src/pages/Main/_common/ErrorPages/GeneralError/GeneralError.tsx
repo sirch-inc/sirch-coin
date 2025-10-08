@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import './GeneralError.css';
 
 
 export default function GeneralError() {

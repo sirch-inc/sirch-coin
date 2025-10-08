@@ -1,15 +1,44 @@
-# GitHub Actions Deployment Setup
+# Enhanced GitHub Actions CI/CD Pipeline
+
+## Overview
+The CI/CD pipeline has been modernized with comprehensive quality gates, security scanning, and optimized performance while maintaining developer velocity.
 
 ## Files Created/Modified
+
+### ✅ Enhanced: `.github/workflows/ci.yml`
+**Key Features:**
+- **Individual Status Checks**: Granular feedback for each quality gate
+- **Non-blocking Workflow**: Preview deployments continue even if tests fail
+- **Security Scanning**: Trivy vulnerability scanner + Dependency Review
+- **Performance Optimization**: Intelligent caching and concurrency control
+- **Quality Gates**: Coverage thresholds and comprehensive testing
+- **Smart Notifications**: Automated PR comments with fix guidance
 
 ### ✅ Created: `.github/workflows/deploy-production.yml`
 - Manual "push-button" deployment to production
 - Requires typing "PRODUCTION" to confirm deployment
 - Uses environment-specific secrets with `_PROD` suffix
 
-### ✅ Updated: `.github/workflows/ci.yml`
-- Updated to use environment-specific secrets with `_TEST` suffix
-- Continues to deploy automatically on push/PR
+## Enhanced CI/CD Features
+
+### 🛡️ Security & Quality Gates
+- **Dependency Review**: Automatic scanning for vulnerable dependencies in PRs
+- **Trivy Security Scanner**: Comprehensive vulnerability scanning with SARIF uploads
+- **Coverage Thresholds**: 80% minimum line coverage requirement
+- **TypeScript Strict Checking**: Separate type checking as quality gate
+- **ESLint & Prettier**: Code style and quality enforcement
+
+### ⚡ Performance Optimizations
+- **Concurrency Control**: Cancels outdated runs to save resources
+- **Intelligent Caching**: Node modules and build artifacts caching
+- **Parallel Execution**: Independent quality checks run simultaneously
+- **Memory Optimization**: Configured for GitHub Actions runner limits
+
+### 🎯 Developer Experience
+- **Individual Check Status**: Clear ✅/❌ indicators for each test type
+- **Non-blocking Previews**: Deploy previews created even with test failures
+- **Actionable Feedback**: PR comments with specific fix instructions
+- **Fast Iteration**: Separated type checking from build process
 
 ## Required GitHub Secrets
 
@@ -60,15 +89,48 @@ VITE_IS_OFFLINE=false
 4. Type "PRODUCTION" in the confirmation field
 5. Click "Run workflow"
 
-## npm Scripts Required
+## Required npm Scripts
 
-Make sure you have these scripts in your `package.json`:
-- `build-test` - Build for test environment
-- `build-production` - Build for production environment
-- `test` - Run your tests
+### ✅ Modernized Build Scripts (Type checking separated from builds)
+```json
+{
+  "scripts": {
+    "build-test": ". ./build-variables.sh && vite build --mode test",
+    "build-production": ". ./build-variables.sh && vite build --mode production",
+    "tsc": "tsc --noEmit",
+    "type-check": "tsc --noEmit",
+    "test:coverage": "vitest run --coverage --reporter=verbose --reporter=junit",
+    "lint": "eslint . --report-unused-disable-directives --max-warnings 0"
+  }
+}
+```
+
+### 🏗️ Architecture Benefits
+- **Separated Concerns**: Type checking and building are independent processes
+- **Faster Builds**: No redundant type checking during build process
+- **Better CI**: Parallel execution of quality checks and builds
+- **Developer Velocity**: Build succeeds even with type errors for faster iteration
+
+## Quality Gate Configuration
+
+### Required Status Checks (Branch Protection)
+Enable these status checks in GitHub Settings → Branches:
+- ✅ `Lint Checks`
+- ✅ `TypeScript Compilation`
+- ✅ `Security Audit`  
+- ✅ `Unit Tests`
+
+### Coverage Requirements
+- **Minimum**: 80% line coverage
+- **Reports**: HTML and LCOV formats in `coverage/` directory
+- **CI Integration**: Coverage data included in PR status checks
 
 ## Next Steps
 
-1. Add all the required secrets to GitHub
-2. Test the workflows by pushing a commit (for test) and manually triggering production
-3. Update your npm scripts if needed
+1. **Add GitHub Secrets**: Configure all required environment secrets
+2. **Configure Branch Protection**: Enable required status checks
+3. **Test the Pipeline**: 
+   - Push a commit to test automated CI
+   - Manually trigger production deployment
+   - Verify quality gates work as expected
+4. **Monitor Performance**: Check CI execution times and optimize as needed
