@@ -62,9 +62,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [quality-check]
     if: always() && (needs.quality-check.result == 'success' || needs.quality-check.result == 'skipped' || github.event.inputs.force_deploy == 'true')
-    environment: 
-      name: test
-      url: ${{ steps.deploy.outputs.url }}
     steps:
       - name: Repository Checkout
         uses: actions/checkout@v4
