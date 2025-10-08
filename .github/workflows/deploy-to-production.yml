@@ -2,7 +2,7 @@
 # Artifact Retention: Production builds (365d), Deployment logs (365d)
 # See: CICD_ARTIFACT_RETENTION_POLICY.md for complete retention strategy
 
-name: Deploy to Production
+name: Deploy to PROD
 
 on:
   workflow_dispatch: # Manual "push-button" trigger
