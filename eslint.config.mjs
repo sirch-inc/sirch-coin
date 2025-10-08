@@ -4,6 +4,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import reactPlugin from 'eslint-plugin-react';
 import tseslint from 'typescript-eslint';
+import security from 'eslint-plugin-security';
 
 const reactConfig = {
   version: '18.2',
@@ -19,7 +20,8 @@ export default tseslint.config(
     plugins: {
       'react': reactPlugin,
       'react-hooks': reactHooks,
-      'react-refresh': reactRefresh
+      'react-refresh': reactRefresh,
+      'security': security
     },
     languageOptions: {
       globals: {
@@ -35,7 +37,12 @@ export default tseslint.config(
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       ...reactHooks.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off',
-      'react/jsx-no-target-blank': ['error', { allowReferrer: false }]
+      'react/jsx-no-target-blank': ['error', { allowReferrer: false }],
+      ...security.configs.recommended.rules,
+      // Customize security rules for React apps
+      'security/detect-object-injection': 'off', // Too many false positives in React
+      'security/detect-non-literal-fs-filename': 'off', // Not relevant for frontend
+      'security/detect-non-literal-require': 'off' // Not relevant for frontend
     }
   },
   {
@@ -58,7 +65,8 @@ export default tseslint.config(
       '@typescript-eslint': tseslint.plugin,
       'react': reactPlugin,
       'react-hooks': reactHooks,
-      'react-refresh': reactRefresh
+      'react-refresh': reactRefresh,
+      'security': security
     },
     settings: {
       react: reactConfig
@@ -72,7 +80,12 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off',
       'react/jsx-no-target-blank': ['error', { allowReferrer: false }],
-      'react/prop-types': 'off'  // Disable prop-types for TypeScript files
+      'react/prop-types': 'off',  // Disable prop-types for TypeScript files
+      ...security.configs.recommended.rules,
+      // Customize security rules for React/TypeScript
+      'security/detect-object-injection': 'off', // Too many false positives in React
+      'security/detect-non-literal-fs-filename': 'off', // Not relevant for frontend
+      'security/detect-non-literal-require': 'off' // Not relevant for frontend
     }
   },
   {
