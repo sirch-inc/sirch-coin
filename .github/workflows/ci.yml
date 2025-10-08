@@ -7,8 +7,29 @@
 name: CI (Legacy - Disabled)
 
 on:
+<<<<<<< Updated upstream
   # Disabled - no triggers
   workflow_dispatch:  # Manual trigger only
+=======
+  # Run on pushes to main (for direct commits/emergency fixes)
+  workflow_dispatch:
+    
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+  
+  # Run on all PRs to main (your primary workflow)
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+
+env:
+  SOURCE_BRANCH: ${{ github.head_ref || github.ref_name }}
+>>>>>>> Stashed changes
 
 permissions:
   contents: read
