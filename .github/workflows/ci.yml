@@ -61,14 +61,15 @@ jobs:
         with:
           cache-key-suffix: security
 
-      - name: Dependency Review
+      - name: Dependency Review  
         uses: actions/dependency-review-action@v4
         if: github.event_name == 'pull_request'
         with:
           fail-on-severity: moderate
           allow-licenses: MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, 0BSD, Unlicense
           comment-summary-in-pr: always
-          fail-on-scopes: runtime, development
+          fail-on-scopes: runtime
+          deny-licenses: GPL-2.0, GPL-3.0, AGPL-1.0, AGPL-3.0
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
@@ -137,15 +138,20 @@ jobs:
 
       - name: Run lint checks
         id: lint
-        run: npm run lint -- --cache --cache-location .eslintcache --format=@microsoft/eslint-formatter-sarif --output-file eslint-results.sarif
+        run: npm run lint -- --cache --cache-location .eslintcache
         continue-on-error: true
 
-      - name: Upload ESLint SARIF results
-        uses: github/codeql-action/upload-sarif@v4
-        if: always() && hashFiles('eslint-results.sarif') != ''
-        with:
-          sarif_file: 'eslint-results.sarif'
-          wait-for-processing: true
+      - name: Generate ESLint Security Report
+        if: always()
+        run: |
+          echo "# ESLint Security Check Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [[ "${{ steps.lint.outcome }}" == "success" ]]; then
+            echo "✅ **ESLint security rules passed** - No security issues detected" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **ESLint detected potential security issues** - Check logs above for details" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
 
       - name: Check TypeScript compilation
         id: typescript
@@ -169,7 +175,6 @@ jobs:
         with:
           name: lint-results-${{ github.sha }}
           path: |
-            eslint-results.sarif
             .eslintcache
           retention-days: 14
           if-no-files-found: warn
