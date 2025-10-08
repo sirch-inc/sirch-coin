@@ -1,57 +1,98 @@
-name: "Setup Node.js and Dependencies"
-description: "Common setup steps for Node.js projects with caching"
+name: "Setup Node.js Environment"
+description: "Set up Node.js with intelligent caching and dependency management"
 
 inputs:
+  node-version:
+    description: "Node.js version to use"
+    required: false
+    default: "20"
   cache-key-suffix:
-    description: "Suffix to append to cache key for job-specific caching"
+    description: "Suffix for cache key to allow job-specific caching"
     required: false
     default: "default"
-
   additional-cache-paths:
-    description: "Additional paths to include in cache (newline separated)"
+    description: "Additional paths to cache (multiline)"
     required: false
     default: ""
 
 outputs:
   cache-hit:
-    description: "Whether there was a cache hit"
-    value: ${{ steps.cache.outputs.cache-hit }}
+    description: "Whether cache was hit"
+    value: ${{ steps.cache-deps.outputs.cache-hit }}
+  node-version:
+    description: "Node.js version used"
+    value: ${{ steps.setup-node.outputs.node-version }}
+  npm-cache-dir:
+    description: "NPM cache directory"
+    value: ${{ steps.npm-cache-dir.outputs.dir }}
 
 runs:
   using: "composite"
   steps:
-    - name: Use Node.js
+    - name: Setup Node.js
+      id: setup-node
       uses: actions/setup-node@v4
       with:
-        node-version: "20"
+        node-version: ${{ inputs.node-version }}
         cache: "npm"
-        cache-dependency-path: "**/package-lock.json"
 
-    - name: Cache dependencies and build outputs
+    - name: Get npm cache directory
+      id: npm-cache-dir
+      shell: bash
+      run: echo "dir=$(npm config get cache)" >> $GITHUB_OUTPUT
+
+    - name: Cache dependencies and build artifacts
+      id: cache-deps
       uses: actions/cache@v4
-      id: cache
       with:
         path: |
+          ${{ steps.npm-cache-dir.outputs.dir }}
           node_modules
-          ~/.npm
-          ~/.cache/npm
+          ~/.cache/ms-playwright
           .eslintcache
           ${{ inputs.additional-cache-paths }}
-        key: ${{ runner.os }}-vite-${{ inputs.cache-key-suffix }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('src/**/*.[jt]s?(x)', 'vite.config.*') }}
+        key: ${{ runner.os }}-deps-${{ inputs.cache-key-suffix }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('src/**/*.[jt]s?(x)', 'vite.config.*', 'tailwind.config.*', 'postcss.config.*') }}
         restore-keys: |
-          ${{ runner.os }}-vite-${{ inputs.cache-key-suffix }}-${{ hashFiles('**/package-lock.json') }}-
-          ${{ runner.os }}-vite-${{ inputs.cache-key-suffix }}-
-          ${{ runner.os }}-vite-
-
-    - name: Report cache status
-      shell: bash
-      run: |
-        if [ "${{ steps.cache.outputs.cache-hit }}" == "true" ]; then
-          echo "✅ Cache hit - dependencies restored from cache"
-        else
-          echo "❌ Cache miss - will install fresh dependencies"
-        fi
+          ${{ runner.os }}-deps-${{ inputs.cache-key-suffix }}-${{ hashFiles('**/package-lock.json') }}-
+          ${{ runner.os }}-deps-${{ inputs.cache-key-suffix }}-
+          ${{ runner.os }}-deps-
 
     - name: Install dependencies
       shell: bash
-      run: npm ci
+      run: |
+        if [ "${{ steps.cache-deps.outputs.cache-hit }}" != 'true' ]; then
+          echo "📦 Installing fresh dependencies..."
+          npm ci --prefer-offline --no-audit
+        else
+          echo "✅ Using cached dependencies"
+          # Verify node_modules exists and has content
+          if [ ! -d "node_modules" ] || [ -z "$(ls -A node_modules 2>/dev/null)" ]; then
+            echo "⚠️  Cache hit but node_modules missing, reinstalling..."
+            npm ci --prefer-offline --no-audit
+          fi
+        fi
+
+    - name: Cache reporting
+      shell: bash
+      run: |
+        echo "🔍 Cache Status Report:"
+        echo "- Cache hit: ${{ steps.cache-deps.outputs.cache-hit }}"
+        echo "- Node version: ${{ steps.setup-node.outputs.node-version }}"
+        echo "- Cache key suffix: ${{ inputs.cache-key-suffix }}"
+        if [ -n "${{ inputs.additional-cache-paths }}" ]; then
+          echo "- Additional cache paths configured"
+        fi
+        echo "- NPM cache directory: ${{ steps.npm-cache-dir.outputs.dir }}"
+
+        # Report dependency count
+        if [ -f "package-lock.json" ]; then
+          DEP_COUNT=$(jq '.packages | length' package-lock.json 2>/dev/null || echo "unknown")
+          echo "- Dependencies: $DEP_COUNT packages"
+        fi
+
+        # Report cache efficiency
+        if [ "${{ steps.cache-deps.outputs.cache-hit }}" == "true" ]; then
+          echo "💚 Cache efficiency: Excellent - saved dependency installation time"
+        else
+          echo "💛 Cache efficiency: Building cache for future runs"
+        fi

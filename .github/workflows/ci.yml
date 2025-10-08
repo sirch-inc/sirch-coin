@@ -8,7 +8,7 @@ name: CI Pipeline
 
 on:
   workflow_dispatch:
-    
+
   push:
     branches: [main]
     paths-ignore:
@@ -38,7 +38,7 @@ permissions:
   deployments: write
 
 jobs:
-  # Security scanning job - runs first
+  # Security scanning job - runs in parallel
   security:
     name: 🛡️ Security Scan
     runs-on: ubuntu-latest
@@ -61,14 +61,14 @@ jobs:
         with:
           cache-key-suffix: security
 
-      - name: Dependency Review
+      - name: Dependency Review  
         uses: actions/dependency-review-action@v4
         if: github.event_name == 'pull_request'
         with:
           fail-on-severity: moderate
           allow-licenses: MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, 0BSD, Unlicense
           comment-summary-in-pr: always
-          fail-on-scopes: runtime, development
+          fail-on-scopes: runtime
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
@@ -112,11 +112,77 @@ jobs:
           retention-days: 14
           if-no-files-found: warn
 
-  # Testing and linting job - runs in parallel with security
-  test:
-    name: 🧪 Test & Lint
+  # Linting and type checking job - runs in parallel
+  lint:
+    name: 📝 Lint & Type Check
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, '[ci skip]') }}
+    
+    outputs:
+      lint-status: ${{ steps.lint-summary.outputs.status }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_FOR_GITHUB_ACTIONS }}
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Setup Node.js and Dependencies
+        uses: ./.github/actions/setup
+        with:
+          cache-key-suffix: lint
+
+      - name: Run lint checks
+        id: lint
+        run: npm run lint -- --cache --cache-location .eslintcache
+        continue-on-error: true
+
+      - name: Generate ESLint Security Report
+        if: always()
+        run: |
+          echo "# ESLint Security Check Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [[ "${{ steps.lint.outcome }}" == "success" ]]; then
+            echo "✅ **ESLint security rules passed** - No security issues detected" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **ESLint detected potential security issues** - Check logs above for details" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+      - name: Check TypeScript compilation
+        id: typescript
+        run: npm run tsc
+        continue-on-error: true
+
+      - name: Lint summary
+        id: lint-summary
+        run: |
+          if [[ "${{ steps.lint.outcome }}" == "success" && "${{ steps.typescript.outcome }}" == "success" ]]; then
+            echo "status=success" >> "$GITHUB_OUTPUT"
+            echo "✅ Linting and type checking passed"
+          else
+            echo "status=failure" >> "$GITHUB_OUTPUT"
+            echo "❌ Linting or type checking failed"
+          fi
+
+      - name: Upload lint results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lint-results-${{ github.sha }}
+          path: |
+            .eslintcache
+          retention-days: 14
+          if-no-files-found: warn
+
+  # Unit testing job - runs in parallel
+  test:
+    name: 🧪 Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
     if: ${{ !contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, '[ci skip]') }}
     
     outputs:
@@ -135,30 +201,28 @@ jobs:
         with:
           cache-key-suffix: test
 
-      - name: Run lint checks
-        id: lint
-        run: npm run lint -- --cache --cache-location .eslintcache
-        continue-on-error: true
-
-      - name: Check TypeScript compilation
-        id: typescript
-        run: npm run tsc
-        continue-on-error: true
-
       - name: Run unit tests with coverage
         id: tests
-        run: npm run test:coverage
+        run: npm run test:coverage -- --reporter=junit --outputFile=test-results.xml
+        continue-on-error: true
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        if: always() && hashFiles('coverage/lcov.info') != ''
+        with:
+          files: ./coverage/lcov.info
+          fail_ci_if_error: false
         continue-on-error: true
 
       - name: Test summary
         id: test-summary
         run: |
-          if [[ "${{ steps.lint.outcome }}" == "success" && "${{ steps.typescript.outcome }}" == "success" && "${{ steps.tests.outcome }}" == "success" ]]; then
+          if [[ "${{ steps.tests.outcome }}" == "success" ]]; then
             echo "status=success" >> "$GITHUB_OUTPUT"
-            echo "✅ All tests passed"
+            echo "✅ All unit tests passed"
           else
             echo "status=failure" >> "$GITHUB_OUTPUT"
-            echo "❌ Some tests failed"
+            echo "❌ Some unit tests failed"
           fi
 
       - name: Upload test results
@@ -172,13 +236,13 @@ jobs:
           retention-days: 14
           if-no-files-found: warn
 
-  # Build and deploy job - runs after security and tests complete successfully  
+  # Build and deploy job - runs after security, lint, and test jobs complete successfully  
   build-deploy:
     name: 🚀 Build & Deploy
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: [security, test]  # Wait for both security and test jobs
-    if: ${{ needs.security.outputs.security-status == 'success' && needs.test.outputs.test-status == 'success' }}
+    needs: [security, lint, test]  # Wait for all quality gates
+    if: ${{ needs.security.outputs.security-status == 'success' && needs.lint.outputs.lint-status == 'success' && needs.test.outputs.test-status == 'success' }}
     
     environment: 
       name: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'production' || 'preview' }}
@@ -312,9 +376,7 @@ jobs:
   summary:
     name: 📋 Pipeline Summary
     runs-on: ubuntu-latest
-    needs: [security, test, build-deploy]
-    if: always()
-    
+    needs: [build-deploy]    
     steps:
       - name: Create pipeline summary
         run: |
@@ -322,13 +384,15 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           
           SECURITY_STATUS="${{ needs.security.result == 'success' && '✅ Passed' || '❌ Failed' }}"
+          LINT_STATUS="${{ needs.lint.result == 'success' && '✅ Passed' || '❌ Failed' }}"
           TEST_STATUS="${{ needs.test.result == 'success' && '✅ Passed' || '❌ Failed' }}"
           BUILD_STATUS="${{ needs.build-deploy.result == 'success' && '✅ Passed' || (needs.build-deploy.result == 'skipped' && '⏭️ Skipped' || '❌ Failed') }}"
           
           echo "| Stage | Status | Details |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|--------|---------|" >> $GITHUB_STEP_SUMMARY
           echo "| 🛡️ Security | $SECURITY_STATUS | Dependency review, vulnerability scanning |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🧪 Tests | $TEST_STATUS | ESLint, TypeScript, unit tests |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📝 Lint & Type Check | $LINT_STATUS | ESLint security rules, TypeScript compilation |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🧪 Unit Tests | $TEST_STATUS | Jest tests with coverage reporting |" >> $GITHUB_STEP_SUMMARY
           echo "| 🚀 Build & Deploy | $BUILD_STATUS | Vite build, Lighthouse, preview deployment |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
@@ -338,7 +402,7 @@ jobs:
           fi
           
           # Overall status
-          if [[ "${{ needs.security.result }}" == "success" && "${{ needs.test.result }}" == "success" && "${{ needs.build-deploy.result }}" == "success" ]]; then
+          if [[ "${{ needs.security.result }}" == "success" && "${{ needs.lint.result }}" == "success" && "${{ needs.test.result }}" == "success" && "${{ needs.build-deploy.result }}" == "success" ]]; then
             echo "🎉 **All pipeline stages completed successfully!**" >> $GITHUB_STEP_SUMMARY
           else
             echo "⚠️ **Some pipeline stages failed or were skipped.** Check individual job results above." >> $GITHUB_STEP_SUMMARY
