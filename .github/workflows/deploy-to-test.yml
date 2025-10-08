@@ -12,9 +12,13 @@ on:
       - 'docs/**'
       - '**/*.md'
   
-  # Manual trigger for re-deployments
+  # Manual trigger for direct commits or re-deployments
   workflow_dispatch:
     inputs:
+      deployment_reason:
+        description: 'Reason for manual deployment (e.g., "Direct commit bypass", "Hotfix deployment")'
+        required: true
+        default: 'Manual deployment'
       force_deploy:
         description: 'Force deployment even if tests fail'
         required: false
@@ -22,8 +26,42 @@ on:
         type: boolean
 
 jobs:
-  deploy-test:
+  # Run quality checks for direct commits (bypassed PRs)
+  quality-check:
+    name: 🔍 Quality Check (Direct Commit)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.event_name == 'push' && !contains(github.event.head_commit.message, 'Merge pull request')
+    steps:
+      - name: Repository Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Setup Node.js and Dependencies
+        uses: ./.github/actions/setup
+        with:
+          cache-key-suffix: test-deploy
+
+      - name: Run comprehensive checks
+        run: |
+          echo "🔍 Running quality checks for direct commit..."
+          npm run lint
+          npm run tsc
+          npm audit --audit-level=moderate
+          npm test
+
+      - name: Quality check summary
+        run: |
+          echo "✅ Quality checks passed for direct commit"
+          echo "⚠️ This deployment bypassed the standard PR process"
+
+  deploy-test:
+    name: 🚀 Deploy to TEST
+    runs-on: ubuntu-latest
+    needs: [quality-check]
+    if: always() && (needs.quality-check.result == 'success' || needs.quality-check.result == 'skipped' || github.event.inputs.force_deploy == 'true')
     environment: 
       name: test
       url: ${{ steps.deploy.outputs.url }}
@@ -111,10 +149,30 @@ jobs:
           echo "## 🚀 TEST Deployment Complete" >> $GITHUB_STEP_SUMMARY
           echo "- **URL**: ${{ steps.deploy.outputs.url }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
-          if [ "${{ github.event.inputs.force_deploy }}" = "true" ]; then
-            echo "- **Tests**: ⚠️ Skipped (Forced Deployment)" >> $GITHUB_STEP_SUMMARY
+          
+          # Indicate deployment path
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "- **Deployment Type**: 🔧 Manual (Direct commit or re-deployment)" >> $GITHUB_STEP_SUMMARY
+            echo "- **Reason**: ${{ github.event.inputs.deployment_reason || 'Manual deployment' }}" >> $GITHUB_STEP_SUMMARY
+            if [ "${{ github.event.inputs.force_deploy }}" = "true" ]; then
+              echo "- **Tests**: ⚠️ Skipped (Forced Deployment)" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "- **Tests**: ✅ Passed" >> $GITHUB_STEP_SUMMARY
+            fi
           else
-            echo "- **Tests**: ✅ Passed" >> $GITHUB_STEP_SUMMARY
+            echo "- **Deployment Type**: 🔄 Automatic (PR Merge)" >> $GITHUB_STEP_SUMMARY
+            echo "- **Tests**: ✅ Validated via CI Pipeline" >> $GITHUB_STEP_SUMMARY
           fi
+          
           echo "- **Ready for PROD**: ✅ QA Complete" >> $GITHUB_STEP_SUMMARY
           echo "- **Artifacts**: [test-build-${{ github.sha }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+
+      - name: Notify deployment
+        if: always()
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "🚨 MANUAL TEST deployment by ${{ github.actor }}"
+            echo "Reason: ${{ github.event.inputs.deployment_reason || 'Direct commit bypass' }}"
+          else
+            echo "✅ Automatic TEST deployment from PR merge"
+          fi
