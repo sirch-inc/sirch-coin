@@ -4,7 +4,7 @@
 # Artifact Retention: CI builds (7d), Test results (14d), Preview logs (14d)
 # See: CICD_ARTIFACT_RETENTION_POLICY.md for complete retention strategy
 
-name: CI Pipeline
+name: CI
 
 on:
   workflow_dispatch:
