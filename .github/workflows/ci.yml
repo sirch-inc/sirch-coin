@@ -38,7 +38,7 @@ permissions:
   deployments: write
 
 jobs:
-  # Security scanning job - runs first
+  # Security scanning job - runs in parallel
   security:
     name: 🛡️ Security Scan
     runs-on: ubuntu-latest
@@ -112,7 +112,7 @@ jobs:
           retention-days: 14
           if-no-files-found: warn
 
-  # Linting and type checking job - runs in parallel with security and tests
+  # Linting and type checking job - runs in parallel
   lint:
     name: 📝 Lint & Type Check
     runs-on: ubuntu-latest
@@ -178,7 +178,7 @@ jobs:
           retention-days: 14
           if-no-files-found: warn
 
-  # Unit testing job - runs in parallel with security and lint
+  # Unit testing job - runs in parallel
   test:
     name: 🧪 Unit Tests
     runs-on: ubuntu-latest
@@ -236,7 +236,7 @@ jobs:
           retention-days: 14
           if-no-files-found: warn
 
-  # Build and deploy job - runs after security, lint, and tests complete successfully  
+  # Build and deploy job - runs after security, lint, and test jobs complete successfully  
   build-deploy:
     name: 🚀 Build & Deploy
     runs-on: ubuntu-latest
@@ -376,9 +376,7 @@ jobs:
   summary:
     name: 📋 Pipeline Summary
     runs-on: ubuntu-latest
-    needs: [security, lint, test, build-deploy]
-    if: always()
-    
+    needs: [build-deploy]    
     steps:
       - name: Create pipeline summary
         run: |
